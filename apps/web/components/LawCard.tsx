@@ -11,38 +11,38 @@ interface LawCardProps {
 
 export default function LawCard({ law }: LawCardProps) {
     const gradeColors = {
-        A: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        B: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-        C: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+        A: 'success' as const,
+        B: 'warning' as const,
+        C: 'error' as const
     };
 
     return (
         <Link href={`/laws/${law.id}`}>
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 cursor-pointer h-full">
-                <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-3">
+            <Card className="p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-crimson-400 cursor-pointer h-full group">
+                <h3 className="text-xl font-bold text-crimson-600 dark:text-crimson-400 mb-3 group-hover:text-crimson-700 dark:group-hover:text-crimson-300 transition-colors">
                     {law.name}
                 </h3>
 
-                <div className="flex gap-2 flex-wrap mb-3">
-                    <Badge className={gradeColors[law.grade]}>
+                <div className="flex gap-2 flex-wrap mb-4">
+                    <Badge variant={gradeColors[law.grade]}>
                         Grade {law.grade}
                     </Badge>
-                    <Badge variant="outline">
+                    <Badge variant="secondary">
                         Prioridad {law.priority}
                     </Badge>
                 </div>
 
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                <div className="text-sm text-stone-600 dark:text-stone-400">
+                    <span className="font-semibold text-stone-900 dark:text-stone-100">
                         {law.articles.toLocaleString()}
                     </span> artículos •
-                    <span className="font-semibold text-gray-900 dark:text-gray-100 ml-1">
+                    <span className="font-semibold text-forest-600 dark:text-forest-400 ml-1">
                         {law.score}%
                     </span> calidad
                 </div>
 
                 {law.transitorios > 0 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                    <div className="text-xs text-stone-500 dark:text-stone-500 mt-2">
                         + {law.transitorios} transitorios
                     </div>
                 )}
@@ -50,3 +50,4 @@ export default function LawCard({ law }: LawCardProps) {
         </Link>
     );
 }
+
