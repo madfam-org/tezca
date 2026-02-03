@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/aldoruizluna/labspace/leyes-como-codigo-mx/scripts/scraping/bulk_state_scraper.py", line 122, in <module>
+    main()
+  File "/Users/aldoruizluna/labspace/leyes-como-codigo-mx/scripts/scraping/bulk_state_scraper.py", line 20, in main
+    with open(registry_path, 'r', encoding='utf-8') as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'data/state_registry.json'
