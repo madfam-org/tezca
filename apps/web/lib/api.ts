@@ -77,6 +77,7 @@ export const api = {
             state?: string | null;
             status?: string;
             sort?: string;
+            date_range?: string;
             page?: number;
             page_size?: number;
         }
@@ -98,6 +99,9 @@ export const api = {
         }
         if (options?.sort && options.sort !== 'relevance') {
             params.append('sort', options.sort);
+        }
+        if (options?.date_range && options.date_range !== 'all') {
+            params.append('date_range', options.date_range);
         }
         if (options?.page) {
             params.append('page', options.page.toString());

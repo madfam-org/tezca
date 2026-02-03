@@ -15,6 +15,7 @@ export interface SearchFilterState {
     state: string | null;
     status: string;
     sort: string;
+    date_range?: string;
 }
 
 interface SearchFiltersProps {
@@ -243,6 +244,28 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                                     {opt.label}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Date Range */}
+                <div>
+                    <Label htmlFor="date_range" className="mb-2 block text-sm font-medium">
+                        Fecha de publicación
+                    </Label>
+                    <Select
+                        value={filters.date_range || 'all'}
+                        onValueChange={(value) => onFiltersChange({ ...filters, date_range: value })}
+                    >
+                        <SelectTrigger id="date_range">
+                            <SelectValue placeholder="Cualquier fecha" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Cualquier fecha</SelectItem>
+                            <SelectItem value="2024">2024 (Este año)</SelectItem>
+                            <SelectItem value="2023">2023</SelectItem>
+                            <SelectItem value="last_5_years">Últimos 5 años</SelectItem>
+                            <SelectItem value="older">Más antiguos</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

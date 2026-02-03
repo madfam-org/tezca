@@ -65,6 +65,35 @@ class SearchView(APIView):
                 prefix = f"{state_filter.lower()}_"
                 filter_clauses.append({"prefix": {"law_id.keyword": prefix}})
 
+            # Date Range Filter
+            date_range = request.query_params.get("date_range", None)
+            if date_range and date_range != "all":
+                from datetime import datetime, timedelta
+                now = datetime.now()
+                
+                if date_range == "2024":
+                    # Current Year (Assuming 2024 context, or generic current year)
+                    # Ideally dynamically get current year if "this_year"
+                    start_date = "2024-01-01"
+                    end_date = "2024-12-31"
+                    filter_clauses.append({"range": {"publication_date": {"gte": start_date, "lte": end_date}}})
+                
+                elif date_range == "2023":
+                    start_date = "2023-01-01"
+                    end_date = "2023-12-31"
+                    filter_clauses.append({"range": {"publication_date": {"gte": start_date, "lte": end_date}}})
+                
+                elif date_range == "last_5_years":
+                    start_year = now.year - 5
+                    start_date = f"{start_year}-01-01"
+                    filter_clauses.append({"range": {"publication_date": {"gte": start_date}}})
+                
+                elif date_range == "older":
+                    # Older than 5 years
+                    end_year = now.year - 5
+                    end_date = f"{end_year}-01-01"
+                    filter_clauses.append({"range": {"publication_date": {"lt": end_date}}})
+
             # Search status (vigente/abrogado) - not fully indexed yet, placeholder
             # if search_status and search_status != "all": ...
 

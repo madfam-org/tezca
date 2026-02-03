@@ -68,6 +68,7 @@ function SearchContent() {
                 state: searchFilters.state,
                 status: searchFilters.status,
                 sort: searchFilters.sort,
+                date_range: searchFilters.date_range,
                 page,
                 page_size: PAGE_SIZE,
             });
