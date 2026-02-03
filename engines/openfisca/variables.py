@@ -1,22 +1,34 @@
 from engines.openfisca_mock import Person, TaxBenefitSystem, Variable
-from engines.catala.lisr_catala import Person as CatalaPerson, PhysicalPersonTax
+# from openfisca_core.variables import Variable
+from engines.catala.lisr_catala import Person as CatalaPerson, PhysicalPersonTax, get_person_tax
 from decimal import Decimal
 
+# Helper to process single person logic for vectorised OpenFisca
+def calculate_single(residence, source_mx, income_c, income_g, output_field=None):
+    p_catala = CatalaPerson(residence=residence, income_source_mx=source_mx)
+    result = get_person_tax(p_catala, Decimal(str(income_c)), Decimal(str(income_g)))
+    
+    if output_field == "total":
+        return float(result.isr_monthly)
+    elif output_field in result.breakdown:
+        return float(result.breakdown[output_field])
+    return 0.0
+
 class isr_obligation(Variable):
-    value_type = bool
+    value_type = float
     entity = Person
-    label = "Obligación de pago de ISR"
+    label = "Impuesto Sobre la Renta a Cargo (Mensual)"
     definition_period = "MONTH"
 
     def formula(person, period, parameters):
         residence = person("is_resident", period)
         source_mx = person("has_mexican_income_source", period)
-        
-        # Using the Mock Catala Logic
-        # We vectorise explicitly here for simplicity, though real Catala is cleaner
+        cash = person("income_cash", period)
+        goods = person("income_goods", period)
+
         return [
-            CatalaPerson(r, s).tax_obligation() 
-            for r, s in zip(residence, source_mx)
+            calculate_single(r, s, c, g, "total_tax")
+            for r, s, c, g in zip(residence, source_mx, cash, goods)
         ]
 
 class gross_income(Variable):
@@ -28,10 +40,41 @@ class gross_income(Variable):
     def formula(person, period, parameters):
         cash = person("income_cash", period)
         goods = person("income_goods", period)
+        return cash + goods
 
+# Breakdown Variables
+
+class isr_breakdown_lower_limit(Variable):
+    value_type = float
+    entity = Person
+    label = "Límite Inferior"
+    definition_period = "MONTH"
+    def formula(person, period, parameters):
         return [
-            float(PhysicalPersonTax(Decimal(c), Decimal(g)).total_income())
-            for c, g in zip(cash, goods)
+            calculate_single(r, s, c, g, "lower_limit")
+            for r, s, c, g in zip(person("is_resident", period), person("has_mexican_income_source", period), person("income_cash", period), person("income_goods", period))
+        ]
+
+class isr_breakdown_fixed_fee(Variable):
+    value_type = float
+    entity = Person
+    label = "Cuota Fija"
+    definition_period = "MONTH"
+    def formula(person, period, parameters):
+        return [
+            calculate_single(r, s, c, g, "fixed_fee")
+            for r, s, c, g in zip(person("is_resident", period), person("has_mexican_income_source", period), person("income_cash", period), person("income_goods", period))
+        ]
+
+class isr_breakdown_rate(Variable):
+    value_type = float
+    entity = Person
+    label = "Tasa Aplicable (%)"
+    definition_period = "MONTH"
+    def formula(person, period, parameters):
+        return [
+            calculate_single(r, s, c, g, "rate")
+            for r, s, c, g in zip(person("is_resident", period), person("has_mexican_income_source", period), person("income_cash", period), person("income_goods", period))
         ]
 
 # Input Variables

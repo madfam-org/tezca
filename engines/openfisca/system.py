@@ -1,7 +1,7 @@
 from engines.openfisca_mock import TaxBenefitSystem
 from engines.openfisca.variables import (
     isr_obligation, gross_income, is_resident, has_mexican_income_source,
-    income_cash, income_goods
+    income_cash, income_goods, isr_breakdown_lower_limit, isr_breakdown_rate, isr_breakdown_fixed_fee
 )
 
 class MexicanTaxSystem(TaxBenefitSystem):
@@ -12,7 +12,10 @@ class MexicanTaxSystem(TaxBenefitSystem):
             is_resident,
             has_mexican_income_source,
             income_cash,
-            income_goods
+            income_goods,
+            isr_breakdown_lower_limit,
+            isr_breakdown_rate,
+            isr_breakdown_fixed_fee
         ])
 
 if __name__ == "__main__":

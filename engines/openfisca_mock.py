@@ -51,4 +51,4 @@ class Simulation:
             result = variable.formula(person_obj, period, None)
             results[name] = result[0]
             
-        return results
+        return list(results.values())

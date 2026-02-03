@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 export default function TaxForm() {
     const [incomeCash, setIncomeCash] = useState<number>(0);
@@ -50,35 +49,37 @@ export default function TaxForm() {
     };
 
     return (
-        <Card className="max-w-md mx-auto shadow-lg">
+        <Card className="max-w-xl mx-auto shadow-lg">
             <CardHeader>
-                <CardTitle>Calculadora de Impuestos</CardTitle>
-                <CardDescription>Régimen General de Personas Físicas (LISR)</CardDescription>
+                <CardTitle>Calculadora de Impuestos 2024</CardTitle>
+                <CardDescription>Régimen General (LISR Art. 96) - Mensual</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="incomeCash">Ingreso Efectivo (MXN)</Label>
-                        <Input
-                            id="incomeCash"
-                            type="number"
-                            placeholder="0.00"
-                            value={incomeCash}
-                            onChange={(e) => setIncomeCash(parseFloat(e.target.value) || 0)}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="incomeGoods">Ingreso en Bienes (MXN)</Label>
-                        <Input
-                            id="incomeGoods"
-                            type="number"
-                            placeholder="0.00"
-                            value={incomeGoods}
-                            onChange={(e) => setIncomeGoods(parseFloat(e.target.value) || 0)}
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="incomeCash">Ingreso Efectivo</Label>
+                            <Input
+                                id="incomeCash"
+                                type="number"
+                                placeholder="0.00"
+                                value={incomeCash}
+                                onChange={(e) => setIncomeCash(parseFloat(e.target.value) || 0)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="incomeGoods">Ingreso en Bienes</Label>
+                            <Input
+                                id="incomeGoods"
+                                type="number"
+                                placeholder="0.00"
+                                value={incomeGoods}
+                                onChange={(e) => setIncomeGoods(parseFloat(e.target.value) || 0)}
+                            />
+                        </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
                         {loading ? "Calculando..." : "Calcular Impuestos"}
                     </Button>
                 </form>
@@ -92,20 +93,42 @@ export default function TaxForm() {
                 )}
 
                 {result && (
-                    <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-100">
-                        <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            <h3 className="font-semibold text-green-800">Cálculo Completado</h3>
-                        </div>
-                        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                            <dt className="text-gray-600">Ingreso Bruto:</dt>
-                            <dd className="font-bold text-gray-900">${result.gross_income.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</dd>
+                    <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
 
-                            <dt className="text-gray-600">Obligación ISR:</dt>
-                            <dd className={`font-bold ${result.isr_obligation ? 'text-red-600' : 'text-green-600'}`}>
-                                {result.isr_obligation ? "SÍ PAGA" : "EXENTO"}
-                            </dd>
-                        </dl>
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100 space-y-3">
+                            <div className="flex items-center gap-2 mb-2 border-b pb-2">
+                                <Info className="h-4 w-4 text-blue-600" />
+                                <h3 className="font-semibold text-gray-800">Desglose del Cálculo</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 text-sm gap-y-1">
+                                <span className="text-gray-500">Ingreso Gravable:</span>
+                                <span className="text-right font-medium">${result.gross_income.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+
+                                <span className="text-gray-500">(-) Límite Inferior:</span>
+                                <span className="text-right">${result.breakdown.lower_limit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+
+                                <span className="text-gray-500">(=) Excedente:</span>
+                                <span className="text-right">${(result.gross_income - result.breakdown.lower_limit).toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+
+                                <span className="text-gray-500">(x) Tasa:</span>
+                                <span className="text-right">{result.breakdown.rate}%</span>
+
+                                <span className="text-gray-500">(+) Cuota Fija:</span>
+                                <span className="text-right">${result.breakdown.fixed_fee.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200 shadow-sm flex justify-between items-center">
+                            <div>
+                                <h3 className="font-bold text-green-900 text-lg">Total a Pagar</h3>
+                                <p className="text-xs text-green-700">ISR Personas Físicas</p>
+                            </div>
+                            <div className="text-2xl font-extrabold text-green-800">
+                                ${result.isr_obligation.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                            </div>
+                        </div>
+
                     </div>
                 )}
             </CardContent>

@@ -2,42 +2,50 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from engines.openfisca.system import MexicanTaxSystem
-from .serializers import CalculationRequestSerializer, CalculationResultSerializer
+from .serializers import CalculationRequestSerializer
 
 class CalculationView(APIView):
-    """
-    Executes a tax calculation using the OpenFisca Engine.
-    """
-    
     def post(self, request):
         serializer = CalculationRequestSerializer(data=request.data)
         if serializer.is_valid():
-            data = serializer.validated_data
+            inputs = serializer.validated_data
             
-            # Initialize Engine
+            # Initialize System
             system = MexicanTaxSystem()
             sim = system.new_simulation()
             
-            # Map Inputs
-            sim.add_person(
-                name="citizen",
-                period=data['period'],
-                income_cash=data['income_cash'],
-                income_goods=data['income_goods'],
-                is_resident=data['is_resident'],
-                has_mexican_income_source=data['has_mexican_income_source']
-            )
+            # 1. Add Person
+            sim.add_person(name="taxpayer", period=inputs['period'], 
+                           is_resident=inputs['is_resident'],
+                           has_mexican_income_source=True, # Assumed for MVP
+                           income_cash=inputs['income_cash'],
+                           income_goods=inputs['income_goods']
+                          )
             
-            # Run Calculation
-            # Note: In a real app we'd map output variables more dynamically
-            gross_income = sim.calculate("gross_income", data['period'])
-            isr_obligation = sim.calculate("isr_obligation", data['period'])
+            # 2. Add Tax Unit (Individual) if necessary, but here we just query variables
             
-            result = {
-                "gross_income": gross_income["citizen"],
-                "isr_obligation": isr_obligation["citizen"]
-            }
-            
-            return Response(result, status=status.HTTP_200_OK)
+            # 3. Calculate
+            # We fetch all relevant variables
+            try:
+                gross_income = sim.calculate("gross_income", inputs['period'])[0]
+                isr_due = sim.calculate("isr_obligation", inputs['period'])[0]
+                lower_limit = sim.calculate("isr_breakdown_lower_limit", inputs['period'])[0]
+                fixed_fee = sim.calculate("isr_breakdown_fixed_fee", inputs['period'])[0]
+                rate = sim.calculate("isr_breakdown_rate", inputs['period'])[0]
+                
+                return Response({
+                    "period": inputs['period'],
+                    "gross_income": gross_income,
+                    "isr_obligation": isr_due,  # This is the "Total Tax"
+                    "breakdown": {
+                        "lower_limit": lower_limit,
+                        "fixed_fee": fixed_fee,
+                        "rate": rate,
+                        "taxable_income": gross_income # Simplified
+                    }
+                })
+            except Exception as e:
+                # In production log this
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
