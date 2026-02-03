@@ -1,0 +1,54 @@
+{
+  "state_id": 11,
+  "state_name": "Guanajuato",
+  "total_found": 5,
+  "successful": 5,
+  "failed": 0,
+  "laws": [
+    {
+      "file_id": 78886,
+      "ambito": "ESTATAL",
+      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=78886&ambito=ESTATAL",
+      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/GUANAJUATO/o478886.doc&nombreclave=o478886.doc",
+      "format": "doc",
+      "local_path": "data/state_laws/guanajuato/ley_de_ingresos_acámbaro_2018_78886.doc",
+      "law_name": "Ley de Ingresos ACÁMBARO 2018"
+    },
+    {
+      "file_id": 78890,
+      "ambito": "ESTATAL",
+      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=78890&ambito=ESTATAL",
+      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/GUANAJUATO/o478890.doc&nombreclave=o478890.doc",
+      "format": "doc",
+      "local_path": "data/state_laws/guanajuato/ley_de_ingresos_comonfort_2018_78890.doc",
+      "law_name": "Ley de Ingresos COMONFORT 2018"
+    },
+    {
+      "file_id": 84378,
+      "ambito": "ESTATAL",
+      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=84378&ambito=ESTATAL",
+      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/GUANAJUATO/o484378.doc&nombreclave=o484378.doc",
+      "format": "doc",
+      "local_path": "data/state_laws/guanajuato/ley_de_ingresos_del_municipio_de_san_miguel_de_allende_2019_84378.doc",
+      "law_name": "Ley de Ingresos del municipio de San Miguel de Allende 2019"
+    },
+    {
+      "file_id": 78898,
+      "ambito": "ESTATAL",
+      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=78898&ambito=ESTATAL",
+      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/GUANAJUATO/o478898.doc&nombreclave=o478898.doc",
+      "format": "doc",
+      "local_path": "data/state_laws/guanajuato/ley_de_ingresos_huanímaro_2018_78898.doc",
+      "law_name": "Ley de Ingresos HUANÍMARO 2018"
+    },
+    {
+      "file_id": 84334,
+      "ambito": "ESTATAL",
+      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=84334&ambito=ESTATAL",
+      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/GUANAJUATO/o484334.doc&nombreclave=o484334.doc",
+      "format": "doc",
+      "local_path": "data/state_laws/guanajuato/ley_de_ingresos_para_el_municipio_de_comonfort_84334.doc",
+      "law_name": "Ley de Ingresos para el municipio de Comonfort"
+    }
+  ]
+}

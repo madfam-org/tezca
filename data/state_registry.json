@@ -1,0 +1,299 @@
+{
+    "metadata": {
+        "version": "1.0",
+        "created": "2026-02-03",
+        "description": "Registry of Mexican state laws to be ingested from Orden Jurídico Nacional",
+        "total_states": 32,
+        "source": "http://compilacion.ordenjuridico.gob.mx/"
+    },
+    "states": [
+        {
+            "id": 1,
+            "name": "Aguascalientes",
+            "abbreviation": "AGS",
+            "slug": "aguascalientes",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 2,
+            "name": "Baja California",
+            "abbreviation": "BC",
+            "slug": "baja-california",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 3,
+            "name": "Baja California Sur",
+            "abbreviation": "BCS",
+            "slug": "baja-california-sur",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 4,
+            "name": "Campeche",
+            "abbreviation": "CAM",
+            "slug": "campeche",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 5,
+            "name": "Coahuila",
+            "abbreviation": "COAH",
+            "slug": "coahuila",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 6,
+            "name": "Colima",
+            "abbreviation": "COL",
+            "slug": "colima",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 7,
+            "name": "Chiapas",
+            "abbreviation": "CHIS",
+            "slug": "chiapas",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 8,
+            "name": "Chihuahua",
+            "abbreviation": "CHIH",
+            "slug": "chihuahua",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 9,
+            "name": "Ciudad de México",
+            "abbreviation": "CDMX",
+            "slug": "cdmx",
+            "priority": 1,
+            "status": "pending",
+            "notes": "Federal capital, highest population"
+        },
+        {
+            "id": 10,
+            "name": "Durango",
+            "abbreviation": "DGO",
+            "slug": "durango",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 11,
+            "name": "Guanajuato",
+            "abbreviation": "GTO",
+            "slug": "guanajuato",
+            "priority": 2,
+            "status": "pilot",
+            "notes": "Used for initial testing - 700+ laws"
+        },
+        {
+            "id": 12,
+            "name": "Guerrero",
+            "abbreviation": "GRO",
+            "slug": "guerrero",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 13,
+            "name": "Hidalgo",
+            "abbreviation": "HGO",
+            "slug": "hidalgo",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 14,
+            "name": "Jalisco",
+            "abbreviation": "JAL",
+            "slug": "jalisco",
+            "priority": 1,
+            "status": "pending",
+            "notes": "Second largest economy"
+        },
+        {
+            "id": 15,
+            "name": "Estado de México",
+            "abbreviation": "MEX",
+            "slug": "estado-mexico",
+            "priority": 1,
+            "status": "pending",
+            "notes": "Highest population"
+        },
+        {
+            "id": 16,
+            "name": "Michoacán",
+            "abbreviation": "MICH",
+            "slug": "michoacan",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 17,
+            "name": "Morelos",
+            "abbreviation": "MOR",
+            "slug": "morelos",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 18,
+            "name": "Nayarit",
+            "abbreviation": "NAY",
+            "slug": "nayarit",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 19,
+            "name": "Nuevo León",
+            "abbreviation": "NL",
+            "slug": "nuevo-leon",
+            "priority": 1,
+            "status": "pending",
+            "notes": "Major industrial center, Monterrey"
+        },
+        {
+            "id": 20,
+            "name": "Oaxaca",
+            "abbreviation": "OAX",
+            "slug": "oaxaca",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 21,
+            "name": "Puebla",
+            "abbreviation": "PUE",
+            "slug": "puebla",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 22,
+            "name": "Querétaro",
+            "abbreviation": "QRO",
+            "slug": "queretaro",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 23,
+            "name": "Quintana Roo",
+            "abbreviation": "QROO",
+            "slug": "quintana-roo",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 24,
+            "name": "San Luis Potosí",
+            "abbreviation": "SLP",
+            "slug": "san-luis-potosi",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 25,
+            "name": "Sinaloa",
+            "abbreviation": "SIN",
+            "slug": "sinaloa",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 26,
+            "name": "Sonora",
+            "abbreviation": "SON",
+            "slug": "sonora",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 27,
+            "name": "Tabasco",
+            "abbreviation": "TAB",
+            "slug": "tabasco",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 28,
+            "name": "Tamaulipas",
+            "abbreviation": "TAM",
+            "slug": "tamaulipas",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 29,
+            "name": "Tlaxcala",
+            "abbreviation": "TLAX",
+            "slug": "tlaxcala",
+            "priority": 3,
+            "status": "pending"
+        },
+        {
+            "id": 30,
+            "name": "Veracruz",
+            "abbreviation": "VER",
+            "slug": "veracruz",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 31,
+            "name": "Yucatán",
+            "abbreviation": "YUC",
+            "slug": "yucatan",
+            "priority": 2,
+            "status": "pending"
+        },
+        {
+            "id": 32,
+            "name": "Zacatecas",
+            "abbreviation": "ZAC",
+            "slug": "zacatecas",
+            "priority": 3,
+            "status": "pending"
+        }
+    ],
+    "core_codes": [
+        {
+            "type": "constitution",
+            "name_pattern": "Constitución Política del Estado de {state}",
+            "priority": 1
+        },
+        {
+            "type": "civil_code",
+            "name_pattern": "Código Civil para el Estado de {state}",
+            "priority": 1
+        },
+        {
+            "type": "penal_code",
+            "name_pattern": "Código Penal para el Estado de {state}",
+            "priority": 1
+        },
+        {
+            "type": "electoral_law",
+            "name_pattern": "Ley Electoral del Estado de {state}",
+            "priority": 2
+        },
+        {
+            "type": "admin_procedure",
+            "name_pattern": "Ley de Procedimiento Administrativo del Estado de {state}",
+            "priority": 2
+        }
+    ]
+}
