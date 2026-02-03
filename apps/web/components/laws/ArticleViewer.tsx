@@ -113,8 +113,8 @@ function SingleArticle({
                 </button>
             </div>
 
-            <div className="prose prose-slate dark:prose-invert max-w-none">
-                <p className="whitespace-pre-wrap leading-relaxed text-base">
+            <div className="prose prose-lg prose-slate dark:prose-invert max-w-none font-serif">
+                <p className="whitespace-pre-wrap leading-relaxed text-lg text-foreground/90">
                     {article.text}
                 </p>
             </div>

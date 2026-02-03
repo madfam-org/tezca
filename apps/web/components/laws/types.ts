@@ -9,6 +9,7 @@ export interface Law {
 export interface LawVersion {
     publication_date: string | null;
     dof_url: string | null;
+    xml_file?: string | null;
 }
 
 export interface Article {

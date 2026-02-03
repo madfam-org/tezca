@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground`}
+        className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"
