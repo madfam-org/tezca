@@ -49,3 +49,17 @@ class CalculationView(APIView):
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from .ingestion_manager import IngestionManager
+
+class IngestionView(APIView):
+    def post(self, request):
+        params = request.data
+        success, message = IngestionManager.start_ingestion(params)
+        if success:
+             return Response({"status": "started", "message": message}, status=status.HTTP_202_ACCEPTED)
+        return Response({"status": "error", "message": message}, status=status.HTTP_409_CONFLICT)
+        
+    def get(self, request):
+        status_data = IngestionManager.get_status()
+        return Response(status_data)
