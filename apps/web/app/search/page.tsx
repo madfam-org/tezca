@@ -7,8 +7,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SearchFilters, type SearchFilterState } from '@/components/SearchFilters';
+import { Pagination } from '@/components/Pagination';
 import { api } from '@/lib/api';
 import type { SearchResult } from '@/lib/types';
+
+const DEFAULT_FILTERS: SearchFilterState = {
+    jurisdiction: ['federal'],
+    category: null,
+    status: 'all',
+    sort: 'relevance',
+};
+
+const PAGE_SIZE = 10;
 
 export default function SearchPage() {
     const router = useRouter();
@@ -16,19 +27,30 @@ export default function SearchPage() {
     const initialQuery = searchParams?.get('q') || '';
 
     const [query, setQuery] = useState(initialQuery);
+    const [filters, setFilters] = useState<SearchFilterState>(DEFAULT_FILTERS);
+    const [currentPage, setCurrentPage] = useState(1);
     const [results, setResults] = useState<SearchResult[]>([]);
+    const [total, setTotal] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Perform search when query or filters change
     useEffect(() => {
         if (initialQuery) {
-            performSearch(initialQuery);
+            performSearch(initialQuery, filters, currentPage);
         }
     }, [initialQuery]);
 
-    const performSearch = async (searchQuery: string) => {
+    const performSearch = async (
+        searchQuery: string,
+        searchFilters: SearchFilterState,
+        page: number
+    ) => {
         if (!searchQuery.trim()) {
             setResults([]);
+            setTotal(0);
+            setTotalPages(0);
             return;
         }
 
@@ -36,8 +58,18 @@ export default function SearchPage() {
         setError(null);
 
         try {
-            const data = await api.search(searchQuery);
+            const data = await api.search(searchQuery, {
+                jurisdiction: searchFilters.jurisdiction,
+                category: searchFilters.category,
+                status: searchFilters.status,
+                sort: searchFilters.sort,
+                page,
+                page_size: PAGE_SIZE,
+            });
+
             setResults(data.results || []);
+            setTotal(data.total || data.results.length);
+            setTotalPages(data.total_pages || Math.ceil((data.total || data.results.length) / PAGE_SIZE));
 
             if (data.warning) {
                 setError(data.warning);
@@ -45,6 +77,8 @@ export default function SearchPage() {
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Error al buscar');
             setResults([]);
+            setTotal(0);
+            setTotalPages(0);
         } finally {
             setLoading(false);
         }
@@ -53,16 +87,37 @@ export default function SearchPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
-            router.push(`/search?q=${encodeURIComponent(query)}`);
-            performSearch(query);
+            // Update URL with query params
+            const params = new URLSearchParams({ q: query });
+            router.push(`/search?${params}`);
+
+            // Reset to page 1 when new search
+            setCurrentPage(1);
+            performSearch(query, filters, 1);
         }
+    };
+
+    const handleFiltersChange = (newFilters: SearchFilterState) => {
+        setFilters(newFilters);
+        setCurrentPage(1); // Reset to page 1 when filters change
+        if (query.trim()) {
+            performSearch(query, newFilters, 1);
+        }
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        performSearch(query, filters, page);
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
         <div className="min-h-screen bg-background">
             {/* Search Header */}
             <div className="border-b border-border bg-card">
-                <div className="mx-auto max-w-4xl px-6 py-8">
+                <div className="mx-auto max-w-6xl px-6 py-8">
                     <h1 className="mb-6 font-display text-3xl font-bold text-foreground">
                         Buscar Leyes
                     </h1>
@@ -93,91 +148,125 @@ export default function SearchPage() {
                 </div>
             </div>
 
-            {/* Results */}
-            <div className="mx-auto max-w-4xl px-6 py-8">
-                {error && (
-                    <div className="mb-6 rounded-lg bg-error-50 p-4 text-error-700 dark:bg-error-900 dark:text-error-100">
-                        ⚠️ {error}
-                    </div>
-                )}
+            {/* Main Content */}
+            <div className="mx-auto max-w-6xl px-6 py-8">
+                <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+                    {/* Filters Sidebar */}
+                    <aside>
+                        <SearchFilters
+                            filters={filters}
+                            onFiltersChange={handleFiltersChange}
+                            resultCount={total}
+                        />
+                    </aside>
 
-                {loading && (
-                    <div className="flex items-center justify-center py-16">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-                    </div>
-                )}
+                    {/* Results */}
+                    <main>
+                        {error && (
+                            <div className="mb-6 rounded-lg bg-error-50 p-4 text-error-700 dark:bg-error-900 dark:text-error-100">
+                                ⚠️ {error}
+                            </div>
+                        )}
 
-                {!loading && results.length === 0 && initialQuery && (
-                    <div className="py-16 text-center">
-                        <p className="text-lg text-muted-foreground">
-                            No se encontraron resultados para "{initialQuery}"
-                        </p>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            Intenta con otros términos de búsqueda
-                        </p>
-                    </div>
-                )}
+                        {loading && (
+                            <div className="flex items-center justify-center py-16">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+                            </div>
+                        )}
 
-                {!loading && results.length === 0 && !initialQuery && (
-                    <div className="py-16 text-center">
-                        <p className="text-lg text-muted-foreground">
-                            Ingresa un término de búsqueda para comenzar
-                        </p>
-                    </div>
-                )}
+                        {!loading && results.length === 0 && initialQuery && (
+                            <div className="py-16 text-center">
+                                <p className="text-lg text-muted-foreground">
+                                    No se encontraron resultados para "{initialQuery}"
+                                </p>
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    Intenta con otros términos de búsqueda o ajusta los filtros
+                                </p>
+                            </div>
+                        )}
 
-                {!loading && results.length > 0 && (
-                    <>
-                        <div className="mb-6 text-sm text-muted-foreground">
-                            {results.length} resultado{results.length !== 1 ? 's' : ''} para "{initialQuery}"
-                        </div>
+                        {!loading && results.length === 0 && !initialQuery && (
+                            <div className="py-16 text-center">
+                                <p className="text-lg text-muted-foreground">
+                                    Ingresa un término de búsqueda para comenzar
+                                </p>
+                            </div>
+                        )}
 
-                        <div className="space-y-4">
-                            {results.map((result, index) => (
-                                <Card key={result.id || index} className="transition-all hover:shadow-lg">
-                                    <CardContent className="p-6">
-                                        <div className="flex items-start justify-between gap-4">
-                                            {/* Content */}
-                                            <div className="flex-1">
-                                                <div className="mb-2 flex items-center gap-2">
-                                                    <Badge variant="secondary" className="font-mono text-xs">
-                                                        {result.law.toUpperCase()}
-                                                    </Badge>
-                                                    {result.article && (
-                                                        <span className="text-sm text-muted-foreground">
-                                                            {result.article}
-                                                        </span>
+                        {!loading && results.length > 0 && (
+                            <>
+                                <div className="mb-6 flex items-center justify-between">
+                                    <div className="text-sm text-muted-foreground">
+                                        Mostrando {(currentPage - 1) * PAGE_SIZE + 1}-
+                                        {Math.min(currentPage * PAGE_SIZE, total)} de {total} resultado
+                                        {total !== 1 ? 's' : ''}
+                                    </div>
+
+                                    {totalPages > 1 && (
+                                        <div className="text-sm text-muted-foreground">
+                                            Página {currentPage} de {totalPages}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4">
+                                    {results.map((result, index) => (
+                                        <Card key={result.id || index} className="transition-all hover:shadow-lg">
+                                            <CardContent className="p-6">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    {/* Content */}
+                                                    <div className="flex-1">
+                                                        <div className="mb-2 flex items-center gap-2">
+                                                            <Badge variant="secondary" className="font-mono text-xs">
+                                                                {result.law.toUpperCase()}
+                                                            </Badge>
+                                                            {result.article && (
+                                                                <span className="text-sm text-muted-foreground">
+                                                                    {result.article}
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        <div
+                                                            className="text-sm text-foreground"
+                                                            dangerouslySetInnerHTML={{ __html: result.snippet }}
+                                                        />
+
+                                                        {result.date && (
+                                                            <div className="mt-3 text-xs text-muted-foreground">
+                                                                Publicación: {new Date(result.date).toLocaleDateString('es-MX')}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Score */}
+                                                    {result.score && (
+                                                        <div className="text-right">
+                                                            <div className="text-xs text-muted-foreground">Relevancia</div>
+                                                            <div className="font-display text-lg font-bold text-primary-600">
+                                                                {result.score.toFixed(1)}
+                                                            </div>
+                                                        </div>
                                                     )}
                                                 </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
 
-                                                <div
-                                                    className="text-sm text-foreground"
-                                                    dangerouslySetInnerHTML={{ __html: result.snippet }}
-                                                />
-
-                                                {result.date && (
-                                                    <div className="mt-3 text-xs text-muted-foreground">
-                                                        Publicación: {new Date(result.date).toLocaleDateString('es-MX')}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Score */}
-                                            {result.score && (
-                                                <div className="text-right">
-                                                    <div className="text-xs text-muted-foreground">Relevancia</div>
-                                                    <div className="font-display text-lg font-bold text-primary-600">
-                                                        {result.score.toFixed(1)}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </>
-                )}
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={handlePageChange}
+                                        className="mt-8"
+                                    />
+                                )}
+                            </>
+                        )}
+                    </main>
+                </div>
             </div>
         </div>
     );

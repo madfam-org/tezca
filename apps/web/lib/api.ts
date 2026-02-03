@@ -55,8 +55,39 @@ export const api = {
     /**
      * Search laws and articles
      */
-    search: async (query: string): Promise<SearchResponse> => {
+    search: async (
+        query: string,
+        options?: {
+            jurisdiction?: string[];
+            category?: string | null;
+            status?: string;
+            sort?: string;
+            page?: number;
+            page_size?: number;
+        }
+    ): Promise<SearchResponse> => {
         const params = new URLSearchParams({ q: query });
+
+        // Add optional filters
+        if (options?.jurisdiction && options.jurisdiction.length > 0) {
+            params.append('jurisdiction', options.jurisdiction.join(','));
+        }
+        if (options?.category && options.category !== 'all') {
+            params.append('category', options.category);
+        }
+        if (options?.status && options.status !== 'all') {
+            params.append('status', options.status);
+        }
+        if (options?.sort && options.sort !== 'relevance') {
+            params.append('sort', options.sort);
+        }
+        if (options?.page) {
+            params.append('page', options.page.toString());
+        }
+        if (options?.page_size) {
+            params.append('page_size', options.page_size.toString());
+        }
+
         return fetcher<SearchResponse>(`/search/?${params}`);
     },
 };

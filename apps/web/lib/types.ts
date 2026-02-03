@@ -31,11 +31,15 @@ export interface SearchResult {
     article: string;
     snippet: string;
     score: number;
+    date?: string;
 }
 
 export interface SearchResponse {
     results: SearchResult[];
     total?: number;
+    page?: number;
+    page_size?: number;
+    total_pages?: number;
     warning?: string;
 }
 
