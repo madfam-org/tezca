@@ -29,7 +29,26 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
     depends_on:
       - api
+      - elasticsearch
 
-networks:
-  default:
-    driver: bridge
+  # Search Engine: Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: leyes_mx_search
+    environment:
+      - node.name=leyes-mx-es
+      - cluster.name=leyes-mx-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+volumes:
+  es_data:
