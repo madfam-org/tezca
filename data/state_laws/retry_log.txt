@@ -20,3 +20,37 @@
 2026-02-03T14:18:00.436405 - 
 🔄 Retrying Michoacán: 504 failures
 2026-02-03T14:18:00.436496 -    Many failures - re-scraping entire state
+2026-02-03T14:47:08.962575 -    ✅ Michoacán: recovered 0/504
+2026-02-03T14:47:08.962696 - 
+🔄 Retrying Morelos: 26 failures
+2026-02-03T14:47:08.962828 -    ⚠️  Morelos: 26 failures (manual review recommended)
+2026-02-03T14:47:08.962942 - 
+🔄 Retrying Nuevo León: 14 failures
+2026-02-03T14:47:08.963055 -    ⚠️  Nuevo León: 14 failures (manual review recommended)
+2026-02-03T14:47:08.963151 - 
+🔄 Retrying Querétaro: 10 failures
+2026-02-03T14:47:08.963254 -    ⚠️  Querétaro: 10 failures (manual review recommended)
+2026-02-03T14:47:08.963362 - 
+🔄 Retrying San Luis Potosí: 47 failures
+2026-02-03T14:47:08.963447 -    ⚠️  San Luis Potosí: 47 failures (manual review recommended)
+2026-02-03T14:47:08.963566 - 
+🔄 Retrying Sonora: 3 failures
+2026-02-03T14:47:08.963655 -    ⚠️  Sonora: 3 failures (manual review recommended)
+2026-02-03T14:47:08.963754 - 
+🔄 Retrying Tabasco: 1 failures
+2026-02-03T14:47:08.963832 -    ⚠️  Tabasco: 1 failures (manual review recommended)
+2026-02-03T14:47:08.963985 - 
+🔄 Retrying Tlaxcala: 7 failures
+2026-02-03T14:47:08.964058 -    ⚠️  Tlaxcala: 7 failures (manual review recommended)
+2026-02-03T14:47:08.964154 - 
+================================================================================
+2026-02-03T14:47:08.964226 - 🎉 RETRY COMPLETE!
+2026-02-03T14:47:08.964357 - ================================================================================
+2026-02-03T14:47:08.964438 - Total retried: 783
+2026-02-03T14:47:08.964512 - Recovered: 0
+2026-02-03T14:47:08.964582 - Still failed: 783
+2026-02-03T14:47:08.964680 - Recovery rate: 0.0%
+2026-02-03T14:47:08.964751 - End time: 2026-02-03T14:47:08.964107
+2026-02-03T14:47:08.964866 - ================================================================================
+2026-02-03T14:47:08.965365 - 
+📊 Retry summary saved to: /Users/aldoruizluna/labspace/leyes-como-codigo-mx/data/state_laws/retry_summary.json

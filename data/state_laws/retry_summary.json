@@ -1,0 +1,23 @@
+{
+  "total_retried": 783,
+  "recovered": 0,
+  "still_failed": 783,
+  "start_time": "2026-02-03T13:38:56.326835",
+  "state_results": [
+    {
+      "state_name": "Estado de México",
+      "original_failed": 141,
+      "recovered": 0,
+      "still_failed": 141,
+      "retry_success_rate": "0.0%"
+    },
+    {
+      "state_name": "Michoacán",
+      "original_failed": 504,
+      "recovered": 0,
+      "still_failed": 504,
+      "retry_success_rate": "0.0%"
+    }
+  ],
+  "end_time": "2026-02-03T14:47:08.964107"
+}
