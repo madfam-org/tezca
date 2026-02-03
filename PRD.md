@@ -10,7 +10,7 @@ This document outlines the strategy to transform the Mexican legal system from a
 
 **Repository Name:** `madfam-org/leyes-como-codigo-mx`
 **License:** GNU Affero General Public License v3.0 (AGPL-3.0)
-**Version:** 1.0.0 (Inception)
+**Version:** 0.1.0 (Inception)
 
 ---
 
