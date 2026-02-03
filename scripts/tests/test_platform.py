@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict, List
 
 # Add apps to path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'apps'))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'apps'))
 
 from parsers.validators.schema import AKNSchemaValidator
 from parsers.validators.completeness import CompletenessValidator

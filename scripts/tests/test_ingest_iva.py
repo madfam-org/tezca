@@ -6,7 +6,7 @@ Quick test: Ingest IVA (VAT Law) to validate parser diversity.
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'apps'))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'apps'))
 
 from scraper.dof_api_client import DOFAPIClient
 from parsers.akn_generator import AkomaNtosoGenerator

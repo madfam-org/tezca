@@ -99,7 +99,7 @@ test:
 # Run law ingestion
 ingest:
 	@echo "📚 Running law ingestion pipeline..."
-	@python scripts/bulk_ingest.py --all --workers 8
+	@python scripts/ingestion/bulk_ingest.py --all --workers 8
 	@echo "✅ Ingestion complete"
 
 # Open law viewer in browser

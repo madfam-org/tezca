@@ -16,7 +16,7 @@ from typing import List, Dict
 import sys
 
 # Add apps to path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'apps'))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'apps'))
 
 
 def load_quality_history(history_file: Path) -> List[Dict]:
