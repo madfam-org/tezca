@@ -1,0 +1,454 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="law">
+    <meta>
+      <identification source="#antigravity">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/ley/2021-06-03/ltpcpimcp/main"/>
+          <FRBRuri value="/mx/fed/ley/2021-06-03/ltpcpimcp"/>
+          <FRBRdate date="2021-06-03" name="Generation"/>
+          <FRBRauthor href="#congress"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/ley/2021-06-03/ltpcpimcp/spa@/main"/>
+          <FRBRuri value="/mx/fed/ley/2021-06-03/ltpcpimcp/spa@"/>
+          <FRBRdate date="2021-06-03" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/ley/2021-06-03/ltpcpimcp/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/ley/2021-06-03/ltpcpimcp/spa@/main.akn"/>
+          <FRBRdate date="2026-02-03" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body>
+      <article id="art-1">
+        <num>Artículo 1</num>
+        <paragraph id="art-1-para-1">
+          <content>
+            <p>Artículo 1. La presente Ley es de orden público, interés general y de aplicación en todo el territorio
+nacional. En atención a los objetivos establecidos en el artículo 28 de la Constitución Política de los
+Estados Unidos Mexicanos, tiene por objeto promover la transparencia en el mercado de la publicidad,
+así como la prevención y el combate a prácticas comerciales que constituyen una ventaja indebida a
+favor de personas determinadas en perjuicio de los anunciantes y, en última instancia, de los
+consumidores.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-2">
+        <num>Artículo 2</num>
+        <paragraph id="art-2-para-1">
+          <content>
+            <p>Artículo 2. La presente Ley será aplicable a los actos, contratos, convenios, acuerdos o
+procedimientos, cualquiera que sea el nombre o denominación que se les dé, que celebren entre sí, dos
+o más de los agentes económicos a los que se refieren las fracciones I, II y VII del artículo 3 de este
+ordenamiento.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-3">
+        <num>Artículo 3</num>
+        <paragraph id="art-3-para-1">
+          <content>
+            <p>Artículo 3. Para los efectos de esta Ley se entenderá por:
+I. Agencia de Medios o Agencia: Persona física o moral cuya actividad principal es la creación,
+diseño, planificación y ejecución de campañas publicitarias, así como la contratación de espacios
+publicitarios por cuenta y orden de anunciantes;
+II. Anunciante: Persona física o moral en cuyo interés se realiza la publicidad para dar a conocer
+las características o beneficios de sus productos y/o servicios;
+1 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+III. Contrato de publicidad: Acuerdo por el que un Anunciante encomienda a una Agencia,
+mediante una contraprestación, la creación, planificación, ejecución y difusión de contenidos
+publicitarios;
+IV. Contrato de difusión publicitaria: Acuerdo por el que, a cambio de una contraprestación, un
+Medio se obliga en favor de un Anunciante a permitir la utilización de Espacios Publicitarios;
+V. Espacio Publicitario: Lugar o tiempo en los Medios de Comunicación en los que se inserta
+Publicidad, con el propósito de dar a conocer la existencia o características de un producto o
+servicio para inducir su comercialización a través de cualquier Medio;
+VI. Ley: La Ley para la Transparencia, Prevención y Combate de Prácticas Indebidas en Materia de
+Contratación de Publicidad;
+VII. Medio de Comunicación o Medio: Persona física o moral que, por medio de ejemplares
+impresos, las telecomunicaciones, la radiodifusión, las señales satelitales, el Internet, la fibra
+óptica, el cable o cualquier otro medio de transmisión, difunda espacios publicitarios;
+VIII. Publicidad: Actividad que comprende todo proceso de creación, planificación, ejecución y
+difusión de contenido en espacios publicitarios, por cualquiera de los medios de comunicación
+señalados en esta Ley;
+IX. Publicidad Digital: Lugar que las plataformas digitales conectadas a Internet, como páginas web
+y aplicaciones móviles, destinan para insertar anuncios publicitarios en línea, y
+X. Publicidad Digital Programática: Publicidad Digital vendida a través de mecanismos
+automatizados, en particular a través de subastas en tiempo real, que establecen como criterio
+principal de venta el acceso a audiencias con perfiles segmentados.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-4">
+        <num>Artículo 4</num>
+        <paragraph id="art-4-para-1">
+          <content>
+            <p>Artículo 4. Una Agencia sólo puede adquirir Espacios Publicitarios por cuenta y orden de un
+Anunciante y en el marco de un contrato de mandato celebrado por escrito entre el Anunciante y la
+Agencia. Una Agencia no puede adquirir Espacios Publicitarios por cuenta propia para su posterior
+reventa a un Anunciante.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-5">
+        <num>Artículo 5</num>
+        <paragraph id="art-5-para-1">
+          <content>
+            <p>Artículo 5. El contrato de mandato celebrado entre la Agencia y el Anunciante debe establecer las
+condiciones de remuneración de la Agencia. La Agencia sólo puede recibir, como remuneración por los
+servicios prestados al Anunciante, la contraprestación establecida en el contrato de mandato.
+Cualquier descuento otorgado por el Medio a la Agencia debe ser transferido integralmente al
+Anunciante. El Anunciante tiene derecho a controlar la ejecución de la campaña de publicidad.
+Ni la Agencia ni terceros utilizados por la Agencia para la prestación de servicios al Anunciante
+pueden recibir remuneración, comisión o beneficio en especie por parte de un Medio.
+Una Agencia que presta servicios a los Anunciantes no puede simultáneamente prestar servicios a los
+Medios. En todo caso, los servicios prestados a los Medios deben realizarse por una persona que
+pertenece al mismo grupo económico que la Agencia, pero distinta a esta última.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-6">
+        <num>Artículo 6</num>
+        <paragraph id="art-6-para-1">
+          <content>
+            <p>Artículo 6. El Medio deberá enviar la factura por concepto de la venta de los Espacios Publicitarios
+directamente al Anunciante, aun cuando la Agencia realice el pago en su nombre, conforme a la
+normatividad en materia fiscal aplicable. Además de la factura, el Medio deberá entregar directamente al
+Anunciante la información siguiente:
+2 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+I. Las fechas y los lugares de difusión;
+II. Los Espacios Publicitarios difundidos y los formatos utilizados, y
+III. Los precios unitarios de los Espacios Publicitarios, incluyendo, en su caso, los montos de
+cualquier descuento otorgado por el Medio.
+Cuando proceda, la Agencia deberá oportunamente conciliar la información anterior con el Medio
+antes de que el Medio envíe al Anunciante la factura y la información correspondiente.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-7">
+        <num>Artículo 7</num>
+        <paragraph id="art-7-para-1">
+          <content>
+            <p>Artículo 7. La Agencia que adquiera Publicidad Digital Programática por cuenta y orden de un
+Anunciante deberá comunicar a la mayor brevedad posible al Medio vendedor de los Espacios
+Publicitarios la identidad de dicho Anunciante y entregarle, durante el mes siguiente a la difusión de los
+Espacios Publicitarios considerados, la información siguiente:
+I. Los resultados de los servicios prestados en términos de los indicadores cuantitativos de
+desempeño acordados entre el Anunciante y la Agencia antes del lanzamiento de una campaña
+publicitaria, tales como número de impresiones, visibilidad y duración de las mismas, parámetros
+de alcance y frecuencia, número de interacciones, clicks y acciones;
+II. Los resultados de los servicios prestados en términos de los criterios acordados entre el
+Anunciante y la Agencia antes del lanzamiento de una campaña publicitaria, en materias tales
+como objetivos generales, segmentación de la audiencia, métodos de optimización, eficacia de
+los medios utilizados, relación costo/beneficio;
+III. Los instrumentos tecnológicos propios y los servicios de terceros utilizados en la prestación de
+los servicios, precisando su identidad y experiencia; el Anunciante podrá tener acceso a los
+instrumentos de evaluación a disposición de la Agencia, y
+IV. Los medios utilizados para evitar la difusión de los Espacios Publicitarios en plataformas o
+entornos señalados por el Anunciante como perjudiciales a su imagen.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-8">
+        <num>Artículo 8</num>
+        <paragraph id="art-8-para-1">
+          <content>
+            <p>Artículo 8. La Agencia debe informar por escrito al Anunciante de las relaciones financieras que la
+Agencia, o el grupo económico al que pertenece, tiene con el o los Medios que pretende contratar.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-9">
+        <num>Artículo 9</num>
+        <paragraph id="art-9-para-1">
+          <content>
+            <p>Artículo 9. En caso de que la contratación se lleve a cabo por un ente público, sin perjuicio de las
+disposiciones de esta Ley, se deberá atender a los criterios, principios y disposiciones previstas en la Ley
+General de Comunicación Social y demás ordenamientos aplicables en la materia.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-10">
+        <num>Artículo 10</num>
+        <paragraph id="art-10-para-1">
+          <content>
+            <p>Artículo 10. Por infracciones a la presente Ley, se podrán aplicar las siguientes sanciones:
+I. Multa hasta por el equivalente de dos por ciento de sus ingresos a:
+a) El Anunciante o la Agencia que no celebre un contrato en los términos del artículo 4 de esta
+Ley;
+b) El Medio que no entregue directamente al Anunciante la factura y la información asociada en
+los términos del artículo 6 de la presente Ley, y
+c) La Agencia que no entregue la información establecida en el artículo 7 de esta Ley.
+II. Multa hasta por el equivalente de cuatro por ciento de sus ingresos a:
+3 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+a) La Agencia que adquiera Espacios Publicitarios por cuenta propia para su posterior reventa
+a un Anunciante;
+b) La Agencia que recomiende a un Anunciante, o contrate por cuenta y orden de éste, un
+Medio con el que tiene relaciones financieras, si deliberadamente comunica al Anunciante
+información falsa o distorsionada sobre las características del Medio referido o de los Medios
+que le pueden ser sustitutos;
+c) La Agencia que, actuando por cuenta y orden de un Anunciante, reciba remuneración,
+comisión o beneficio en especie alguno de cualquier persona distinta de dicho Anunciante;
+d) El Medio que entregue remuneración, comisión o beneficio en especie alguno a una Agencia
+que actúa por cuenta y orden de un Anunciante o a terceros utilizados por la Agencia para la
+prestación de los servicios al Anunciante, y
+e) La Agencia que preste directamente servicios a un Medio en términos contrarios a lo
+señalado en el artículo 5 de esta Ley.
+En caso de reincidencia, se podrá imponer una multa hasta por el doble de los montos señalados en
+el presente artículo.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-11">
+        <num>Artículo 11</num>
+        <paragraph id="art-11-para-1">
+          <content>
+            <p>Artículo 11. Las denuncias derivadas de las disposiciones de la presente Ley se sustanciarán y
+procesarán por la Comisión Federal de Competencia Económica de conformidad con los procedimientos
+previstos por la Ley Federal de Competencia Económica.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-12">
+        <num>Artículo 12</num>
+        <paragraph id="art-12-para-1">
+          <content>
+            <p>Artículo 12. Las sanciones administrativas a que se refiere la presente Ley serán sin perjuicio de las
+responsabilidades civiles y penales que procedan.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-13">
+        <num>Artículo 13</num>
+        <paragraph id="art-13-para-1">
+          <content>
+            <p>Artículo 13. Las disposiciones establecidas en la presente Ley son aplicables con independencia del
+lugar de establecimiento de la Agencia, si el Anunciante tiene residencia en México y el anuncio es
+difundido en el territorio nacional.
+Transitorio
+Único. La presente Ley entrará en vigor a los 90 días siguientes al de su publicación en el Diario
+Oficial de la Federación.
+Ciudad de México, a 30 de abril de 2021.- Sen. Oscar Eduardo Ramírez Aguilar, Presidente.- Dip.
+Dulce María Sauri Riancho, Presidenta.- Sen. Lilia Margarita Valdez Martínez, Secretaria.- Dip.
+Martha Hortencia Garay Cadena, Secretaria.- Rúbricas."
+En cumplimiento de lo dispuesto por la fracción I del Artículo 89 de la Constitución Política de los
+Estados Unidos Mexicanos, y para su debida publicación y observancia, expido el presente Decreto en la
+Residencia del Poder Ejecutivo Federal, en la Ciudad de México, a 28 de mayo de 2021.- Andrés
+Manuel López Obrador.- Rúbrica.- La Secretaria de Gobernación, Dra. Olga María del Carmen
+Sánchez Cordero Dávila.- Rúbrica.]
+4 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+RESOLUTIVOS DE SENTENCIA EN CONTROVERSIA CONSTITUCIONAL
+PUNTOS RESOLUTIVOS de la sentencia dictada por el Tribunal Pleno de la Suprema
+Corte de Justicia de la Nación en la Controversia Constitucional 94/2021, promovida por
+la Comisión Federal de Competencia Económica.
+Notificados al Congreso de la Unión para efectos legales el 12 de junio de 2023
+Al margen un sello con el Escudo Nacional, que dice: Poder Judicial de la Federación.- Suprema Corte de
+Justicia de la Nación.
+SECRETARÍA GENERAL DE ACUERDOS
+OFICIO NÚM. SGA/MOKM/222/2023
+SEÑOR LICENCIADO EDUARDO ARANDA MARTÍNEZ
+SECRETARIO DE LA SECCIÓN DE TRÁMITE DE
+CONTROVERSIAS CONSTITUCIONALES Y DE
+ACCIONES DE INCONSTITUCIONALIDAD DE LA
+SUPREMA CORTE DE JUSTICIA DE LA NACIÓN
+P R E S E N T E
+El Tribunal Pleno, en su sesión celebrada el ocho de junio de dos mil veintitrés, resolvió la
+controversia constitucional 94/2021, promovida por la Comisión Federal de Competencia Económica, en
+los términos siguientes:
+“PRIMERO. Es procedente y fundada la presente controversia constitucional.
+SEGUNDO. Se declara la invalidez del DECRETO por el que se expide la Ley para la
+Transparencia, Prevención y Combate de Prácticas Indebidas en Materia de Contratación de
+Publicidad, publicado en el Diario Oficial de la Federación el tres de junio de dos mil veintiuno, la
+cual surtirá sus efectos a partir de la notificación de estos puntos resolutivos al Congreso de la
+Unión, de conformidad con los apartados IX y XI de esta determinación
+TERCERO. Publíquese esta resolución en el Diario Oficial de la Federación, así como en el
+Semanario Judicial de la Federación y su Gaceta.”
+Cabe señalar que el Tribunal Pleno determinó que la declaratoria de invalidez surtirá sus efectos a
+partir de la notificación de estos puntos resolutivos al Congreso de la Unión, por lo que le solicito que gire
+instrucciones para que, a la brevedad, se practique la citada notificación, inclusive al titular del Poder
+Ejecutivo Federal.
+Asimismo, con el objeto de dar cumplimiento a lo determinado por el Tribunal Pleno en su sesión
+privada celebrada el doce de abril de dos mil diez, le solicito que remita a esta Secretaría General de
+Acuerdos únicamente copia certificada del documento en el que conste la notificación que se realice al
+Congreso de la Unión.
+Atentamente
+Ciudad de México; 8 de junio de 2023
+LICENCIADO RAFAEL COELLO CETINA.- Rúbrica.
+5 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+Notificados los puntos resolutivos a la Cámara de Diputados del H. Congreso de la Unión el lunes 12 de
+junio de 2023 a las 11:04 hrs.- Dirección General de Asuntos Jurídicos.- Sello de Recibido.
+6 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+SENTENCIA dictada por el Tribunal Pleno de la Suprema Corte de Justicia de la Nación
+en la Controversia Constitucional 94/2021, así como los Votos Particulares de la señora
+Ministra Loretta Ortiz Ahlf y del señor Ministro Arturo Zaldívar Lelo de Larrea, y
+Concurrentes de la señora Ministra Ana Margarita Ríos Farjat y del señor Ministro Alberto
+Pérez Dayán.
+Publicada en el Diario Oficial de la Federación el 22 de diciembre de 2023
+Al margen un sello con el Escudo Nacional, que dice: Estados Unidos Mexicanos.- Suprema Corte de
+Justicia de la Nación.- Secretaría General de Acuerdos.
+CONTROVERSIA CONSTITUCIONAL
+94/2021
+ACTOR: COMISIÓN FEDERAL DE
+COMPETENCIA ECONÓMICA
+VISTO BUENO
+SR. MINISTRO
+PONENTE: MINISTRO JORGE MARIO PARDO REBOLLEDO
+COTEJÓ
+SECRETARIO: GUILLERMO PABLO LÓPEZ ANDRADE
+Ciudad de México. Acuerdo del Tribunal Pleno de la Suprema Corte de Justicia de la Nación
+correspondiente al ocho de junio de dos mil veintitrés.
+SENTENCIA
+Mediante la cual se resuelve la controversia constitucional 94/2021, promovida por la Comisión
+Federal de Competencia Económica (COFECE) en contra del Poder Ejecutivo Federal y las
+Cámaras de Diputados y de Senadores del Congreso de la Unión.
+………
+XI. EFECTOS
+456. Los artículos 41, fracciones IV y V, y 45 de la Ley Reglamentaria de las Fracciones I y II del</p>
+          </content>
+        </paragraph>
+      </article>
+      <article id="art-105">
+        <num>Artículo 105</num>
+        <paragraph id="art-105-para-1">
+          <content>
+            <p>Artículo 105 de la Constitución Política de los Estados Unidos Mexicanos establecen que la
+sentencia debe contener la fijación de sus alcances y efectos, que surtirán a partir de la fecha en
+que lo determine la Suprema Corte de Justicia de la Nación y que la declaración de invalidez de las
+sentencias no tendrá efectos retroactivos, salvo en materia penal.
+457. Por tanto, de acuerdo con la parte considerativa de este fallo, se declara la invalidez con efectos
+generales de la totalidad del “Decreto por el que se expide la Ley para la Transparencia,
+Prevención y Combate de Prácticas Indebidas en Materia de Contratación de Publicidad”,
+publicado en el Diario Oficial de la Federación el tres de junio de dos mil veintiuno.
+458. La presente resolución surtirá sus efectos a partir de la notificación de sus puntos resolutivos
+al Congreso de la Unión.
+Por lo expuesto y fundado, se resuelve:
+7 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+PRIMERO. Es procedente y fundada la presente controversia constitucional.
+SEGUNDO. Se declara la invalidez del DECRETO por el que se expide la Ley para la
+Transparencia, Prevención y Combate de Prácticas Indebidas en Materia de Contratación de
+Publicidad, publicado en el Diario Oficial de la Federación el tres de junio de dos mil veintiuno, la
+cual surtirá sus efectos a partir de la notificación de estos puntos resolutivos al Congreso de la
+Unión, de conformidad con los apartados IX y XI de esta determinación.
+TERCERO. Publíquese esta resolución en el Diario Oficial de la Federación, así como en el
+Semanario Judicial de la Federación y su Gaceta.
+Notifíquese, haciéndolo por medio de oficio a las partes, y, en su oportunidad, archívese el
+expediente como asunto concluido.
+Así lo resolvió el Pleno de la Suprema Corte de Justicia de la Nación:
+En relación con el punto resolutivo primero:
+Se aprobó por unanimidad de once votos de las señoras Ministras y de los señores Ministros
+Gutiérrez Ortiz Mena, González Alcántara Carrancá, Ortiz Ahlf, Esquivel Mossa, Aguilar Morales,
+Pardo Rebolledo, Zaldívar Lelo de Larrea, Ríos Farjat, Laynez Potisek, Pérez Dayán y Presidenta
+Piña Hernández, respecto de los apartados del I al IV relativos, respectivamente, a los
+antecedentes y trámite de la demanda, a la competencia, a la precisión de las normas reclamadas
+y a la oportunidad.
+Se aprobó por mayoría de diez votos de las señoras Ministras y de los señores Ministros Gutiérrez
+Ortiz Mena, González Alcántara Carrancá, Esquivel Mossa, Aguilar Morales, Pardo Rebolledo,
+Zaldívar Lelo de Larrea, Ríos Farjat, Laynez Potisek, Pérez Dayán y Presidenta Piña Hernández,
+respecto de los apartados V, VI y VII relativos, respectivamente, a la legitimación activa, a la
+legitimación pasiva y a las causas de improcedencia y sobreseimiento. La señora Ministra Ortiz
+Ahlf votó en contra del apartado V y, en consecuencia, de los apartados VI y VII.
+Se aprobó por unanimidad de once votos de las señoras Ministras y de los señores Ministros
+Gutiérrez Ortiz Mena, González Alcántara Carrancá, Esquivel Mossa, Ortiz Ahlf, Aguilar Morales,
+Pardo Rebolledo, Zaldívar Lelo de Larrea, Ríos Farjat, Laynez Potisek, Pérez Dayán y Presidenta
+Piña Hernández, respecto del apartado VIII, relativo a la precisión de la litis.
+En relación con el punto resolutivo segundo:
+Se aprobó por mayoría de ocho votos de las señoras Ministras y de los señores Ministros Gutiérrez
+Ortiz Mena apartándose de la metodología y únicamente por el vicio alusivo a los plazos para
+conocer los dictámenes legislativos correspondientes, González Alcántara Carrancá, Aguilar
+Morales, Pardo Rebolledo apartándose de diversas consideraciones, Ríos Farjat, Laynez Potisek
+apartándose de la metodología, Pérez Dayán apartándose de la metodología y Presidenta Piña
+Hernández apartándose de algunas consideraciones, respecto del apartado IX, relativo al análisis
+del procedimiento legislativo, consistente en declarar la invalidez del DECRETO por el que se
+expide la Ley para la Transparencia, Prevención y Combate de Prácticas Indebidas en Materia de
+Contratación de Publicidad. Las señoras Ministras Esquivel Mossa y Ortiz Ahlf y el señor Ministro
+Zaldívar Lelo de Larrea votaron en contra y anunciaron sendos votos particulares. La señora
+Ministra y los señores Ministros Gutiérrez Ortiz Mena, Ríos Farjat, Laynez Potisek y Pérez Dayán
+anunciaron sendos votos concurrentes. El señor Ministro González Alcántara Carrancá reservó su
+derecho de formular voto concurrente.
+8 de 9
+LEY PARA LA TRANSPARENCIA, PREVENCIÓN Y COMBATE DE PRÁCTICAS INDEBIDAS EN MATERIA DE
+CONTRATACIÓN DE PUBLICIDAD
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 03-06-2021
+Secretaría General
+Secretaría de Servicios Parlamentarios
+Se aprobó por unanimidad de once votos de las señoras Ministras y de los señores Ministros
+Gutiérrez Ortiz Mena, González Alcántara Carrancá, Esquivel Mossa, Ortiz Ahlf, Aguilar Morales,
+Pardo Rebolledo, Zaldívar Lelo de Larrea, Ríos Farjat, Laynez Potisek, Pérez Dayán y Presidenta
+Piña Hernández, respecto del apartado X, relativo a la afectación a las competencias
+constitucionales de la COFECE, consistente en determinar que resulta innecesario ocuparse de
+estos conceptos de invalidez al haberse declarado la invalidez del Decreto impugnado en su
+totalidad.
+Se aprobó por mayoría de ocho votos de las señoras Ministras y de los señores Ministros Gutiérrez
+Ortiz Mena, González Alcántara Carrancá, Aguilar Morales, Pardo Rebolledo, Ríos Farjat, Laynez
+Potisek, Pérez Dayán y Presidenta Piña Hernández, respecto del apartado XI, relativo a los
+efectos, consistente en determinar que la declaratoria de invalidez surta sus efectos generales a
+partir de la notificación de los puntos resolutivos de esta sentencia al Congreso de la Unión. Las
+señoras Ministras Esquivel Mossa y Ortiz Ahlf y el señor Ministro Zaldívar Lelo de Larrea votaron
+en contra.
+En relación con el punto resolutivo tercero:
+Se aprobó por unanimidad de once votos de las señoras Ministras y de los señores Ministros
+Gutiérrez Ortiz Mena, González Alcántara Carrancá, Esquivel Mossa, Ortiz Ahlf, Aguilar Morales,
+Pardo Rebolledo, Zaldívar Lelo de Larrea, Ríos Farjat, Laynez Potisek, Pérez Dayán y Presidenta
+Piña Hernández.
+La señora Ministra Presidenta Piña Hernández declaró que el asunto se resolvió en los términos
+precisados. Doy fe.
+Firman la señora Ministra Presidenta y el señor Ministro Ponente con el Secretario General de
+Acuerdos, quien da fe.
+Ministra Presidenta, Norma Lucía Piña Hernández.- Firmado electrónicamente.- Ministro Ponente,
+Jorge Mario Pardo Rebolledo.- Firmado electrónicamente.- Secretario General de Acuerdos, Rafael
+Coello Cetina.- Firmado electrónicamente.
+EL LICENCIADO RAFAEL COELLO CETINA, SECRETARIO GENERAL DE ACUERDOS DE LA
+SUPREMA CORTE DE JUSTICIA DE LA NACIÓN: CERTIFICA: Que la presente copia fotostática
+constante de ciento un fojas útiles, concuerda fiel y exactamente con el original firmado electrónicamente
+de la sentencia emitida en la controversia constitucional 94/2021, promovida por la Comisión Federal de
+Competencia Económica, dictada por el Pleno de la Suprema Corte de Justicia de la Nación en su sesión
+del ocho de junio de dos mil veintitrés. Se certifica con la finalidad de que se publique en el Diario Oficial
+de la Federación.- Ciudad de México, a veintiocho de noviembre de dos mil veintitrés.- Rúbrica.
+9 de 9</p>
+          </content>
+        </paragraph>
+      </article>
+    </body>
+  </act>
+</akomaNtoso>

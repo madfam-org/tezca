@@ -1,0 +1,926 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="law">
+    <meta>
+      <identification source="#antigravity">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/ley/1986-01-08/124/main"/>
+          <FRBRuri value="/mx/fed/ley/1986-01-08/124"/>
+          <FRBRdate date="1986-01-08" name="Generation"/>
+          <FRBRauthor href="#congress"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/ley/1986-01-08/124/spa@/main"/>
+          <FRBRuri value="/mx/fed/ley/1986-01-08/124/spa@"/>
+          <FRBRdate date="1986-01-08" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/ley/1986-01-08/124/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/ley/1986-01-08/124/spa@/main.akn"/>
+          <FRBRdate date="2026-02-03" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body>
+      <title id="title-1">
+        <num>TITULO PRIMERO Disposiciones Generales</num>
+      </title>
+      <title id="title-2">
+        <num>TITULO SEGUNDO De las Zonas Marinas Mexicanas</num>
+        <chapter id="chapter-1">
+          <num>CAPITULO I De los Ambitos de Aplicación de la Ley</num>
+        </chapter>
+        <chapter id="chapter-2">
+          <num>CAPITULO II De las Instalaciones Marítimas</num>
+        </chapter>
+        <chapter id="chapter-3">
+          <num>CAPITULO III De los Recursos y del Aprovechamiento Económico del Mar</num>
+        </chapter>
+        <chapter id="chapter-4">
+          <num>CAPITULO IV De la Protección y Preservación del Medio Marino y de la Investigación Científica Marina</num>
+        </chapter>
+        <chapter id="chapter-5">
+          <num>CAPITULO I Del Mar Territorial</num>
+        </chapter>
+        <chapter id="chapter-6">
+          <num>CAPITULO II De las Aguas Marinas Interiores</num>
+        </chapter>
+        <chapter id="chapter-7">
+          <num>CAPITULO III De la Zona Contigua</num>
+        </chapter>
+        <chapter id="chapter-8">
+          <num>CAPITULO IV De la Zona Económica Exclusiva</num>
+        </chapter>
+        <chapter id="chapter-9">
+          <num>CAPITULO V De la Plataforma Continental o Insular</num>
+          <article id="art-1o">
+            <num>Artículo 1o</num>
+            <paragraph id="art-1o-para-1">
+              <content>
+                <p>ARTICULO 1o.- La presente Ley es reglamentaria de los párrafos Cuarto, Quinto, Sexto y Octavo del</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-27">
+            <num>Artículo 27</num>
+            <paragraph id="art-27-para-1">
+              <content>
+                <p>Artículo 27 de la Constitución Política de los Estados Unidos Mexicanos, en lo relativo a las zonas
+marinas mexicanas.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-2o">
+            <num>Artículo 2o</num>
+            <paragraph id="art-2o-para-1">
+              <content>
+                <p>ARTICULO 2o.- La presente Ley es de jurisdicción federal, rige en las zonas marinas que forman
+parte del territorio nacional y, en lo aplicable, más allá de éste en las zonas marinas donde la Nación
+ejerce derechos de soberanía, jurisdicciones y otros derechos. Sus disposiciones son de orden público,
+en el marco del sistema nacional de planeación democrática.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-3o">
+            <num>Artículo 3o</num>
+            <paragraph id="art-3o-para-1">
+              <content>
+                <p>ARTICULO 3o.- Las zonas marinas mexicanas son:
+a) El Mar Territorial
+b) Las Aguas Marinas Interiores
+c) La Zona Contigua
+d) La Zona Económica Exclusiva
+e) La Plataforma Continental y las Plataformas Insulares y
+f) Cualquier otra permitida por el derecho internacional.
+1 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-4o">
+            <num>Artículo 4o</num>
+            <paragraph id="art-4o-para-1">
+              <content>
+                <p>ARTICULO 4o.- En las zonas enumeradas en el Artículo anterior, la Nación ejercerá los poderes,
+derechos, jurisdicciones y competencias que esta misma Ley establece, de conformidad con la
+Constitución Política de los Estados Unidos Mexicanos y con el derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-5o">
+            <num>Artículo 5o</num>
+            <paragraph id="art-5o-para-1">
+              <content>
+                <p>ARTICULO 5o.- Los Estados extranjeros y sus nacionales, al realizar actividades en las zonas
+marinas enumeradas en el Artículo 3o., observarán las disposiciones que para cada una de ellas
+establece la presente Ley, con los derechos y obligaciones consecuentes.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-6o">
+            <num>Artículo 6o</num>
+            <paragraph id="art-6o-para-1">
+              <content>
+                <p>ARTICULO 6o.- La soberanía de la Nación y sus derechos de soberanía, jurisdicciones y
+competencias dentro de los límites de las respectivas zonas marinas, conforme a la presente Ley, se
+ejercerán según lo dispuesto por la Constitución Política de los Estados Unidos Mexicanos, el derecho
+internacional y la legislación nacional aplicable, respecto a:
+I.- Las obras, islas artificiales, instalaciones y estructuras marinas;
+II.- El régimen aplicable a los recursos marinos vivos, inclusive su conservación y utilización;
+III.- El régimen aplicable a los recursos marinos no vivos, inclusive su conservación y utilización;
+IV.- El aprovechamiento económico del mar, inclusive la utilización de minerales disueltos en sus
+aguas, la producción de energía eléctrica o térmica derivada de las mismas, de las corrientes y de los
+vientos, la captación de energía solar en el mar, el desarrollo de la zona costera, la maricultura, el
+establecimiento de parques marinos nacionales, la promoción de la recreación y el turismo y el
+establecimiento de comunidades pesqueras;
+V.- La protección y preservación del medio marino, inclusive la prevención de su contaminación; y
+VI.- La realización de actividades de investigación científica marina.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-7o">
+            <num>Artículo 7o</num>
+            <paragraph id="art-7o-para-1">
+              <content>
+                <p>ARTICULO 7o.- Corresponde al Poder Ejecutivo Federal la aplicación de esta Ley, a través de las
+distintas dependencias de la Administración Pública Federal que, de conformidad con la Ley Orgánica de
+ésta y demás disposiciones legales vigentes, son autoridades nacionales competentes según las
+atribuciones que confieren a cada una de ellas.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-8o">
+            <num>Artículo 8o</num>
+            <paragraph id="art-8o-para-1">
+              <content>
+                <p>ARTICULO 8o.- El Poder Ejecutivo Federal podrá negociar acuerdos con Estados vecinos, para la
+delimitación de las líneas divisorias entre las zonas marinas mexicanas y las correspondientes zonas
+colindantes de jurisdicción nacional marina de cada uno de ellos, en aquellos casos en que se produzca
+una superposición entre las mismas, de conformidad con el derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-9o">
+            <num>Artículo 9o</num>
+            <paragraph id="art-9o-para-1">
+              <content>
+                <p>ARTICULO 9o.- No se extenderán las zonas marinas mexicanas más allá de una línea media, cuyos
+puntos sean equidistantes de los puntos más próximos de las líneas de base a partir de las cuales se
+mida la anchura del Mar Territorial de un Estado vecino, salvo acuerdo en contrario con ese Estado.
+El Poder Ejecutivo Federal no reconocerá la extensión unilateral de las zonas marinas de un Estado
+vecino, más allá de una línea media, cuyos puntos sean equidistantes de los puntos más próximos de las
+líneas de base a partir de las cuales se mide la anchura del Mar Territorial mexicano. En estos casos, el
+Poder Ejecutivo Federal buscará la negociación con el Estado vecino en cuestión, a fin de acordar una
+solución recíprocamente aceptable.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-10">
+            <num>Artículo 10</num>
+            <paragraph id="art-10-para-1">
+              <content>
+                <p>ARTICULO 10.- El goce de los derechos que esta Ley dispone a favor de embarcaciones extranjeras,
+depende de que exista reciprocidad, con el Estado cuya bandera enarbolan, a favor de las
+embarcaciones nacionales, y siempre que se esté dentro de lo dispuesto por la Constitución Política de
+los Estados Unidos Mexicanos y por el derecho internacional.
+2 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-11">
+            <num>Artículo 11</num>
+            <paragraph id="art-11-para-1">
+              <content>
+                <p>ARTICULO 11.- El Poder Ejecutivo Federal se asegurará de que las relaciones marítimas con otros
+Estados se lleven a cabo bajo el principio de la reciprocidad internacional, mismo que aplicará tanto en
+cuanto a las zonas marinas mexicanas como a las establecidas por esos Estados, respecto a cualquier
+actividad realizada por ellos o por sus nacionales con estricto apego al derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-12">
+            <num>Artículo 12</num>
+            <paragraph id="art-12-para-1">
+              <content>
+                <p>ARTICULO 12.- El reconocimiento de la Nación a los actos de delimitación de las zonas marinas de
+otros Estados, se hará con estricto apego a las normas del derecho internacional y con base en la
+reciprocidad.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-13">
+            <num>Artículo 13</num>
+            <paragraph id="art-13-para-1">
+              <content>
+                <p>ARTICULO 13.- El Poder Ejecutivo Federal se asegurará de que las autoridades nacionales
+competentes observen las normas internacionales aplicables que reconocen el derecho de los países sin
+litoral para enarbolar un pabellón.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-14">
+            <num>Artículo 14</num>
+            <paragraph id="art-14-para-1">
+              <content>
+                <p>ARTICULO 14.- Las islas artificiales, instalaciones y estructuras no tienen Mar Territorial propio y su
+presencia no afecta la delimitación del Mar Territorial, de la Zona Económica Exclusiva o de la Plataforma
+Continental.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-15">
+            <num>Artículo 15</num>
+            <paragraph id="art-15-para-1">
+              <content>
+                <p>ARTICULO 15.- La Nación tiene jurisdicción exclusiva sobre las islas artificiales, instalaciones y
+estructuras en la Zona Económica Exclusiva y en la Plataforma Continental y en las Plataformas
+Insulares, incluida la jurisdicción en materia de reglamentos aduaneros, fiscales, sanitarios, de seguridad
+y de inmigración.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-16">
+            <num>Artículo 16</num>
+            <paragraph id="art-16-para-1">
+              <content>
+                <p>ARTICULO 16.- La Nación tiene derecho exclusivo en las zonas marinas mexicanas, de construir, así
+como el de autorizar y reglamentar la construcción, operación y utilización de islas artificiales, de
+instalaciones y estructuras, de conformidad con la presente Ley, la Ley General de Bienes Nacionales, la
+Ley de Obras Públicas y demás disposiciones aplicables en vigor.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-17">
+            <num>Artículo 17</num>
+            <paragraph id="art-17-para-1">
+              <content>
+                <p>ARTICULO 17.- La construcción, instalación, conservación, mantenimiento, reparación y demolición
+de los bienes inmuebles dedicados a la exploración, localización, perforación, extracción y desarrollo de
+recursos marinos, o destinados a un servicio público o al uso común en las zonas marinas mexicanas,
+deberá hacerse observando las disposiciones legales vigentes en la materia.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-18">
+            <num>Artículo 18</num>
+            <paragraph id="art-18-para-1">
+              <content>
+                <p>ARTICULO 18.- La aplicación de la presente Ley se llevará a cabo en estricta observancia de la
+legislación sobre pesca, de las disposiciones emanadas de ella y otras aplicables, en cuanto a medidas
+de conservación y utilización por nacionales o extranjeros de los recursos vivos en las zonas marinas
+mexicanas.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-19">
+            <num>Artículo 19</num>
+            <paragraph id="art-19-para-1">
+              <content>
+                <p>ARTICULO 19.- La exploración, explotación, beneficio, aprovechamiento, refinación, transportación,
+almacenamiento, distribución y venta de los hidrocarburos y minerales submarinos, en las zonas marinas
+mexicanas, se rige por las Leyes Reglamentarias del Artículo 27 Constitucional en el Ramo del Petróleo y
+en Materia Minera y sus respectivos Reglamentos, así como por las disposiciones aplicables de la
+presente Ley.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-20">
+            <num>Artículo 20</num>
+            <paragraph id="art-20-para-1">
+              <content>
+                <p>ARTICULO 20.- Cualquier actividad que implique la explotación, uso y aprovechamiento económico
+de las zonas marinas mexicanas, distintas de las previstas en los dos Artículos anteriores del presente
+3 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios
+Título, se rigen por las disposiciones reglamentarias de los párrafos cuarto, quinto y sexto del Artículo 27
+de la Constitución Política de los Estados Unidos Mexicanos, así como por la presente Ley y las demás
+leyes y reglamentos aplicables.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-21">
+            <num>Artículo 21</num>
+            <paragraph id="art-21-para-1">
+              <content>
+                <p>ARTICULO 21.- En el ejercicio de los poderes, derechos, jurisdicciones y competencias de la Nación
+dentro de las zonas marinas mexicanas, se aplicarán la Ley Federal de Protección al Ambiente, la Ley
+General de Salud, y sus respectivos Reglamentos, la Ley Federal de Aguas y demás leyes y reglamentos
+aplicables vigentes o que se adopten, incluidos la presente Ley, su reglamento y las normas pertinentes
+del derecho internacional para prevenir, reducir y controlar la contaminación del medio marino.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-22">
+            <num>Artículo 22</num>
+            <paragraph id="art-22-para-1">
+              <content>
+                <p>ARTICULO 22.- En la realización de actividades de investigación científica en las zonas marinas
+mexicanas, se aplicarán los siguientes principios:
+I.- Se realizarán exclusivamente con fines pacíficos.
+II.- Se realizarán con métodos y medios científicos adecuados, compatibles con la presente Ley y
+demás leyes aplicables y con el derecho internacional.
+III.- No interferirán injustificadamente con otros usos legítimos del mar compatibles con esta Ley y con
+el derecho internacional.
+IV.- Se respetarán todas las leyes y reglamentos pertinentes a la protección y preservación del medio
+marino.
+V.- No constituirán fundamento jurídico para ninguna reivindicación sobre parte alguna del medio
+marino o sus recursos.
+VI.- Cuando conforme a la presente Ley sean permitidos para su realización por extranjeros se
+asegurará el mayor grado posible de participación nacional, y
+VII.- En el caso de la fracción anterior, la nación se asegurará que se le proporcionen los resultados
+de la investigación y, si así lo solicita, la asistencia necesaria para su interpretación y evaluación.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-23">
+            <num>Artículo 23</num>
+            <paragraph id="art-23-para-1">
+              <content>
+                <p>ARTICULO 23.- La Nación ejerce soberanía en una franja del mar, denominada Mar Territorial,
+adyacente tanto a las costas nacionales, sean continentales o insulares, como a las Aguas Marinas
+Interiores.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-24">
+            <num>Artículo 24</num>
+            <paragraph id="art-24-para-1">
+              <content>
+                <p>ARTICULO 24.- La soberanía de la Nación se extiende al espacio aéreo sobre el Mar Territorial, al
+lecho y al subsuelo de ese Mar.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-25">
+            <num>Artículo 25</num>
+            <paragraph id="art-25-para-1">
+              <content>
+                <p>ARTICULO 25.- La anchura del Mar Territorial mexicano, es de 12 millas marinas (22,224 metros),
+medidas de conformidad con las disposiciones de esta Ley y su Reglamento.
+4 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-26">
+            <num>Artículo 26</num>
+            <paragraph id="art-26-para-1">
+              <content>
+                <p>ARTICULO 26.- Los límites del Mar Territorial se miden a partir de líneas de base, sean normales o
+rectas, o una combinación de las mismas, determinadas de conformidad con las disposiciones del
+Reglamento de la presente Ley.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-27">
+            <num>Artículo 27</num>
+            <paragraph id="art-27-para-1">
+              <content>
+                <p>ARTICULO 27.- El límite exterior del Mar Territorial es la línea cada uno de cuyos puntos está a una
+distancia de 12 millas marinas (22,224 metros), del punto más próximo de las líneas que constituyan su
+límite interior, determinadas de conformidad con el Artículo 26 de esta Ley y con las disposiciones
+pertinentes de su Reglamento.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-28">
+            <num>Artículo 28</num>
+            <paragraph id="art-28-para-1">
+              <content>
+                <p>ARTICULO 28.- Cualquier esclavo que ingrese al Mar Territorial en una embarcación extranjera
+alcanzará, por ese solo hecho, su libertad y la protección de las leyes, en los términos del Artículo 2 de la
+Constitución Política de los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-29">
+            <num>Artículo 29</num>
+            <paragraph id="art-29-para-1">
+              <content>
+                <p>ARTICULO 29.- Las embarcaciones de todos los Estados, sean ribereños o sin litoral, gozan del
+derecho de paso inocente a través del Mar Territorial mexicano.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-30">
+            <num>Artículo 30</num>
+            <paragraph id="art-30-para-1">
+              <content>
+                <p>ARTICULO 30.- Cuando una embarcación de guerra extranjera no cumpla las normas de esta Ley, de
+su Reglamento y de otras disposiciones legales nacionales relativas al paso por el Mar Territorial, y no
+acate la invitación que se le haga para que las cumpla, podrá exigírsele que salga inmediatamente del
+Mar Territorial mexicano.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-31">
+            <num>Artículo 31</num>
+            <paragraph id="art-31-para-1">
+              <content>
+                <p>ARTICULO 31.- El Poder Ejecutivo Federal exigirá la responsabilidad del Estado del pabellón por
+cualquier pérdida o daño que sufra la Nación como resultado del incumplimiento por una embarcación de
+guerra u otra embarcación de Estado destinada a fines no comerciales, de las leyes y reglamentos
+nacionales relativos al paso por el Mar Territorial o de las disposiciones de esta Ley, su Reglamento y
+otras normas aplicables de derecho internacional.
+Fe de erratas al artículo DOF 09-01-1986</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-32">
+            <num>Artículo 32</num>
+            <paragraph id="art-32-para-1">
+              <content>
+                <p>ARTICULO 32.- Con las excepciones previstas en las disposiciones de este Título, ninguna
+disposición de esta Ley afectará a las inmunidades a que tienen derecho las embarcaciones extranjeras
+de guerra y otras embarcaciones de Estado destinadas a fines no comerciales, por estar sujetas sólo a la
+jurisdicción del Estado de su pabellón y, con base en la reciprocidad a las embarcaciones de Estado
+destinadas a fines comerciales.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-33">
+            <num>Artículo 33</num>
+            <paragraph id="art-33-para-1">
+              <content>
+                <p>ARTICULO 33.- El sobrevuelo de aeronaves extranjeras en el Mar Territorial está sujeto a las leyes
+nacionales, de conformidad con las obligaciones internacionales de los Estados Unidos Mexicanos en la
+materia y su inspección, vigilancia y control quedan sujetas exclusivamente a la jurisdicción y
+competencia del Poder Ejecutivo Federal, en los términos de la Ley de Vías Generales de Comunicación
+y otras disposiciones legales vigentes.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-34">
+            <num>Artículo 34</num>
+            <paragraph id="art-34-para-1">
+              <content>
+                <p>ARTICULO 34.- La Nación ejerce soberanía en las áreas del mar denominadas Aguas Marinas
+Interiores, comprendidas entre las costas nacionales, tanto continentales como insulares, y el Mar
+Territorial mexicano.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-35">
+            <num>Artículo 35</num>
+            <paragraph id="art-35-para-1">
+              <content>
+                <p>ARTICULO 35.- La soberanía de la Nación se extiende al espacio aéreo sobre las Aguas Marinas
+Interiores, al lecho y al subsuelo de esas aguas.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-36">
+            <num>Artículo 36</num>
+            <paragraph id="art-36-para-1">
+              <content>
+                <p>ARTICULO 36.- Son aguas Marinas Interiores aquellas comprendidas entre la costa y las líneas de
+base, normales o rectas, a partir de las cuales se mide el Mar Territorial, de conformidad con las
+disposiciones pertinentes del Reglamento de la presente Ley y que incluyen:
+5 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios
+I.- La parte norte del Golfo de California;
+II.- Las de las bahías internas;
+III.- Las de los puertos;
+IV.- Las internas de los arrecifes; y
+V.- Las de las desembocaduras o deltas de los ríos, lagunas y estuarios comunicados permanente o
+intermitentemente con el mar.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-37">
+            <num>Artículo 37</num>
+            <paragraph id="art-37-para-1">
+              <content>
+                <p>ARTICULO 37.- El límite interior de las Aguas Marinas Interiores coincide con la línea de bajamar a lo
+largo de la costa, cuando esta línea no se toma como base para medir el Mar Territorial de conformidad
+con las disposiciones en el Reglamento de la presente Ley, tal como aparezca en las cartas a gran
+escala reconocidas oficialmente por los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-38">
+            <num>Artículo 38</num>
+            <paragraph id="art-38-para-1">
+              <content>
+                <p>ARTICULO 38.- Para los efectos del límite interior de las Aguas Marinas Interiores, la línea de
+bajamar es la línea de mayor flujo y reflujo donde llegan las aguas marinas en un momento dado a lo
+largo de las costas continentales o insulares de la Nación.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-39">
+            <num>Artículo 39</num>
+            <paragraph id="art-39-para-1">
+              <content>
+                <p>ARTICULO 39.- El límite exterior de las Aguas Marinas Interiores coincide idénticamente con las
+líneas de base a partir de las cuales se mide el mar Territorial, tal como aparezca en las cartas a gran
+escala reconocidas oficialmente por los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-40">
+            <num>Artículo 40</num>
+            <paragraph id="art-40-para-1">
+              <content>
+                <p>ARTICULO 40.- La delimitación de Aguas Marinas Interiores en Zonas de colindancia con zonas
+marinas de jurisdicción nacional de Estados vecinos, se considerará comprendida en la delimitación que
+sea fijada o acordada para la línea divisoria entre el Mar Territorial mexicano y el Mar Territorial u otras
+zonas marinas de jurisdicción nacional de esos Estados vecinos, de conformidad con los Artículos 8o. y
+9o. de esta Ley y con las disposiciones pertinentes de su reglamento.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-41">
+            <num>Artículo 41</num>
+            <paragraph id="art-41-para-1">
+              <content>
+                <p>ARTICULO 41.- Las embarcaciones extranjeras que naveguen en las Aguas Marinas Interiores
+quedan sujetas, por ese solo hecho, al cumplimiento de esta Ley, de su Reglamento y de las demás
+disposiciones legales aplicables de la República.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-42">
+            <num>Artículo 42</num>
+            <paragraph id="art-42-para-1">
+              <content>
+                <p>ARTICULO 42.- La Nación tiene en una zona contigua a su Mar Territorial, designada con el nombre
+de Zona Contigua, competencia para tomar las medidas de fiscalización necesarias con el objeto de:
+I.- Prevenir las infracciones de las normas aplicables de esta Ley, de su Reglamento y de las leyes y
+reglamentos aduaneros, fiscales, de inmigración o sanitarios que pudieren cometerse en el territorio, en
+las Aguas Marinas Interiores o en el Mar Territorial mexicanos; y
+II.- Sancionar las infracciones a dichas normas aplicables de esta Ley, de su Reglamento y de esas
+leyes y reglamentos cometidas en el territorio, en las Aguas Marinas Interiores o en el Mar Territorial.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-43">
+            <num>Artículo 43</num>
+            <paragraph id="art-43-para-1">
+              <content>
+                <p>ARTICULO 43.- La Zona Contigua de México se extiende a 24 millas marinas (44,448 metros),
+contadas desde las líneas de base a partir de las cuales, de conformidad con el Artículo 26 de esta Ley, y
+con las disposiciones pertinentes de su Reglamento, se mide la anchura del Mar Territorial mexicano.
+6 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-44">
+            <num>Artículo 44</num>
+            <paragraph id="art-44-para-1">
+              <content>
+                <p>ARTICULO 44.- El límite inferior de la Zona Contigua coincide idénticamente con el límite exterior del
+Mar Territorial, determinado este último de conformidad con el Artículo 27 de la presente Ley y con las
+disposiciones pertinentes de su Reglamento y que aparezcan en las cartas reconocidas oficialmente por
+los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-45">
+            <num>Artículo 45</num>
+            <paragraph id="art-45-para-1">
+              <content>
+                <p>ARTICULO 45.- El límite exterior de la Zona Contigua mexicana, es la línea cada uno de cuyos puntos
+está, del punto más próximo de las líneas de base del Mar Territorial determinadas en el Artículo 26 de
+esta Ley, a una distancia de 24 millas marinas (44,448 metros).</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-46">
+            <num>Artículo 46</num>
+            <paragraph id="art-46-para-1">
+              <content>
+                <p>ARTICULO 46.- La Nación ejerce en una Zona Económica Exclusiva situada fuera del Mar Territorial y
+adyacente a éste:
+I.- Derechos de soberanía para los fines de exploración y explotación, conservación y administración
+de los recursos naturales, tanto vivos como no vivos, ya sean renovables o no renovables, del lecho y el
+subsuelo del mar y de las aguas suprayacentes, y con respecto a otras actividades con miras a la
+exploración y explotación económica de la Zona, tal como la producción de energía derivada del agua, de
+las corrientes y de los vientos;
+II.- Jurisdicción, con relación a las disposiciones pertinentes de esta Ley, de su Reglamento y del
+derecho internacional, con respecto:
+1.- Al establecimiento y utilización de islas artificiales, instalaciones y estructuras;
+2.- A la investigación científica marina; y
+3.- A la protección y preservación del medio marino; y
+III.- Otros derechos y deberes que fije esta Ley, su Reglamento y el derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-47">
+            <num>Artículo 47</num>
+            <paragraph id="art-47-para-1">
+              <content>
+                <p>ARTICULO 47.- El Poder Ejecutivo Federal se asegurará de que, en el ejercicio de los derechos y
+jurisdicciones y en el cumplimiento de los deberes de la Nación en la Zona Económica Exclusiva, se
+tomen debidamente en cuenta los derechos y deberes de los demás Estados y se actúe de manera
+compatible con el derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-48">
+            <num>Artículo 48</num>
+            <paragraph id="art-48-para-1">
+              <content>
+                <p>ARTICULO 48.- El Poder Ejecutivo Federal respetará el goce de los Estados extranjeros, en la Zona
+Económica Exclusiva, de las libertades de navegación, de sobrevuelo y de tender cables y tuberías
+submarinos, así como de los otros usos del mar internacionalmente legítimos relacionados con dichas
+libertades, tales como los vinculados a la operación de embarcaciones, aeronaves, y cables y tuberías
+submarinos, y que sean compatibles con el derecho internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-49">
+            <num>Artículo 49</num>
+            <paragraph id="art-49-para-1">
+              <content>
+                <p>ARTICULO 49.- El Poder Ejecutivo Federal vigilará que, al ejercitar los Estados extranjeros sus
+derechos y al cumplir sus deberes en la Zona Económica Exclusiva mexicana, tengan debidamente en
+cuenta los derechos, jurisdicciones y deberes de la Nación y cumplan esta Ley, su Reglamento y otros
+reglamentos nacionales adoptados de conformidad con la Constitución y normas aplicables de derecho
+internacional.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-50">
+            <num>Artículo 50</num>
+            <paragraph id="art-50-para-1">
+              <content>
+                <p>ARTICULO 50.- La Zona Económica Exclusiva Mexicana se extiende a 200 millas marinas (370,400
+metros) contadas desde las líneas de base a partir de las cuales, de conformidad con el Artículo 26 de
+esta Ley, se mide la anchura del Mar Territorial.
+7 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-51">
+            <num>Artículo 51</num>
+            <paragraph id="art-51-para-1">
+              <content>
+                <p>ARTICULO 51.- Las islas gozan de zona económica exclusiva pero no así las rocas no aptas para
+mantener habitación humana o vida económica propia.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-52">
+            <num>Artículo 52</num>
+            <paragraph id="art-52-para-1">
+              <content>
+                <p>ARTICULO 52.- El límite interior de la Zona Económica Exclusiva coincide idénticamente con el límite
+exterior del Mar Territorial, determinado de conformidad con el Artículo 26 de esta Ley, y con las
+disposiciones pertinentes de su Reglamento, y que aparezca en las cartas reconocidas oficialmente por
+los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-53">
+            <num>Artículo 53</num>
+            <paragraph id="art-53-para-1">
+              <content>
+                <p>ARTICULO 53.- El límite exterior de la Zona Económica Exclusiva mexicana es la línea cada uno de
+cuyos puntos está del punto más próximo de las líneas de base del Mar Territorial determinadas en el</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-26">
+            <num>Artículo 26</num>
+            <paragraph id="art-26-para-1">
+              <content>
+                <p>Artículo 26 de esta Ley, a una distancia de 200 millas marinas (370,400 metros).</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-54">
+            <num>Artículo 54</num>
+            <paragraph id="art-54-para-1">
+              <content>
+                <p>ARTICULO 54.- El límite exterior de la Zona Económica Exclusiva, en consecuencia, está constituido
+por una serie de arcos que unen los puntos cuyas coordenadas geográficas fueron publicadas por
+Decreto en el Diario Oficial de la Federación, el 7 de junio de 1976, y que aparezcan en las cartas
+oficialmente reconocidas por los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-55">
+            <num>Artículo 55</num>
+            <paragraph id="art-55-para-1">
+              <content>
+                <p>ARTICULO 55.- El Poder Ejecutivo Federal velará porque se respete, con sujeción a las disposiciones
+pertinentes de esta Ley, de su Reglamento y del derecho internacional, las libertades de navegación y
+sobrevuelo, en la Zona Económica Exclusiva mexicana por las embarcaciones y aeronaves de todos los
+Estados, sean ribereños o sin litoral.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-56">
+            <num>Artículo 56</num>
+            <paragraph id="art-56-para-1">
+              <content>
+                <p>ARTICULO 56.- El Poder Ejecutivo Federal dictará medidas adecuadas de administración y
+conservación para que los recursos vivos no se vean amenazados por una explotación excesiva,
+determinará la captura permisible de recursos vivos en la Zona Económica Exclusiva y, sin perjuicio de lo
+anterior, promoverá la utilización óptima de dichos recursos. Cuando el total de la captura permisible de
+una especie sea mayor que la capacidad para pescar y cazar de las embarcaciones nacionales, el Poder
+Ejecutivo Federal dará acceso a embarcaciones extranjeras al excedente de la captura permisible de
+acuerdo con el interés nacional y bajo las condiciones que señale la legislación mexicana de pesca.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-57">
+            <num>Artículo 57</num>
+            <paragraph id="art-57-para-1">
+              <content>
+                <p>ARTICULO 57.- La Nación ejerce derechos de soberanía sobre la Plataforma Continental y las
+Plataformas Insulares a los efectos de su exploración y de la explotación de sus recursos naturales.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-58">
+            <num>Artículo 58</num>
+            <paragraph id="art-58-para-1">
+              <content>
+                <p>ARTICULO 58.- Los derechos de soberanía de la Nación a que se refiere el Artículo anterior son
+exclusivos, en el sentido de que si México no explora la Plataforma Continental y las Plataformas
+Insulares o no explota sus recursos naturales, nadie puede emprender estas actividades sin expreso
+consentimiento de las autoridades nacionales competentes.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-59">
+            <num>Artículo 59</num>
+            <paragraph id="art-59-para-1">
+              <content>
+                <p>ARTICULO 59.- Los derechos de soberanía de la Nación a que se refiere el Artículo 57 son
+independientes de la ocupación real o ficticia de la Plataforma Continental y de las Plataformas Insulares.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-60">
+            <num>Artículo 60</num>
+            <paragraph id="art-60-para-1">
+              <content>
+                <p>ARTICULO 60.- Los derechos de la Nación sobre la Plataforma Continental y las Plataformas
+Insulares no afectan la condición jurídica de las aguas suprayacentes, ni la del espacio aéreo situado
+sobre tales aguas.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-61">
+            <num>Artículo 61</num>
+            <paragraph id="art-61-para-1">
+              <content>
+                <p>ARTICULO 61.- El ejercicio de los derechos de la Nación sobre la Plataforma Continental y las
+Plataformas Insulares no deberá afectar la navegación y otros derechos y libertades de los demás
+8 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios
+Estados, previstos en esta Ley, en su Reglamento y según el derecho internacional ni tener como
+resultado una injerencia injustificada en ellos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-62">
+            <num>Artículo 62</num>
+            <paragraph id="art-62-para-1">
+              <content>
+                <p>ARTICULO 62.- La Plataforma Continental y las Plataformas Insulares mexicanas, comprenden el
+lecho y el subsuelo de las áreas submarinas que se extienden más allá del mar territorial, y a todo lo
+largo de la prolongación natural del territorio nacional hasta el borde exterior del margen continental, o
+bien hasta una distancia de 200 millas marinas contadas desde las líneas de base a partir de las cuales
+se mide la anchura del mar territorial, en los casos de que el borde exterior del margen continental no
+llegue a esa distancia, de acuerdo con lo dispuesto por el derecho internacional. La definición anterior
+comprende la plataforma de islas, cayos y arrecifes que forman parte del territorio nacional.
+Fe de erratas al artículo DOF 09-01-1986</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-63">
+            <num>Artículo 63</num>
+            <paragraph id="art-63-para-1">
+              <content>
+                <p>ARTICULO 63.- Las islas gozan de Plataforma Insular, pero no así las rocas no aptas para mantener
+habitación humana o vida económica propia.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-64">
+            <num>Artículo 64</num>
+            <paragraph id="art-64-para-1">
+              <content>
+                <p>ARTICULO 64.- El límite interior de la Plataforma Continental y de las Plataformas Insulares
+mexicanas coinciden idénticamente con el límite exterior del suelo del Mar Territorial determinado de
+conformidad con el Artículo 26 de esta Ley y con las disposiciones pertinentes de su Reglamento, y
+según aparezca en las cartas oficialmente reconocidas por los Estados Unidos Mexicanos.</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-65">
+            <num>Artículo 65</num>
+            <paragraph id="art-65-para-1">
+              <content>
+                <p>ARTICULO 65.- En los lugares donde el borde exterior del margen continental de la Plataforma
+Continental y de las Plataformas Insulares no llegue a 200 millas marinas contadas desde las líneas de
+base a partir de las cuales se mide el Mar Territorial, el límite exterior de las citadas Plataformas
+coincidirá idénticamente con el límite exterior del suelo de la Zona Económica Exclusiva, determinado
+conforme a lo previsto en los Artículo 53 y 54 de esta Ley, y que aparezca en las cartas oficialmente
+reconocidas por los Estados Unidos Mexicanos.
+TRANSITORIOS
+ARTICULO PRIMERO.- La presente Ley entrará en vigor en la fecha de su publicación en el Diario
+Oficial de la Federación.
+ARTICULO SEGUNDO.- La presente Ley deroga la Ley Reglamentaria del Párrafo Octavo del</p>
+              </content>
+            </paragraph>
+          </article>
+          <article id="art-27">
+            <num>Artículo 27</num>
+            <paragraph id="art-27-para-1">
+              <content>
+                <p>Artículo 27 Constitucional, relativo a la Zona Económica Exclusiva, publicada en el Diario Oficial de la
+Federación el 13 de febrero de 1976.
+ARTICULO TERCERO.- La presente Ley deroga todas las disposiciones legales en vigor que se le
+opongan. Las materias no previstas en esta Ley relacionadas con actividades en las zonas marinas de
+jurisdicción nacional, se regirán por la legislación nacional en vigor en lo que no se le opongan.
+ARTICULO CUARTO.- Las infracciones a lo dispuesto en la presente Ley serán sancionadas por las
+autoridades nacionales competentes de conformidad con los ordenamientos nacionales aplicables a sus
+distintas materias.
+México, D. F., a 18 de diciembre de 1985.- Sen. Socorro Díaz Palacios, Presidenta.- Dip. Fernando
+Ortiz Arana, Presidente.- Sen. Guillermo Mercado Romero, Secretario.- Dip. Reyes Rodolfo Flores Z.,
+Secretario.- Rúbricas.
+En cumplimiento de lo dispuesto por la fracción I del artículo 89 de la Constitución Política de los
+Estados Unidos Mexicanos y para su debida publicación y observancia, expido el presente Decreto en la
+residencia del Poder Ejecutivo Federal, en la ciudad de México, Distrito Federal, a los veinte días del mes
+de diciembre de mil novecientos ochenta y cinco.- Miguel de la Madrid H.- Rúbrica.- El Secretario de
+Gobernación, Manuel Bartlett D.- Rúbrica.- El Secretario de Relaciones Exteriores, Bernardo
+9 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios
+Sepúlveda Amor.- Rúbrica.- El Secretario de Marina, Miguel Angel Gómez Ortega.- Rúbrica.- El
+Secretario de Comunicaciones y Transportes, Daniel Díaz Díaz.- Rúbrica.- El Secretario de Turismo,
+Antonio Enríquez Savigñac.- Rúbrica.- El Secretario de Pesca, Pedro Ojeda Paullada.- Rúbrica.
+Fe de erratas al párrafo DOF 09-01-1986
+10 de 11
+LEY FEDERAL DEL MAR
+CÁMARA DE DIPUTADOS DEL H. CONGRESO DE LA UNIÓN Nueva Ley DOF 08-01-1986
+Secretaría General
+Secretaría de Servicios Parlamentarios
+ARTÍCULOS TRANSITORIOS DE DECRETOS DE REFORMA
+FE de Erratas de la Ley del Mar, publicado el 8 de enero de 1983.
+Publicada en el Diario Oficial de la Federación el 9 de enero de 1986
+En la página 6, primera columna, Artículo 31, renglón octavo, dice:
+"paso del Mar Territorial".
+Debe decir:
+"paso por el Mar Territorial".
+En la página 8, segunda columna, Artículo 62; renglón once, dice:
+"de que al borde exterior del margen continental".
+Debe decir:
+"de que el borde exterior del margen continental".
+En la página 9, segunda columna, el segundo párrafo, décimo a decimoctavo renglón, dice:
+mil novecientos ochenta y cinco.- Miguel de la Madrid H.- Rúbrica.- El Secretario de Gobernación.
+Manuel Bartlett D.- Rúbrica.- El Secretario de Marina, Miguel Angel Gómez Ortega.- Rúbrica.- El
+Secretario de Comunicaciones y Transportes, Daniel Díaz Díaz.- Rúbrica.- El Secretario de Turismo,
+Antonio Enríquez Savigñac.- Rúbrica.- El Secretario de Pesca, Pedro Ojeda Paullada.- Rúbrica.
+Debe decir: mil novecientos ochenta y cinco.- Miguel de la Madrid H.- Rúbrica.- El Secretario de
+Gobernación, Manuel Bartlett D.- Rúbrica.- El Secretario de Relaciones Exteriores, Bernardo
+Sepúlveda Amor.- Rúbrica.- El Secretario de Marina, Miguel Angel Gómez Ortega.- Rúbrica.- El
+Secretario de Comunicaciones y Transportes, Daniel Díaz Díaz.- Rúbrica.- El Secretario de Turismo,
+Antonio Enríquez Savigñac.- Rúbrica.- El Secretario de Pesca, Pedro Ojeda Paullada.- Rúbrica.
+11 de 11</p>
+              </content>
+            </paragraph>
+          </article>
+        </chapter>
+      </title>
+    </body>
+  </act>
+</akomaNtoso>

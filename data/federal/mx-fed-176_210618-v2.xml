@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="law">
+    <meta>
+      <identification source="#antigravity">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/ley/1939-11-10/176_210618/main"/>
+          <FRBRuri value="/mx/fed/ley/1939-11-10/176_210618"/>
+          <FRBRdate date="1939-11-10" name="Generation"/>
+          <FRBRauthor href="#congress"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/ley/1939-11-10/176_210618/spa@/main"/>
+          <FRBRuri value="/mx/fed/ley/1939-11-10/176_210618/spa@"/>
+          <FRBRdate date="1939-11-10" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/ley/1939-11-10/176_210618/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/ley/1939-11-10/176_210618/spa@/main.akn"/>
+          <FRBRdate date="2026-02-03" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body/>
+  </act>
+</akomaNtoso>
