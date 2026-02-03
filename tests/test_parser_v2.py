@@ -27,22 +27,22 @@ class TestParserBasics:
         parser = AkomaNtosoGeneratorV2()
         result = parser.parse_structure_v2(sample_law_text)
         
-        assert result.metadata['titles'] >= 1
+        assert result.metadata['structure']['title'] >= 1
     
     def test_parse_with_chapter(self, sample_law_text):
         """Test parsing with CAPÍTULO."""
         parser = AkomaNtosoGeneratorV2()
         result = parser.parse_structure_v2(sample_law_text)
         
-        assert result.metadata['chapters'] >= 1
-   
+        assert result.metadata['structure']['chapter'] >= 1
+    
     def test_parse_transitorios(self, sample_law_text):
         """Test parsing TRANSITORIOS section."""
         parser = AkomaNtosoGeneratorV2()
         result = parser.parse_structure_v2(sample_law_text)
         
         # Should detect at least 2 transitorios
-        transitorios_count = sum(1 for a in result.articles if 'trans-' in a['id'])
+        transitorios_count = sum(1 for e in result.elements if e['type'] == 'transitorio')
         assert transitorios_count >= 2
     
     def test_confidence_score(self, sample_law_text):
@@ -50,8 +50,8 @@ class TestParserBasics:
         parser = AkomaNtosoGeneratorV2()
         result = parser.parse_structure_v2(sample_law_text)
         
-        assert 0 <= result.metadata['confidence'] <= 1
-        assert result.metadata['confidence'] > 0.5  # Should be reasonably confident
+        assert 0 <= result.confidence <= 1
+        assert result.confidence > 0.5  # Should be reasonably confident
 
 
 class TestXMLGeneration:

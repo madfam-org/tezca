@@ -100,9 +100,21 @@ ROMAN_NUMERALS = {
     'XVI': 16, 'XVII': 17, 'XVIII': 18, 'XIX': 19, 'XX': 20,
 }
 
-def roman_to_int(roman: str) -> int:
+def roman_to_int(s: str) -> int:
     """Convert roman numeral to integer."""
-    return ROMAN_NUMERALS.get(roman.upper(), 0)
+    if not s:
+        return 0
+    s = s.upper()
+    roman = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+    result = 0
+    for i in range(len(s)):
+        if s[i] not in roman:
+            return 0
+        if i + 1 < len(s) and roman.get(s[i+1], 0) > roman[s[i]]:
+            result -= roman[s[i]]
+        else:
+            result += roman[s[i]]
+    return result
 
 
 # Fraction/subdivision patterns
