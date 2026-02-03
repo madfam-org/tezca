@@ -60,6 +60,13 @@ export const api = {
     },
 
     /**
+     * Get global dashboard statistics
+     */
+    getStats: async (): Promise<import('./types').DashboardStats> => {
+        return fetcher<import('./types').DashboardStats>('/stats/');
+    },
+
+    /**
      * Search laws and articles
      */
     search: async (

@@ -160,3 +160,32 @@ def states_list(request):
     return Response({
         'states': sorted(list(found_states))
     })
+
+@api_view(['GET'])
+def law_stats(request):
+    """Get global statistics for the dashboard."""
+    total_laws = Law.objects.count()
+    federal_count = Law.objects.filter(tier='federal').count()
+    state_count = Law.objects.filter(tier='state').count()
+    
+    # Get recent laws (most recent version publication date)
+    recent_versions = LawVersion.objects.select_related('law').order_by('-publication_date')[:5]
+    recent_laws = []
+    for v in recent_versions:
+        recent_laws.append({
+            'id': v.law.official_id,
+            'name': v.law.short_name or v.law.name,
+            'date': v.publication_date,
+            'tier': v.law.tier,
+            'category': v.law.category
+        })
+
+    last_update = recent_versions[0].publication_date if recent_versions else None
+
+    return Response({
+        'total_laws': total_laws,
+        'federal_count': federal_count,
+        'state_count': state_count,
+        'last_update': last_update,
+        'recent_laws': recent_laws
+    })

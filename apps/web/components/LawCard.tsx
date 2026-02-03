@@ -10,10 +10,10 @@ interface LawCardProps {
 }
 
 export default function LawCard({ law }: LawCardProps) {
-    const gradeColors = {
-        A: 'success' as const,
-        B: 'warning' as const,
-        C: 'error' as const
+    const getGradeVariant = (grade: string) => {
+        if (grade === 'A') return 'default'; // Greenish usually?
+        if (grade === 'C') return 'destructive';
+        return 'secondary';
     };
 
     return (
@@ -24,7 +24,7 @@ export default function LawCard({ law }: LawCardProps) {
                 </h3>
 
                 <div className="flex gap-2 flex-wrap mb-4">
-                    <Badge variant={gradeColors[law.grade]}>
+                    <Badge variant={getGradeVariant(law.grade)}>
                         Grade {law.grade}
                     </Badge>
                     <Badge variant="secondary">

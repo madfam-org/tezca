@@ -48,3 +48,17 @@ export interface APIError {
     error: string;
     details?: string;
 }
+
+export interface DashboardStats {
+    total_laws: number;
+    federal_count: number;
+    state_count: number;
+    last_update: string | null;
+    recent_laws: {
+        id: string;
+        name: string;
+        date: string;
+        tier: string;
+        category: string;
+    }[];
+}

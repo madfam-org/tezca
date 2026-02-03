@@ -23,7 +23,9 @@ const DEFAULT_FILTERS: SearchFilterState = {
 
 const PAGE_SIZE = 10;
 
-export default function SearchPage() {
+import { Suspense } from 'react';
+
+function SearchContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialQuery = searchParams?.get('q') || '';
@@ -279,5 +281,13 @@ export default function SearchPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <SearchContent />
+        </Suspense>
     );
 }

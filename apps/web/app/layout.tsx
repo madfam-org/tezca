@@ -33,7 +33,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: any;
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>

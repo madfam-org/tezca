@@ -73,11 +73,8 @@ export function Hero() {
                 </div>
 
                 {/* Stats */}
-                <div className="mt-10 flex flex-wrap justify-center gap-8 text-sm text-primary-100 sm:gap-12 animate-fade-in [animation-delay:300ms]">
-                    <Stat value="11,667" label="leyes" />
-                    <Stat value="550K+" label="artículos" />
-                    <Stat value="98.9%" label="calidad" />
-                    <Stat value="87%" label="cobertura" />
+                <div className="mt-8 text-sm text-primary-100/80 animate-fade-in [animation-delay:300ms]">
+                    Búsqueda inteligente en tiempo real • Actualizado diariamente
                 </div>
             </div>
         </section>
