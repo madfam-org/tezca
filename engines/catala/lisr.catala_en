@@ -1,0 +1,54 @@
+```catala
+declaration name LISR
+```
+
+# Ley del Impuesto Sobre la Renta
+
+## Título I - Disposiciones Generales
+
+### Artículo 1
+
+Las personas físicas y las morales están obligadas al pago del impuesto sobre la renta en los siguientes casos:
+
+```catala
+scope Person:
+  input residence: bool
+  input income_source_mx: bool
+  output tax_obligation: bool
+
+  rule tax_obligation under condition residence:
+    true
+
+  rule tax_obligation under condition not residence and income_source_mx:
+    true
+```
+
+## Título IV - De las Personas Físicas
+
+### Artículo 90
+
+Están obligadas al pago del impuesto establecido en este Título, las personas físicas residentes en México que obtengan ingresos en efectivo, en bienes, devengado...
+
+```catala
+scope PhysicalPersonTax:
+  input income_cash: money
+  input income_goods: money
+  output total_income: money
+
+  definition total_income equals
+    income_cash + income_goods
+```
+
+# Tests
+
+```catala
+# Test Case 1: Resident in Mexico
+scope PersonTest1:
+  output result: bool
+  
+  result equals
+    let p = Person {
+      residence: true
+      income_source_mx: false
+    } in p.tax_obligation
+```

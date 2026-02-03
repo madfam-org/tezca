@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "leyes-como-codigo-mx"
+version = "0.1.0"
+description = "Mexican Open Law Engine"
+authors = ["madfam-org"]
+license = "AGPL-3.0"
+readme = "README.md"
+packages = [{include = "apps"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0"
+djangorestframework = "^3.14"
+celery = "^5.3"
+redis = "^5.0"
+# XML Processing
+lxml = "^5.1"
+# Search
+elasticsearch = "^7.0"
+# NLP
+spacy = "^3.7"
+# Scraping
+juriscraper = "^2.5"
+# Simulation
+# openfisca-core = "*" (Blocked on Py3.11/Numpy)
+# numpy = "^1.26"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+black = "^24.1"
+isort = "^5.13"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
