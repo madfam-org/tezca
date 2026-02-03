@@ -732,8 +732,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "CÓDIGO de Justicia Militar \t\t\t\t \t\t\t\tDOF 31/08/1933",
-            "publication_date": "1933-08-31",
-            "slug": "cjm"
+            "publication_date": "1933-08-31"
         },
         {
             "id": "cfpc",
@@ -745,8 +744,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "CÓDIGO Federal de Procedimientos Civiles \t\t\t\t \t\t\t\t...",
-            "publication_date": "1943-02-24",
-            "slug": "cfpc"
+            "publication_date": "1943-02-24"
         },
         {
             "id": "cmpp",
@@ -758,8 +756,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "CÓDIGO Militar de Procedimientos Penales \t\t\t\t \t\t\t\t...",
-            "publication_date": "2016-05-16",
-            "slug": "cmpp"
+            "publication_date": "2016-05-16"
         },
         {
             "id": "cnpcf",
@@ -771,8 +768,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "CÓDIGO Nacional de Procedimientos Civiles y Famili...",
-            "publication_date": "2023-06-07",
-            "slug": "cnpcf"
+            "publication_date": "2023-06-07"
         },
         {
             "id": "10_270614",
@@ -784,8 +780,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "ESTATUTO de Gobierno del Distrito Federal \t\t\t\t \t\t\t...",
-            "publication_date": "1994-07-26",
-            "slug": "10_270614"
+            "publication_date": "1994-07-26"
         },
         {
             "id": "79",
@@ -797,8 +792,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "IMPUESTO sobre Servicios Expresamente Declarados d...",
-            "publication_date": "1968-12-31",
-            "slug": "79"
+            "publication_date": "1968-12-31"
         },
         {
             "id": "ladua",
@@ -810,8 +804,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Aduanera \t\t\t\t \t\t\t\tDOF 15/12/1995 \t\t\t\t \t\t\t\tNuev...",
-            "publication_date": "1995-12-15",
-            "slug": "ladua"
+            "publication_date": "1995-12-15"
         },
         {
             "id": "lagra",
@@ -823,8 +816,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Agraria \t\t\t\t \t\t\t\tDOF 26/02/1992 \t\t\t\t \t\t\t\tNueva...",
-            "publication_date": "1992-02-26",
-            "slug": "lagra"
+            "publication_date": "1992-02-26"
         },
         {
             "id": "laassp",
@@ -836,8 +828,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Adquisiciones, Arrendamientos y Servicios d...",
-            "publication_date": "2025-04-16",
-            "slug": "laassp"
+            "publication_date": "2025-04-16"
         },
         {
             "id": "laero",
@@ -849,8 +840,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Aeropuertos \t\t\t\t \t\t\t\tDOF 22/12/1995 \t\t\t\t \t\t...",
-            "publication_date": "1995-12-22",
-            "slug": "laero"
+            "publication_date": "1995-12-22"
         },
         {
             "id": "lamn",
@@ -862,8 +852,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Amnistía \t\t\t\t \t\t\t\tDOF 22/04/2020",
-            "publication_date": "2020-04-22",
-            "slug": "lamn"
+            "publication_date": "2020-04-22"
         },
         {
             "id": "19",
@@ -875,8 +864,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Amnistía \t\t\t\t \t\t\t\tDOF 22/01/1994",
-            "publication_date": "1994-01-22",
-            "slug": "19"
+            "publication_date": "1994-01-22"
         },
         {
             "id": "lamp",
@@ -888,8 +876,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Amparo, Reglamentaria de los artículos 103 ...",
-            "publication_date": "2013-04-02",
-            "slug": "lamp"
+            "publication_date": "2013-04-02"
         },
         {
             "id": "laam",
@@ -901,8 +888,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Ascensos de la Armada de México \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "2004-06-25",
-            "slug": "laam"
+            "publication_date": "2004-06-25"
         },
         {
             "id": "larefagn",
@@ -914,8 +900,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Ascensos y Recompensas del Ejército, Fuerza...",
-            "publication_date": "2003-10-30",
-            "slug": "larefagn"
+            "publication_date": "2003-10-30"
         },
         {
             "id": "lasoc",
@@ -927,8 +912,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Asistencia Social \t\t\t\t \t\t\t\tDOF 02/09/2004",
-            "publication_date": "2004-09-02",
-            "slug": "lasoc"
+            "publication_date": "2004-09-02"
         },
         {
             "id": "lapp",
@@ -940,8 +924,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Asociaciones Público Privadas \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "2012-01-16",
-            "slug": "lapp"
+            "publication_date": "2012-01-16"
         },
         {
             "id": "larcp",
@@ -953,8 +936,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Asociaciones Religiosas y Culto Público \t\t\t...",
-            "publication_date": "1992-07-15",
-            "slug": "larcp"
+            "publication_date": "1992-07-15"
         },
         {
             "id": "lac",
@@ -966,8 +948,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Aviación Civil \t\t\t\t \t\t\t\tDOF 12/05/1995 \t\t\t\t...",
-            "publication_date": "1995-05-12",
-            "slug": "lac"
+            "publication_date": "1995-05-12"
         },
         {
             "id": "laat",
@@ -979,8 +960,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Ayuda Alimentaria para los Trabajadores \t\t\t...",
-            "publication_date": "2011-01-17",
-            "slug": "laat"
+            "publication_date": "2011-01-17"
         },
         {
             "id": "lbio",
@@ -992,8 +972,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Biocombustibles \t\t\t\t \t\t\t\tDOF 18/03/2025",
-            "publication_date": "2025-03-18",
-            "slug": "lbio"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lbogm",
@@ -1005,8 +984,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Bioseguridad de Organismos Genéticamente Mo...",
-            "publication_date": "2005-03-18",
-            "slug": "lbogm"
+            "publication_date": "2005-03-18"
         },
         {
             "id": "lcec_120419",
@@ -1018,8 +996,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Cámaras Empresariales y sus Confederaciones...",
-            "publication_date": "2005-01-20",
-            "slug": "lcec_120419"
+            "publication_date": "2005-01-20"
         },
         {
             "id": "lcpaf",
@@ -1031,8 +1008,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Caminos, Puentes y Autotransporte Federal \t...",
-            "publication_date": "1993-12-22",
-            "slug": "lcpaf"
+            "publication_date": "1993-12-22"
         },
         {
             "id": "238",
@@ -1044,8 +1020,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Capitalización del Procampo \t\t\t\t \t\t\t\tDOF 31...",
-            "publication_date": "2001-12-31",
-            "slug": "238"
+            "publication_date": "2001-12-31"
         },
         {
             "id": "lcjpjf",
@@ -1057,8 +1032,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Carrera Judicial del Poder Judicial de la F...",
-            "publication_date": "2025-01-02",
-            "slug": "lcjpjf"
+            "publication_date": "2025-01-02"
         },
         {
             "id": "28",
@@ -1070,8 +1044,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Comercio Exterior \t\t\t\t \t\t\t\tDOF 27/07/1993",
-            "publication_date": "1993-07-27",
-            "slug": "28"
+            "publication_date": "1993-07-27"
         },
         {
             "id": "lcm",
@@ -1083,8 +1056,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Concursos Mercantiles \t\t\t\t \t\t\t\tDOF 12/05/20...",
-            "publication_date": "2000-05-12",
-            "slug": "lcm"
+            "publication_date": "2000-05-12"
         },
         {
             "id": "30",
@@ -1096,8 +1068,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Contribución de Mejoras por Obras Públicas ...",
-            "publication_date": "1990-12-26",
-            "slug": "30"
+            "publication_date": "1990-12-26"
         },
         {
             "id": "lcid_061120",
@@ -1109,8 +1080,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Cooperación Internacional para el Desarroll...",
-            "publication_date": "2011-04-06",
-            "slug": "lcid_061120"
+            "publication_date": "2011-04-06"
         },
         {
             "id": "lcf",
@@ -1122,8 +1092,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Coordinación Fiscal \t\t\t\t \t\t\t\tDOF 27/12/1978",
-            "publication_date": "1978-12-27",
-            "slug": "lcf"
+            "publication_date": "1978-12-27"
         },
         {
             "id": "ldrs",
@@ -1135,8 +1104,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Desarrollo Rural Sustentable \t\t\t\t \t\t\t\tDOF 0...",
-            "publication_date": "2001-12-07",
-            "slug": "ldrs"
+            "publication_date": "2001-12-07"
         },
         {
             "id": "ldsc",
@@ -1148,8 +1116,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Desarrollo Sustentable de la Cafeticultura ...",
-            "publication_date": "2025-12-19",
-            "slug": "ldsc"
+            "publication_date": "2025-12-19"
         },
         {
             "id": "ldsca",
@@ -1161,8 +1128,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Desarrollo Sustentable de la Caña de Azúcar...",
-            "publication_date": "2005-08-22",
-            "slug": "ldsca"
+            "publication_date": "2005-08-22"
         },
         {
             "id": "ldefagn",
@@ -1174,8 +1140,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Disciplina del Ejército, Fuerza Aérea y Gua...",
-            "publication_date": "1926-03-15",
-            "slug": "ldefagn"
+            "publication_date": "1926-03-15"
         },
         {
             "id": "ldfefm",
@@ -1187,8 +1152,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Disciplina Financiera de las Entidades Fede...",
-            "publication_date": "2016-04-27",
-            "slug": "ldfefm"
+            "publication_date": "2016-04-27"
         },
         {
             "id": "252",
@@ -1200,8 +1164,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Disciplina para el Personal de la Armada de...",
-            "publication_date": "2002-12-13",
-            "slug": "252"
+            "publication_date": "2002-12-13"
         },
         {
             "id": "lemefagn",
@@ -1213,8 +1176,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Educación Militar del Ejército, Fuerza Aére...",
-            "publication_date": "2005-12-23",
-            "slug": "lemefagn"
+            "publication_date": "2005-12-23"
         },
         {
             "id": "len",
@@ -1226,8 +1188,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Educación Naval \t\t\t\t \t\t\t\tDOF 12/03/2019",
-            "publication_date": "2019-03-12",
-            "slug": "len"
+            "publication_date": "2019-03-12"
         },
         {
             "id": "246",
@@ -1239,8 +1200,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Energía para el Campo \t\t\t\t \t\t\t\tDOF 30/12/20...",
-            "publication_date": "2002-12-30",
-            "slug": "246"
+            "publication_date": "2002-12-30"
         },
         {
             "id": "35",
@@ -1252,8 +1212,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Expropiación \t\t\t\t \t\t\t\tDOF 25/11/1936",
-            "publication_date": "1936-11-25",
-            "slug": "35"
+            "publication_date": "1936-11-25"
         },
         {
             "id": "36_200521",
@@ -1265,8 +1224,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Extradición Internacional \t\t\t\t \t\t\t\tDOF 29/1...",
-            "publication_date": "1975-12-29",
-            "slug": "36_200521"
+            "publication_date": "1975-12-29"
         },
         {
             "id": "lfea",
@@ -1278,8 +1236,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Firma Electrónica Avanzada \t\t\t\t \t\t\t\tDOF 11/...",
-            "publication_date": "2012-01-11",
-            "slug": "lfea"
+            "publication_date": "2012-01-11"
         },
         {
             "id": "lfrcf_200521",
@@ -1291,8 +1248,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fiscalización y Rendición de Cuentas de la ...",
-            "publication_date": "2016-07-18",
-            "slug": "lfrcf_200521"
+            "publication_date": "2016-07-18"
         },
         {
             "id": "lfcc_200120",
@@ -1304,8 +1260,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fomento a la Confianza Ciudadana \t\t\t\t \t\t\t\tD...",
-            "publication_date": "2020-01-20",
-            "slug": "lfcc_200120"
+            "publication_date": "2020-01-20"
         },
         {
             "id": "lfiv_230518",
@@ -1317,8 +1272,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fomento a la Industria Vitivinícola \t\t\t\t \t\t...",
-            "publication_date": "2018-05-23",
-            "slug": "lfiv_230518"
+            "publication_date": "2018-05-23"
         },
         {
             "id": "lfll",
@@ -1330,8 +1284,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fomento para la Lectura y el Libro \t\t\t\t \t\t\t...",
-            "publication_date": "2008-07-24",
-            "slug": "lfll"
+            "publication_date": "2008-07-24"
         },
         {
             "id": "lfaar",
@@ -1343,8 +1296,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fondos de Aseguramiento Agropecuario y Rura...",
-            "publication_date": "2005-05-13",
-            "slug": "lfaar"
+            "publication_date": "2005-05-13"
         },
         {
             "id": "lfi",
@@ -1356,8 +1308,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Fondos de Inversión \t\t\t\t \t\t\t\t(Antes \"Ley de...",
-            "publication_date": "2001-06-04",
-            "slug": "lfi"
+            "publication_date": "2001-06-04"
         },
         {
             "id": "lgeo",
@@ -1369,8 +1320,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Geotermia \t\t\t\t \t\t\t\tDOF 18/03/2025",
-            "publication_date": "2025-03-18",
-            "slug": "lgeo"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lical_010720",
@@ -1382,8 +1332,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Infraestructura de la Calidad \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "2020-07-01",
-            "slug": "lical_010720"
+            "publication_date": "2020-07-01"
         },
         {
             "id": "lif_2026",
@@ -1395,8 +1344,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Ingresos de la Federación para el Ejercicio...",
-            "publication_date": "2025-11-07",
-            "slug": "lif_2026"
+            "publication_date": "2025-11-07"
         },
         {
             "id": "lih",
@@ -1408,8 +1356,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Ingresos sobre Hidrocarburos \t\t\t\t \t\t\t\tDOF 1...",
-            "publication_date": "2014-08-11",
-            "slug": "lih"
+            "publication_date": "2014-08-11"
         },
         {
             "id": "lisf",
@@ -1421,8 +1368,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Instituciones de Seguros y de Fianzas \t\t\t\t ...",
-            "publication_date": "2013-04-04",
-            "slug": "lisf"
+            "publication_date": "2013-04-04"
         },
         {
             "id": "lansi",
@@ -1434,8 +1380,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Agencia Nacional de Seguridad Industrial...",
-            "publication_date": "2014-08-11",
-            "slug": "lansi"
+            "publication_date": "2014-08-11"
         },
         {
             "id": "lcmm",
@@ -1447,8 +1392,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Casa de Moneda de México \t\t\t\t \t\t\t\tDOF 20...",
-            "publication_date": "1986-01-20",
-            "slug": "lcmm"
+            "publication_date": "1986-01-20"
         },
         {
             "id": "lcnbv",
@@ -1460,8 +1404,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Comisión Nacional Bancaria y de Valores ...",
-            "publication_date": "1995-04-28",
-            "slug": "lcnbv"
+            "publication_date": "1995-04-28"
         },
         {
             "id": "lcne",
@@ -1473,8 +1416,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Comisión Nacional de Energía \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "2025-03-18",
-            "slug": "lcne"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lcndh",
@@ -1486,8 +1428,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Comisión Nacional de los Derechos Humano...",
-            "publication_date": "1992-06-29",
-            "slug": "lcndh"
+            "publication_date": "1992-06-29"
         },
         {
             "id": "less",
@@ -1499,8 +1440,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Economía Social y Solidaria \t\t\t\t \t\t\t\t(An...",
-            "publication_date": "2012-05-23",
-            "slug": "less"
+            "publication_date": "2012-05-23"
         },
         {
             "id": "lepecfe",
@@ -1512,8 +1452,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Empresa Pública del Estado, Comisión Fed...",
-            "publication_date": "2025-03-18",
-            "slug": "lepecfe"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lepepm",
@@ -1525,8 +1464,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Empresa Pública del Estado, Petróleos Me...",
-            "publication_date": "2025-03-18",
-            "slug": "lepepm"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lfgr",
@@ -1538,8 +1476,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Fiscalía General de la República \t\t\t\t \t\t...",
-            "publication_date": "2021-05-20",
-            "slug": "lfgr"
+            "publication_date": "2021-05-20"
         },
         {
             "id": "lgn",
@@ -1551,8 +1488,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Guardia Nacional \t\t\t\t \t\t\t\tDOF 16/07/2025",
-            "publication_date": "2025-07-16",
-            "slug": "lgn"
+            "publication_date": "2025-07-16"
         },
         {
             "id": "lpf",
@@ -1564,8 +1500,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de la Policía Federal \t\t\t\t \t\t\t\tDOF 01/06/2009 ...",
-            "publication_date": "2009-06-01",
-            "slug": "lpf"
+            "publication_date": "2009-06-01"
         },
         {
             "id": "ldpam",
@@ -1577,8 +1512,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de los Derechos de las Personas Adultas Mayore...",
-            "publication_date": "2002-06-25",
-            "slug": "ldpam"
+            "publication_date": "2002-06-25"
         },
         {
             "id": "lhheum",
@@ -1590,8 +1524,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de los Husos Horarios en los Estados Unidos Me...",
-            "publication_date": "2022-10-28",
-            "slug": "lhheum"
+            "publication_date": "2022-10-28"
         },
         {
             "id": "ligie_2022",
@@ -1603,8 +1536,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de los Impuestos Generales de Importación y de...",
-            "publication_date": "2022-06-07",
-            "slug": "ligie_2022"
+            "publication_date": "2022-06-07"
         },
         {
             "id": "lins",
@@ -1616,8 +1548,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de los Institutos Nacionales de Salud \t\t\t\t \t\t\t...",
-            "publication_date": "2000-05-26",
-            "slug": "lins"
+            "publication_date": "2000-05-26"
         },
         {
             "id": "lsar",
@@ -1629,8 +1560,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de los Sistemas de Ahorro para el Retiro \t\t\t\t ...",
-            "publication_date": "1996-05-23",
-            "slug": "lsar"
+            "publication_date": "1996-05-23"
         },
         {
             "id": "lmigra",
@@ -1642,8 +1572,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Migración \t\t\t\t \t\t\t\tDOF 25/05/2011 \t\t\t\t \t\t\t\t...",
-            "publication_date": "2011-05-25",
-            "slug": "lmigra"
+            "publication_date": "2011-05-25"
         },
         {
             "id": "lmin",
@@ -1655,8 +1584,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Minería \t\t\t\t \t\t\t\t(Antes \"Ley Minera\") \t\t\t\t ...",
-            "publication_date": "1992-06-26",
-            "slug": "lmin"
+            "publication_date": "1992-06-26"
         },
         {
             "id": "53",
@@ -1668,8 +1596,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Nacionalidad \t\t\t\t \t\t\t\tDOF 23/01/1998",
-            "publication_date": "1998-01-23",
-            "slug": "53"
+            "publication_date": "1998-01-23"
         },
         {
             "id": "lncm",
@@ -1681,8 +1608,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Navegación y Comercio Marítimos \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "2006-06-01",
-            "slug": "lncm"
+            "publication_date": "2006-06-01"
         },
         {
             "id": "lopsrm",
@@ -1694,8 +1620,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Obras Públicas y Servicios Relacionados con...",
-            "publication_date": "2000-01-04",
-            "slug": "lopsrm"
+            "publication_date": "2000-01-04"
         },
         {
             "id": "57",
@@ -1707,8 +1632,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Organizaciones Ganaderas \t\t\t\t \t\t\t\tDOF 06/01...",
-            "publication_date": "1999-01-06",
-            "slug": "57"
+            "publication_date": "1999-01-06"
         },
         {
             "id": "lplan",
@@ -1720,8 +1644,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Planeación \t\t\t\t \t\t\t\tDOF 05/01/1983 \t\t\t\t \t\t\t...",
-            "publication_date": "1983-01-05",
-            "slug": "lplan"
+            "publication_date": "1983-01-05"
         },
         {
             "id": "lpte",
@@ -1733,8 +1656,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Planeación y Transición Energética \t\t\t\t \t\t\t...",
-            "publication_date": "2025-03-18",
-            "slug": "lpte"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lperc",
@@ -1746,8 +1668,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Premios, Estímulos y Recompensas Civiles \t\t...",
-            "publication_date": "1975-12-31",
-            "slug": "lperc"
+            "publication_date": "1975-12-31"
         },
         {
             "id": "lpo",
@@ -1759,8 +1680,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Productos Orgánicos \t\t\t\t \t\t\t\tDOF 07/02/2006",
-            "publication_date": "2006-02-07",
-            "slug": "lpo"
+            "publication_date": "2006-02-07"
         },
         {
             "id": "lpab",
@@ -1772,8 +1692,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Protección al Ahorro Bancario \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "1999-01-19",
-            "slug": "lpab"
+            "publication_date": "1999-01-19"
         },
         {
             "id": "63",
@@ -1785,8 +1704,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Protección al Comercio y la Inversión de No...",
-            "publication_date": "1996-10-23",
-            "slug": "63"
+            "publication_date": "1996-10-23"
         },
         {
             "id": "lpeam",
@@ -1798,8 +1716,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Protección del Espacio Aéreo Mexicano \t\t\t\t ...",
-            "publication_date": "2023-03-01",
-            "slug": "lpeam"
+            "publication_date": "2023-03-01"
         },
         {
             "id": "lpdusf",
@@ -1811,8 +1728,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Protección y Defensa al Usuario de Servicio...",
-            "publication_date": "1999-01-18",
-            "slug": "lpdusf"
+            "publication_date": "1999-01-18"
         },
         {
             "id": "65_071220",
@@ -1824,8 +1740,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Puertos \t\t\t\t \t\t\t\tDOF 19/07/1993",
-            "publication_date": "1993-07-19",
-            "slug": "65_071220"
+            "publication_date": "1993-07-19"
         },
         {
             "id": "lram",
@@ -1837,8 +1752,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Recompensas de la Armada de México \t\t\t\t \t\t\t...",
-            "publication_date": "1985-01-14",
-            "slug": "lram"
+            "publication_date": "1985-01-14"
         },
         {
             "id": "lrcdn",
@@ -1850,8 +1764,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Responsabilidad Civil por Daños Nucleares \t...",
-            "publication_date": "1974-12-31",
-            "slug": "lrcdn"
+            "publication_date": "1974-12-31"
         },
         {
             "id": "lsint_300519",
@@ -1863,8 +1776,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Seguridad Interior \t\t\t\t \t\t\t\tDOF 21/12/2017 ...",
-            "publication_date": "2017-12-21",
-            "slug": "lsint_300519"
+            "publication_date": "2017-12-21"
         },
         {
             "id": "lsn",
@@ -1876,8 +1788,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Seguridad Nacional \t\t\t\t \t\t\t\tDOF 31/01/2005 ...",
-            "publication_date": "2005-01-31",
-            "slug": "lsn"
+            "publication_date": "2005-01-31"
         },
         {
             "id": "lsp",
@@ -1889,8 +1800,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Sistemas de Pagos \t\t\t\t \t\t\t\tDOF 12/12/2002 \t...",
-            "publication_date": "2002-12-12",
-            "slug": "lsp"
+            "publication_date": "2002-12-12"
         },
         {
             "id": "70",
@@ -1902,8 +1812,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Sociedades de Responsabilidad Limitada de I...",
-            "publication_date": "1934-08-31",
-            "slug": "70"
+            "publication_date": "1934-08-31"
         },
         {
             "id": "71_240418",
@@ -1915,8 +1824,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Sociedades de Solidaridad Social \t\t\t\t \t\t\t\tD...",
-            "publication_date": "1976-05-27",
-            "slug": "71_240418"
+            "publication_date": "1976-05-27"
         },
         {
             "id": "ltf",
@@ -1928,8 +1836,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Tesorería de la Federación \t\t\t\t \t\t\t\tDOF 30/...",
-            "publication_date": "2015-12-30",
-            "slug": "ltf"
+            "publication_date": "2015-12-30"
         },
         {
             "id": "256",
@@ -1941,8 +1848,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Transparencia y de Fomento a la Competencia...",
-            "publication_date": "2002-12-30",
-            "slug": "256"
+            "publication_date": "2002-12-30"
         },
         {
             "id": "luc",
@@ -1954,8 +1860,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Uniones de Crédito \t\t\t\t \t\t\t\tDOF 20/08/2008 ...",
-            "publication_date": "2008-08-20",
-            "slug": "luc"
+            "publication_date": "2008-08-20"
         },
         {
             "id": "lvzmm",
@@ -1967,8 +1872,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Vertimientos en las Zonas Marinas Mexicanas...",
-            "publication_date": "2014-01-17",
-            "slug": "lvzmm"
+            "publication_date": "2014-01-17"
         },
         {
             "id": "lvgc",
@@ -1980,8 +1884,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Vías Generales de Comunicación \t\t\t\t \t\t\t\tDOF...",
-            "publication_date": "1940-02-19",
-            "slug": "lvgc"
+            "publication_date": "1940-02-19"
         },
         {
             "id": "lviv",
@@ -1993,8 +1896,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY de Vivienda \t\t\t\t \t\t\t\tDOF 27/06/2006 \t\t\t\t \t\t\t\tE...",
-            "publication_date": "2006-06-27",
-            "slug": "lviv"
+            "publication_date": "2006-06-27"
         },
         {
             "id": "74",
@@ -2006,8 +1908,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Banco de México \t\t\t\t \t\t\t\tDOF 23/12/1993",
-            "publication_date": "1993-12-23",
-            "slug": "74"
+            "publication_date": "1993-12-23"
         },
         {
             "id": "75_100619",
@@ -2019,8 +1920,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Diario Oficial de la Federación y Gacetas ...",
-            "publication_date": "1986-12-24",
-            "slug": "75_100619"
+            "publication_date": "1986-12-24"
         },
         {
             "id": "lfmped",
@@ -2032,8 +1932,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Fondo Mexicano del Petróleo para la Estabi...",
-            "publication_date": "2014-08-11",
-            "slug": "lfmped"
+            "publication_date": "2014-08-11"
         },
         {
             "id": "liva",
@@ -2045,8 +1944,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Impuesto al Valor Agregado \t\t\t\t \t\t\t\tDOF 29...",
-            "publication_date": "1978-12-29",
-            "slug": "liva"
+            "publication_date": "1978-12-29"
         },
         {
             "id": "lieps",
@@ -2058,8 +1956,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Impuesto Especial sobre Producción y Servi...",
-            "publication_date": "1980-12-30",
-            "slug": "lieps"
+            "publication_date": "1980-12-30"
         },
         {
             "id": "lissfam",
@@ -2071,8 +1968,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto de Seguridad Social para las Fue...",
-            "publication_date": "2003-07-09",
-            "slug": "lissfam"
+            "publication_date": "2003-07-09"
         },
         {
             "id": "lifnvt",
@@ -2084,8 +1980,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto del Fondo Nacional de la Viviend...",
-            "publication_date": "1972-04-24",
-            "slug": "lifnvt"
+            "publication_date": "1972-04-24"
         },
         {
             "id": "lifnct",
@@ -2097,8 +1992,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto del Fondo Nacional para el Consu...",
-            "publication_date": "2006-04-24",
-            "slug": "lifnct"
+            "publication_date": "2006-04-24"
         },
         {
             "id": "limj",
@@ -2110,8 +2004,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto Mexicano de la Juventud \t\t\t\t \t\t\t...",
-            "publication_date": "1999-01-06",
-            "slug": "limj"
+            "publication_date": "1999-01-06"
         },
         {
             "id": "88_200521",
@@ -2123,8 +2016,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto Nacional de las Mujeres \t\t\t\t \t\t\t...",
-            "publication_date": "2001-01-12",
-            "slug": "88_200521"
+            "publication_date": "2001-01-12"
         },
         {
             "id": "linpi",
@@ -2136,8 +2028,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Instituto Nacional de los Pueblos Indígena...",
-            "publication_date": "2018-12-04",
-            "slug": "linpi"
+            "publication_date": "2018-12-04"
         },
         {
             "id": "269_200521",
@@ -2149,8 +2040,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Registro Público Vehicular \t\t\t\t \t\t\t\tDOF 01...",
-            "publication_date": "2004-09-01",
-            "slug": "269_200521"
+            "publication_date": "2004-09-01"
         },
         {
             "id": "lse",
@@ -2162,8 +2052,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Sector Eléctrico \t\t\t\t \t\t\t\tDOF 18/03/2025",
-            "publication_date": "2025-03-18",
-            "slug": "lse"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lsh",
@@ -2175,8 +2064,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Sector Hidrocarburos \t\t\t\t \t\t\t\tDOF 18/03/20...",
-            "publication_date": "2025-03-18",
-            "slug": "lsh"
+            "publication_date": "2025-03-18"
         },
         {
             "id": "lss",
@@ -2188,8 +2076,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Seguro Social \t\t\t\t \t\t\t\tDOF 21/12/1995 \t\t\t\t...",
-            "publication_date": "1995-12-21",
-            "slug": "lss"
+            "publication_date": "1995-12-21"
         },
         {
             "id": "93_041218",
@@ -2201,8 +2088,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Servicio de Administración Tributaria \t\t\t\t...",
-            "publication_date": "1995-12-15",
-            "slug": "93_041218"
+            "publication_date": "1995-12-15"
         },
         {
             "id": "96_190418",
@@ -2214,8 +2100,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Servicio Exterior Mexicano \t\t\t\t \t\t\t\tDOF 04...",
-            "publication_date": "1994-01-04",
-            "slug": "96_190418"
+            "publication_date": "1994-01-04"
         },
         {
             "id": "lsm",
@@ -2227,8 +2112,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Servicio Militar \t\t\t\t \t\t\t\tDOF 11/09/1940",
-            "publication_date": "1940-09-11",
-            "slug": "lsm"
+            "publication_date": "1940-09-11"
         },
         {
             "id": "lspm",
@@ -2240,8 +2124,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Servicio Postal Mexicano \t\t\t\t \t\t\t\tDOF 24/1...",
-            "publication_date": "1986-12-24",
-            "slug": "lspm"
+            "publication_date": "1986-12-24"
         },
         {
             "id": "260",
@@ -2253,8 +2136,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Servicio Profesional de Carrera en la Admi...",
-            "publication_date": "2003-04-10",
-            "slug": "260"
+            "publication_date": "2003-04-10"
         },
         {
             "id": "lsnieg",
@@ -2266,8 +2148,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Sistema Nacional de Información Estadístic...",
-            "publication_date": "2008-04-16",
-            "slug": "lsnieg"
+            "publication_date": "2008-04-16"
         },
         {
             "id": "lsniimsp",
@@ -2279,8 +2160,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Sistema Nacional de Investigación e Inteli...",
-            "publication_date": "2025-07-16",
-            "slug": "lsniimsp"
+            "publication_date": "2025-07-16"
         },
         {
             "id": "lsprem",
@@ -2292,8 +2172,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY del Sistema Público de Radiodifusión del Estad...",
-            "publication_date": "2014-07-14",
-            "slug": "lsprem"
+            "publication_date": "2014-07-14"
         },
         {
             "id": "lmtr",
@@ -2305,8 +2184,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY en Materia de Telecomunicaciones y Radiodifusi...",
-            "publication_date": "2025-07-16",
-            "slug": "lmtr"
+            "publication_date": "2025-07-16"
         },
         {
             "id": "lfcdo",
@@ -2318,8 +2196,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal contra la Delincuencia Organizada \t\t\t\t...",
-            "publication_date": "1996-11-07",
-            "slug": "lfcdo"
+            "publication_date": "1996-11-07"
         },
         {
             "id": "lfafe",
@@ -2331,8 +2208,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Armas de Fuego y Explosivos \t\t\t\t \t\t...",
-            "publication_date": "1972-01-11",
-            "slug": "lfafe"
+            "publication_date": "1972-01-11"
         },
         {
             "id": "lfar",
@@ -2344,8 +2220,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Austeridad Republicana \t\t\t\t \t\t\t\tDOF...",
-            "publication_date": "2019-11-19",
-            "slug": "lfar"
+            "publication_date": "2019-11-19"
         },
         {
             "id": "103_220321",
@@ -2357,8 +2232,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Cinematografía \t\t\t\t \t\t\t\tDOF 29/12/1...",
-            "publication_date": "1992-12-29",
-            "slug": "103_220321"
+            "publication_date": "1992-12-29"
         },
         {
             "id": "lfce",
@@ -2370,8 +2244,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Competencia Económica \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "2014-05-23",
-            "slug": "lfce"
+            "publication_date": "2014-05-23"
         },
         {
             "id": "lfcpo_190521",
@@ -2383,8 +2256,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Consulta Popular \t\t\t\t \t\t\t\tDOF 14/03...",
-            "publication_date": "2014-03-14",
-            "slug": "lfcpo_190521"
+            "publication_date": "2014-03-14"
         },
         {
             "id": "105",
@@ -2396,8 +2268,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Correduría Pública \t\t\t\t \t\t\t\tDOF 29/...",
-            "publication_date": "1992-12-29",
-            "slug": "105"
+            "publication_date": "1992-12-29"
         },
         {
             "id": "lfdeapd",
@@ -2409,8 +2280,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Declaración Especial de Ausencia pa...",
-            "publication_date": "2018-06-22",
-            "slug": "lfdeapd"
+            "publication_date": "2018-06-22"
         },
         {
             "id": "lfdefp",
@@ -2422,8 +2292,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Defensoría Pública \t\t\t\t \t\t\t\tDOF 28/...",
-            "publication_date": "1998-05-28",
-            "slug": "lfdefp"
+            "publication_date": "1998-05-28"
         },
         {
             "id": "lfd",
@@ -2435,8 +2304,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Derechos \t\t\t\t \t\t\t\tDOF 31/12/1981 \t\t...",
-            "publication_date": "1981-12-31",
-            "slug": "lfd"
+            "publication_date": "1981-12-31"
         },
         {
             "id": "136_300118",
@@ -2448,8 +2316,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Deuda Pública \t\t\t\t \t\t\t\t(Antes \"Ley ...",
-            "publication_date": "1976-12-31",
-            "slug": "136_300118"
+            "publication_date": "1976-12-31"
         },
         {
             "id": "lffaosc",
@@ -2461,8 +2328,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Fomento a las Actividades Realizada...",
-            "publication_date": "2004-02-09",
-            "slug": "lffaosc"
+            "publication_date": "2004-02-09"
         },
         {
             "id": "109",
@@ -2474,8 +2340,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Juegos y Sorteos \t\t\t\t \t\t\t\tDOF 31/12...",
-            "publication_date": "1947-12-31",
-            "slug": "109"
+            "publication_date": "1947-12-31"
         },
         {
             "id": "lfep",
@@ -2487,8 +2352,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de las Entidades Paraestatales \t\t\t\t \t\t...",
-            "publication_date": "1986-05-14",
-            "slug": "lfep"
+            "publication_date": "1986-05-14"
         },
         {
             "id": "lfdc",
@@ -2500,8 +2364,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de los Derechos del Contribuyente \t\t\t\t...",
-            "publication_date": "2005-06-23",
-            "slug": "lfdc"
+            "publication_date": "2005-06-23"
         },
         {
             "id": "lftse",
@@ -2513,8 +2376,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de los Trabajadores al Servicio del Es...",
-            "publication_date": "1963-12-28",
-            "slug": "lftse"
+            "publication_date": "1963-12-28"
         },
         {
             "id": "lfprh",
@@ -2526,8 +2388,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Presupuesto y Responsabilidad Hacen...",
-            "publication_date": "2006-03-30",
-            "slug": "lfprh"
+            "publication_date": "2006-03-30"
         },
         {
             "id": "lfpa",
@@ -2539,8 +2400,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Procedimiento Administrativo \t\t\t\t \t...",
-            "publication_date": "1994-08-04",
-            "slug": "lfpa"
+            "publication_date": "1994-08-04"
         },
         {
             "id": "lfpca",
@@ -2552,8 +2412,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Procedimiento Contencioso Administr...",
-            "publication_date": "2005-12-01",
-            "slug": "lfpca"
+            "publication_date": "2005-12-01"
         },
         {
             "id": "lfpccs_110518",
@@ -2565,8 +2424,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Producción, Certificación y Comerci...",
-            "publication_date": "2007-06-15",
-            "slug": "lfpccs_110518"
+            "publication_date": "2007-06-15"
         },
         {
             "id": "lfppi",
@@ -2578,8 +2436,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Protección a la Propiedad Industria...",
-            "publication_date": "2020-07-01",
-            "slug": "lfppi"
+            "publication_date": "2020-07-01"
         },
         {
             "id": "lfpdppp",
@@ -2591,8 +2448,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Protección de Datos Personales en P...",
-            "publication_date": "2025-03-20",
-            "slug": "lfpdppp"
+            "publication_date": "2025-03-20"
         },
         {
             "id": "lfppcpcia",
@@ -2604,8 +2460,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "Ley Federal de Protección del Patrimonio Cultural ...",
-            "publication_date": "2022-01-17",
-            "slug": "lfppcpcia"
+            "publication_date": "2022-01-17"
         },
         {
             "id": "lfremsp_190521",
@@ -2617,8 +2472,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Remuneraciones de los Servidores Pú...",
-            "publication_date": "2021-05-19",
-            "slug": "lfremsp_190521"
+            "publication_date": "2021-05-19"
         },
         {
             "id": "lfrpe",
@@ -2630,8 +2484,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Responsabilidad Patrimonial del Est...",
-            "publication_date": "2004-12-31",
-            "slug": "lfrpe"
+            "publication_date": "2004-12-31"
         },
         {
             "id": "lfrm",
@@ -2643,8 +2496,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Revocación de Mandato \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "2021-09-14",
-            "slug": "lfrm"
+            "publication_date": "2021-09-14"
         },
         {
             "id": "lfsa",
@@ -2656,8 +2508,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Sanidad Animal \t\t\t\t \t\t\t\tDOF 25/07/2...",
-            "publication_date": "2007-07-25",
-            "slug": "lfsa"
+            "publication_date": "2007-07-25"
         },
         {
             "id": "lfsv",
@@ -2669,8 +2520,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Sanidad Vegetal \t\t\t\t \t\t\t\tDOF 05/01/...",
-            "publication_date": "1994-01-05",
-            "slug": "lfsv"
+            "publication_date": "1994-01-05"
         },
         {
             "id": "lfsp",
@@ -2682,8 +2532,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Seguridad Privada \t\t\t\t \t\t\t\tDOF 06/0...",
-            "publication_date": "2006-07-06",
-            "slug": "lfsp"
+            "publication_date": "2006-07-06"
         },
         {
             "id": "lfvv",
@@ -2695,8 +2544,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Variedades Vegetales \t\t\t\t \t\t\t\tDOF 2...",
-            "publication_date": "1996-10-25",
-            "slug": "lfvv"
+            "publication_date": "1996-10-25"
         },
         {
             "id": "lfzee",
@@ -2708,8 +2556,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal de Zonas Económicas Especiales \t\t\t\t \t\t...",
-            "publication_date": "2016-06-01",
-            "slug": "lfzee"
+            "publication_date": "2016-06-01"
         },
         {
             "id": "lfisan",
@@ -2721,8 +2568,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal del Impuesto sobre Automóviles Nuevos ...",
-            "publication_date": "1996-12-30",
-            "slug": "lfisan"
+            "publication_date": "1996-12-30"
         },
         {
             "id": "124",
@@ -2734,8 +2580,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal del Mar \t\t\t\t \t\t\t\tDOF 08/01/1986",
-            "publication_date": "1986-01-08",
-            "slug": "124"
+            "publication_date": "1986-01-08"
         },
         {
             "id": "lfcpq",
@@ -2747,8 +2592,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para el Control de Precursores Químico...",
-            "publication_date": "1997-12-26",
-            "slug": "lfcpq"
+            "publication_date": "1997-12-26"
         },
         {
             "id": "lfcsq",
@@ -2760,8 +2604,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para el Control de Sustancias Químicas...",
-            "publication_date": "2009-06-09",
-            "slug": "lfcsq"
+            "publication_date": "2009-06-09"
         },
         {
             "id": "lffmaa",
@@ -2773,8 +2616,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para el Fomento de la Microindustria y...",
-            "publication_date": "1988-01-26",
-            "slug": "lffmaa"
+            "publication_date": "1988-01-26"
         },
         {
             "id": "lffpmn_130420",
@@ -2786,8 +2628,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para el Fomento y Protección del Maíz ...",
-            "publication_date": "2020-04-13",
-            "slug": "lffpmn_130420"
+            "publication_date": "2020-04-13"
         },
         {
             "id": "lfaebsp",
@@ -2799,8 +2640,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para la Administración y Enajenación d...",
-            "publication_date": "2002-12-19",
-            "slug": "lfaebsp"
+            "publication_date": "2002-12-19"
         },
         {
             "id": "lfpiorpi",
@@ -2812,8 +2652,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para la Prevención e Identificación de...",
-            "publication_date": "2012-10-17",
-            "slug": "lfpiorpi"
+            "publication_date": "2012-10-17"
         },
         {
             "id": "lfppipp_200521",
@@ -2825,8 +2664,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para la Protección a Personas que Inte...",
-            "publication_date": "2012-06-08",
-            "slug": "lfppipp_200521"
+            "publication_date": "2012-06-08"
         },
         {
             "id": "lfped",
@@ -2838,8 +2676,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para Prevenir y Eliminar la Discrimina...",
-            "publication_date": "2003-06-11",
-            "slug": "lfped"
+            "publication_date": "2003-06-11"
         },
         {
             "id": "lfpsdmh",
@@ -2851,8 +2688,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal para Prevenir y Sancionar los Delitos ...",
-            "publication_date": "2016-01-12",
-            "slug": "lfpsdmh"
+            "publication_date": "2016-01-12"
         },
         {
             "id": "lfmzaah",
@@ -2864,8 +2700,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Federal sobre Monumentos y Zonas Arqueológicos...",
-            "publication_date": "1972-05-06",
-            "slug": "lfmzaah"
+            "publication_date": "1972-05-06"
         },
         {
             "id": "lgag",
@@ -2877,8 +2712,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Aguas \t\t\t\t \t\t\t\tDOF 11/12/2025 \t\t\t\t ...",
-            "publication_date": "2025-12-11",
-            "slug": "lgag"
+            "publication_date": "2025-12-11"
         },
         {
             "id": "lga",
@@ -2890,8 +2724,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Archivos \t\t\t\t \t\t\t\tDOF 15/06/2018 \t\t...",
-            "publication_date": "2018-06-15",
-            "slug": "lga"
+            "publication_date": "2018-06-15"
         },
         {
             "id": "lgahotdu",
@@ -2903,8 +2736,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Asentamientos Humanos, Ordenamiento...",
-            "publication_date": "2016-11-28",
-            "slug": "lgahotdu"
+            "publication_date": "2016-11-28"
         },
         {
             "id": "lgb",
@@ -2916,8 +2748,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Bibliotecas \t\t\t\t \t\t\t\tDOF 01/06/2021",
-            "publication_date": "2021-06-01",
-            "slug": "lgb"
+            "publication_date": "2021-06-01"
         },
         {
             "id": "lgbn",
@@ -2929,8 +2760,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Bienes Nacionales \t\t\t\t \t\t\t\tDOF 20/0...",
-            "publication_date": "2004-05-20",
-            "slug": "lgbn"
+            "publication_date": "2004-05-20"
         },
         {
             "id": "lgcs",
@@ -2942,8 +2772,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Comunicación Social \t\t\t\t \t\t\t\tDOF 11...",
-            "publication_date": "2018-05-11",
-            "slug": "lgcs"
+            "publication_date": "2018-05-11"
         },
         {
             "id": "lgcg",
@@ -2955,8 +2784,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Contabilidad Gubernamental  \t\t\t\t \t\t...",
-            "publication_date": "2008-12-31",
-            "slug": "lgcg"
+            "publication_date": "2008-12-31"
         },
         {
             "id": "lgcfd",
@@ -2968,8 +2796,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Cultura Física y Deporte \t\t\t\t \t\t\t\tD...",
-            "publication_date": "2013-06-07",
-            "slug": "lgcfd"
+            "publication_date": "2013-06-07"
         },
         {
             "id": "lgcdc",
@@ -2981,8 +2808,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Cultura y Derechos Culturales \t\t\t\t ...",
-            "publication_date": "2017-06-19",
-            "slug": "lgcdc"
+            "publication_date": "2017-06-19"
         },
         {
             "id": "lgdlpi",
@@ -2994,8 +2820,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Derechos Lingüísticos de los Pueblo...",
-            "publication_date": "2003-03-13",
-            "slug": "lgdlpi"
+            "publication_date": "2003-03-13"
         },
         {
             "id": "lgdfs",
@@ -3007,8 +2832,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Desarrollo Forestal Sustentable \t\t\t...",
-            "publication_date": "2018-06-05",
-            "slug": "lgdfs"
+            "publication_date": "2018-06-05"
         },
         {
             "id": "lgds",
@@ -3020,8 +2844,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Desarrollo Social \t\t\t\t \t\t\t\tDOF 20/0...",
-            "publication_date": "2004-01-20",
-            "slug": "lgds"
+            "publication_date": "2004-01-20"
         },
         {
             "id": "lgec",
@@ -3033,8 +2856,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Economía Circular \t\t\t\t \t\t\t\tDOF 19/0...",
-            "publication_date": "2026-01-19",
-            "slug": "lgec"
+            "publication_date": "2026-01-19"
         },
         {
             "id": "lges_200421",
@@ -3046,8 +2868,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Educación Superior \t\t\t\t \t\t\t\tDOF 20/...",
-            "publication_date": "2021-04-20",
-            "slug": "lges_200421"
+            "publication_date": "2021-04-20"
         },
         {
             "id": "lgaas",
@@ -3059,8 +2880,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de la Alimentación Adecuada y Sostenib...",
-            "publication_date": "2024-04-17",
-            "slug": "lgaas"
+            "publication_date": "2024-04-17"
         },
         {
             "id": "lgdnna",
@@ -3072,8 +2892,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de los Derechos de Niñas, Niños y Adol...",
-            "publication_date": "2014-12-04",
-            "slug": "lgdnna"
+            "publication_date": "2014-12-04"
         },
         {
             "id": "lgmime",
@@ -3085,8 +2904,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de los Medios de Impugnación en Materi...",
-            "publication_date": "2023-03-02",
-            "slug": "lgmime"
+            "publication_date": "2023-03-02"
         },
         {
             "id": "lgmasc",
@@ -3098,8 +2916,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Mecanismos Alternativos de Solución...",
-            "publication_date": "2024-01-26",
-            "slug": "lgmasc"
+            "publication_date": "2024-01-26"
         },
         {
             "id": "lgmsv",
@@ -3111,8 +2928,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Movilidad y Seguridad Vial \t\t\t\t \t\t\t...",
-            "publication_date": "2022-05-17",
-            "slug": "lgmsv"
+            "publication_date": "2022-05-17"
         },
         {
             "id": "lgoaac",
@@ -3124,8 +2940,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Organizaciones y Actividades Auxili...",
-            "publication_date": "1985-01-14",
-            "slug": "lgoaac"
+            "publication_date": "1985-01-14"
         },
         {
             "id": "lgpp",
@@ -3137,8 +2952,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Partidos Políticos \t\t\t\t \t\t\t\tDOF 23/...",
-            "publication_date": "2014-05-23",
-            "slug": "lgpp"
+            "publication_date": "2014-05-23"
         },
         {
             "id": "lgpas",
@@ -3150,8 +2964,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Pesca y Acuacultura Sustentables \t\t...",
-            "publication_date": "2007-07-24",
-            "slug": "lgpas"
+            "publication_date": "2007-07-24"
         },
         {
             "id": "lgp",
@@ -3163,8 +2976,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Población \t\t\t\t \t\t\t\tDOF 07/01/1974",
-            "publication_date": "1974-01-07",
-            "slug": "lgp"
+            "publication_date": "1974-01-07"
         },
         {
             "id": "lgpsacdii",
@@ -3176,8 +2988,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Prestación de Servicios para la Ate...",
-            "publication_date": "2011-10-24",
-            "slug": "lgpsacdii"
+            "publication_date": "2011-10-24"
         },
         {
             "id": "lgpc",
@@ -3189,8 +3000,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Protección Civil \t\t\t\t \t\t\t\tDOF 06/06...",
-            "publication_date": "2012-06-06",
-            "slug": "lgpc"
+            "publication_date": "2012-06-06"
         },
         {
             "id": "lgra",
@@ -3202,8 +3012,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Responsabilidades Administrativas \t...",
-            "publication_date": "2016-07-18",
-            "slug": "lgra"
+            "publication_date": "2016-07-18"
         },
         {
             "id": "lgsc",
@@ -3215,8 +3024,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Sociedades Cooperativas \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "1994-08-03",
-            "slug": "lgsc"
+            "publication_date": "1994-08-03"
         },
         {
             "id": "lgt",
@@ -3228,8 +3036,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Turismo \t\t\t\t \t\t\t\tDOF 17/06/2009 \t\t\t...",
-            "publication_date": "2009-06-17",
-            "slug": "lgt"
+            "publication_date": "2009-06-17"
         },
         {
             "id": "lgv",
@@ -3241,8 +3048,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Víctimas \t\t\t\t \t\t\t\tDOF 09/01/2013",
-            "publication_date": "2013-01-09",
-            "slug": "lgv"
+            "publication_date": "2013-01-09"
         },
         {
             "id": "lgvs",
@@ -3254,8 +3060,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General de Vida Silvestre \t\t\t\t \t\t\t\tDOF 03/07/2...",
-            "publication_date": "2000-07-03",
-            "slug": "lgvs"
+            "publication_date": "2000-07-03"
         },
         {
             "id": "lgsmime",
@@ -3267,8 +3072,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General del Sistema de Medios de Impugnación e...",
-            "publication_date": "1996-11-22",
-            "slug": "lgsmime"
+            "publication_date": "1996-11-22"
         },
         {
             "id": "lgsna_200521",
@@ -3280,8 +3084,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General del Sistema Nacional Anticorrupción \t\t...",
-            "publication_date": "2016-07-18",
-            "slug": "lgsna_200521"
+            "publication_date": "2016-07-18"
         },
         {
             "id": "lgsnsp",
@@ -3293,8 +3096,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General del Sistema Nacional de Seguridad Públ...",
-            "publication_date": "2025-07-16",
-            "slug": "lgsnsp"
+            "publication_date": "2025-07-16"
         },
         {
             "id": "lgscmm_300919",
@@ -3306,8 +3108,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General del Sistema para la Carrera de las Mae...",
-            "publication_date": "2019-09-30",
-            "slug": "lgscmm_300919"
+            "publication_date": "2019-09-30"
         },
         {
             "id": "lgmde_200521",
@@ -3319,8 +3120,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General en Materia de Delitos Electorales \t\t\t\t...",
-            "publication_date": "2014-05-23",
-            "slug": "lgmde_200521"
+            "publication_date": "2014-05-23"
         },
         {
             "id": "lgmdfp",
@@ -3332,8 +3132,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General en Materia de Desaparición Forzada de ...",
-            "publication_date": "2017-11-17",
-            "slug": "lgmdfp"
+            "publication_date": "2017-11-17"
         },
         {
             "id": "lgmhcti",
@@ -3345,8 +3144,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General en materia de Humanidades, Ciencias, T...",
-            "publication_date": "2023-05-08",
-            "slug": "lgmhcti"
+            "publication_date": "2023-05-08"
         },
         {
             "id": "lgct",
@@ -3358,8 +3156,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para el Control del Tabaco \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "2008-05-30",
-            "slug": "lgct"
+            "publication_date": "2008-05-30"
         },
         {
             "id": "lgappcea_270516",
@@ -3371,8 +3168,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para la Atención y Protección a Person...",
-            "publication_date": "2015-04-30",
-            "slug": "lgappcea_270516"
+            "publication_date": "2015-04-30"
         },
         {
             "id": "lgdocia_070121",
@@ -3384,8 +3180,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para la Detección Oportuna del Cáncer ...",
-            "publication_date": "2021-01-07",
-            "slug": "lgdocia_070121"
+            "publication_date": "2021-01-07"
         },
         {
             "id": "lgismh",
@@ -3397,8 +3192,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para la Igualdad Sustantiva entre Muje...",
-            "publication_date": "2006-08-02",
-            "slug": "lgismh"
+            "publication_date": "2006-08-02"
         },
         {
             "id": "lgipd",
@@ -3410,8 +3204,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para la Inclusión de las Personas con ...",
-            "publication_date": "2011-05-30",
-            "slug": "lgipd"
+            "publication_date": "2011-05-30"
         },
         {
             "id": "lgpsvd_040521",
@@ -3423,8 +3216,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para la Prevención Social de la Violen...",
-            "publication_date": "2012-01-24",
-            "slug": "lgpsvd_040521"
+            "publication_date": "2012-01-24"
         },
         {
             "id": "lgpist",
@@ -3436,8 +3228,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para Prevenir, Investigar y Sancionar ...",
-            "publication_date": "2017-06-26",
-            "slug": "lgpist"
+            "publication_date": "2017-06-26"
         },
         {
             "id": "lgpisdme",
@@ -3449,8 +3240,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "Ley General para Prevenir, Investigar y Sancionar ...",
-            "publication_date": "2025-11-28",
-            "slug": "lgpisdme"
+            "publication_date": "2025-11-28"
         },
         {
             "id": "lgpsedmtp",
@@ -3462,8 +3252,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para Prevenir, Sancionar y Erradicar l...",
-            "publication_date": "2012-06-14",
-            "slug": "lgpsedmtp"
+            "publication_date": "2012-06-14"
         },
         {
             "id": "lgpsdms_200521",
@@ -3475,8 +3264,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY General para Prevenir y Sancionar los Delitos ...",
-            "publication_date": "2010-11-30",
-            "slug": "lgpsdms_200521"
+            "publication_date": "2010-11-30"
         },
         {
             "id": "152",
@@ -3488,8 +3276,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Monetaria de los Estados Unidos Mexicanos \t\t\t\t...",
-            "publication_date": "1931-07-27",
-            "slug": "152"
+            "publication_date": "1931-07-27"
         },
         {
             "id": "lnep",
@@ -3501,8 +3288,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional de Ejecución Penal \t\t\t\t \t\t\t\tDOF 16/06...",
-            "publication_date": "2016-06-16",
-            "slug": "lnep"
+            "publication_date": "2016-06-16"
         },
         {
             "id": "lned",
@@ -3514,8 +3300,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional de Extinción de Dominio \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "2019-08-09",
-            "slug": "lned"
+            "publication_date": "2019-08-09"
         },
         {
             "id": "lnmascmp",
@@ -3527,8 +3312,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional de Mecanismos Alternativos de Solució...",
-            "publication_date": "2014-12-29",
-            "slug": "lnmascmp"
+            "publication_date": "2014-12-29"
         },
         {
             "id": "lnrd_270519",
@@ -3540,8 +3324,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional del Registro de Detenciones \t\t\t\t \t\t\t\t...",
-            "publication_date": "2019-05-27",
-            "slug": "lnrd_270519"
+            "publication_date": "2019-05-27"
         },
         {
             "id": "lnsijpa",
@@ -3553,8 +3336,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional del Sistema Integral de Justicia Pena...",
-            "publication_date": "2016-06-16",
-            "slug": "lnsijpa"
+            "publication_date": "2016-06-16"
         },
         {
             "id": "lnetb",
@@ -3566,8 +3348,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional para Eliminar Trámites Burocráticos \t...",
-            "publication_date": "2025-07-16",
-            "slug": "lnetb"
+            "publication_date": "2025-07-16"
         },
         {
             "id": "lnuf",
@@ -3579,8 +3360,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Nacional sobre el Uso de la Fuerza \t\t\t\t \t\t\t\tDO...",
-            "publication_date": "2019-05-27",
-            "slug": "lnuf"
+            "publication_date": "2019-05-27"
         },
         {
             "id": "loam",
@@ -3592,8 +3372,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Armada de México \t\t\t\t \t\t\t\tDOF 0...",
-            "publication_date": "2025-11-07",
-            "slug": "loam"
+            "publication_date": "2025-11-07"
         },
         {
             "id": "lopdc",
@@ -3605,8 +3384,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Procuraduría de la Defensa del ...",
-            "publication_date": "2006-09-04",
-            "slug": "lopdc"
+            "publication_date": "2006-09-04"
         },
         {
             "id": "lopgjdf",
@@ -3618,8 +3396,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Procuraduría General de Justici...",
-            "publication_date": "2011-06-20",
-            "slug": "lopgjdf"
+            "publication_date": "2011-06-20"
         },
         {
             "id": "louaaan",
@@ -3631,8 +3408,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Universidad Autónoma Agraria An...",
-            "publication_date": "2006-04-26",
-            "slug": "louaaan"
+            "publication_date": "2006-04-26"
         },
         {
             "id": "157",
@@ -3644,8 +3420,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Universidad Autónoma Metropolit...",
-            "publication_date": "1973-12-17",
-            "slug": "157"
+            "publication_date": "1973-12-17"
         },
         {
             "id": "158",
@@ -3657,8 +3432,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de la Universidad Nacional Autónoma d...",
-            "publication_date": "1945-01-06",
-            "slug": "158"
+            "publication_date": "1945-01-06"
         },
         {
             "id": "159",
@@ -3670,8 +3444,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de los Tribunales Agrarios \t\t\t\t \t\t\t\tD...",
-            "publication_date": "1992-02-26",
-            "slug": "159"
+            "publication_date": "1992-02-26"
         },
         {
             "id": "162",
@@ -3683,8 +3456,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de Nacional Financiera \t\t\t\t \t\t\t\tDOF 2...",
-            "publication_date": "1986-12-26",
-            "slug": "162"
+            "publication_date": "1986-12-26"
         },
         {
             "id": "loshf",
@@ -3696,8 +3468,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica de Sociedad Hipotecaria Federal \t\t\t\t ...",
-            "publication_date": "2001-10-11",
-            "slug": "loshf"
+            "publication_date": "2001-10-11"
         },
         {
             "id": "164_190719",
@@ -3709,8 +3480,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Banco del Bienestar \t\t\t\t \t\t\t\t(Ant...",
-            "publication_date": "2001-06-01",
-            "slug": "164_190719"
+            "publication_date": "2001-06-01"
         },
         {
             "id": "lobnce",
@@ -3722,8 +3492,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Banco Nacional de Comercio Exteri...",
-            "publication_date": "1986-01-20",
-            "slug": "lobnce"
+            "publication_date": "1986-01-20"
         },
         {
             "id": "lobnosp",
@@ -3735,8 +3504,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Banco Nacional de Obras y Servici...",
-            "publication_date": "1986-01-20",
-            "slug": "lobnosp"
+            "publication_date": "1986-01-20"
         },
         {
             "id": "167",
@@ -3748,8 +3516,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Banco Nacional del Ejército, Fuer...",
-            "publication_date": "1986-01-13",
-            "slug": "167"
+            "publication_date": "1986-01-13"
         },
         {
             "id": "locfcrl_060120",
@@ -3761,8 +3528,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Centro Federal de Conciliación y ...",
-            "publication_date": "2020-01-06",
-            "slug": "locfcrl_060120"
+            "publication_date": "2020-01-06"
         },
         {
             "id": "locgeum",
@@ -3774,8 +3540,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Congreso General de los Estados U...",
-            "publication_date": "1999-09-03",
-            "slug": "locgeum"
+            "publication_date": "1999-09-03"
         },
         {
             "id": "loefam",
@@ -3787,8 +3552,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Ejército y Fuerza Aérea Mexicanos...",
-            "publication_date": "1986-12-26",
-            "slug": "loefam"
+            "publication_date": "1986-12-26"
         },
         {
             "id": "170_171215",
@@ -3800,8 +3564,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Instituto Nacional de Antropologí...",
-            "publication_date": "1939-02-03",
-            "slug": "170_171215"
+            "publication_date": "1939-02-03"
         },
         {
             "id": "171",
@@ -3813,8 +3576,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Instituto Politécnico Nacional \t\t...",
-            "publication_date": "1981-12-29",
-            "slug": "171"
+            "publication_date": "1981-12-29"
         },
         {
             "id": "lopjf",
@@ -3826,8 +3588,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Poder Judicial de la Federación \t...",
-            "publication_date": "2024-12-20",
-            "slug": "lopjf"
+            "publication_date": "2024-12-20"
         },
         {
             "id": "loscm",
@@ -3839,8 +3600,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Seminario de Cultura Mexicana \t\t\t...",
-            "publication_date": "1949-12-31",
-            "slug": "loscm"
+            "publication_date": "1949-12-31"
         },
         {
             "id": "lotfja",
@@ -3852,8 +3612,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Orgánica del Tribunal Federal de Justicia Admi...",
-            "publication_date": "2016-07-18",
-            "slug": "lotfja"
+            "publication_date": "2016-07-18"
         },
         {
             "id": "176_210618",
@@ -3865,8 +3624,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Conservar la Neutralidad del País \t\t\t\t \t\t...",
-            "publication_date": "1939-11-10",
-            "slug": "176_210618"
+            "publication_date": "1939-11-10"
         },
         {
             "id": "ldvuma_301216",
@@ -3878,8 +3636,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Determinar el Valor de la Unidad de Medid...",
-            "publication_date": "2016-12-30",
-            "slug": "ldvuma_301216"
+            "publication_date": "2016-12-30"
         },
         {
             "id": "ldcmpme",
@@ -3891,8 +3648,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para el Desarrollo de la Competitividad de la ...",
-            "publication_date": "2002-12-30",
-            "slug": "ldcmpme"
+            "publication_date": "2002-12-30"
         },
         {
             "id": "177",
@@ -3904,8 +3660,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para el Diálogo, la Conciliación y la Paz Dign...",
-            "publication_date": "1995-03-11",
-            "slug": "177"
+            "publication_date": "1995-03-11"
         },
         {
             "id": "lupdecr",
@@ -3917,8 +3672,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para el uso y protección de la denominación y ...",
-            "publication_date": "2007-03-23",
-            "slug": "lupdecr"
+            "publication_date": "2007-03-23"
         },
         {
             "id": "liispcen",
@@ -3930,8 +3684,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Impulsar el Incremento Sostenido de la Pr...",
-            "publication_date": "2015-05-06",
-            "slug": "liispcen"
+            "publication_date": "2015-05-06"
         },
         {
             "id": "268",
@@ -3943,8 +3696,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para la Comprobación, Ajuste y Cómputo de Serv...",
-            "publication_date": "2004-06-14",
-            "slug": "268"
+            "publication_date": "2004-06-14"
         },
         {
             "id": "lcacsefam",
@@ -3956,8 +3708,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para la Comprobación, Ajuste y Cómputo de Serv...",
-            "publication_date": "2006-02-09",
-            "slug": "lcacsefam"
+            "publication_date": "2006-02-09"
         },
         {
             "id": "lppddhp",
@@ -3969,8 +3720,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para la Protección de Personas Defensoras de D...",
-            "publication_date": "2012-06-25",
-            "slug": "lppddhp"
+            "publication_date": "2012-06-25"
         },
         {
             "id": "ltpcpimcp",
@@ -3982,8 +3732,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para la Transparencia, Prevención y Combate de...",
-            "publication_date": "2021-06-03",
-            "slug": "ltpcpimcp"
+            "publication_date": "2021-06-03"
         },
         {
             "id": "ltosf",
@@ -3995,8 +3744,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para la Transparencia y Ordenamiento de los Se...",
-            "publication_date": "2007-06-15",
-            "slug": "ltosf"
+            "publication_date": "2007-06-15"
         },
         {
             "id": "lrascap",
@@ -4008,8 +3756,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Regular las Actividades de las Sociedades...",
-            "publication_date": "2009-08-13",
-            "slug": "lrascap"
+            "publication_date": "2009-08-13"
         },
         {
             "id": "lraf",
@@ -4021,8 +3768,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Regular las Agrupaciones Financieras \t\t\t\t...",
-            "publication_date": "2014-01-10",
-            "slug": "lraf"
+            "publication_date": "2014-01-10"
         },
         {
             "id": "lritf",
@@ -4034,8 +3780,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Regular las Instituciones de Tecnología F...",
-            "publication_date": "2018-03-09",
-            "slug": "lritf"
+            "publication_date": "2018-03-09"
         },
         {
             "id": "lrsic",
@@ -4047,8 +3792,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY para Regular las Sociedades de Información Cre...",
-            "publication_date": "2002-01-15",
-            "slug": "lrsic"
+            "publication_date": "2002-01-15"
         },
         {
             "id": "187_291214",
@@ -4060,8 +3804,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Aprueba la Adhesión de México al Convenio ...",
-            "publication_date": "1982-01-05",
-            "slug": "187_291214"
+            "publication_date": "1982-01-05"
         },
         {
             "id": "192",
@@ -4073,8 +3816,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Crea el Fondo de Garantía y Fomento para l...",
-            "publication_date": "1954-12-31",
-            "slug": "192"
+            "publication_date": "1954-12-31"
         },
         {
             "id": "193_171215",
@@ -4086,8 +3828,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que crea el Instituto Nacional de Bellas Artes...",
-            "publication_date": "1946-12-31",
-            "slug": "193_171215"
+            "publication_date": "1946-12-31"
         },
         {
             "id": "laem",
@@ -4099,8 +3840,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que crea la Agencia Espacial Mexicana \t\t\t\t \t\t\t...",
-            "publication_date": "2010-07-30",
-            "slug": "laem"
+            "publication_date": "2010-07-30"
         },
         {
             "id": "195",
@@ -4112,8 +3852,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que crea la Universidad Autónoma Chapingo \t\t\t\t...",
-            "publication_date": "1974-12-30",
-            "slug": "195"
+            "publication_date": "1974-12-30"
         },
         {
             "id": "196",
@@ -4125,8 +3864,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Crea la Universidad del Ejército y Fuerza ...",
-            "publication_date": "1975-12-29",
-            "slug": "196"
+            "publication_date": "1975-12-29"
         },
         {
             "id": "197",
@@ -4138,8 +3876,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Declara Reservas Mineras Nacionales los Ya...",
-            "publication_date": "1950-01-26",
-            "slug": "197"
+            "publication_date": "1950-01-26"
         },
         {
             "id": "lccaif",
@@ -4151,8 +3888,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Establece Bases para la Ejecución en Méxic...",
-            "publication_date": "1960-12-31",
-            "slug": "lccaif"
+            "publication_date": "1960-12-31"
         },
         {
             "id": "200_291214",
@@ -4164,8 +3900,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY que Establece Bases para la Ejecución en Méxic...",
-            "publication_date": "1959-12-19",
-            "slug": "200_291214"
+            "publication_date": "1959-12-19"
         },
         {
             "id": "202",
@@ -4177,8 +3912,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria de la Fracción V del Artículo 76...",
-            "publication_date": "1978-12-29",
-            "slug": "202"
+            "publication_date": "1978-12-29"
         },
         {
             "id": "lrart76_fracvi",
@@ -4190,8 +3924,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria de la fracción VI del artículo 7...",
-            "publication_date": "2007-08-31",
-            "slug": "lrart76_fracvi"
+            "publication_date": "2007-08-31"
         },
         {
             "id": "lrfxiiib_art123",
@@ -4203,8 +3936,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria de la Fracción XIII Bis del Apar...",
-            "publication_date": "1983-12-30",
-            "slug": "lrfxiiib_art123"
+            "publication_date": "1983-12-30"
         },
         {
             "id": "204",
@@ -4216,8 +3948,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria de la Fracción XVIII del Artícul...",
-            "publication_date": "1982-12-27",
-            "slug": "204"
+            "publication_date": "1982-12-27"
         },
         {
             "id": "lrfiyii_art105",
@@ -4229,8 +3960,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria de las Fracciones I y II del Art...",
-            "publication_date": "1995-05-11",
-            "slug": "lrfiyii_art105"
+            "publication_date": "1995-05-11"
         },
         {
             "id": "207",
@@ -4242,8 +3972,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria del Artículo 27 Constitucional e...",
-            "publication_date": "1985-02-04",
-            "slug": "207"
+            "publication_date": "1985-02-04"
         },
         {
             "id": "lrart3_mmce_300919",
@@ -4255,8 +3984,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria del Artículo 3o. de la Constituc...",
-            "publication_date": "2019-09-30",
-            "slug": "lrart3_mmce_300919"
+            "publication_date": "2019-09-30"
         },
         {
             "id": "208_190118",
@@ -4268,8 +3996,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria del Artículo 5o. Constitucional,...",
-            "publication_date": "1945-05-26",
-            "slug": "208_190118"
+            "publication_date": "1945-05-26"
         },
         {
             "id": "lrart6_mdr",
@@ -4281,8 +4008,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria del artículo 6o., párrafo primer...",
-            "publication_date": "2015-11-04",
-            "slug": "lrart6_mdr"
+            "publication_date": "2015-11-04"
         },
         {
             "id": "lrsf",
@@ -4294,8 +4020,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Reglamentaria del Servicio Ferroviario \t\t\t\t \t\t...",
-            "publication_date": "1995-05-12",
-            "slug": "lrsf"
+            "publication_date": "1995-05-12"
         },
         {
             "id": "23",
@@ -4307,8 +4032,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY sobre Cámaras Agrícolas, que en lo sucesivo se...",
-            "publication_date": "1932-08-27",
-            "slug": "23"
+            "publication_date": "1932-08-27"
         },
         {
             "id": "211",
@@ -4320,8 +4044,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Sobre el Contrato de Seguro \t\t\t\t \t\t\t\tDOF 31/08...",
-            "publication_date": "1935-08-31",
-            "slug": "211"
+            "publication_date": "1935-08-31"
         },
         {
             "id": "lebhn",
@@ -4333,8 +4056,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY sobre el Escudo, la Bandera y el Himno Naciona...",
-            "publication_date": "1984-02-08",
-            "slug": "lebhn"
+            "publication_date": "1984-02-08"
         },
         {
             "id": "215",
@@ -4346,8 +4068,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY sobre Elaboración y Venta de Café Tostado \t\t\t\t...",
-            "publication_date": "1972-05-25",
-            "slug": "215"
+            "publication_date": "1972-05-25"
         },
         {
             "id": "271",
@@ -4359,8 +4080,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY Sobre la Aprobación de Tratados Internacionale...",
-            "publication_date": "2004-09-02",
-            "slug": "271"
+            "publication_date": "2004-09-02"
         },
         {
             "id": "lsct",
@@ -4372,8 +4092,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY sobre la Celebración de Tratados \t\t\t\t \t\t\t\tDOF ...",
-            "publication_date": "1992-01-02",
-            "slug": "lsct"
+            "publication_date": "1992-01-02"
         },
         {
             "id": "lrpcap",
@@ -4385,8 +4104,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "LEY sobre Refugiados, Protección Complementaria y ...",
-            "publication_date": "2011-01-27",
-            "slug": "lrpcap"
+            "publication_date": "2011-01-27"
         },
         {
             "id": "218",
@@ -4397,9 +4115,7 @@
             "status": "discovered",
             "tier": "general",
             "category": "uncategorized",
-            "short_name": "ORDENANZA General de la Armada \t\t\t\t \t\t\t\tDOF 01 al ...",
-            "slug": "218",
-            "publication_date": "1900-01-01"
+            "short_name": "ORDENANZA General de la Armada \t\t\t\t \t\t\t\tDOF 01 al ..."
         },
         {
             "id": "pef_2026",
@@ -4411,8 +4127,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "PRESUPUESTO de Egresos de la Federación para el Ej...",
-            "publication_date": "2025-11-21",
-            "slug": "pef_2026"
+            "publication_date": "2025-11-21"
         },
         {
             "id": "reg_diputados",
@@ -4424,8 +4139,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "REGLAMENTO de la Cámara de Diputados \t\t\t\tDOF 24/12...",
-            "publication_date": "2010-12-24",
-            "slug": "reg_diputados"
+            "publication_date": "2010-12-24"
         },
         {
             "id": "reg_senado",
@@ -4437,8 +4151,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "REGLAMENTO del Senado de la República \t\t\t\t \t\t\t\tDOF...",
-            "publication_date": "2010-06-04",
-            "slug": "reg_senado"
+            "publication_date": "2010-06-04"
         },
         {
             "id": "219",
@@ -4450,8 +4163,7 @@
             "tier": "general",
             "category": "uncategorized",
             "short_name": "REGLAMENTO para el Gobierno Interior del Congreso ...",
-            "publication_date": "1934-03-20",
-            "slug": "219"
+            "publication_date": "1934-03-20"
         }
     ],
     "categories": {

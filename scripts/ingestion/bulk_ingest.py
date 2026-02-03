@@ -127,7 +127,7 @@ def main():
     print()
     
     for law in laws:
-        print(f"  • {law['id']:10} - {law['short_name']}")
+        print(f"  • {law['id']:10} - {law.get('short_name', law.get('name', 'Unknown'))}")
     
     print(f"\n{'='*70}")
     

@@ -60,11 +60,12 @@ class DatabaseSaver:
         # 2. Extract dates
         # Try to use publication date from metadata, or fallback to today
         pub_date_str = law_metadata.get('publication_date')
-        if pub_date_str:
+        if pub_date_str and pub_date_str != "1900-01-01":  # Skip placeholder dates
             pub_date = parse_date(pub_date_str)
         else:
-            from datetime import date
-            pub_date = date.today()
+            # Use None for unknown dates - don't create version
+            logger.warning(f"Skipping version creation for {law_metadata['id']} - missing publication date")
+            return None
             
         # 3. Create Version
         # Check if version exists to avoid duplicates
