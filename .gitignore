@@ -1,1 +1,69 @@
-node_modules
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+.hypothesis/
+
+# Production builds
+build/
+dist/
+*.egg-info/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Archives and Large Files
+archives/
+*.tar.gz
+*.tar
+*.zip
+*.7z
+*.rar
+
+# Data directories (large state law files)
+data/state_laws/**/*.doc
+data/state_laws/**/*.pdf
+data/state_laws/**/*.docx
+data/state_laws/*.tar.gz
+
+# But keep metadata JSONs
+!data/state_laws/**/*_metadata.json
+!data/state_laws/*.json
+
+# XML outputs (generated)
+data/xml/states/
+
+# Logs
+logs/
+*.log
+nohup.out

@@ -1,37 +1,45 @@
-import TaxForm from "../components/TaxForm";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Hero } from '@/components/Hero';
+import { JurisdictionCards } from '@/components/JurisdictionCards';
+import { PopularLaws } from '@/components/PopularLaws';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-crimson-50 flex flex-col items-center justify-center p-4">
-      <div className="text-center mb-8">
-        <h1 className="text-5xl font-bold text-stone-900 tracking-tight sm:text-6xl">
-          Leyes Como Código <span className="text-crimson-600">México</span>
-        </h1>
-        <p className="mt-4 text-xl text-stone-600 max-w-2xl">
-          Un motor de reglas fiscales abierto, verificable y ejecutable.
-          <br />
-          <span className="text-forest-600 font-semibold">Legislación Federal en formato machine-readable</span>
-        </p>
+    <div className="min-h-screen bg-background">
+      <Hero />
+      <JurisdictionCards />
+      <PopularLaws />
 
-        <div className="mt-8 flex gap-4 justify-center">
-          <Button asChild size="lg" className="px-8 py-6 text-lg bg-crimson-600 hover:bg-crimson-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
-            <Link href="/laws">
-              📚 Explorar Leyes Federales
-            </Link>
-          </Button>
+      {/* Features section */}
+      <div className="border-t border-border bg-muted/30 py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-12 md:grid-cols-3">
+            <Feature
+              icon="✨"
+              title="87% Cobertura Legal"
+              description="11,667 leyes federales y estatales completamente digitalizadas" />
+            <Feature
+              icon="🔍"
+              title="Búsqueda Completa"
+              description="550,000+ artículos indexados con búsqueda de texto completo"
+            />
+            <Feature
+              icon="📊"
+              title="98.9% Precisión"
+              description="Calidad garantizada con validación automática y sistema de calificación"
+            />
+          </div>
         </div>
       </div>
-
-      <div className="w-full max-w-lg">
-        <TaxForm />
-      </div>
-
-      <footer className="mt-12 text-sm text-stone-500">
-        <p>Powered by <span className="font-semibold text-stone-700">OpenFisca</span> & <span className="font-semibold text-stone-700">Catala</span></p>
-      </footer>
-    </main>
+    </div>
   );
 }
 
+function Feature({ icon, title, description }: { icon: string; title: string; description: string }) {
+  return (
+    <div className="text-center">
+      <div className="mb-4 text-5xl">{icon}</div>
+      <h3 className="font-display text-xl font-bold text-foreground mb-3">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
+    </div>
+  );
+}

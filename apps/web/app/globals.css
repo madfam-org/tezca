@@ -4,201 +4,280 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Mexican-Inspired Color Palette */
-  --color-crimson-50: #FEF2F2;
-  --color-crimson-100: #FEE2E2;
-  --color-crimson-500: #EF4444;
-  --color-crimson-600: #DC2626;
-  --color-crimson-700: #B91C1C;
-  --color-crimson-900: #7F1D1D;
-  
-  --color-forest-50: #F0FDF4;
-  --color-forest-100: #DCFCE7;
-  --color-forest-500: #22C55E;
-  --color-forest-600: #16A34A;
-  --color-forest-700: #15803D;
-  --color-forest-900: #14532D;
-  
-  --color-gold-50: #FFFBEB;
-  --color-gold-100: #FEF3C7;
-  --color-gold-400: #FBBF24;
-  --color-gold-500: #F59E0B;
-  --color-gold-600: #D97706;
-  
-  /* Warm Neutral Palette */
-  --color-stone-50: #FAFAF9;
-  --color-stone-100: #F5F5F4;
-  --color-stone-200: #E7E5E4;
-  --color-stone-300: #D6D3D1;
-  --color-stone-400: #A8A29E;
-  --color-stone-500: #78716C;
-  --color-stone-700: #44403C;
-  --color-stone-800: #292524;
-  --color-stone-900: #1C1917;
-  
-  /* Semantic Mappings */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-destructive: var(--destructive);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  
-  /* Typography - Font Families */
-  --font-heading: var(--font-inter);
-  --font-body: var(--font-source-serif);
-  --font-ui: var(--font-inter);
-  --font-mono: var(--font-jetbrains);
-  
-  /* Border Radius */
-  --radius-sm: 0.25rem;
+  /* ==========================================
+     LEYES COMO CÓDIGO - VIBRANT COLOR SYSTEM
+     ========================================== */
+
+  /* PRIMARY - Deep Blue (Modern, Professional) */
+  --color-primary-50: oklch(97% 0.01 250);
+  --color-primary-100: oklch(95% 0.02 250);
+  --color-primary-200: oklch(88% 0.05 250);
+  --color-primary-300: oklch(78% 0.10 250);
+  --color-primary-400: oklch(68% 0.15 250);
+  --color-primary-500: oklch(58% 0.18 250);
+  /* Main brand color */
+  --color-primary-600: oklch(50% 0.16 250);
+  --color-primary-700: oklch(42% 0.14 250);
+  --color-primary-800: oklch(32% 0.10 250);
+  --color-primary-900: oklch(22% 0.06 250);
+
+  /* SECONDARY - Vibrant Purple (Accent) */
+  --color-secondary-50: oklch(97% 0.01 300);
+  --color-secondary-100: oklch(95% 0.03 300);
+  --color-secondary-200: oklch(88% 0.08 300);
+  --color-secondary-300: oklch(78% 0.13 300);
+  --color-secondary-400: oklch(68% 0.17 300);
+  --color-secondary-500: oklch(60% 0.20 300);
+  /* Accent color */
+  --color-secondary-600: oklch(52% 0.18 300);
+  --color-secondary-700: oklch(44% 0.15 300);
+  --color-secondary-800: oklch(34% 0.11 300);
+  --color-secondary-900: oklch(24% 0.07 300);
+
+  /* ACCENT - Pink/Magenta (Highlights) */
+  --color-accent-50: oklch(97% 0.01 340);
+  --color-accent-100: oklch(95% 0.04 340);
+  --color-accent-200: oklch(88% 0.09 340);
+  --color-accent-300: oklch(78% 0.14 340);
+  --color-accent-400: oklch(68% 0.18 340);
+  --color-accent-500: oklch(60% 0.21 340);
+  --color-accent-600: oklch(52% 0.19 340);
+  --color-accent-700: oklch(44% 0.16 340);
+  --color-accent-800: oklch(34% 0.12 340);
+  --color-accent-900: oklch(24% 0.08 340);
+
+  /* GRADE COLORS - For Law Quality Badges */
+  --color-grade-a: oklch(65% 0.18 150);
+  /* Emerald green */
+  --color-grade-b: oklch(65% 0.14 180);
+  /* Teal */
+  --color-grade-c: oklch(75% 0.16 80);
+  /* Gold/Yellow */
+  --color-grade-d: oklch(68% 0.18 50);
+  /* Orange */
+  --color-grade-f: oklch(62% 0.20 25);
+  /* Red-orange */
+
+  /* SUCCESS - Emerald (Positive actions) */
+  --color-success-50: oklch(97% 0.01 150);
+  --color-success-500: oklch(65% 0.18 150);
+  --color-success-700: oklch(48% 0.14 150);
+
+  /* WARNING - Amber (Caution) */
+  --color-warning-50: oklch(97% 0.01 80);
+  --color-warning-500: oklch(75% 0.16 80);
+  --color-warning-700: oklch(58% 0.13 80);
+
+  /* ERROR - Red (Alerts) */
+  --color-error-50: oklch(97% 0.01 25);
+  --color-error-500: oklch(62% 0.20 25);
+  --color-error-700: oklch(48% 0.17 25);
+
+  /* NEUTRAL - Gray (Text & Backgrounds) */
+  --color-neutral-50: oklch(98% 0.00 250);
+  --color-neutral-100: oklch(96% 0.00 250);
+  --color-neutral-200: oklch(90% 0.00 250);
+  --color-neutral-300: oklch(82% 0.00 250);
+  --color-neutral-400: oklch(68% 0.00 250);
+  --color-neutral-500: oklch(54% 0.00 250);
+  --color-neutral-600: oklch(44% 0.00 250);
+  --color-neutral-700: oklch(36% 0.00 250);
+  --color-neutral-800: oklch(26% 0.00 250);
+  --color-neutral-900: oklch(16% 0.00 250);
+  --color-neutral-950: oklch(10% 0.00 250);
+
+  /* SEMANTIC TOKENS (Light Mode) */
+  --color-background: var(--color-neutral-50);
+  --color-foreground: var(--color-neutral-900);
+  --color-card: var(--color-neutral-0, white);
+  --color-card-foreground: var(--color-neutral-900);
+  --color-popover: var(--color-neutral-0, white);
+  --color-popover-foreground: var(--color-neutral-900);
+  --color-muted: var(--color-neutral-100);
+  --color-muted-foreground: var(--color-neutral-600);
+  --color-border: var(--color-neutral-200);
+  --color-input: var(--color-neutral-200);
+  --color-ring: var(--color-primary-500);
+
+  /* TYPOGRAPHY */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Outfit", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* RADIUS */
+  --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-full: 9999px;
-  
-  /* Shadows */
+
+  /* SHADOWS */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  
-  /* Chart colors (keeping for compatibility) */
-  --color-chart-1: oklch(0.646 0.222 41.116);
-  --color-chart-2: oklch(0.6 0.118 184.704);
-  --color-chart-3: oklch(0.398 0.07 227.392);
-  --color-chart-4: oklch(0.828 0.189 84.429);
-  --color-chart-5: oklch(0.769 0.188 70.08);
 }
 
-:root {
-  /* Light Mode Theme */
-  --background: #FAFAF9;  /* stone-50 */
-  --foreground: #1C1917;  /* stone-900 */
-  
-  --card: #FFFFFF;
-  --card-foreground: #1C1917;
-  
-  --popover: #FFFFFF;
-  --popover-foreground: #1C1917;
-  
-  --primary: #DC2626;  /* crimson-600 */
-  --primary-foreground: #FFFFFF;
-  
-  --secondary: #16A34A;  /* forest-600 */
-  --secondary-foreground: #FFFFFF;
-  
-  --accent: #F59E0B;  /* gold-500 */
-  --accent-foreground: #1C1917;
-  
-  --muted: #F5F5F4;  /* stone-100 */
-  --muted-foreground: #78716C;  /* stone-500 */
-  
-  --destructive: #DC2626;  /* crimson-600 */
-  
-  --border: #E7E5E4;  /* stone-200 */
-  --input: #E7E5E4;  /* stone-200 */
-  --ring: #DC2626;  /* crimson-600 */
-}
-
+/* DARK MODE OVERRIDES */
 .dark {
-  /* Dark Mode Theme */
-  --background: #0A0A0A;
-  --foreground: #F5F5F4;  /* stone-50 */
-  
-  --card: #171717;
-  --card-foreground: #F5F5F4;
-  
-  --popover: #171717;
-  --popover-foreground: #F5F5F4;
-  
-  --primary: #F87171;  /* lighter crimson for dark mode */
-  --primary-foreground: #0A0A0A;
-  
-  --secondary: #4ADE80;  /* lighter forest for dark mode */
-  --secondary-foreground: #0A0A0A;
-  
-  --accent: #FCD34D;  /* lighter gold for dark mode */
-  --accent-foreground: #0A0A0A;
-  
-  --muted: #262626;
-  --muted-foreground: #A8A29E;  /* stone-400 */
-  
-  --destructive: #F87171;
-  
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #F87171;
+  --color-background: var(--color-neutral-950);
+  --color-foreground: var(--color-neutral-100);
+  --color-card: var(--color-neutral-900);
+  --color-card-foreground: var(--color-neutral-100);
+  --color-popover: var(--color-neutral-900);
+  --color-popover-foreground: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-800);
+  --color-muted-foreground: var(--color-neutral-400);
+  --color-border: var(--color-neutral-800);
+  --color-input: var(--color-neutral-800);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+/* ==========================================
+   GLOBAL STYLES
+   ========================================== */
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-family: var(--font-sans);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+/* SMOOTH SCROLLING */
+html {
+  scroll-behavior: smooth;
+}
+
+/* FOCUS VISIBLE (Accessibility) */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-ring;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  body {
-    @apply bg-background text-foreground font-ui;
-    font-feature-settings: "kern" 1, "liga" 1;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold tracking-tight;
-  }
-  
-  h1 {
-    @apply text-4xl lg:text-5xl;
-  }
-  
-  h2 {
-    @apply text-3xl lg:text-4xl;
-  }
-  
-  h3 {
-    @apply text-2xl lg:text-3xl;
-  }
-  
-  h4 {
-    @apply text-xl lg:text-2xl;
-  }
-  
-  h5 {
-    @apply text-lg lg:text-xl;
-  }
-  
-  /* Improved focus states */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-  }
-  
-  /* Smooth transitions */
-  * {
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+
+  to {
+    opacity: 1;
   }
 }
 
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.25s ease-out;
+}
+
+/* GRADIENT BACKGROUNDS */
+.bg-gradient-radial {
+  background: radial-gradient(circle at 50% 50%, var(--gradient-from), var(--gradient-to));
+}
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* GLASSMORPHISM EFFECT */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100 dark:bg-neutral-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 dark:bg-neutral-700 rounded-lg;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400 dark:bg-neutral-600;
+}
+
+/* UTILITY CLASSES */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
