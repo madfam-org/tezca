@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Database, Settings } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@leyesmx/ui";
 
 export default function Home() {
     return (

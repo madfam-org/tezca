@@ -9,25 +9,34 @@
 
 ## Quick Start
 
-# Using Docker (Recommended)
-docker-compose up -d --build
+### Prerequisites
+- Node.js 20+
+- Python 3.10+
+- Docker & Docker Compose
 
-# Manual Setup (Development)
+### Development Setup
 
-## Wrapper Script
-# We provide a unified shell for easy development (backend + frontend)
-./dev.sh
+1. **Install Dependencies (Frontend)**
+   ```bash
+   npm install
+   ```
 
-## Backend
-cd apps/api
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+2. **Start Development Servers**
+   ```bash
+   # Start Web App
+   npm run dev:web
 
-## Frontend
-cd apps/web
-npm install
-npm run dev
+   # Start Admin Console
+   npm run dev --workspace=apps/admin
+   ```
+
+3. **Backend Setup**
+   ```bash
+   cd apps/api
+   pip install -r requirements.txt
+   python manage.py migrate
+   python manage.py runserver
+   ```
 
 
 ## Coverage
@@ -43,26 +52,38 @@ npm run dev
 
 - ✅ **87% Legal Coverage** - 11,667 laws across federal and state levels
 - ✅ **98.9% Parser Accuracy** - Exceeds industry standards
+- ✅ **Dynamic Dashboard** - Real-time statistics and recent legislation feed
+- ✅ **Advanced Search** - Date range filtering, state filters, and auto-complete
+- ✅ **Law Detail 2.0** - Enhanced typography, improved ease-of-reading, and citations
 - ✅ **Quality Validation** - 5 automated checks, A-F grading
 - ✅ **Full-Text Search** - 550,000+ articles indexed in Elasticsearch
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
-- ✅ **Production Ready** - Comprehensive test suite, full documentation
+- ✅ **Production Ready** - Full-stack testing (Backend + Frontend w/ Vitest)
 
 ## Architecture
 
+### Monorepo Structure
+This project uses a monorepo architecture managed by NPM Workspaces.
+
+```text
+/
+├── packages/
+│   ├── ui/          # Shared UI Library (@leyesmx/ui) - React 19 / Shadcn
+│   ├── lib/         # Shared Utilities & Types (@leyesmx/lib)
+│   └── tsconfig/    # Shared TypeScript configurations
+├── apps/
+│   ├── web/         # Public Portal (Next.js 15)
+│   ├── admin/       # Management Console (Next.js 16)
+│   └── api/         # Backend API (Django / Python)
+└── package.json     # Workspace Root
 ```
-Law Ingestion Pipeline:
-  PDF Download → Text Extraction → XML Parsing → Quality Validation → Storage
-  
-Components:
-  - Parser V2: Enhanced Akoma Ntoso generator (98.9% accuracy)
-  - Validators: Schema + completeness checking
-  - Quality System: A-F grading with metrics
-  - Batch Processor: Parallel execution engine
-  - Monitoring: Structured logs + error tracking
-```
+
+### Components
+  - **Ingestion Pipeline**: PDF Download → Text Extraction → Parsing → Validation
+  - **Public Portal**: Citizen-facing search and traversal of laws
+  - **Admin Console**: Operator dashboard for monitoring ingestion jobs
 
 ## Documentation
 
@@ -88,11 +109,17 @@ Components:
 - ✅ Quality validation framework
 - ✅ Elasticsearch full-text search
 
-**Phase 2: State Laws** - 🔄 IN PROGRESS (4 weeks)
+**Phase 2: State Laws** - ✅ COMPLETE
 - ✅ 11,337 state laws downloaded (94% coverage)
-- 🔄 Database schema update
-- 🔄 State ingestion pipeline
+- ✅ Database schema update
+- ✅ State law processing pipeline
 - ✅ Frontend state filters
+
+**Phase 3: UI/UX Transformation** - 🔄 IN PROGRESS
+- ✅ Dynamic Homepage Dashboard
+- ✅ Law Detail Page 2.0
+- ✅ Advanced Search Filters (Date Range)
+- 🔄 Comparison Tool
 
 **Phase 3: Municipal Laws** - 📋 PLANNED (Q2 2026)
 - 📋 Tier 1: 10 largest cities

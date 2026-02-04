@@ -2,8 +2,7 @@
 
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input, Button } from "@leyesmx/ui";
 
 export function Hero() {
     const [searchQuery, setSearchQuery] = useState('');

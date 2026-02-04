@@ -34,7 +34,7 @@ export function DashboardStatsGrid() {
     return (
         <div className="space-y-8">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                     label="Total de Leyes"
                     value={stats.total_laws.toLocaleString()}

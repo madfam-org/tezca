@@ -62,3 +62,15 @@ export interface DashboardStats {
         category: string;
     }[];
 }
+
+export interface LawArticle {
+    article_id: string;
+    text: string;
+}
+
+export interface LawArticleResponse {
+    law_id: string;
+    law_name: string;
+    total: number;
+    articles: LawArticle[];
+}

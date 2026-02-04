@@ -1,4 +1,4 @@
-import type { Law, LawListItem, SearchResponse } from './types';
+import type { Law, LawListItem, SearchResponse, DashboardStats, LawArticleResponse } from "@leyesmx/lib";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -62,8 +62,8 @@ export const api = {
     /**
      * Get global dashboard statistics
      */
-    getStats: async (): Promise<import('./types').DashboardStats> => {
-        return fetcher<import('./types').DashboardStats>('/stats/');
+    getStats: async (): Promise<DashboardStats> => {
+        return fetcher<DashboardStats>('/stats/');
     },
 
     /**
@@ -112,6 +112,13 @@ export const api = {
 
         return fetcher<SearchResponse>(`/search/?${params}`);
     },
+    /**
+     * Get full text (articles) of a law
+     */
+    getLawArticles: async (lawId: string): Promise<LawArticleResponse> => {
+        return fetcher<LawArticleResponse>(`/laws/${lawId}/articles/`);
+    },
+
 };
 
 export { APIError };

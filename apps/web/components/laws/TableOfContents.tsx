@@ -1,6 +1,6 @@
 import type { Article } from './types';
 import { ScrollText, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from "@leyesmx/lib";
 
 interface TableOfContentsProps {
     articles: Article[];

@@ -4,14 +4,11 @@ import { useState, useEffect } from 'react';
 import { Search as SearchIcon, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input, Button, Card, CardContent, Badge } from "@leyesmx/ui";
 import { SearchFilters, type SearchFilterState } from '@/components/SearchFilters';
 import { Pagination } from '@/components/Pagination';
 import { api } from '@/lib/api';
-import type { SearchResult } from '@/lib/types';
+import type { SearchResult } from "@leyesmx/lib";
 
 const DEFAULT_FILTERS: SearchFilterState = {
     jurisdiction: ['federal'],

@@ -4,15 +4,20 @@ from rest_framework.test import APIClient
 from apps.api.models import Law, LawVersion
 from datetime import date
 from unittest.mock import patch, MagicMock
+import uuid
 
 @pytest.mark.django_db
 class TestLawApi:
     def setup_method(self):
         self.client = APIClient()
         
+        # Create unique IDs for isolation
+        self.fed_id = f"federal_law_{uuid.uuid4().hex[:8]}"
+        self.state_id = f"colima_civil_{uuid.uuid4().hex[:8]}"
+
         # Create test laws
         self.law_federal = Law.objects.create(
-            official_id='federal_law',
+            official_id=self.fed_id,
             name='Ley Federal',
             tier='federal',
             category='ley'
@@ -24,7 +29,7 @@ class TestLawApi:
         )
 
         self.law_state = Law.objects.create(
-            official_id='colima_codigo_civil',
+            official_id=self.state_id,
             name='Código Civil de Colima',
             tier='state',
             category='codigo'
@@ -36,7 +41,7 @@ class TestLawApi:
         response = self.client.get(url)
         
         assert response.status_code == 200
-        assert response.data['id'] == 'federal_law'
+        assert response.data['id'] == self.fed_id
         assert response.data['versions'][0]['dof_url'] == 'http://dof.gob.mx/nota_detalle.php?codigo=123'
     
     def test_law_detail_not_found(self):

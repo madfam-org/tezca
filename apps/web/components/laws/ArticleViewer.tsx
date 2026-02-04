@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Article } from './types';
+import type { Article } from "@leyesmx/lib";
 import { Link as LinkIcon, Check } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Card } from "@leyesmx/ui";
+import { cn } from "@leyesmx/lib";
 import { useInView } from 'react-intersection-observer';
 
 interface ArticleViewerProps {

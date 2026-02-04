@@ -4,7 +4,8 @@
     "private": true,
     "description": "Monorepo root for Leyes Como Código México",
     "workspaces": [
-        "apps/*"
+        "apps/*",
+        "packages/*"
     ],
     "scripts": {
         "dev:web": "npm run dev --workspace=web",
