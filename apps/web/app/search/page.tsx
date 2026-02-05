@@ -14,6 +14,7 @@ const DEFAULT_FILTERS: SearchFilterState = {
     jurisdiction: ['federal'],
     category: null,
     state: null,
+    municipality: null,
     status: 'all',
     sort: 'relevance',
     title: '',
@@ -37,6 +38,7 @@ function SearchContent() {
         jurisdiction: searchParams?.get('jurisdiction')?.split(',') || DEFAULT_FILTERS.jurisdiction,
         category: searchParams?.get('category') || DEFAULT_FILTERS.category,
         state: searchParams?.get('state') || DEFAULT_FILTERS.state,
+        municipality: searchParams?.get('municipality') || DEFAULT_FILTERS.municipality,
         status: searchParams?.get('status') || DEFAULT_FILTERS.status,
         sort: searchParams?.get('sort') || DEFAULT_FILTERS.sort,
         date_range: searchParams?.get('date_range') || DEFAULT_FILTERS.date_range,
@@ -77,6 +79,7 @@ function SearchContent() {
                 jurisdiction: searchFilters.jurisdiction,
                 category: searchFilters.category,
                 state: searchFilters.state,
+                municipality: searchFilters.municipality,
                 status: searchFilters.status,
                 sort: searchFilters.sort,
                 date_range: searchFilters.date_range,
@@ -268,6 +271,11 @@ function SearchContent() {
                                                                 <Badge variant="secondary" className="font-mono text-[10px] sm:text-xs truncate max-w-[200px] sm:max-w-[300px]">
                                                                     {result.law_name}
                                                                 </Badge>
+                                                                {result.municipality && (
+                                                                    <Badge variant="outline" className="text-[10px] sm:text-xs">
+                                                                        📍 {result.municipality}
+                                                                    </Badge>
+                                                                )}
                                                                 {result.article && (
                                                                     <span className="text-xs sm:text-sm text-muted-foreground font-medium">
                                                                         {result.article}

@@ -9,6 +9,7 @@ export interface SearchFilterState {
     jurisdiction: string[];
     category: string | null;
     state: string | null;
+    municipality: string | null;
     status: string;
     sort: string;
     date_range?: string;
@@ -25,7 +26,17 @@ interface SearchFiltersProps {
 const JURISDICTIONS = [
     { id: 'federal', name: 'Federal', icon: '🏛️' },
     { id: 'state', name: 'Estatal', icon: '🏢' },
-    { id: 'municipal', name: 'Municipal', icon: '🏘️', disabled: true },
+    { id: 'municipal', name: 'Municipal', icon: '🏘️' },
+];
+
+const MUNICIPALITIES = [
+    { value: 'all', label: 'Todos los municipios' },
+    { value: 'cdmx', label: 'Ciudad de México' },
+    { value: 'guadalajara', label: 'Guadalajara' },
+    { value: 'monterrey', label: 'Monterrey' },
+    { value: 'puebla', label: 'Puebla' },
+    { value: 'tijuana', label: 'Tijuana' },
+    { value: 'leon', label: 'León' },
 ];
 
 const CATEGORIES = [
@@ -97,6 +108,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
             jurisdiction: ['federal'], // Default to federal
             category: null,
             state: null,
+            municipality: null,
             status: 'all',
             sort: 'relevance',
             title: '',
@@ -109,6 +121,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
         if (filters.jurisdiction.length !== 1 || !filters.jurisdiction.includes('federal')) count++;
         if (filters.category && filters.category !== 'all') count++;
         if (filters.state && filters.state !== 'all') count++;
+        if (filters.municipality && filters.municipality !== 'all') count++;
         if (filters.status !== 'all') count++;
         if (filters.sort !== 'relevance') count++;
         if (filters.title) count++;
@@ -118,6 +131,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
 
     const activeCount = activeFilterCount();
     const showStateSelector = filters.jurisdiction.includes('state');
+    const showMunicipalitySelector = filters.jurisdiction.includes('municipal');
 
     return (
         <Card className="mb-6">
@@ -197,6 +211,32 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                                 {states.map((state) => (
                                     <SelectItem key={state} value={state}>
                                         {state}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
+
+                {/* Municipality Selector - Conditional */}
+                {showMunicipalitySelector && (
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                        <Label htmlFor="municipality" className="mb-2 block text-sm font-medium">
+                            Municipio
+                        </Label>
+                        <Select
+                            value={filters.municipality || 'all'}
+                            onValueChange={(value: string) =>
+                                onFiltersChange({ ...filters, municipality: value === 'all' ? null : value })
+                            }
+                        >
+                            <SelectTrigger id="municipality">
+                                <SelectValue placeholder="Todos los municipios" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {MUNICIPALITIES.map((muni) => (
+                                    <SelectItem key={muni.value} value={muni.value}>
+                                        {muni.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

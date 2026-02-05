@@ -75,6 +75,7 @@ export const api = {
             jurisdiction?: string[];
             category?: string | null;
             state?: string | null;
+            municipality?: string | null;
             status?: string;
             sort?: string;
             date_range?: string;
@@ -95,6 +96,9 @@ export const api = {
         }
         if (options?.state && options.state !== 'all') {
             params.append('state', options.state);
+        }
+        if (options?.municipality && options.municipality !== 'all') {
+            params.append('municipality', options.municipality);
         }
         if (options?.status && options.status !== 'all') {
             params.append('status', options.status);
