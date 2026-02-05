@@ -3,38 +3,70 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ==========================================
+   ROOT VARIABLES - Can be overridden by .dark
+   ========================================== */
+
+:root {
+  /* Light Mode Semantic Colors */
+  --background: 98% 0.00 250;
+  --foreground: 16% 0.00 250;
+  --card: 100% 0.00 250;
+  --card-foreground: 16% 0.00 250;
+  --popover: 100% 0.00 250;
+  --popover-foreground: 16% 0.00 250;
+  --muted: 96% 0.00 250;
+  --muted-foreground: 44% 0.00 250;
+  --border: 90% 0.00 250;
+  --input: 90% 0.00 250;
+  --ring: 58% 0.18 250;
+}
+
+.dark {
+  /* Dark Mode Semantic Colors */
+  --background: 10% 0.00 250;
+  --foreground: 96% 0.00 250;
+  --card: 16% 0.00 250;
+  --card-foreground: 96% 0.00 250;
+  --popover: 16% 0.00 250;
+  --popover-foreground: 96% 0.00 250;
+  --muted: 22% 0.00 250;
+  --muted-foreground: 68% 0.00 250;
+  --border: 26% 0.00 250;
+  --input: 26% 0.00 250;
+  --ring: 68% 0.15 250;
+}
+
 @theme inline {
   /* ==========================================
-     LEYES COMO CÓDIGO - VIBRANT COLOR SYSTEM
+     LEYES COMO CÓDIGO - COLOR SYSTEM
      ========================================== */
 
-  /* PRIMARY - Deep Blue (Modern, Professional) */
+  /* PRIMARY - Deep Blue */
   --color-primary-50: oklch(97% 0.01 250);
   --color-primary-100: oklch(95% 0.02 250);
   --color-primary-200: oklch(88% 0.05 250);
   --color-primary-300: oklch(78% 0.10 250);
   --color-primary-400: oklch(68% 0.15 250);
   --color-primary-500: oklch(58% 0.18 250);
-  /* Main brand color */
   --color-primary-600: oklch(50% 0.16 250);
   --color-primary-700: oklch(42% 0.14 250);
   --color-primary-800: oklch(32% 0.10 250);
   --color-primary-900: oklch(22% 0.06 250);
 
-  /* SECONDARY - Vibrant Purple (Accent) */
+  /* SECONDARY - Vibrant Purple */
   --color-secondary-50: oklch(97% 0.01 300);
   --color-secondary-100: oklch(95% 0.03 300);
   --color-secondary-200: oklch(88% 0.08 300);
   --color-secondary-300: oklch(78% 0.13 300);
   --color-secondary-400: oklch(68% 0.17 300);
   --color-secondary-500: oklch(60% 0.20 300);
-  /* Accent color */
   --color-secondary-600: oklch(52% 0.18 300);
   --color-secondary-700: oklch(44% 0.15 300);
   --color-secondary-800: oklch(34% 0.11 300);
   --color-secondary-900: oklch(24% 0.07 300);
 
-  /* ACCENT - Pink/Magenta (Highlights) */
+  /* ACCENT - Pink/Magenta */
   --color-accent-50: oklch(97% 0.01 340);
   --color-accent-100: oklch(95% 0.04 340);
   --color-accent-200: oklch(88% 0.09 340);
@@ -46,34 +78,29 @@
   --color-accent-800: oklch(34% 0.12 340);
   --color-accent-900: oklch(24% 0.08 340);
 
-  /* GRADE COLORS - For Law Quality Badges */
+  /* GRADE COLORS */
   --color-grade-a: oklch(65% 0.18 150);
-  /* Emerald green */
   --color-grade-b: oklch(65% 0.14 180);
-  /* Teal */
   --color-grade-c: oklch(75% 0.16 80);
-  /* Gold/Yellow */
   --color-grade-d: oklch(68% 0.18 50);
-  /* Orange */
   --color-grade-f: oklch(62% 0.20 25);
-  /* Red-orange */
 
-  /* SUCCESS - Emerald (Positive actions) */
+  /* SUCCESS */
   --color-success-50: oklch(97% 0.01 150);
   --color-success-500: oklch(65% 0.18 150);
   --color-success-700: oklch(48% 0.14 150);
 
-  /* WARNING - Amber (Caution) */
+  /* WARNING */
   --color-warning-50: oklch(97% 0.01 80);
   --color-warning-500: oklch(75% 0.16 80);
   --color-warning-700: oklch(58% 0.13 80);
 
-  /* ERROR - Red (Alerts) */
+  /* ERROR */
   --color-error-50: oklch(97% 0.01 25);
   --color-error-500: oklch(62% 0.20 25);
   --color-error-700: oklch(48% 0.17 25);
 
-  /* NEUTRAL - Gray (Text & Backgrounds) */
+  /* NEUTRAL */
   --color-neutral-50: oklch(98% 0.00 250);
   --color-neutral-100: oklch(96% 0.00 250);
   --color-neutral-200: oklch(90% 0.00 250);
@@ -86,18 +113,18 @@
   --color-neutral-900: oklch(16% 0.00 250);
   --color-neutral-950: oklch(10% 0.00 250);
 
-  /* SEMANTIC TOKENS (Light Mode) */
-  --color-background: var(--color-neutral-50);
-  --color-foreground: var(--color-neutral-900);
-  --color-card: var(--color-neutral-0, white);
-  --color-card-foreground: var(--color-neutral-900);
-  --color-popover: var(--color-neutral-0, white);
-  --color-popover-foreground: var(--color-neutral-900);
-  --color-muted: var(--color-neutral-100);
-  --color-muted-foreground: var(--color-neutral-600);
-  --color-border: var(--color-neutral-200);
-  --color-input: var(--color-neutral-200);
-  --color-ring: var(--color-primary-500);
+  /* SEMANTIC TOKENS - Reference :root variables for dark mode support */
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
 
   /* TYPOGRAPHY */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -115,20 +142,6 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-/* DARK MODE OVERRIDES */
-.dark {
-  --color-background: var(--color-neutral-950);
-  --color-foreground: var(--color-neutral-100);
-  --color-card: var(--color-neutral-900);
-  --color-card-foreground: var(--color-neutral-100);
-  --color-popover: var(--color-neutral-900);
-  --color-popover-foreground: var(--color-neutral-100);
-  --color-muted: var(--color-neutral-800);
-  --color-muted-foreground: var(--color-neutral-400);
-  --color-border: var(--color-neutral-800);
-  --color-input: var(--color-neutral-800);
 }
 
 /* ==========================================
@@ -160,7 +173,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* FOCUS VISIBLE (Accessibility) */
+/* FOCUS VISIBLE */
 *:focus-visible {
   @apply outline-2 outline-offset-2 outline-ring;
 }
@@ -240,7 +253,7 @@ html {
   background-size: 40px 40px;
 }
 
-/* GLASSMORPHISM EFFECT */
+/* GLASSMORPHISM */
 .glass {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
