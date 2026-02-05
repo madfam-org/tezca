@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -25,6 +25,16 @@ export const metadata: Metadata = {
   title: "Leyes Como Código México",
   description: "Legislación Federal Mexicana en formato Akoma Ntoso. Acceso profesional a 50+ leyes federales con búsqueda avanzada y referencias cruzadas.",
   keywords: ["leyes mexicanas", "código civil", "Akoma Ntoso", "legislación", "México"],
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#3b82f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e40af" }
+  ],
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -49,7 +59,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ComparisonProvider>
-            <div className="absolute top-4 right-4 z-50">
+            <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50">
               <ModeToggle />
             </div>
             {children}
