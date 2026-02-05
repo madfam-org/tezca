@@ -13,16 +13,18 @@ from .config import get_config, list_municipalities, MUNICIPALITY_CONFIGS
 from .cdmx import CDMXScraper
 from .guadalajara import GuadalajaraScraper
 from .monterrey import MonterreyScraper
+from .puebla import PueblaScraper
+from .tijuana import TijuanaScraper
+from .leon import LeonScraper
 
 # Registry mapping municipality IDs to scraper classes
 SCRAPERS: Dict[str, Type[MunicipalScraper]] = {
     'cdmx': CDMXScraper,
     'guadalajara': GuadalajaraScraper,
     'monterrey': MonterreyScraper,
-    # More scrapers will be added here:
-    # 'puebla': PueblaScraper,
-    # 'tijuana': TijuanaScraper,
-    # 'leon': LeonScraper,
+    'puebla': PueblaScraper,
+    'tijuana': TijuanaScraper,
+    'leon': LeonScraper,
 }
 
 
