@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .admin_views import health_check, job_status, list_jobs, system_config, system_metrics
+from .admin_views import (
+    health_check,
+    job_status,
+    list_jobs,
+    system_config,
+    system_metrics,
+)
 from .cross_reference_views import article_cross_references, law_cross_references
 from .law_views import (
     LawDetailView,
