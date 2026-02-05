@@ -44,6 +44,10 @@ __pycache__/
 *$py.class
 *.so
 .Python
+venv/
+venv.old/
+env/
+ENV/
 
 # Archives and Large Files
 archives/
