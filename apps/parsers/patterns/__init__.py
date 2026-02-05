@@ -1,9 +1,6 @@
 """Pattern library package for Mexican legal document parsing."""
 
-from .articles import (
-    compile_article_patterns,
-    is_derogated,
-)
+from .articles import compile_article_patterns, is_derogated
 from .metadata import (
     extract_cross_references,
     extract_effective_date,

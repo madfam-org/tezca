@@ -33,6 +33,9 @@ pytest-django = "^4.7"
 black = "^24.1"
 isort = "^5.13"
 
+[tool.isort]
+profile = "black"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
