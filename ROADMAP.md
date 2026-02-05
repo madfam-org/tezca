@@ -260,10 +260,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Documentation
 
-- **[Strategic Overview](docs/strategic_overview.md)**: Comprehensive vision and architecture
-- **[State Laws Roadmap](docs/state_laws_roadmap.md)**: 4-week state processing plan
-- **[Ingestion Fixes](docs/INGESTION_FIXES.md)**: Pipeline improvements
-- **[OJN Strategy](docs/OJN_SCRAPING_STRATEGY.md)**: State law scraping guide
+- **[Strategic Overview](docs/strategy/STRATEGIC_OVERVIEW.md)**: Comprehensive vision and architecture
+- **[State Laws Report](docs/research/STATE_LAW_SCRAPING_REPORT.md)**: 4-week state processing plan
+- **[Ingestion Fixes](docs/research/INGESTION_FIXES.md)**: Pipeline improvements
+- **[OJN Strategy](docs/research/OJN_SCRAPING_STRATEGY.md)**: State law scraping guide
 
 ---
 
