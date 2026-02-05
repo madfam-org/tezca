@@ -4,10 +4,10 @@ Celery tasks for background processing.
 
 import json
 import subprocess
-from datetime import datetime
 from pathlib import Path
 
 from celery import shared_task
+from django.utils import timezone
 
 BASE_DIR = Path(__file__).parent.parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -66,7 +66,7 @@ def run_ingestion(self, params=None):
             "status": "running",
             "message": "Starting ingestion...",
             "progress": 0,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": timezone.now().isoformat(),
             "params": params,
             "task_id": self.request.id,
         }
@@ -75,7 +75,7 @@ def run_ingestion(self, params=None):
     try:
         with open(LOG_FILE, "a") as log:
             log.write(
-                f"\n\n--- Ingestion started at {datetime.now().isoformat()} ---\n"
+                f"\n\n--- Ingestion started at {timezone.now().isoformat()} ---\n"
             )
             log.write(f"Command: {' '.join(cmd)}\n")
             log.write(f"Celery task ID: {self.request.id}\n")
@@ -96,7 +96,7 @@ def run_ingestion(self, params=None):
                         {
                             "status": "running",
                             "message": line.strip(),
-                            "timestamp": datetime.now().isoformat(),
+                            "timestamp": timezone.now().isoformat(),
                             "task_id": self.request.id,
                         }
                     )
@@ -105,7 +105,7 @@ def run_ingestion(self, params=None):
 
         # Completion status
         status_data = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": timezone.now().isoformat(),
             "task_id": self.request.id,
         }
 
@@ -130,7 +130,7 @@ def run_ingestion(self, params=None):
         error_status = {
             "status": "error",
             "message": f"Execution error: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": timezone.now().isoformat(),
             "task_id": self.request.id,
         }
         _write_status(error_status)

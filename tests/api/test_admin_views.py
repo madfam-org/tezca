@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.urls import reverse
@@ -83,3 +83,75 @@ class TestAdminViews:
         assert "jobs" in data
         assert len(data["jobs"]) == 1
         assert data["jobs"][0]["status"] == "idle"
+
+    @patch("elasticsearch.Elasticsearch")
+    @patch("apps.api.admin_views.connection")
+    def test_system_config(self, mock_connection, mock_es_class):
+        """Test GET /admin/config/ returns all config sections."""
+        # Mock database connection check
+        mock_connection.ensure_connection.return_value = None
+
+        # Mock Elasticsearch ping success (imported locally inside system_config)
+        mock_es = mock_es_class.return_value
+        mock_es.ping.return_value = True
+
+        url = reverse("admin-config")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Verify all four top-level sections exist
+        assert "environment" in data
+        assert "database" in data
+        assert "elasticsearch" in data
+        assert "data" in data
+
+        # Verify environment section structure
+        assert "debug" in data["environment"]
+        assert "allowed_hosts" in data["environment"]
+        assert "language" in data["environment"]
+        assert "timezone" in data["environment"]
+
+        # Verify database section
+        assert "engine" in data["database"]
+        assert data["database"]["status"] == "connected"
+        assert "name" in data["database"]
+
+        # Verify elasticsearch section
+        assert data["elasticsearch"]["status"] == "connected"
+        assert "host" in data["elasticsearch"]
+
+        # Verify data section
+        assert data["data"]["total_laws"] == 3
+        assert data["data"]["total_versions"] == 0
+        assert data["data"]["latest_publication"] is None
+
+        # Verify mocks were called
+        mock_connection.ensure_connection.assert_called_once()
+        mock_es_class.assert_called_once()
+        mock_es.ping.assert_called_once()
+
+    @patch("elasticsearch.Elasticsearch")
+    @patch("apps.api.admin_views.connection")
+    def test_system_config_es_unavailable(self, mock_connection, mock_es_class):
+        """Test /admin/config/ when Elasticsearch raises an exception."""
+        # Mock database connection check (succeeds)
+        mock_connection.ensure_connection.return_value = None
+
+        # Mock Elasticsearch to raise an exception on instantiation (imported locally)
+        mock_es_class.side_effect = Exception("Connection refused")
+
+        url = reverse("admin-config")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # ES should report unavailable when an exception is raised
+        assert data["elasticsearch"]["status"] == "unavailable"
+
+        # Other sections should still be present and correct
+        assert data["database"]["status"] == "connected"
+        assert "environment" in data
+        assert "data" in data

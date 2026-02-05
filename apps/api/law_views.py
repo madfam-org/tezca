@@ -1,3 +1,4 @@
+import os
 import re
 
 from django.shortcuts import get_object_or_404
@@ -30,7 +31,7 @@ def _natural_sort_key(text: str):
 
 
 # Elasticsearch config
-ES_HOST = "http://elasticsearch:9200"
+ES_HOST = os.getenv("ES_HOST", "http://elasticsearch:9200")
 INDEX_NAME = "articles"
 
 

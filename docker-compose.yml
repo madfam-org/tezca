@@ -29,6 +29,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - elasticsearch
 
   # Celery Worker
   celery:

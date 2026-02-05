@@ -18,7 +18,7 @@ from apps.api.schema import ArticleCrossRefsSchema, LawCrossRefsSchema
     responses={200: ArticleCrossRefsSchema},
 )
 @api_view(["GET"])
-def article_cross_references(request, law_slug, article_id):
+def article_cross_references(request, law_id, article_id):
     """
     Get cross-references for a specific article.
 
@@ -30,12 +30,12 @@ def article_cross_references(request, law_slug, article_id):
     """
     # Get outgoing references (references this article makes)
     outgoing_refs = CrossReference.objects.filter(
-        source_law_slug=law_slug, source_article_id=article_id
+        source_law_slug=law_id, source_article_id=article_id
     ).order_by("start_position")
 
     # Get incoming references (references to this article)
     incoming_refs = CrossReference.objects.filter(
-        target_law_slug=law_slug, target_article_num=article_id
+        target_law_slug=law_id, target_article_num=article_id
     ).order_by("-confidence")
 
     # Format outgoing references
@@ -82,7 +82,7 @@ def article_cross_references(request, law_slug, article_id):
     responses={200: LawCrossRefsSchema},
 )
 @api_view(["GET"])
-def law_cross_references(request, law_slug):
+def law_cross_references(request, law_id):
     """
     Get all cross-references for a law.
 
@@ -91,10 +91,10 @@ def law_cross_references(request, law_slug):
     Example: GET /api/v1/laws/amparo/references/
     """
     # Get all outgoing references for this law
-    outgoing = CrossReference.objects.filter(source_law_slug=law_slug).select_related()
+    outgoing = CrossReference.objects.filter(source_law_slug=law_id).select_related()
 
     # Get all incoming references to this law
-    incoming = CrossReference.objects.filter(target_law_slug=law_slug).select_related()
+    incoming = CrossReference.objects.filter(target_law_slug=law_id).select_related()
 
     # Calculate statistics
     total_outgoing = outgoing.count()

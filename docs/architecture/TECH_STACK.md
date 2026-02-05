@@ -62,10 +62,20 @@ Our stack is chosen to support **Isomorphism**: the ability to prove that the co
 **Goal:** Serve the data to the public.
 
 * **Language:** Python 3.11+
+* **Package Manager:** **Poetry** (replaces requirements.txt; all deps in `pyproject.toml`)
 * **API Framework:** **Django REST Framework** (Integrated with Indigo).
-* **Task Queue:** Celery + Redis (for processing large PDF ingestion jobs).
+* **API Documentation:** **drf-spectacular** (OpenAPI 3.0 schema at `/api/docs/`, `/api/redoc/`, `/api/schema/`)
+* **Task Queue:** **Celery** + **Redis 7** (for background ingestion jobs; thread fallback when Redis unavailable).
 * **Containerization:** Docker & Docker Compose.
-* **Formatting:** `Black` (Python), `Prettier` (XML/Markdown).
+* **Formatting:** `Black` + `isort` (Python), `ESLint` (TypeScript).
+
+### Layer 4b: Frontend Stack
+
+* **Framework:** **Next.js 15** (public portal), **Next.js 16** (admin console)
+* **UI Library:** React 19 + **Shadcn/ui** + **Tailwind CSS 4** (CSS-first config, no `tailwind.config.ts`)
+* **Shared Packages:** `@leyesmx/ui`, `@leyesmx/lib` (Zod v4 schemas for runtime API validation)
+* **Monorepo:** NPM Workspaces
+* **Testing:** Vitest + @testing-library/react (frontend), Pytest (backend)
 
 ---
 

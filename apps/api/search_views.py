@@ -96,8 +96,6 @@ class SearchView(APIView):
                 filter_clauses.append({"match": {"chapter": structural_chapter}})
 
             # State filter
-
-            # State filter
             state_filter = request.query_params.get("state", None)
             if state_filter and state_filter != "all":
                 # State ID prefix (e.g., "Colima" -> "colima_")
@@ -107,9 +105,11 @@ class SearchView(APIView):
             # Date Range Filter
             date_range = request.query_params.get("date_range", None)
             if date_range and date_range != "all":
-                from datetime import datetime, timedelta
+                from datetime import timedelta
 
-                now = datetime.now()
+                from django.utils import timezone
+
+                now = timezone.now()
 
                 if date_range == "2024":
                     # Current Year (Assuming 2024 context, or generic current year)

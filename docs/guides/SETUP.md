@@ -1,14 +1,15 @@
 # Setup Guide
 
-Complete installation and configuration guide for the Leyes Como Código pipeline.
+Complete installation and configuration guide for the Leyes Como Codigo pipeline.
 
 ## Prerequisites
 
-- **Python**: 3.11 or higher
-- **pip**: Latest version
+- **Node.js**: 20+
+- **Python**: 3.11+
+- **Poetry**: Latest (`pip install poetry`)
 - **Git**: For cloning repository
-- **pdfplumber**: PDF text extraction (auto-installed)
-- **lxml**: XML processing (auto-installed)
+- **Redis**: 7+ (optional, for Celery task queue; falls back to threads without it)
+- **Docker & Docker Compose**: For containerized deployment
 
 ## Installation
 
@@ -19,46 +20,109 @@ git clone https://github.com/madfam-org/leyes-como-codigo-mx.git
 cd leyes-como-codigo-mx
 ```
 
-### 2. Create Virtual Environment (Recommended)
+### 2. Install Frontend Dependencies
 
 ```bash
-python3.11 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+npm install
 ```
 
-### 3. Install Dependencies
+This installs all workspace dependencies (web, admin, shared packages).
+
+### 3. Install Backend Dependencies
 
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
-**Key dependencies**:
-- `pdfplumber` - PDF text extraction
-- `lxml` - XML processing
-- `requests` - HTTP downloads
-- `pytest` - Testing framework
-
-### 4. Verify Installation
+### 4. Configure Environment
 
 ```bash
-python -c "from apps.parsers import AkomaNtosoGeneratorV2; print('✅ Installation successful!')"
+cp .env.example .env
+# Edit .env with your settings (see .env.example for all variables)
 ```
 
-## Quick Start
+Key variables:
+- `DJANGO_SECRET_KEY` - Required, set to a random string
+- `DB_ENGINE` - `django.db.backends.sqlite3` (default) or `django.db.backends.postgresql`
+- `ES_HOST` - Elasticsearch URL (default: `http://localhost:9200`)
+- `CELERY_BROKER_URL` - Redis URL for task queue (default: `redis://localhost:6379/0`)
 
-### Parse a Single Law
+### 5. Run Database Migrations
+
+```bash
+poetry run python manage.py migrate
+```
+
+### 6. Verify Installation
+
+```bash
+poetry run python -c "from apps.parsers import AkomaNtosoGeneratorV2; print('Installation successful!')"
+```
+
+## Development Servers
+
+```bash
+# Frontend: Public Portal (http://localhost:3000)
+npm run dev:web
+
+# Frontend: Admin Console (http://localhost:3001)
+npm run dev:admin
+
+# Backend: Django API (http://localhost:8000)
+poetry run python manage.py runserver
+
+# Optional: Celery worker (requires Redis)
+poetry run celery -A apps.indigo worker --loglevel=info
+```
+
+## Docker Deployment
+
+```bash
+# Set required env vars
+cp .env.example .env
+# Edit .env (DJANGO_SECRET_KEY is required)
+
+# Start all services
+docker compose up -d
+```
+
+This starts: API, Celery worker, Web, Admin, PostgreSQL, Redis, Elasticsearch.
+
+## Running Tests
+
+### Backend Tests
+
+```bash
+poetry run pytest tests/ -v
+```
+
+### Frontend Tests
+
+```bash
+npm run test --workspace=web
+```
+
+### Linting
+
+```bash
+# Python (must use poetry to match CI versions)
+poetry run black --check apps/ tests/ scripts/
+poetry run isort --check-only apps/ tests/ scripts/
+
+# Frontend
+npm run lint --workspace=web
+npm run lint --workspace=admin
+```
+
+## Quick Start: Parse a Law
 
 ```python
 from pathlib import Path
 from apps.parsers import AkomaNtosoGeneratorV2
 
-# Load law text
 text = Path('data/raw/ley_amparo_extracted.txt').read_text()
-
-# Create parser
 parser = AkomaNtosoGeneratorV2()
 
-# Generate FRBR metadata
 metadata = parser.create_frbr_metadata(
     law_type='ley',
     date_str='2013-04-02',
@@ -66,155 +130,61 @@ metadata = parser.create_frbr_metadata(
     title='Ley de Amparo'
 )
 
-# Parse to XML
-xml_path, result = parser.generate_xml(
-    text,
-    metadata,
-    Path('output/amparo.xml')
-)
-
-print(f"✅ Generated: {xml_path}")
+xml_path, result = parser.generate_xml(text, metadata, Path('output/amparo.xml'))
+print(f"Generated: {xml_path}")
 print(f"Confidence: {result.metadata['confidence']*100:.1f}%")
 ```
 
-### Batch Ingest Laws
+## API Documentation
 
-```bash
-# Ingest specific laws
-python scripts/bulk_ingest.py --laws amparo,iva --workers 2
-
-# Ingest by priority
-python scripts/bulk_ingest.py --priority 1 --workers 4
-
-# Ingest all laws
-python scripts/bulk_ingest.py --all --workers 8
-
-# Skip re-downloading PDFs
-python scripts/bulk_ingest.py --all --skip-download
-```
-
-### Validate Quality
-
-```python
-from apps.parsers.quality import QualityCalculator
-
-calc = QualityCalculator()
-metrics = calc.calculate(
-    xml_path='data/federal/mx-fed-amparo-v2.xml',
-    law_name='Ley de Amparo',
-    law_slug='amparo',
-    articles_expected=300
-)
-
-print(f"Grade: {metrics.grade} ({metrics.overall_score:.1f}%)")
-```
-
-### Monitor Progress
-
-```bash
-# View dashboard
-python scripts/ingestion_status.py
-
-# View specific law
-python scripts/ingestion_status.py --law amparo
-
-# Last 48 hours
-python scripts/ingestion_status.py --last 48
-```
+When the Django server is running:
+- Swagger UI: http://localhost:8000/api/docs/
+- ReDoc: http://localhost:8000/api/redoc/
+- OpenAPI Schema: http://localhost:8000/api/schema/
 
 ## Directory Structure
 
 ```
 leyes-como-codigo-mx/
 ├── apps/
-│   ├── parsers/           # Core parsing modules
-│   │   ├── akn_generator_v2.py
-│   │   ├── patterns/      # Pattern library
-│   │   ├── validators/    # Quality validators
-│   │   ├── quality.py     # Quality metrics
-│   │   ├── pipeline.py    # Ingestion pipeline
-│   │   ├── logger.py      # Structured logging
-│   │   └── error_tracker.py
-│   └── scraper/
-│       └── law_registry.py
-├── data/
-│   ├── law_registry.json  # Law metadata
-│   ├── federal/           # Generated XMLs
-│   ├── raw/              # PDFs and extracted text
-│   └── logs/             # Application logs
-├── scripts/
-│   ├── bulk_ingest.py    # Batch processing CLI
-│   └── ingestion_status.py
-├── tests/                # Test suite
-└── docs/                 # Documentation
-```
-
-## Configuration
-
-### Law Registry
-
-Edit `data/law_registry.json` to add new laws:
-
-```json
-{
-  "federal_laws": [
-    {
-      "id": "new-law",
-      "name": "Official Law Name",
-      "short_name": "Short Name",
-      "type": "ley",
-      "slug": "new-law",
-      "expected_articles": 100,
-      "publication_date": "2020-01-01",
-      "url": "https://example.com/law.pdf",
-      "priority": 1,
-      "tier": "category"
-    }
-  ]
-}
+│   ├── web/              # Public Portal (Next.js 15)
+│   ├── admin/            # Admin Console (Next.js 16)
+│   ├── api/              # Django REST API
+│   ├── indigo/           # Django project settings
+│   ├── parsers/          # AKN parsing pipeline
+│   ├── scraper/          # DOF/OJN/Municipal scrapers
+│   └── ingestion/        # Ingestion orchestration
+├── packages/
+│   ├── ui/               # Shared UI components (@leyesmx/ui)
+│   ├── lib/              # Shared types & schemas (@leyesmx/lib)
+│   └── tsconfig/         # Shared TS config
+├── engines/
+│   ├── catala/           # Tax algorithms
+│   ├── openfisca/        # Microsimulation
+│   └── blawx/            # Rule logic
+├── data/                 # Law registry, XMLs, logs
+├── tests/                # Backend test suite (Pytest)
+├── docs/                 # Documentation
+├── pyproject.toml        # Python deps (Poetry)
+└── package.json          # Workspace root (NPM)
 ```
 
 ## Troubleshooting
 
 ### Import Errors
-
 ```bash
-# Ensure Python path is set
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 ```
 
-### PDF Download Failures
+### Redis Not Available
+Celery tasks will fall back to thread-based execution. This is fine for local development.
 
-```bash
-# Use --skip-download for existing PDFs
-python scripts/bulk_ingest.py --laws amparo --skip-download
-```
-
-### Memory Issues
-
-```bash
-# Reduce worker count
-python scripts/bulk_ingest.py --all --workers 2
-```
-
-### Test Failures
-
-```bash
-# Run with verbose output
-pytest -v
-
-# Run specific test
-pytest tests/test_patterns.py -v
-```
+### CI Lint Failures
+Always use `poetry run black` / `poetry run isort` (not system versions) to match CI.
 
 ## Next Steps
 
-- Read [Architecture Guide](ARCHITECTURE.md)
-- Explore [Examples](examples/)
-- Run [Tests](../tests/)
-- Check [API Reference](API.md)
-
-## Support
-
-- Issues: https://github.com/madfam-org/leyes-como-codigo-mx/issues
-- Documentation: https://github.com/madfam-org/leyes-como-codigo-mx/docs
+- Read [Architecture Guide](../architecture/ARCHITECTURE.md)
+- Review [Tech Stack](../architecture/TECH_STACK.md)
+- Run [Tests](../../tests/)
+- Check [Code Quality](code_quality.md)

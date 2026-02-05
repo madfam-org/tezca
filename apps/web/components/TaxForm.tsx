@@ -32,7 +32,8 @@ export default function TaxForm() {
         setResult(null);
 
         try {
-            const res = await fetch("http://localhost:8000/api/v1/calculate/", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+            const res = await fetch(`${apiUrl}/calculate/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

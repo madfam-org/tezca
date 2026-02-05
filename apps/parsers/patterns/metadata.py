@@ -24,8 +24,8 @@ DOF_DATE_PATTERN = r"(\d{2}-\d{2}-\d{4})"
 # Combined reform pattern
 REFORM_PATTERN = (
     r"(Art[íi]culo|Fracci[óo]n|P[áa]rrafo|Inciso|Cap[íi]tulo|T[íi]tulo)\s+"
-    f'({"|".join(REFORM_ACTIONS)})\s+'
-    f"DOF\s+{DOF_DATE_PATTERN}"
+    rf'({"|".join(REFORM_ACTIONS)})\s+'
+    rf"DOF\s+{DOF_DATE_PATTERN}"
 )
 
 

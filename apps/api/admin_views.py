@@ -1,18 +1,33 @@
-import json
 import os
 
 from django.conf import settings as django_settings
 from django.db import connection
 from django.db.models import Count, Max
-from django.http import JsonResponse
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .ingestion_manager import IngestionManager
 from .models import Law, LawVersion
+from .schema import (
+    ErrorSchema,
+    HealthCheckSchema,
+    JobListSchema,
+    JobStatusSchema,
+    SystemConfigSchema,
+    SystemMetricsSchema,
+)
 
 
-@require_http_methods(["GET"])
+@extend_schema(
+    tags=["Admin"],
+    summary="Health check",
+    description="Simple health check verifying database connectivity.",
+    responses={200: HealthCheckSchema, 503: HealthCheckSchema},
+)
+@api_view(["GET"])
 def health_check(request):
     """
     Simple health check endpoint.
@@ -24,9 +39,12 @@ def health_check(request):
         db_status = "connected"
     except Exception as e:
         db_status = f"error: {str(e)}"
-        return JsonResponse({"status": "unhealthy", "database": db_status}, status=503)
+        return Response(
+            {"status": "unhealthy", "database": db_status},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
 
-    return JsonResponse(
+    return Response(
         {
             "status": "healthy",
             "database": db_status,
@@ -35,7 +53,13 @@ def health_check(request):
     )
 
 
-@require_http_methods(["GET"])
+@extend_schema(
+    tags=["Admin"],
+    summary="System metrics",
+    description="Aggregated system metrics including law counts by jurisdiction and category.",
+    responses={200: SystemMetricsSchema, 500: ErrorSchema},
+)
+@api_view(["GET"])
 def system_metrics(request):
     """
     Returns aggregated system metrics for the dashboard.
@@ -48,18 +72,9 @@ def system_metrics(request):
         # Federal (tier=0/federal), State (tier=1/state), Municipal (tier=2/municipal)
         # Note: Model uses string values for 'tier' typically
 
-        federal_count = (
-            Law.objects.filter(tier="0").count()
-            + Law.objects.filter(tier="federal").count()
-        )
-        state_count = (
-            Law.objects.filter(tier="1").count()
-            + Law.objects.filter(tier="state").count()
-        )
-        municipal_count = (
-            Law.objects.filter(tier="2").count()
-            + Law.objects.filter(tier="municipal").count()
-        )
+        federal_count = Law.objects.filter(tier__in=["0", "federal"]).count()
+        state_count = Law.objects.filter(tier__in=["1", "state"]).count()
+        municipal_count = Law.objects.filter(tier__in=["2", "municipal"]).count()
 
         # Breakdown by category (top 5)
         categories = list(
@@ -72,7 +87,7 @@ def system_metrics(request):
         # Returns null to signal the frontend that real data is unavailable.
         quality_distribution = None
 
-        return JsonResponse(
+        return Response(
             {
                 "total_laws": total_laws,
                 "counts": {
@@ -86,30 +101,42 @@ def system_metrics(request):
             }
         )
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@require_http_methods(["GET"])
+@extend_schema(
+    tags=["Admin"],
+    summary="Job status",
+    description="Current status of the ingestion job.",
+    responses={200: JobStatusSchema, 500: ErrorSchema},
+)
+@api_view(["GET"])
 def job_status(request):
     """
     Returns the current status of the ingestion job.
     Uses IngestionManager to read the status file.
     """
     try:
-        status = IngestionManager.get_status()
-        return JsonResponse(status)
+        status_data = IngestionManager.get_status()
+        return Response(status_data)
     except Exception as e:
-        return JsonResponse(
+        return Response(
             {
                 "status": "error",
                 "message": str(e),
                 "timestamp": timezone.now().isoformat(),
             },
-            status=500,
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
-@require_http_methods(["GET"])
+@extend_schema(
+    tags=["Admin"],
+    summary="List jobs",
+    description="List of recent ingestion jobs.",
+    responses={200: JobListSchema, 500: ErrorSchema},
+)
+@api_view(["GET"])
 def list_jobs(request):
     """
     Returns a list of recent jobs.
@@ -120,12 +147,18 @@ def list_jobs(request):
         current = IngestionManager.get_status()
         # Mocking a 'list' format for the frontend
         jobs = [{"id": "current", **current}]
-        return JsonResponse({"jobs": jobs})
+        return Response({"jobs": jobs})
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@require_http_methods(["GET"])
+@extend_schema(
+    tags=["Admin"],
+    summary="System configuration",
+    description="Read-only system configuration and service status.",
+    responses={200: SystemConfigSchema},
+)
+@api_view(["GET"])
 def system_config(request):
     """
     Returns read-only system configuration and service status.
@@ -158,7 +191,7 @@ def system_config(request):
     latest_version = LawVersion.objects.aggregate(latest=Max("publication_date"))
     latest_date = latest_version["latest"]
 
-    return JsonResponse(
+    return Response(
         {
             "environment": {
                 "debug": django_settings.DEBUG,

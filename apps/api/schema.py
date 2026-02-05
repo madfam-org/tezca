@@ -183,6 +183,99 @@ class LawCrossRefsSchema(serializers.Serializer):
     statistics = LawRefStatsSchema()
 
 
+# ── Admin endpoints ─────────────────────────────────────────────────────
+
+
+class HealthCheckSchema(serializers.Serializer):
+    status = serializers.ChoiceField(choices=["healthy", "unhealthy"])
+    database = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+
+
+class MetricsCountsSchema(serializers.Serializer):
+    federal = serializers.IntegerField()
+    state = serializers.IntegerField()
+    municipal = serializers.IntegerField()
+
+
+class CategoryCountSchema(serializers.Serializer):
+    category = serializers.CharField(allow_null=True)
+    count = serializers.IntegerField()
+
+
+class SystemMetricsSchema(serializers.Serializer):
+    total_laws = serializers.IntegerField()
+    counts = MetricsCountsSchema()
+    top_categories = CategoryCountSchema(many=True)
+    quality_distribution = serializers.DictField(allow_null=True)
+    last_updated = serializers.DateTimeField()
+
+
+class JobStatusSchema(serializers.Serializer):
+    status = serializers.CharField()
+    message = serializers.CharField()
+    progress = serializers.IntegerField(required=False)
+    timestamp = serializers.CharField()
+
+
+class JobListSchema(serializers.Serializer):
+    jobs = JobStatusSchema(many=True)
+
+
+class EnvironmentConfigSchema(serializers.Serializer):
+    debug = serializers.BooleanField()
+    allowed_hosts = serializers.ListField(child=serializers.CharField())
+    language = serializers.CharField()
+    timezone = serializers.CharField()
+
+
+class DatabaseConfigSchema(serializers.Serializer):
+    engine = serializers.CharField()
+    status = serializers.CharField()
+    name = serializers.CharField()
+
+
+class ElasticsearchConfigSchema(serializers.Serializer):
+    host = serializers.CharField()
+    status = serializers.CharField()
+
+
+class DataConfigSchema(serializers.Serializer):
+    total_laws = serializers.IntegerField()
+    total_versions = serializers.IntegerField()
+    latest_publication = serializers.CharField(allow_null=True)
+
+
+class SystemConfigSchema(serializers.Serializer):
+    environment = EnvironmentConfigSchema()
+    database = DatabaseConfigSchema()
+    elasticsearch = ElasticsearchConfigSchema()
+    data = DataConfigSchema()
+
+
+class IngestionRequestSchema(serializers.Serializer):
+    mode = serializers.ChoiceField(
+        choices=["all", "priority", "specific", "tier"],
+        default="all",
+        required=False,
+    )
+    priority_level = serializers.IntegerField(default=1, required=False)
+    laws = serializers.CharField(required=False)
+    tier = serializers.CharField(required=False)
+    skip_download = serializers.BooleanField(default=False, required=False)
+    workers = serializers.IntegerField(default=4, required=False)
+
+
+class IngestionResponseSchema(serializers.Serializer):
+    status = serializers.CharField()
+    message = serializers.CharField()
+
+
+class CalculationDisabledSchema(serializers.Serializer):
+    message = serializers.CharField()
+    data = serializers.DictField()
+
+
 # ── Error schema ─────────────────────────────────────────────────────────
 
 

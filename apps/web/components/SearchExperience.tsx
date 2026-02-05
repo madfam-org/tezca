@@ -15,7 +15,8 @@ export default function SearchExperience() {
         if (!query) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8000/api/v1/search/?q=${encodeURIComponent(query)}`);
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+            const res = await fetch(`${apiUrl}/search/?q=${encodeURIComponent(query)}`);
             const data = await res.json();
             setResults(data.results || []);
         } catch (e) {

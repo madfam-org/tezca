@@ -10,6 +10,9 @@
     "scripts": {
         "dev:web": "npm run dev --workspace=web",
         "build:web": "npm run build --workspace=web",
-        "lint:web": "npm run lint --workspace=web"
+        "lint:web": "npm run lint --workspace=web",
+        "dev:admin": "npm run dev --workspace=admin",
+        "build:admin": "npm run build --workspace=admin",
+        "lint:admin": "npm run lint --workspace=admin"
     }
 }

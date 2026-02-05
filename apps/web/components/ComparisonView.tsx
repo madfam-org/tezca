@@ -44,7 +44,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
                     ]);
                     return {
                         details: articles,
-                        structure: structureData.structure
+                        structure: structureData?.structure ?? []
                     };
                 });
 

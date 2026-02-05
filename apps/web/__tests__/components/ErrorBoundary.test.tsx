@@ -54,7 +54,7 @@ describe('ErrorBoundary', () => {
     });
 
     it('recovers when Reintentar is clicked', () => {
-        const { rerender } = render(
+        render(
             <ErrorBoundary>
                 <ThrowingChild shouldThrow={true} />
             </ErrorBoundary>

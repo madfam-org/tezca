@@ -16,26 +16,23 @@
 
 ### Development Setup
 
-1. **Install Dependencies (Frontend)**
+1. **Install Dependencies**
    ```bash
-   npm install
+   npm install          # Frontend (all workspaces)
+   poetry install       # Backend (Python)
+   cp .env.example .env # Configure environment
    ```
 
 2. **Start Development Servers**
    ```bash
-   # Start Web App
-   npm run dev:web
-
-   # Start Admin Console
-   npm run dev --workspace=apps/admin
+   npm run dev:web          # Public portal → http://localhost:3000
+   npm run dev:admin        # Admin console → http://localhost:3001
+   poetry run python manage.py runserver  # API → http://localhost:8000
    ```
 
-3. **Backend Setup**
+3. **Docker (all services)**
    ```bash
-   cd apps/api
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py runserver
+   docker compose up -d   # API, Celery, Web, Admin, PostgreSQL, Redis, Elasticsearch
    ```
 
 
@@ -61,6 +58,9 @@
 - ✅ **REST API** - Machine-readable access for legal tech
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
 - ✅ **Production Ready** - Full-stack testing (Backend + Frontend w/ Vitest)
+- ✅ **OpenAPI Documentation** - Swagger UI, ReDoc at `/api/docs/`
+- ✅ **Background Processing** - Celery + Redis for ingestion jobs
+- ✅ **Cross-References** - Automatic detection and linking between laws
 
 ## Architecture
 
@@ -87,9 +87,10 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 
 ## Documentation
 
-- [Setup Guide](docs/SETUP.md) - Installation and configuration
-- [Examples](docs/examples/) - Working code samples
-- [Testing](tests/) - Test suite (>20 tests)
+- [Setup Guide](docs/guides/SETUP.md) - Installation and configuration
+- [Tech Stack](docs/architecture/TECH_STACK.md) - Approved technologies
+- [Architecture](docs/architecture/ARCHITECTURE.md) - System design
+- [Testing](tests/) - Test suite (84+ backend, 50+ frontend tests)
 
 ## Performance
 

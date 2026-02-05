@@ -1,10 +1,17 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-mock-key-for-dev")
 DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
+
+if not DEBUG and SECRET_KEY == "django-insecure-mock-key-for-dev":
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY must be set in production (DEBUG=False)"
+    )
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 CORS_ALLOWED_ORIGINS = os.environ.get(

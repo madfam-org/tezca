@@ -3,8 +3,9 @@ import os
 import subprocess
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
+
+from django.utils import timezone
 
 # Paths
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -34,7 +35,7 @@ class IngestionManager:
             return {
                 "status": "idle",
                 "message": "No ingestion active",
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": timezone.now().isoformat(),
             }
 
         try:
@@ -44,7 +45,7 @@ class IngestionManager:
             return {
                 "status": "error",
                 "message": f"Failed to read status: {str(e)}",
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": timezone.now().isoformat(),
             }
 
     @staticmethod
@@ -83,7 +84,7 @@ class IngestionManager:
             "message": "Starting ingestion (thread fallback)...",
             "progress": 0,
             "total": 0,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": timezone.now().isoformat(),
             "params": params,
         }
         with open(STATUS_FILE, "w") as f:
@@ -130,7 +131,7 @@ class IngestionManager:
         try:
             with open(LOG_FILE, "a") as log:
                 log.write(
-                    f"\n\n--- Ingestion started at {datetime.now().isoformat()} ---\n"
+                    f"\n\n--- Ingestion started at {timezone.now().isoformat()} ---\n"
                 )
                 log.write(f"Command: {' '.join(cmd)}\n")
 
@@ -150,7 +151,7 @@ class IngestionManager:
 
                 process.wait()
 
-            status_data = {"timestamp": datetime.now().isoformat()}
+            status_data = {"timestamp": timezone.now().isoformat()}
 
             if process.returncode == 0:
                 status_data["status"] = "completed"
@@ -178,7 +179,7 @@ class IngestionManager:
                     {
                         "status": "error",
                         "message": f"Execution error: {str(e)}",
-                        "timestamp": datetime.now().isoformat(),
+                        "timestamp": timezone.now().isoformat(),
                     },
                     f,
                 )
@@ -194,7 +195,7 @@ class IngestionManager:
                 data = {"status": "running"}
 
             data["message"] = message
-            data["timestamp"] = datetime.now().isoformat()
+            data["timestamp"] = timezone.now().isoformat()
 
             with open(STATUS_FILE, "w") as f:
                 json.dump(data, f)
