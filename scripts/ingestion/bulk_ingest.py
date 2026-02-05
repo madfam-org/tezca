@@ -29,7 +29,7 @@ import json
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'apps'))
 
-from scraper.law_registry import LawRegistry
+from scraper.utils.law_registry import LawRegistry
 from parsers.pipeline import IngestionPipeline, IngestionResult
 
 

@@ -38,7 +38,7 @@ class LawRegistry:
                           Defaults to data/law_registry.json
         """
         if registry_path is None:
-            registry_path = Path(__file__).parent.parent.parent / 'data' / 'law_registry.json'
+            registry_path = Path(__file__).parent.parent.parent.parent / 'data' / 'law_registry.json'
         
         self.registry_path = Path(registry_path)
         self.data = self._load_registry()

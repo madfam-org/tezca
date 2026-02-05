@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 # 1. Setup paths
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # 2. Mock Django BEFORE importing the command
 # This is necessary because the environment lacks Django

@@ -6,6 +6,11 @@ import pytest
 from pathlib import Path
 import tempfile
 import shutil
+import sys
+
+# Add apps to path for all tests
+sys.path.insert(0, str(Path(__file__).parent.parent / 'apps'))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 @pytest.fixture

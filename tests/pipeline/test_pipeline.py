@@ -6,7 +6,6 @@ import pytest
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'apps'))
 
 from parsers.pipeline import IngestionPipeline
 from parsers.quality import QualityCalculator

@@ -1,5 +1,5 @@
 import datetime
-from apps.scraper.dof_daily import DofScraper
+from apps.scraper.federal.dof_daily import DofScraper
 
 def test_scraper_initialization():
     """Test that DofScraper initializes with current date by default."""
