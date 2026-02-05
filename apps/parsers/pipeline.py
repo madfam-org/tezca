@@ -268,14 +268,20 @@ class IngestionPipeline:
         
         # Create FRBR metadata
         # V2 uses a more comprehensive dictionary
-        metadata = {
-            'law_id': law_id,
-            'title': law_metadata['name'],
-            'date': law_metadata['publication_date'], # Initial publication
-            'slug': law_metadata['slug'],
-            'law_type': law_metadata.get('type', 'ley'),
-            'status': law_metadata.get('status', 'vigente')
-        }
+        # Create FRBR metadata
+        # Use V2 helper to generate standard FRBR metadata
+        metadata = self.parser.create_frbr_metadata(
+            law_type=law_metadata.get('type', 'ley'),
+            date_str=law_metadata['publication_date'],
+            slug=law_metadata['slug'],
+            title=law_metadata['name']
+        )
+        
+        # Add additional fields
+        metadata.update({
+             'law_id': law_id,
+             'status': law_metadata.get('status', 'vigente')
+        })
         
         # Generate XML using V2 (which handles multi-pass and internal metadata extraction)
         # Note: metadata dictionary passed here overrides/supplements internal extraction

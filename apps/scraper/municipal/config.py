@@ -12,14 +12,14 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     'cdmx': {
         'name': 'Ciudad de México',
         'state': 'Ciudad de México',
-        'base_url': 'https://www.congresocdmx.gob.mx/',
+        'base_url': 'https://data.consejeria.cdmx.gob.mx/',
         'catalog_type': 'html',
         'tier': 0,
         'population': 9_209_944,
         'selectors': {
-            'catalog_path': '/normatividad',
-            'law_links': 'a.regulation-link',
-            'title': '.title',
+            'catalog_path': '/index.php/leyes/leyes',
+            'law_links': 'a',
+            'title': 'td',
         },
         'status': 'implemented'
     },
@@ -33,7 +33,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         'tier': 1,
         'population': 1_495_189,
         'selectors': {
-            'catalog_path': '/normatividad',
+            'catalog_path': '/Losreglamentosfederalesestatalesymunicipales',
             'law_links': 'a:contains("Reglamento")',
             'title': '.title',
         },
@@ -43,14 +43,14 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     'monterrey': {
         'name': 'Monterrey',
         'state': 'Nuevo León',
-        'base_url': 'https://www.monterrey.gob.mx/transparencia/',
+        'base_url': 'https://www.monterrey.gob.mx/',
         'catalog_type': 'html',
         'tier': 1,
         'population': 1_142_194,
         'selectors': {
-            'catalog_path': '/normatividad',
-            'law_links': 'a.regulation',
-            'title': '.regulation-title',
+            'catalog_path': '/transparencia/Oficial_/Normatividad.html',
+            'law_links': 'a',
+            'title': 'td', # Placeholder, need to check HTML
         },
         'status': 'stub'  # Needs implementation
     },

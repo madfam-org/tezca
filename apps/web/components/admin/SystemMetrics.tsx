@@ -23,14 +23,20 @@ export function SystemMetrics() {
 
     const fetchMetrics = async () => {
         try {
-            // Try to fetch from API, fallback to mock data if it fails
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-            const response = await fetch(`${apiUrl}/api/v1/admin/metrics/`);
+            const data = await api.getAdminMetrics();
             
-            if (!response.ok) throw new Error('API not available');
-            
-            const data = await response.json();
-            setMetrics(data);
+            // Transform API data to component format
+            // API returns: { total_laws, counts: { federal, state }, top_categories, quality_distribution, last_updated }
+            setMetrics({
+                totalLaws: data.total_laws,
+                federalLaws: data.counts.federal,
+                stateLaws: data.counts.state,
+                gradeA: 65, // Mocked in backend for now
+                gradeB: 20, // Mocked in backend for now
+                activeJobs: 0, // We'll get this from separate call or include in metrics later
+                lastUpdate: data.last_updated,
+                lawsTrend: '+0', // Not yet implemented in backend
+            });
             setError(null);
         } catch (err) {
             console.warn('Using fallback metrics data:', err);

@@ -1,6 +1,7 @@
 'use client';
 
 import { SystemMetrics } from '@/components/admin/SystemMetrics';
+import { JobQueue } from '@/components/admin/JobQueue';
 import { Button } from '@leyesmx/ui';
 import { Settings, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
@@ -68,14 +69,7 @@ export default function AdminDashboard() {
                         <h2 className="text-lg sm:text-xl font-semibold mb-4">
                             Trabajos Recientes
                         </h2>
-                        <div className="border rounded-lg p-6 sm:p-8 text-center bg-card">
-                            <p className="text-muted-foreground text-sm sm:text-base">
-                                La monitorización de trabajos estará disponible próximamente
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                                Esta sección mostrará el estado de scraping y procesamiento de leyes
-                            </p>
-                        </div>
+                        <JobQueue />
                     </section>
                 </div>
             </div>

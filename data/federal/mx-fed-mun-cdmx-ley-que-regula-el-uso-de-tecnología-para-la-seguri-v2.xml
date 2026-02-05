@@ -1,0 +1,1096 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="law">
+    <meta>
+      <identification source="#antigravity">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri/main"/>
+          <FRBRuri value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri"/>
+          <FRBRdate date="2024-01-01" name="Generation"/>
+          <FRBRauthor href="#congress"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri/spa@/main"/>
+          <FRBRuri value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri/spa@"/>
+          <FRBRdate date="2024-01-01" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/reglamento/2024-01-01/mun-cdmx-ley-que-regula-el-uso-de-tecnología-para-la-seguri/spa@/main.akn"/>
+          <FRBRdate date="2026-02-05" name="Generation"/>
+          <FRBRauthor href="#antigravity"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body>
+      <chapter id="chapter-1">
+        <num>CAPÍTULO I DISPOSICIONES GENERALES</num>
+      </chapter>
+      <chapter id="chapter-2">
+        <num>CAPÍTULO II DE LOS LINEAMIENTOS A QUE SE SUJETARÁ LA COLOCACIÓN DE TECNOLOGÍA</num>
+      </chapter>
+      <chapter id="chapter-3">
+        <num>CAPÍTULO III DE LOS CENTROS DE CONTROL, COMANDO, CÓMPUTO Y COMUNICACIONES.</num>
+      </chapter>
+      <chapter id="chapter-4">
+        <num>CAPÍTULO IV DEL USO DE TECNOLOGÍA EN LA SEGURIDAD PÚBLICA</num>
+      </chapter>
+      <chapter id="chapter-5">
+        <num>CAPÍTULO V DE LA RESERVA, CONTROL, ANÁLISIS Y UTILIZACIÓN</num>
+      </chapter>
+      <chapter id="chapter-6">
+        <num>Capítulo III de esta Ley.</num>
+      </chapter>
+      <chapter id="chapter-7">
+        <num>CAPÍTULO VI DE LOS MEDIOS DE PRUEBA OBTENIDOS</num>
+      </chapter>
+      <chapter id="chapter-8">
+        <num>CAPÍTULO VII DE LA COORDINACIÓN PARA LA OBTENCIÓN E INTERCAMBIO DE</num>
+      </chapter>
+      <chapter id="chapter-9">
+        <num>CAPÍTULO VIII DE LA FORMACIÓN DE UNA CULTURA DEL USO Y APROVECHAMIENTO DE TECNOLOGÍA</num>
+        <article id="art-1.">
+          <num>Artículo 1.</num>
+          <paragraph id="art-1.-para-1">
+            <content>
+              <p>Artículo 1.- Las disposiciones de esta Ley son de orden público e interés social y de observancia general
+en la Ciudad de México y tienen por objeto:
+Artículo reformado G.O. CDMX 27/08/25
+I. Regular la ubicación, instalación y operación de equipos y sistemas tecnológicos a cargo de la
+Secretaría de Seguridad Ciudadana de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+II. Contribuir al mantenimiento del orden, la tranquilidad y estabilidad en la convivencia así como
+prevenir situaciones de emergencia o desastre e incrementar la seguridad ciudadana;
+III. Regular la utilización de la información obtenida por el uso de equipos y sistemas tecnológicos
+en las materias de seguridad ciudadana y procuración de justicia; y
+Fracción reformada G.O. CDMX 27/08/25
+IV. Regular las acciones de análisis de la información captada con equipos o sistemas tecnológicos
+para generar inteligencia para la prevención de la delincuencia e infracciones administrativas.
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-2.">
+          <num>Artículo 2.</num>
+          <paragraph id="art-2.-para-1">
+            <content>
+              <p>Artículo 2.- Para los efectos de esta Ley, se entenderá por:
+I. Cadena de Custodia: al documento oficial donde se asienta la obtención de información por el
+uso de equipos y sistemas tecnológicos por la Secretaría así como sus características
+específicas de identificación; con el objeto que cada persona o persona servidora pública a la
+que se le transmite la información, suscriba en la misma su recepción así como toda
+circunstancia relativa a su inviolabilidad e inalterabilidad, haciéndose responsable de su
+conservación y cuidado hasta su traslado a otra persona o persona servidora pública;
+Fracción reformada G.O. CDMX 27/08/25
+II. Conductas Ilícitas de alto impacto: aquellas que tengan amplia repercusión por su recurrencia y
+cercanía con el entorno familiar y vecinal;
+III. Equipos tecnológicos: al conjunto de aparatos y dispositivos, para el tratamiento de voz o
+imagen, que constituyen el material de un sistema o un medio;
+IV. Instituciones de Seguridad Pública: a la Secretaría de Seguridad Ciudadana y Fiscalía General de
+Justicia, que como dependencias del ámbito local de la Ciudad de México, por sus funciones
+legales les compete la prevención, investigación y persecución de delitos e infracciones
+administrativas;
+Fracción reformada G.O. CDMX 27/08/25
+V. Inteligencia para la prevención: al conocimiento obtenido a partir del acopio, procesamiento,
+diseminación y aprovechamiento de información, para la toma de decisiones en materia de
+Seguridad Ciudadana competencia de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+VI. Ley: a la Ley que regula el Uso de Tecnología para la Seguridad Ciudadana de la Ciudad de
+México;
+Fracción reformada G.O. CDMX 27/08/25
+VII. Medio: al dispositivo electrónico que permite recibir y/o transmitir información para apoyar
+las tareas de seguridad ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+VIII. Fiscalía: a la Fiscalía General de Justicia de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+IX. Registro: al Registro de Equipos y Sistemas Tecnológicos para la Seguridad Ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+X. Reglamento: al Reglamento de la Ley que Regula el Uso de Tecnología para la Seguridad
+Ciudadana de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+XI. Secretaría: a la Secretaría de Seguridad Ciudadana de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+XII. Sistema tecnológico: al conjunto organizado de dispositivos electrónicos, programas de
+cómputo y en general todo aquello basado en tecnologías de la información para apoyar tareas
+de seguridad ciudadana; y
+Fracción reformada G.O. CDMX 27/08/25
+XIII. Tecnología: conjunto de técnicas de la información, utilizadas para apoyar tareas de seguridad
+ciudadana.
+Fracción reformada G.O. CDMX 27/08/25
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-3.">
+          <num>Artículo 3.</num>
+          <paragraph id="art-3.-para-1">
+            <content>
+              <p>Artículo 3.- Se crea el Registro de Equipos y Sistemas Tecnológicos para la Seguridad Ciudadana, a cargo
+de la Secretaría, que integrará el registro de aquellos cuya instalación y operación previa deba ser
+inscrita en el mismo, de conformidad con la presente Ley y otras disposiciones aplicables.
+Párrafo reformada G.O. CDMX 27/08/25
+La organización del Registro estará prevista en el Reglamento.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-4.">
+          <num>Artículo 4.</num>
+          <paragraph id="art-4.-para-1">
+            <content>
+              <p>Artículo 4.- La instalación de equipos y sistemas tecnológicos, se hará en lugares en los que contribuya a
+prevenir, inhibir y combatir conductas ilícitas y a garantizar el orden y la tranquilidad de los habitantes
+de la Ciudad de México.
+Párrafo reformada G.O. CDMX 27/08/25
+La ubicación estará basada en los criterios y prioridades establecidos en la presente Ley.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-4">
+          <num>Artículo 4</num>
+          <paragraph id="art-4-para-1">
+            <content>
+              <p>Artículo 4 Bis.- Los equipos y sistemas tecnológicos instalados al amparo de la presente Ley, no podrán
+ser retirados bajo ninguna circunstancia.
+Exceptuará lo establecido en el párrafo anterior, solo en aquellos casos en los que la Secretaría previa
+consulta y autorización de la demarcación territorial correspondiente, determine que los equipos y
+sistemas tecnológicos instalados, ya sea por su ubicación o sus características:
+I. No contribuyen a los objetivos establecidos en el artículo 1, fracción II de la Ley; y
+II. Se determine un deterioro físico que imposibilite el adecuado cumplimiento de sus funciones,
+en cuyo caso deberá repararse o sustituirse en un término no mayor a 30 días naturales.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-4">
+          <num>Artículo 4</num>
+          <paragraph id="art-4-para-1">
+            <content>
+              <p>Artículo 4 Ter.- Cuando la inversión realizada por el Gobierno de la Ciudad de México en la instalación
+de equipos y sistemas tecnológicos o cualquier infraestructura que se encuentre dentro del marco de
+regulación de esta ley, sea superior a los cinco mil veces la Unidad de Medida y Actualización vigente,
+no podrá ser modificada o retirada sin previo informe a la Contraloría General de la Ciudad de México
+en el que se justifique dicha acción.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-5.">
+          <num>Artículo 5.</num>
+          <paragraph id="art-5.-para-1">
+            <content>
+              <p>Artículo 5.- Queda prohibida la colocación, de equipos y sistemas tecnológicos al interior de los
+domicilios particulares, así como aquella instalada en cualquier lugar, con el objeto de obtener
+información personal o familiar, por parte de la Secretaría.
+Sólo podrán ser instalados, sin previa autorización, los equipos tecnológicos fijos en bienes del dominio
+público o bienes del dominio privado de la Ciudad de México. Para la instalación en cualquier otro
+lugar, se requerirá autorización por escrito de la persona propietaria o poseedora del lugar donde se
+pretenda ubicar los equipos y sistemas tecnológicos.
+Párrafo reformado G.O. CDMX 27/08/25
+Dicha autorización será clasificada como confidencial y deberá resguardarse junto con la información
+obtenida por esos sistemas tecnológicos, de conformidad con lo dispuesto en la presente Ley y la Ley de
+Transparencia, Acceso a la Información Pública y Rendición de Cuentas de la Ciudad de México.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-5">
+          <num>Artículo 5</num>
+          <paragraph id="art-5-para-1">
+            <content>
+              <p>Artículo 5 Bis.- Queda prohibida la colocación de propaganda, mantas, lonas, carteles, espectaculares,
+estructuras, señalizaciones y en general, cualquier objeto que impida, distorsione, obstruya o limite el
+cumplimiento de las funciones de los equipos y sistemas tecnológicos.
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-6.">
+          <num>Artículo 6.</num>
+          <paragraph id="art-6.-para-1">
+            <content>
+              <p>Artículo 6.- Podrán solicitar que la Secretaría, bajo su operación, resguardo y presupuesto, instale
+equipos y sistemas tecnológicos para la seguridad pública en los bienes de uso común de la Ciudad de
+México:
+I. La persona titular de la Fiscalía, a propuesta de las personas titulares de las Coordinaciones,
+Fiscalías Especializadas, Fiscalías desconcentradas y centrales de investigación y de Procesos,
+así como de las Direcciones Generales de Política Criminal y de la Unidad de Estadística y
+Transparencia;
+Fracción reformada G.O. CDMX 27/08/25
+II. La Consejería Jurídica y de Servicios Legales, con información a propuesta de las y los Jueces
+Cívicos;
+Fracción reformada G.O. CDMX 27/08/25
+III. Otras Dependencias de la Administración Pública Local de la Ciudad de México, que justifiquen
+la necesidad de su instalación, para prevenir situaciones de emergencia o desastre, o
+incrementar la seguridad ciudadana; y
+Fracción reformada G.O. CDMX 27/08/25
+IV. Las personas titulares de las Alcaldías, a la propuesta de los Comités de Seguridad Ciudadana
+de sus correspondientes demarcaciones.
+Fracción reformada G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-7.">
+          <num>Artículo 7.</num>
+          <paragraph id="art-7.-para-1">
+            <content>
+              <p>Artículo 7.- Para la instalación de equipos y sistemas tecnológicos en bienes del dominio público de la
+Ciudad de México, la Secretaría tomará en cuenta los siguientes criterios:
+I. Lugares registrados como zonas peligrosas;
+II. Áreas públicas de zonas, colonias y demás lugares de concentración o afluencia de personas, o
+tránsito de las mismas, registradas en la estadística criminal de la Secretaría y de la Fiscalía,
+con mayor incidencia delictiva;
+Fracción reformada G.O. CDMX 27/08/25
+III. Colonias, manzanas, avenidas y calles, que registran los delitos de mayor impacto para la
+sociedad;
+IV. Intersecciones más conflictivas así clasificadas por la Subsecretaría de Control de Tránsito de
+la Secretaría de Seguridad Ciudadana de la Ciudad de México, en las 16 Alcaldías de esta
+Ciudad;
+V. Zonas registradas con mayor incidencia de infracciones a la Ley de Cultura Cívica;
+VI. Zonas con mayor vulnerabilidad a fenómenos de origen natural o humano; y
+VII. Afuera de los centros escolares en todos sus tipos y niveles.
+La definición de los lugares de ubicación de equipos tecnológicos, se basará en la inteligencia para la
+prevención, las herramientas para la toma de decisiones, comprendidas por Atlas Delincuencial, el Atlas
+de Riesgos, las intersecciones más conflictivas, los índices delictivos, destacando las conductas ilícitas
+de alto impacto y su incidencia delictiva, las zonas peligrosas, los índices de percepción de seguridad,
+los registros de llamadas de denuncias así como por cualquier otro instrumento de análisis, diferente
+de la inteligencia para la prevención, que permita la toma de decisiones en materia de seguridad
+ciudadana, y demás información que posibilite su adecuada colocación, para el cumplimiento de sus
+finalidades.
+Párrafo reformado G.O. CDMX 27/08/25
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-8.">
+          <num>Artículo 8.</num>
+          <paragraph id="art-8.-para-1">
+            <content>
+              <p>Artículo 8.- La solicitud se hará por escrito dirigida a la Secretaría, la que determinará lo procedente de
+conformidad con los criterios a que hace referencia el artículo anterior.
+Una vez cumplidos los requisitos previstos en esta Ley, la Secretaría dará prioridad a la instalación en
+las zonas escolares, recreativas y lugares de mayor afluencia de público.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-9.">
+          <num>Artículo 9.</num>
+          <paragraph id="art-9.-para-1">
+            <content>
+              <p>Artículo 9.- La información generada por la utilización de los equipos y sistemas tecnológicos, en poder
+de la Secretaría, podrá ser preservada en la forma y plazos dispuestos en el Reglamento de esta Ley,
+especialmente la que sean utilizada en un procedimiento a los que se refiere el artículo 15 de esta Ley.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-10.">
+          <num>Artículo 10.</num>
+          <paragraph id="art-10.-para-1">
+            <content>
+              <p>Artículo 10.- El Gobierno de la Ciudad de México instalará los Centros de Control, Comando, Cómputo y
+Comunicaciones, para el manejo de la información obtenida con equipos y sistemas tecnológicos, los
+cuales estarán operados y coordinados por la Secretaría y sujetos a la regulación de esta Ley.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-11.">
+          <num>Artículo 11.</num>
+          <paragraph id="art-11.-para-1">
+            <content>
+              <p>Artículo 11.- Los Centros de Comando y Control en las Demarcaciones Territoriales de la Ciudad de
+México, serán operados, coordinados e instalados por la Secretaría, a través de los Centros de Control,
+Comando, Cómputo y Comunicaciones existentes; pero en todos los casos existirá representación de la
+Alcaldía correspondiente, para los asuntos que recaigan en el ámbito de su competencia. Se
+coordinarán y compartirán información con otras instancias, en los términos de la presente Ley y el
+Reglamento.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-12.">
+          <num>Artículo 12.</num>
+          <paragraph id="art-12.-para-1">
+            <content>
+              <p>Artículo 12.- Las áreas de la administración pública central, desconcentrada y paraestatal del Gobierno
+de la Ciudad de México y las Instituciones Privadas que instalen y operen equipos o sistemas
+tecnológicos, dentro de un Centro de Control, Comando, Cómputo y Comunicaciones, o dentro de un
+Centro de Comando y Control, requerirán justificar su participación, su aportación al mantenimiento
+del orden y tranquilidad en la convivencia social, así como el tipo de servicio que dará a la población.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-13.">
+          <num>Artículo 13.</num>
+          <paragraph id="art-13.-para-1">
+            <content>
+              <p>Artículo 13.- Los equipos y sistemas tecnológicos utilizados por las áreas de la administración pública
+central, desconcentrada y paraestatal del Gobierno de la Ciudad de México y las Instituciones Privadas
+que operen en los Centros de Control, Comando, Cómputo y Comunicaciones, o dentro de un Centro de
+Comando y Control, deberán incorporarse al Registro, en términos del artículo 3 de la presente Ley.
+Artículo reformado G.O. CDMX 27/08/25
+Las Instituciones de Seguridad Ciudadana deberán unificar sus equipos y sistemas tecnológicos entre
+sí; procurarán que estos equipos y sistemas tecnológicos estén homologados con las bases de datos
+metropolitanas y nacionales que se establezcan en el marco del Sistema Nacional de Seguridad Pública.
+Párrafo reformado G.O. CDMX 27/08/25
+El Reglamento normará la actuación y coordinación de las Dependencias de la Ciudad de México y las
+Instituciones Públicas y Privadas en los Centros a que hace referencia el párrafo anterior, de
+conformidad con esta Ley y otras disposiciones aplicables.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-14.">
+          <num>Artículo 14.</num>
+          <paragraph id="art-14.-para-1">
+            <content>
+              <p>Artículo 14.- Para el óptimo aprovechamiento y oportuna actualización de los equipos y sistemas
+tecnológicos, el Gobierno de la Ciudad de México establecerá el Consejo Asesor en Educación, Ciencia,
+Tecnología e Innovación para la Seguridad Ciudadana, constituido por las personas titulares de las
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+áreas tecnológicas de las Instituciones de Seguridad Ciudadana así como del área que designe la
+persona titular de la Secretaría de la Educación, Ciencia, Tecnología e Innovación de la Ciudad de
+México o bien que sea creada para ese efecto por la Junta Directiva de la Secretaría de la Educación,
+Ciencia, Tecnología e Innovación de la Ciudad de México.
+Artículo reformado G.O. CDMX 27/08/25
+Las funciones del Consejo Asesor en Educación, Ciencia, Tecnología e Innovación para la Seguridad
+Ciudadana, serán las siguientes:
+Párrafo reformado G.O. CDMX 27/08/25
+I. Diseñar políticas para la adquisición, utilización e implementación de equipos y sistemas
+tecnológicos por la Secretaría y la Fiscalía General de Justicia de la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+II. Asesorar las labores que la Secretaría de la Educación, Ciencia, Tecnología e Innovación de la
+Ciudad de México realice en el Comité de Autorizaciones de Adquisiciones, Arrendamiento y
+Prestación de Servicios de la Secretaría, siempre y cuando se relacionen con la adquisición de
+Tecnología para la misma;
+Fracción reformada G.O. CDMX 27/08/25
+III. Atender las consultas que, en materia de ciencia y tecnología para la seguridad ciudadana,
+solicite la persona titular de la Jefatura de Gobierno por sí o a través de las Instituciones de
+Seguridad Ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+IV. Emitir opinión sobre los procesos, equipos y sistemas tecnológicos para una segura, eficiente,
+debida y sustentable destrucción de la información a que hace referencia esta Ley; y
+V. Las demás que se señalen en el Reglamento de la presente Ley.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-15.">
+          <num>Artículo 15.</num>
+          <paragraph id="art-15.-para-1">
+            <content>
+              <p>Artículo 15.- La información materia de esta Ley, compuesta por imágenes o sonidos captados equipos o
+sistemas tecnológicos, sólo pueden ser utilizados en:
+I. La prevención de los delitos, principalmente, a través de la generación de inteligencia para la
+prevención y de las herramientas para la toma de decisiones en materia de seguridad
+ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+II. La investigación y persecución de los delitos, especialmente aquella información que la
+Secretaría debe poner del conocimiento de la autoridad ministerial, ya sea para sustentar una
+puesta a disposición o por requerimiento de ésta, al constar en ella la comisión de un delito o
+circunstancias relativas a esos hechos;
+III. La prevención de infracciones administrativas, principalmente a través de la generación de
+inteligencia para la prevención y de las herramientas para la toma de decisiones en materia de
+seguridad ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+IV. La sanción de infracciones administrativas, especialmente aquella información que la
+Secretaría debe poner del conocimiento del Juez Cívico u otra autoridad administrativa
+competente, ya sea para sustentar una puesta a disposición o por requerimiento de ésta,
+conforme a los plazos que permita el procedimiento que se ventile, al constar en ella la
+comisión de una falta administrativa o circunstancias relativas a esos hechos;
+V. La justicia para adolescentes, principalmente a través de la generación de inteligencia para la
+prevención y de las herramientas para la toma de decisiones de seguridad ciudadana, relativas
+a adolescentes, así como de la información obtenida con equipo o sistemas tecnológicos que la
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+Secretaría deba poner del conocimiento de la autoridad ministerial especializada, ya sea para
+sustentar una puesta a disposición o por requerimiento de ésta, al constar en ella la comisión
+de una conducta sancionada como delito en las leyes penales y cometida por una persona que
+tenga entre doce años cumplidos y menos de dieciocho años de edad, o bien que se aprecien
+circunstancias relativas a esos hechos; y
+Fracción reformada G.O. CDMX 27/08/25
+VI. Reacción inmediata, preferentemente a través de los procedimientos que se establezcan en la
+Secretaría, para actuar, de forma pronta y eficaz, en los casos en que, a través de la información
+obtenida con equipos y sistemas tecnológicos, se aprecie la comisión de un delito o infracción
+administrativa y se esté en posibilidad jurídica y material de asegurar al probable responsable,
+de conformidad con la Ley que regula el Uso de la Fuerza de los Cuerpos de Seguridad Pública
+del Distrito Federal.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-16.">
+          <num>Artículo 16.</num>
+          <paragraph id="art-16.-para-1">
+            <content>
+              <p>Artículo 16.- La información a que se refiere esta Ley no podrá obtenerse, clasificarse, analizarse,
+custodiarse o utilizarse como medio de prueba en los siguientes supuestos:
+I. Cuando provenga de la intervención de comunicaciones privadas, salvo cuando sea autorizada
+por la autoridad judicial federal de conformidad con la Constitución Política de los Estados
+Unidos Mexicanos y las leyes secundarias;
+II. Cuando se clasifique, analice, custodie, difunda o distribuya en contravención a la Ley de
+Transparencia, Acceso a la Información Pública y Rendición de Cuentas de la Ciudad de México;
+y
+Fracción reformada G.O. CDMX 27/08/25
+III. Cuando se obtenga al interior de un domicilio o violente el derecho a la vida privada de las
+personas, excepto en los casos de flagrancia o mandamiento judicial, en cuyo caso, deberá
+observarse lo siguiente:
+a) Si con el uso de equipos o sistemas tecnológicos se obtiene información que violente esta
+disposición, la Secretaría, de forma oficiosa y expedita, deberá destruir la misma,
+motivando la razón de tal hecho, asegurándose de que no sea archivada, clasificada,
+analizada o custodiada de forma alguna; y
+b) En el supuesto de que, junto con información relevante para la seguridad pública, obtenida
+con el uso de equipos o sistemas tecnológicos, a que hace referencia el artículo anterior, se
+obtuviere información que afecte los derechos preservados en esta fracción y dicha parte
+no pueda ser eliminada por riesgo a afectar la integridad de la información, la Secretaría
+clasificará sólo esa parte como confidencial y le dará el trato correspondiente, de
+conformidad con esta Ley y la Ley de Transparencia, Acceso a la Información Pública y
+Rendición de Cuentas de la Ciudad de México.
+Inciso reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-17.">
+          <num>Artículo 17.</num>
+          <paragraph id="art-17.-para-1">
+            <content>
+              <p>Artículo 17.- Los particulares que así lo deseen podrán conectar sus equipos y sistemas tecnológicos
+privados al sistema que para el efecto instale la Secretaría, con la finalidad primaria de atender eventos
+con reacción inmediata.
+En el Reglamento de la presente Ley se establecerán los requisitos formales y tecnológicos para que se
+permita tal conexión.
+Toda información obtenida con equipos o sistemas tecnológicos de particulares conectados al sistema
+implementado por la Secretaría, deberá recibir el tratamiento establecido en la presente Ley.
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-18.">
+          <num>Artículo 18.</num>
+          <paragraph id="art-18.-para-1">
+            <content>
+              <p>Artículo 18.- Las Instituciones de Seguridad Ciudadana podrán convenir con instituciones similares de
+la Federación, otras Entidades Federativas o Municipios, la utilización conjunta de equipos y sistemas
+tecnológicos o procedimientos para la obtención de información, conforme a lo siguiente:
+Artículo reformado G.O. CDMX 27/08/25
+I. Los convenios a que se refiere este artículo, deben incluirse en el informe anual que rinda la
+persona titular de la Secretaría, al Congreso de la Ciudad de México; y
+Fracción reformada G.O. CDMX 27/08/25
+II. La autoridad que suscriba el convenio, debe cerciorarse de que en los procesos de obtención,
+clasificación, análisis y custodia de información, referente a lugares de la Ciudad de México, se
+observen los lineamientos que esta Ley dispone para la información obtenida por las
+Instituciones de Seguridad Ciudadana de la Ciudad de México.
+Fracción reformada G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-19.">
+          <num>Artículo 19.</num>
+          <paragraph id="art-19.-para-1">
+            <content>
+              <p>Artículo 19.- Los permisionarios de servicios de seguridad privada en la Ciudad de México, que utilicen
+tecnología a través de la cual se capte información, tendrán las siguientes obligaciones:
+Artículo reformado G.O. CDMX 27/08/25
+I. Inscribir en el Registro establecido en esta Ley así como en el Registro de Servicios de
+Seguridad Privada la utilización de estos sistemas tecnológicos, conforme a la Ley de la
+materia;
+La instalación de equipos o sistemas tecnológicos fijos en bienes de uso privado de la
+Federación o de la Ciudad de México o de bienes particulares requerirá autorización por
+escrito de las personas titulares de esos derechos o de sus representantes legales, de la cual se
+remitirá copia certificada a la Secretaría;
+Párrafo reformado G.O. CDMX 27/08/25
+Para instalar equipos o sistemas tecnológicos fijos en bienes de uso común de la Ciudad de
+México o que, por su dirección o manejo, capten información acontecida en los mismos, el
+permisionario de servicios de seguridad privada solicitará autorización para ello a la Secretaría
+la que, en caso de proveer afirmativamente, asentará tal circunstancia en el Registro de
+Servicios de Seguridad Privada;
+Párrafo reformado G.O. CDMX 27/08/25
+II. Remitir a la Secretaría, dentro de un término de 30 días hábiles, copia fiel e inalterada, de toda
+información obtenida con sus sistemas tecnológicos, en la forma y modalidades que se
+establezcan en el Reglamento respectivo;
+III. Proporcionar a la Secretaría, en un plazo de cinco días hábiles contados a partir del momento
+en que se registró el hecho, copia fiel e inalterada, de toda información obtenida con sus
+sistemas tecnológicos, y que se relacione con las materias establecidas en el artículo 15 de la
+presente Ley, así como un informe emitido por el permisionario en donde, bajo protesta de
+decir verdad, se describan las circunstancias en que se captó dicha información, el tramo de la
+grabación, cinta o cualquier otro medio electrónico en el que se aprecian esos hechos así como
+una descripción de los mismos;
+No tendrán esta obligación los prestatarios de servicios de seguridad privada que obtengan
+información con los equipos o sistemas tecnológicos, registrados ante la Secretaría, y que
+capten hechos probablemente constitutivos de delito o conducta antisocial, perseguibles sólo
+por querella de parte ofendida; y
+IV. Proporcionar a la Secretaría copia fiel e inalterada de toda información obtenida con sus
+sistemas tecnológicos, en un plazo de cinco días hábiles contados a partir del momento en que
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+sea requerida por esa Dependencia. Dicha información se remitirá mediante documento
+suscrito bajo protesta de decir verdad por el permisionario.
+Cuando cualquier autoridad judicial o administrativa de la Ciudad de México necesite con motivo de sus
+funciones, la información a que hace referencia esta fracción, la solicitará a la Secretaría, la que
+desahogará el procedimiento para recabarla en términos del presente artículo.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-20.">
+          <num>Artículo 20.</num>
+          <paragraph id="art-20.-para-1">
+            <content>
+              <p>Artículo 20.- En los procesos de clasificación, análisis, custodia y remisión a cualquier autoridad, de la
+información a que hace referencia el artículo anterior, la Secretaría atenderá lo establecido en los
+artículos 15 y 16 de esta Ley.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-21.">
+          <num>Artículo 21.</num>
+          <paragraph id="art-21.-para-1">
+            <content>
+              <p>Artículo 21.- Los particulares tienen las obligaciones y limitaciones en la utilización de equipos o
+sistemas tecnológicos así como en la obtención, análisis, custodia y difusión de información captada con
+ellos, establecidas en la Constitución Política de los Estados Unidos Mexicanos así como en las Leyes
+federales y locales aplicables.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-22.">
+          <num>Artículo 22.</num>
+          <paragraph id="art-22.-para-1">
+            <content>
+              <p>Artículo 22.- Toda información obtenida por la Secretaría con el uso de equipos o sistemas tecnológicos,
+conforme a los lineamientos de la presente Ley, debe registrarse, clasificarse y tratarse de conformidad
+con lo establecido en la Ley de Transparencia, Acceso a la Información Pública y Rendición de Cuentas
+de la Ciudad de México.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-23.">
+          <num>Artículo 23.</num>
+          <paragraph id="art-23.-para-1">
+            <content>
+              <p>Artículo 23.- Toda información recabada por la Secretaría, con arreglo a la presente Ley, se considerará
+reservada en los siguientes casos:
+I. Aquella cuya divulgación implique la revelación de normas, procedimientos, métodos, fuentes,
+especificaciones técnicas, sistemas, tecnología o equipos útiles a la generación de inteligencia
+para la prevención o el combate a la delincuencia en la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+II. Aquella cuya revelación pueda ser utilizada para actualizar o potenciar una amenaza a la
+seguridad ciudadana o las instituciones de la Ciudad de México; y
+Fracción reformada G.O. CDMX 27/08/25
+III. La información y los materiales de cualquier especie que sean producto de una intervención de
+comunicaciones privadas autorizadas conforme a la Constitución Política de los Estados Unidos
+Mexicanos y las Leyes reglamentarias correspondientes.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-24.">
+          <num>Artículo 24.</num>
+          <paragraph id="art-24.-para-1">
+            <content>
+              <p>Artículo 24.-Toda información recabada por la Secretaría con el uso de equipos o sistemas tecnológicos,
+independientemente de su clasificación, deberá ser remitida, con los documentos a que hace referencia
+la presente Ley, a cualquier autoridad judicial o administrativa de la Ciudad de México que la requiera
+para el cumplimiento de sus atribuciones.
+Artículo reformado G.O. CDMX 27/08/25
+La Secretaría sólo podrá requerir que se le informe el número de Averiguación Previa, asunto o
+expediente y autoridad ante la que se encuentra radicado el asunto para remitir, a la brevedad, la
+información solicitada.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-25.">
+          <num>Artículo 25.</num>
+          <paragraph id="art-25.-para-1">
+            <content>
+              <p>Artículo 25.- La Secretaría debe garantizar la inviolabilidad e inalterabilidad de la información recabada
+con equipos o sistemas tecnológicos, mediante la Cadena de Custodia correspondiente.
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+Las personas servidoras públicas que tengan bajo su custodia la información a que hace referencia este
+artículo, serán responsables directamente de su guarda, inviolabilidad e inalterabilidad, hasta en tanto
+no hagan entrega de la misma a otra persona servidora pública, dando cuenta de dicho acto en el
+documento donde conste la Cadena de Custodia de la misma.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-26.">
+          <num>Artículo 26.</num>
+          <paragraph id="art-26.-para-1">
+            <content>
+              <p>Artículo 26.- Las personas servidoras públicas de la Secretaría que participen en la obtención,
+clasificación, análisis o custodia de información para la seguridad ciudadana a través de tecnología,
+deberán abstenerse de obtener o guardar o transferir el original o copia de dicha información.
+Artículo reformado G.O. CDMX 27/08/25
+Asimismo, dichas personas servidoras públicas deberán otorgar por escrito una promesa de
+confidencialidad que observarán en todo tiempo, aún después de que hayan cesado en el cargo en razón
+del cual se les otorgó el acceso.
+Párrafo reformado G.O. CDMX 27/08/25
+Las personas servidoras públicas del Ministerio Público, Autoridad especializada en Justicia para
+Adolescentes o Autoridad que ventile un procedimiento administrativo, seguido en forma de juicio,
+establecido en la normativa de la Ciudad de México, deberán acatar las disposiciones de este artículo
+cuando, por razón de su encargo, conozcan o manejen información reservada a que hace referencia esta
+Ley y la Ley de Transparencia, Acceso a la Información Pública y Rendición de Cuentas de la Ciudad de
+México.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-27.">
+          <num>Artículo 27.</num>
+          <paragraph id="art-27.-para-1">
+            <content>
+              <p>Artículo 27.- La inobservancia a lo dispuesto en los dos artículos precedentes, constituye
+responsabilidad administrativa grave, para los efectos de la Ley Federal de Responsabilidades de los
+Servidores Públicos, y la Ley de Responsabilidades Administrativas de la Ciudad de México, sin
+perjuicio de la sanción correspondiente al delito de ejercicio ilegal de servicio público, previsto en el
+Código Penal para el Distrito Federal.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-28.">
+          <num>Artículo 28.</num>
+          <paragraph id="art-28.-para-1">
+            <content>
+              <p>Artículo 28.- La información obtenida por la Secretaría y por particulares, con el uso de los equipos o
+sistemas tecnológicos a que hace referencia la presente Ley, podrá utilizarse en el análisis de
+inteligencia para la prevención a través del diseño de los medios y productos a que hace referencia el</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-29.">
+          <num>Artículo 29.</num>
+          <paragraph id="art-29.-para-1">
+            <content>
+              <p>Artículo 29.- La información obtenida con equipos o sistemas tecnológicos obtenida en términos de esta
+Ley, constituye un medio de prueba en los procedimientos ministeriales y judiciales; de Justicia para
+Adolescentes; y, administrativos, seguidos en forma de juicio, establecidos en la normativa de la Ciudad
+de México, con los que tenga relación.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-30.">
+          <num>Artículo 30.</num>
+          <paragraph id="art-30.-para-1">
+            <content>
+              <p>Artículo 30.- La Secretaría deberá acompañar la información obtenida con equipos o sistemas
+tecnológicos regulados por esta Ley, autentificada por escrito, en las remisiones y puestas a disposición
+en que se considere necesario, precisando su origen y las circunstancias en que se allegó de ella.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-31.">
+          <num>Artículo 31.</num>
+          <paragraph id="art-31.-para-1">
+            <content>
+              <p>Artículo 31.- La Secretaría deberá remitir la información obtenida con equipos o sistemas tecnológicos
+regulados por esta, en el menor tiempo posible, cuando le sea requerida por Ministerio Público;
+Autoridad Judicial; Autoridad Especializada en Justicia para Adolescentes; o Autoridad Administrativa,
+que ventile procedimiento, seguido en forma de juicio, establecidos en la normativa de la Ciudad de
+México.
+Artículo reformado G.O. CDMX 27/08/25
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-32.">
+          <num>Artículo 32.</num>
+          <paragraph id="art-32.-para-1">
+            <content>
+              <p>Artículo 32.- La información obtenida con equipos o sistemas tecnológicos por particulares o por
+Instituciones de Seguridad Pública Federales, de una Entidad Federativa diferente a la Ciudad de
+México o Municipales, será solicitada, obtenida y valorada, en su caso, por el Ministerio Público,
+Autoridad Judicial o especializada en Justicia para Adolescentes, o Autoridad Administrativa que ventile
+procedimiento seguido en forma de juicio, establecido en la normativa de la Ciudad de México, de
+conformidad con la Ley aplicable al caso.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-33.">
+          <num>Artículo 33.</num>
+          <paragraph id="art-33.-para-1">
+            <content>
+              <p>Artículo 33.- Los medios de prueba obtenidos con equipos o sistemas tecnológicos por la Secretaría,
+podrán valorarse en un procedimiento ministerial o judicial; de Justicia para Adolescentes; o,
+administrativos, seguidos en forma de juicio, establecidos en la normativa de la Ciudad de México,
+cuando reúnan los requisitos siguientes:
+Artículo reformado G.O. CDMX 27/08/25
+I. Se obtengan con estricto apego a los requisitos exigidos en la presente Ley; y
+II. Se acompañen de un escrito de autentificación de la Secretaría que obtuvo la información, que
+deberá contener:
+a) Descripción de las circunstancias de tiempo, modo y lugar en las que se obtuvo la
+información, especificando la tecnología utilizada y circunstancias particulares del proceso
+de obtención relevantes para la debida valoración e interpretación de la prueba, así como
+de las personas servidoras públicas que la recabaron, sus cargos y adscripciones;
+Inciso reformado G.O. CDMX 27/08/25
+b) Descripción detallada de los elementos visuales o de otra índole que se aprecian en la
+información obtenida con los equipos o sistemas tecnológicos así como transcripción de las
+partes inteligibles de los elementos sonoros contenidos en la misma;
+c) Copia certificada de la Cadena de Custodia de la información obtenida;
+d) Señalar expresamente que la información remitida no sufrió modificación alguna, sea por
+medio físico o tecnológico, que altere sus elementos visuales, sonoros o de otra índole; y
+e) Firma de la persona servidora pública autorizada para ello por acuerdo de la persona
+titular de la Secretaría, mismo que debe ser publicado en la Gaceta Oficial de la Ciudad de
+México.
+Inciso reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-34.">
+          <num>Artículo 34.</num>
+          <paragraph id="art-34.-para-1">
+            <content>
+              <p>Artículo 34.- La información obtenida con equipos y sistemas tecnológicos a que hace referencia esta
+Ley hará prueba plena, salvo el caso en que, durante el transcurso del procedimiento correspondiente,
+se acredite que fue obtenida en contravención de alguna de las disposiciones de la presente Ley. En
+todo caso el juzgador apreciará el resultado de las pruebas de refutabilidad a que haya sido sometida
+para determinar su alcance probatorio.
+El valor de la prueba tendrá alcance pleno sólo en cuanto a los hechos y circunstancias objetivos que se
+desprendan de la probanza obtenida por la Secretaría con el uso de equipos o sistemas tecnológicos;
+para todas las demás circunstancias, su alcance será indiciario.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-35.">
+          <num>Artículo 35.</num>
+          <paragraph id="art-35.-para-1">
+            <content>
+              <p>Artículo 35.- La información en poder de Instituciones de Seguridad Ciudadana obtenida a través del
+uso de equipos o sistemas tecnológicos puede ser suministrada o intercambiada con la Federación,
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+Estados y Municipios del país, de conformidad con la Constitución Política de los Estados Unidos
+Mexicanos, la Ley General del Sistema Nacional de Seguridad Pública, la Ley de Seguridad Nacional y la
+Ley del Sistema de Seguridad Ciudadana de la Ciudad de México, conforme a los siguientes
+lineamientos:
+Artículo reformado G.O. CDMX 27/08/25
+I. La información recabada por la Secretaría a través del uso de equipos o sistemas tecnológicos,
+sólo puede ser suministrada o intercambiada cuando ésta reúna todos y cada uno de los
+requisitos exigidos en la presente Ley.
+Dicha información puede proporcionarse tal y como se obtuvo de los equipos o sistemas
+tecnológicos y sólo se remitirá con los requisitos que establece el artículo 33 o cualquier otra
+especificación cuando así se pacte en el convenio respectivo;
+II. La información obtenida por particulares a través del uso de equipos o sistemas tecnológicos,
+en poder de Instituciones de Seguridad Ciudadana, sólo podrá ser materia de suministro o
+intercambio con la Federación, Estados o Municipios de los Estados Unidos Mexicanos, cuando
+se recabe conforme a lo establecido en el Capítulo IV y no violente las disposiciones del artículo
+21 de esta Ley;
+Fracción reformada G.O. CDMX 27/08/25
+III. Para la comunicación e intercambio con la Federación, Estados o Municipios de los Estados
+Unidos Mexicanos, de productos de inteligencia para la prevención de la delincuencia, en los
+que las Instituciones de Seguridad Ciudadana hubieran analizado información obtenida a
+través del uso de equipos o sistemas tecnológicos, cualquiera que fuese el ente que la recabó, el
+Gobierno de la Ciudad de México deberá vigilar que no se vulnere alguno de los requisitos
+exigidos en el artículo 16 ni se ponga en riesgo la seguridad de las Instituciones de la Ciudad de
+México; y
+Fracción reformada G.O. CDMX 27/08/25
+IV. No se autoriza el suministro o intercambio de información en poder de Instituciones de
+Seguridad Ciudadana, obtenida a través del uso de equipos o sistemas tecnológicos, o de
+productos de inteligencia para la prevención, derivada de dicha información, con personas
+físicas o morales particulares de nacionalidad mexicana o extranjera, cualquiera que sea su
+naturaleza.
+Fracción reformada G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-36.">
+          <num>Artículo 36.</num>
+          <paragraph id="art-36.-para-1">
+            <content>
+              <p>Artículo 36.- Se exceptúa de la prohibición contenida en la fracción IV del artículo anterior, a los
+permisionarios de servicios de seguridad privada, por lo que el Gobierno de la Ciudad de México podrá
+suscribir con los mismos, convenio de suministración de información obtenida a través del uso de
+equipos o sistemas tecnológicos o productos de inteligencia para la prevención derivada de dicha
+información, conforme a lo siguiente:
+Párrafo reformado G.O. CDMX 27/08/25
+I. Que los permisionarios de los servicios de seguridad privada cuenten con autorización,
+licencia, permiso o aviso de registro, vigente, expedido por la Secretaría;
+II. Que el suministro de información o productos de inteligencia tenga como función principal la
+debida actuación de los permisionarios en el desempeño de sus servicios de seguridad privada,
+así como el combate a la delincuencia y otras conductas ilícitas, en ejercicio de sus actividades
+auxiliares o complementarias de la seguridad ciudadana;
+Fracción reformada G.O. CDMX 27/08/25
+III. Que no existan antecedentes de haber incumplido las obligaciones de suministro de
+información, contenidas en esta Ley, así como la consistente en proporcionar apoyo y
+colaboración a las autoridades e Instituciones de Seguridad Ciudadana, cuando éstas lo
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+requieran en caso de emergencia, siniestro o desastre, conforme al artículo 32 de la Ley de
+Seguridad Privada para la Ciudad de México;
+Fracción reformada G.O. CDMX 27/08/25
+IV. Que las empresas de seguridad privada no hayan sido sancionadas en los últimos seis meses
+por la Secretaría, de conformidad con la Ley de Seguridad Privada para la Ciudad de México, y
+Fracción reformada G.O. CDMX 27/08/25
+V. Que el Gobierno de la Ciudad de México procurará que con la suscripción del convenio no se
+beneficie indebidamente a un permisionario de servicios de seguridad privada en perjuicio de
+otros.
+Fracción reformada G.O. CDMX 27/08/25
+En caso de tratarse de un peligro inminente a la seguridad pública, el Gobierno de la Ciudad de México
+podrá suscribir convenio de suministro de información con permisionarios de servicios de seguridad
+privada de forma provisional y urgente, siempre y cuando se reúnan los requisitos exigidos en las
+fracciones II y V del presente artículo.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-37.">
+          <num>Artículo 37.</num>
+          <paragraph id="art-37.-para-1">
+            <content>
+              <p>Artículo 37.- Para realizar los suministros o intercambios a que hace referencia este capítulo, la persona
+titular de la Jefatura de Gobierno de la Ciudad de México por sí o a través de la persona servidora
+pública que designe para tal efecto, suscribirá los convenios correspondientes.
+Párrafo reformado G.O. CDMX 27/08/25
+En dichos convenios, el Gobierno de la Ciudad de México deberá garantizar que las autoridades que
+reciban la información obtenida a través del uso de equipos o sistemas tecnológicos, le proporcionen un
+trato igual al exigido en esta Ley, respetando en todo momento los Derechos Humanos.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-38.">
+          <num>Artículo 38.</num>
+          <paragraph id="art-38.-para-1">
+            <content>
+              <p>Artículo 38.- El Gobierno de la Ciudad de México promoverá la suscripción de los convenios necesarios
+con la Federación, Estados y Municipios colindantes a efecto de unificar sus equipos y sistemas
+tecnológicos así como sus programas y políticas de utilización de los mismos, en el marco del Sistema
+Nacional de Seguridad Pública.
+Párrafo reformado G.O. CDMX 27/08/25
+Asimismo, se procurará que estos equipos y sistemas tecnológicos se homologuen con las bases de
+datos metropolitanas y nacionales que se establezcan en el marco del Sistema Nacional de Seguridad
+Pública.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-39.">
+          <num>Artículo 39.</num>
+          <paragraph id="art-39.-para-1">
+            <content>
+              <p>Artículo 39.- El Gobierno de la Ciudad de México, en la suscripción de convenios de suministro o
+intercambio de información a que hace referencia este capítulo, atenderá prioritariamente los
+respectivos a las Entidades Federativas y Municipios colindantes, así como a los compromisos
+contraídos en el marco del Sistema Nacional de Seguridad Pública.
+Párrafo reformado G.O. CDMX 27/08/25
+El proceso de suscripción de estos convenios, además de lo establecido en la presente Ley, atenderá a lo
+preceptuado en la Ley de Coordinación Metropolitana de la Ciudad de México.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-40.">
+          <num>Artículo 40.</num>
+          <paragraph id="art-40.-para-1">
+            <content>
+              <p>Artículo 40.- La información obtenida a través del uso de sistemas tecnológicos o los productos de
+inteligencia derivados del análisis a los mismos, proporcionados por otros órdenes de gobierno, deberá
+ser procesada y resguardada en los términos establecidos en la presente Ley.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-41.">
+          <num>Artículo 41.</num>
+          <paragraph id="art-41.-para-1">
+            <content>
+              <p>Artículo 41.- Todo sistema y equipo tecnológico relacionado con servicios de alertamiento al público,
+deberá contar previamente con un plan operativo, que establezca con precisión las acciones de
+coordinación entre Dependencias responsables, la participación que corresponde a la población, antes,
+durante y después de una situación de emergencia o desastre, de conformidad con la legislación
+aplicable en la materia de que se trate.</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-42.">
+          <num>Artículo 42.</num>
+          <paragraph id="art-42.-para-1">
+            <content>
+              <p>Artículo 42.- Las Instituciones de Seguridad Ciudadana implementarán el método de procesamiento y
+validación de información estadística, que garantice la veracidad en los datos que reportan.
+Párrafo reformado G.O. CDMX 27/08/25
+Las Instituciones de Seguridad Ciudadana procurarán la estandarización de los criterios técnicos y de
+compatibilidad e interoperabilidad de sus respectivos equipos y sistemas tecnológicos, conforme a los
+convenios a que hace referencia esta Ley.
+Párrafo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-43.">
+          <num>Artículo 43.</num>
+          <paragraph id="art-43.-para-1">
+            <content>
+              <p>Artículo 43.- Para contribuir a la formación de una cultura preventiva en la población de la Ciudad de
+México, las Instituciones de Seguridad Ciudadana difundirán de manera permanente y actualizada, los
+índices delictivos y las zonas y colonias más peligrosas, acompañando dicha información con
+recomendaciones específicas para la autoprotección.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-44.">
+          <num>Artículo 44.</num>
+          <paragraph id="art-44.-para-1">
+            <content>
+              <p>Artículo 44.- Para fomentar en la población una cultura vial y peatonal, las Instituciones de Seguridad
+Ciudadana difundirán de manera permanente y actualizada información de las intersecciones más
+conflictivas, estadísticas de percances viales y sus causas que los ocasionan, acompañadas de
+recomendaciones específicas para la autoprotección.
+Artículo reformado G.O. CDMX 27/08/25</p>
+            </content>
+          </paragraph>
+        </article>
+        <article id="art-45.">
+          <num>Artículo 45.</num>
+          <paragraph id="art-45.-para-1">
+            <content>
+              <p>Artículo 45.- En el informe anual al Congreso de la Ciudad de México, la Secretaría dará a conocer los
+resultados obtenidos en la seguridad ciudadana, con la utilización de equipos y sistemas tecnológicos y
+su repercusión en las zonas de mayor incidencia delictiva, de mayor comisión de faltas administrativas
+e intersecciones viales más conflictivas.
+Artículo reformado G.O. CDMX 27/08/25
+TRANSITORIOS.
+PRIMERO.-Publíquese en la Gaceta Oficial del Distrito Federal y en el Diario Oficial de la Federación,
+para su mayor difusión.
+SEGUNDO.-La presente Ley entrará en vigor al día siguiente de su publicación en la Gaceta Oficial del
+Distrito Federal. El registro establecido en la presente Ley, entrará en vigor a los 6 meses de su
+publicación en la Gaceta Oficial del Distrito Federal.
+En el término de 90 días, la Asamblea Legislativa del Distrito Federal deberá armonizar los Códigos
+Procesales aplicables a lo establecido en esta Ley para la valoración de la información obtenida con
+equipos y sistemas tecnológicos.
+TERCERO.-El Jefe de Gobierno del Distrito Federal, expedirá el Reglamento de esta Ley dentro de los 90
+días naturales después de la publicación del presente Decreto en la Gaceta Oficial del Distrito Federal.
+CUARTO.-El Jefe de Gobierno deberá constituir el Consejo Asesor en Ciencia y Tecnología para la
+Seguridad Pública, dentro del término de 90 días naturales contados a partir de la publicación de la
+presente Ley en la Gaceta Oficial del Distrito Federal.
+QUINTO.-El Instituto de Ciencia y Tecnología del Distrito Federal deberá adecuar sus Estatutos, a más
+tardar dentro de los treinta días posteriores a la entrada en vigor de la presente ley, para establecer la
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+Dirección General Adjunta en esta materia, responsable de ejecutar las atribuciones respectivas
+establecidas en esta Ley.
+SEXTO.-El Jefe de Gobierno por conducto del Secretario de Finanzas, hará las previsiones necesarias en
+el Proyecto de Presupuesto de Egresos 2009, para someter a la aprobación de esta Asamblea Legislativa
+del Distrito Federal la dotación de los recursos necesarios para la operación de la presente Ley.
+Recinto de la Asamblea Legislativa del Distrito Federal, a los nueve días del mes de octubre del año dos
+mil ocho.- POR LA MESA DIRECTIVA.- DIP. MARTÍN CARLOS OLAVARRIETA MALDONADO, PRESIDENTE.-
+SECRETARIO, DIP. BALFRE VARGAS CORTEZ.- SECRETARIA, DIP. MARÍA ELBA GÁRFIAS MALDONADO.-
+FIRMAS.
+En cumplimiento de lo dispuesto por los artículos 122, apartado C, Base Segunda, fracción II, inciso b),
+de la Constitución Política de los Estados Unidos Mexicanos; 48, 49 y 67, fracción II, del Estatuto de
+Gobierno del Distrito Federal, para su debida publicación y observancia, expido el presente Decreto
+Promulgatorio, en la Residencia Oficial del Jefe de Gobierno del Distrito Federal, en la Ciudad de México,
+a los dieciséis días del mes de octubre del año dos mil ocho.- EL JEFE DE GOBIERNO DEL DISTRITO
+FEDERAL, MARCELO LUIS EBRARD CASAUBON.- FIRMA.
+TRANSITORIOS DEL DECRETO POR EL QUE SE ADICIONAN DIVERSAS DISPOSICIONES A LA LEY QUE
+REGULA EL USO DE TECNOLOGÍA PARA LA SEGURIDAD PÚBLICA DEL DISTRITO FEDERAL, PUBLICADO
+EN LA GACETA OFICIAL DEL DISTRITO FEDERAL EL 6 DE JULIO DE 2012.
+PRIMERO.-El presente decreto entrará en vigor al día siguiente de su publicación en la Gaceta Oficial del
+Distrito Federal.
+SEGUNDO.-Publíquese en la Gaceta Oficial del Distrito Federal y para su mayor difusión en el Diario
+Oficial de la Federación.
+TRANSITORIOS DEL DECRETO POR EL QUE SE REFORMAN DIVERSOS ARTÍCULOS DE CÓDIGOS Y LEYES
+LOCALES, QUE DETERMINAN SANCIONES Y MULTAS ADMINISTRATIVAS, CONCEPTOS DE PAGO Y
+MONTOS DE REFERENCIA, PARA SUSTITUIR AL SALARIO MÍNIMO POR LA UNIDAD DE CUENTA DE LA
+CIUDAD DE MÉXICO, DE MANERA INDIVIDUAL O POR MÚLTIPLOS DE ÉSTA, PUBLICADO EN LA GACETA
+OFICIAL DEL DISTRITO FEDERAL EL 28 DE NOVIEMBRE DE 2014.
+PRIMERO.-Publíquese en la Gaceta Oficial del Distrito Federal.
+SEGUNDO.-El presente Decreto se tomará como referencia para el diseño e integración del paquete
+económico correspondiente al ejercicio fiscal 2015 y entrará en vigor junto con dicho paquete, a
+excepción de lo dispuesto en los artículos SEGUNDO y CUADRAGÉSIMO OCTAVO del presente Decreto
+relacionado con la materia Electoral, que entrarán en vigor al día siguiente a aquél en que concluya el
+proceso electoral 2014-2015 del Distrito Federal.
+TERCERO.-Las reformas contenidas en el presente decreto no se aplicarán de manera retroactiva en
+perjuicio de persona alguna, respecto de las sanciones y multas administrativas, conceptos de pago,
+montos de referencia y demás supuestos normativos que se hayan generado o impuesto de manera
+previa a la entrada en vigor del presente decreto.
+CUARTO.-Las referencias que se hagan del salario mínimo en las normas locales vigentes, incluso en
+aquellas pendientes de publicar o de entrar en vigor, se entenderán hechas a la Unidad de Cuenta de la
+Ciudad de México, a partir de la entrada en vigor del presente Decreto.
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+Recinto de la Asamblea Legislativa del Distrito Federal, a los veinticinco días del mes de noviembre del
+año dos mil catorce.-POR LA MESA DIRECTIV A.- DIP. JAIME ALBERTO OCHOA AMORÓS, PRESIDENTE.-
+DIP. OSCAR OCTAVIO MOGUEL BALLADO, PROSECRETARIO.- DIP. KARLA VALERIA GÓMEZ BLANCAS,
+SECRETARIA.- (Firmas)
+En cumplimiento de lo dispuesto por los artículos 122, apartado C, Base Segunda, fracción 11, inciso b),
+de la Constitución Política de los Estados Unidos Mexicanos; 48, 49 Y 67, fracción 11, del Estatuto de
+Gobierno del Distrito Federal, para su debida publicación y observancia, expido el presente Decreto
+Promulgatorio en la Residencia Oficial del Jefe de Gobierno del Distrito Federal, en la Ciudad de México,
+a los veintiocho días del mes de noviembre del año dos mil catorce.- EL JEFE DE GOBIERNO DEL
+DISTRITO FEDERAL, DR. MIGUEL ÁNGEL MANCERA ESPINOSA.- FIRMA.- EL SECRETARIO DE GOBIERNO,
+HÉCTOR SERRANO CORTÉS.- FIRMA.- EL SECRETARIO DE DESARROLLO ECONÓMICO, SALOMÓN
+CHERTORIVSKI WOLDENBERG.- FIRMA.- EL SECRETARIO DE FINANZAS, EDGAR ABRAHAM AMADOR
+ZAMORA.- FIRMA.
+TRANSITORIOS DEL DECRETO POR EL QUE SE ADICIONA LA FRACCIÓN V AL ARTÍCULO 15, Y SE
+REFORMAN LOS ARTÍCULOS 17 Y 22 DE LA LEY DEL SISTEMA DE SEGURIDAD CIUDADANA DE LA
+CIUDAD DE MÉXICO Y SE ADICIONA UNA FRACCIÓN AL ARTÍCULO 7 DE LA LEY QUE REGULA EL USO DE
+LA TECNOLOGÍA DEL DISTRITO FEDERAL PUBLICADO EN LA GACETA OFICIAL DE LA CIUDAD DE
+MÉXICO EL DÍA 16 DE DICIEMBRE DE 2020.
+PRIMERO. Publíquese el presente decreto en la Gaceta Oficial de la Ciudad de México.
+SEGUNDO. El presente decreto entrará en vigor al día siguiente de su publicación en Gaceta Oficial de la
+Ciudad de México.
+TERCERO. La Secretaría de Seguridad Ciudadana durante el ejercicio fiscal anual, determinará los
+criterios para la instalación de cámaras de video vigilancia en los centros escolares.
+Palacio Legislativo del Congreso de la Ciudad de México, a los veinticuatro días del mes de noviembre
+del año dos mil veinte. POR LA MESA DIRECTIVA.- DIPUTADA MARGARITA SALDAÑA HERNÁNDEZ,
+PRESIDENTA.- DIPUTADA DONAJIOFELIA OLIVERA REYES, SECRETARIA.- DIPUTADO HÉCTOR
+BARRERA MARMOLEJO, SECRETARIO.-(Firmas)
+Con fundamento en lo dispuesto por los artículos 122, apartado A, fracción III, de la Constitución
+Política de los Estados Unidos Mexicanos; 32 apartado C, numeral 1, inciso a) de la Constitución Política
+de la Ciudad de México; 3 fracciones XVII y XVIII, 7párrafo primero, 10 fracción II, 12 y 21, párrafo
+primero de la Ley Orgánica del Poder Ejecutivo y de la Administración Pública dela Ciudad de México,
+para su debida publicación y observancia, expido el presente Decreto Promulgatorio en la Residencia
+Oficial de la Jefatura de Gobierno de la Ciudad de México, a los catorce días del mes de diciembre del
+año dos mil veinte.- LA JEFA DEGOBIERNO DE LA CIUDAD DE MÉXICO, DRA. CLAUDIA SHEINBAUM
+PARDO.- FIRMA.- EL SECRETARIO DE GOBIERNO, JOSÉ ALFONSO SUÁREZ DEL REAL Y AGUILERA.-
+FIRMA.- EL SECRETARIO DE SEGURIDAD CIUDADANA, OMAR HAMID GARCÍA HARFUCH.- FIRMA.
+TRANSITORIOS DEL DECRETO POR EL QUE SE MODIFICA LA DENOMINACIÓN DE LA LEY QUE REGULA
+EL USO DE TECNOLOGÍA PARA LA SEGURIDAD PÚBLICA DE LA CIUDAD DE MÉXICO, POR “LEY QUE
+REGULA EL USO DE TECNOLOGÍA PARA LA SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO” Y SE
+REFORMAN LOS ARTÍCULOS 1 PÁRRAFO PRIMERO Y LAS FRACCIONES I Y III; 2 FRACCIONES I, IV, V, VI,
+VII, VIII, IX, X, XI, XII Y XIII; 3 PÁRRAFO PRIMERO; 4 PÁRRAFO PRIMERO, 4 TER, 5 PÁRRAFOS SEGUNDO
+Y TERCERO; 6; 7 FRACCIÓN II Y ÚLTIMO PÁRRAFO; 10; 11; 12; 13; 14 PÁRRAFOS PRIMERO, SEGUNDO Y
+FRACCIONES I, II Y III; 15 FRACCIONES I, III Y V; 16 FRACCIÓN II E INCISO B) DE LA FRACCIÓN III; 18; 19
+LEY QUE REGULA EL USO DE LA TECNOLOGÍA PARA LA
+SEGURIDAD CIUDADANA DE LA CIUDAD DE MÉXICO
+PÁRRAFO PRIMERO Y FRACCIONES I PÁRRAFO SEGUNDO Y TERCERO Y IV PÁRRAFO SEGUNDO; 22; 23
+FRACCIONES I Y II; 24 PÁRRAFO PRIMERO; 25 PÁRRAFO SEGUNDO; 26; 27; 29; 31; 32; 33 PÁRRAFO
+PRIMERO Y FRACCIÓN II INCISOS A) Y E); 35 PÁRRAFO PRIMERO Y FRACCIONES II, III Y IV; 36 PÁRRAFO
+PRIMERO Y FRACCIONES II, III, IV, V Y ÚLTIMO PÁRRAFO; 37; 38 PÁRRAFO PRIMERO; 39; 42; 43; 44 Y
+45, TODOS DE LA LEY QUE REGULA EL USO DE TECNOLOGÍA PARA LA SEGURIDAD PÚBLICA DEL
+DISTRITO FEDERAL, PUBLICADA EN LA GACERTA OFICIAL DE LA CIUDAD DE MÉXICO EL DÍA 27 DE
+AGOSTO DE 2025.
+PRIMERO. - Remítase a la persona titular de la Jefatura de Gobierno de la Ciudad de México para su
+promulgación y publicación en la Gaceta Oficial de la Ciudad de México.
+SEGUNDO. - El presente Decreto entrará en vigor al día siguiente de su publicación.
+Palacio Legislativo del Congreso de la Ciudad de México, a los dieciocho días del mes de agosto del año
+dos mil veinticinco.- POR LA MESA DIRECTIVA.- DIPUTADA MARTHA SOLEDAD ÁVILA VENTURA,
+PRESIDENTA.- DIPUTADO FERNANDO ZÁRATE SALGADO, SECRETARIO.- DIPUTADA LIZZETTE
+SALGADO VIRAMONTES, SECRETARIA.- (Firmas)
+Con fundamento en lo dispuesto por los artículos 122, apartado A, fracción III de la Constitución
+Política de los Estados Unidos Mexicanos; 32, apartado C, numeral 1, inciso a) de la Constitución
+Política de la Ciudad de México; 2 párrafo segundo, 3 fracciones XVII y XVIII, 7 párrafo primero, 10
+fracción II, 12 y 21 párrafo primero de la Ley Orgánica del Poder Ejecutivo y de la Administración
+Pública de la Ciudad de México; para su debida publicación y observancia, expido el presente Decreto
+Promulgatorio en la Residencia Oficial de la Jefatura de Gobierno de la Ciudad de México, a los
+veintisiete días del mes de agosto del año dos mil veinticinco- LA JEFA DE GOBIERNO DE LA CIUDAD DE
+MÉXICO, CLARA MARINA BRUGADA MOLINA.- FIRMA.- EL SECRETARIO DE GOBIERNO, CÉSAR ARNULFO
+CRAVIOTO ROMERO.- FIRMA.- EL SECRETARIO DE SEGURIDAD CIUDADANA, PABLO VÁZQUEZ
+CAMACHO.- FIRMA.</p>
+            </content>
+          </paragraph>
+        </article>
+      </chapter>
+    </body>
+  </act>
+</akomaNtoso>

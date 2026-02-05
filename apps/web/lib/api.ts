@@ -140,6 +140,21 @@ export const api = {
         return fetcher<{ law_id: string; structure: any[] }>(`/laws/${lawId}/structure/`);
     },
 
+    /**
+     * Admin Dashboard endpoints
+     */
+    getAdminMetrics: async () => {
+        return fetcher<any>('/admin/metrics/');
+    },
+
+    getJobStatus: async () => {
+        return fetcher<any>('/admin/jobs/status/');
+    },
+
+    listJobs: async () => {
+        return fetcher<any>('/admin/jobs/');
+    },
+
 };
 
 export { APIError };

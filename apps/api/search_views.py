@@ -45,18 +45,31 @@ class SearchView(APIView):
             # Add filter clauses
             filter_clauses = []
 
-            # Jurisdiction filter
-            if jurisdiction and jurisdiction != "all":
-                jurisdictions = jurisdiction.split(',')
-                # If only one type is selected, filter by tier
-                if 'federal' in jurisdictions and 'state' not in jurisdictions:
-                    filter_clauses.append({"term": {"tier.keyword": "federal"}})
-                elif 'state' in jurisdictions and 'federal' not in jurisdictions:
-                    filter_clauses.append({"term": {"tier.keyword": "state"}})
-
             # Category filter
             if category and category != "all":
                 filter_clauses.append({"term": {"category.keyword": category}})
+
+            # Municipality filter
+            municipality = request.query_params.get("municipality", None)
+            if municipality and municipality != "all":
+                filter_clauses.append({"term": {"municipality.keyword": municipality}})
+
+            # Jurisdiction filter (Enhanced for municipal)
+            if jurisdiction and jurisdiction != "all":
+                jurisdictions = jurisdiction.split(',')
+                
+                # Build should clauses for selected jurisdictions
+                tier_should = []
+                if 'federal' in jurisdictions:
+                    tier_should.append({"term": {"tier.keyword": "federal"}})
+                if 'state' in jurisdictions:
+                    tier_should.append({"term": {"tier.keyword": "state"}})
+                if 'municipal' in jurisdictions:
+                    tier_should.append({"term": {"tier.keyword": "municipal"}})
+                
+                # If we have specific tiers selected, enforce at least one matches
+                if tier_should:
+                    filter_clauses.append({"bool": {"should": tier_should, "minimum_should_match": 1}})
                 
             # Structural/Hierarchy Filters (New in V2)
             # Example: ?title=Titulo Primero&chapter=Capitulo I
@@ -165,6 +178,8 @@ class SearchView(APIView):
                     "snippet": highlight,
                     "date": source.get('publication_date'),
                     "score": hit['_score'],
+                    "state": source.get('state'),
+                    "municipality": source.get('municipality'),
                     # V2 Hierarchy fields
                     "hierarchy": source.get('hierarchy', []),
                     "book": source.get('book'),

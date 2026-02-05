@@ -5,18 +5,22 @@ import re
 import urllib.parse
 import os
 
+from .config import get_config
+
 class CDMXScraper(MunicipalScraper):
     def __init__(self):
-        super().__init__("Ciudad de México", "https://data.consejeria.cdmx.gob.mx/index.php/leyes/leyes")
-        # CDMX uses relative URLs often
+        config = get_config('cdmx')
+        super().__init__(config=config)
         self.base_domain = "https://data.consejeria.cdmx.gob.mx"
+        # Disable SSL verification for this legacy site
+        self.session.verify = False
 
-    def scrape(self) -> List[Dict]:
+    def scrape_catalog(self) -> List[Dict]:
         """
         Scrapes the CDMX laws portal for PDF links.
         Returns a list of dictionaries with metadata.
         """
-        html = self.fetch_page(self.base_url)
+        html = self.fetch_page(self.base_url + self.selectors.get('catalog_path', ''))
         if not html:
             return []
 
@@ -31,50 +35,37 @@ class CDMXScraper(MunicipalScraper):
             # Resolve relative URL
             full_url = urllib.parse.urljoin(self.base_domain, href)
             
-            # Extract Title from Row or Fallback to Filename
-            row = a.find_parent('tr')
+            # Extract Title from Preceding Anchor (Hash Link)
+            # The structure is typically: <a href="#slug">Title</a> ... <a href="file.docx">Icon</a> ... <a href="file.pdf">Icon</a>
             title = None
-            date_published = None
-            
-            if row:
-                row_text = row.get_text(separator=' ', strip=True)
-                # Heuristic: Find the substring starting with "LEY"
-                # This regex looks for LEY followed by uppercase letters and spaces
-                title_match = re.search(r'(LEY\s+(?:DE\s+|LA\s+|PARA\s+|DEL\s+|QUE\s+|[A-ZÁÉÍÓÚÑ"“”,])+(?:CDMX|MÉXICO|DISTRITO FEDERAL|DF|[A-ZÁÉÍÓÚÑ]+))', row_text, re.IGNORECASE)
-                if title_match:
-                    title = title_match.group(1).strip()
-            
-            # Fallback 1: Previous Row (sometimes title is above)
-            if not title and row:
-                prev_row = row.find_previous_sibling('tr')
-                if prev_row:
-                    prev_text = prev_row.get_text(separator=' ', strip=True)
-                    title_match = re.search(r'(LEY\s+(?:DE\s+|LA\s+|PARA\s+|DEL\s+|QUE\s+|[A-ZÁÉÍÓÚÑ"“”,])+(?:CDMX|MÉXICO|DISTRITO FEDERAL|DF|[A-ZÁÉÍÓÚÑ]+))', prev_text, re.IGNORECASE)
-                    if title_match:
-                        title = title_match.group(1).strip()
+            # Search backwards for the title anchor
+            for prev_anchor in a.find_all_previous('a', href=True):
+                # Stop if we hit a '#' link (likely the title)
+                if '#' in prev_anchor['href']:
+                    title_text = prev_anchor.get_text(separator=' ', strip=True)
+                    if len(title_text) > 10:
+                        title = title_text
+                    break
+                # Stop if we went too far (e.g. hit another PDF or a different law block)
+                # Heuristic: if we hit 5 links back without finding #, give up
+                # Or if we hit another PDF, maybe we crossed into another law? (Actually multiple formats are common)
+                
+            # Fallback: Parse Filename if no title found
 
-            # Fallback 2: Parse Filename
+            # Fallback: Parse Filename if no title found
             if not title:
                 filename = os.path.basename(urllib.parse.unquote(full_url))
-                # Remove extension
                 name_body = os.path.splitext(filename)[0]
-                # Replace underscores and formatting
-                clean_name = name_body.replace('_', ' ').replace('-', ' ')
-                # If it looks like a law title (starts with LEY), use it
-                if clean_name.upper().startswith('LEY'):
-                    title = clean_name.upper()
-                else:
-                    title = clean_name # Better than nothing
+                title = name_body.replace('_', ' ').replace('-', ' ')
 
             # Clean up title
             if title:
-                # Remove extra spaces
                 title = re.sub(r'\s+', ' ', title).strip()
 
             law_entry = {
-                'title': title,
+                'name': title,
                 'municipality': self.municipality,
-                'file_url': full_url,
+                'url': full_url,
                 'status': 'Discovered',
                 'category': 'Municipal' # or State for CDMX
             }

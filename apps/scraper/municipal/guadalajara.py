@@ -72,6 +72,12 @@ class GuadalajaraScraper(MunicipalScraper):
         href_lower = href.lower()
         
         keywords = ['reglamento', 'código', 'codigo', 'normativ', 'regla']
+        
+        # Exclude navigation links
+        excludes = ['abrogado', 'federal', 'estatal', 'transparencia']
+        if any(ex in text_lower for ex in excludes):
+            return False
+            
         return any(keyword in text_lower or keyword in href_lower for keyword in keywords)
 
     def scrape_law_content(self, url: str) -> Optional[Dict]:

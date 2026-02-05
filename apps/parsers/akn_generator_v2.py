@@ -31,6 +31,9 @@ from apps.parsers.patterns import (
     roman_to_int,
 )
 
+# Import ordinal mapping helper
+from apps.parsers.patterns.articles import ordinal_to_number
+
 
 @dataclass
 class ParseResult:
@@ -160,10 +163,22 @@ class AkomaNtosoGeneratorV2:
             matched, match = self._try_patterns(line, self.article_patterns)
             
             if matched:
-                # Extract article number (could be 5, 5A, 27-A, etc.)
+                # Extract article number (could be 5, 5A, 27-A, ordinals like "Primero", etc.)
                 art_num = match.group(1)
-                if match.lastindex > 1 and match.group(2):  # Lettered article
+                
+                # Check if this is an ordinal article (e.g., "Primero", "Segundo")
+                numeric_num = ordinal_to_number(art_num) if not art_num.isdigit() else None
+                
+                if numeric_num:
+                    # Municipal ordinal article
+                    art_num = str(numeric_num)
+                    art_id = f"art-{numeric_num}"
+                elif match.lastindex > 1 and match.group(2):  # Lettered article
                     art_num = f"{art_num}-{match.group(2)}"
+                    art_id = f"art-{art_num.lower().replace('-', '')}"
+                else:
+                    # Standard numeric article
+                    art_id = f"art-{art_num.lower().replace('-', '')}"
                 
                 # Collect content until next article/structure
                 content_lines = [line]
@@ -192,7 +207,7 @@ class AkomaNtosoGeneratorV2:
                 
                 articles.append({
                     'type': 'article',
-                    'id': f"art-{art_num.lower().replace('-', '')}",
+                    'id': art_id,
                     'number': art_num,
                     'content': cleaned_content,
                     'reforms': reforms,
