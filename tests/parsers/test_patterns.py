@@ -9,12 +9,12 @@ from pathlib import Path
 
 # Add apps to path
 
-from parsers.patterns.structure import (
+from apps.parsers.patterns.structure import (
     compile_structure_patterns,
     roman_to_int
 )
-from parsers.patterns.articles import compile_article_patterns
-from parsers.patterns.metadata import (
+from apps.parsers.patterns.articles import compile_article_patterns
+from apps.parsers.patterns.metadata import (
     compile_reform_pattern,
     extract_reforms
 )

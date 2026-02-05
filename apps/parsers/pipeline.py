@@ -15,8 +15,8 @@ from datetime import datetime
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
-from parsers.quality import QualityCalculator, QualityMetrics
+from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
+from apps.parsers.quality import QualityCalculator, QualityMetrics
 
 
 @dataclass

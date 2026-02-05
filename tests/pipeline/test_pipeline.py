@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 
 
-from parsers.pipeline import IngestionPipeline
-from parsers.quality import QualityCalculator
+from apps.parsers.pipeline import IngestionPipeline
+from apps.parsers.quality import QualityCalculator
 
 
 @pytest.mark.integration
@@ -25,7 +25,7 @@ class TestPipelineIntegration:
     
     def test_quality_calculation(self, sample_law_text, temp_data_dir):
         """Test quality metrics calculation."""
-        from parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
+        from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
         
         # Generate XML
         parser = AkomaNtosoGeneratorV2()

@@ -31,11 +31,7 @@ jobs:
         
     - name: Run Pytest
       run: |
-        pytest tests/ \
-          --ignore=tests/parsers/test_parser_v2.py \
-          --ignore=tests/parsers/test_patterns.py \
-          --ignore=tests/pipeline/test_pipeline.py \
-          -v
+        pytest tests/ -v
       env:
         PYTHONPATH: apps:.
 

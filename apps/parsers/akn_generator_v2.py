@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import pattern library
-from parsers.patterns import (
+from apps.parsers.patterns import (
     compile_article_patterns,
     compile_structure_patterns,  
     compile_transitorios_patterns,
@@ -229,7 +229,7 @@ class AkomaNtosoGeneratorV2:
         trans_text = text[trans_start:]
         
         # Find ordinal articles
-        from parsers.patterns.structure import ORDINAL_PATTERNS
+        from apps.parsers.patterns.structure import ORDINAL_PATTERNS
         
         for ordinal_pattern, number in ORDINAL_PATTERNS.items():
             pattern = re.compile(f'^({ordinal_pattern})\\.-\\s+(.+?)(?=^[A-ZÚÉÍÓÁ]+\\.-|\\Z)', 
