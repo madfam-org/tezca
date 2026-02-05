@@ -267,14 +267,18 @@ class IngestionPipeline:
         xml_path = self.xml_dir / f"mx-fed-{law_id}-v2.xml"
         
         # Create FRBR metadata
-        metadata = self.parser.create_frbr_metadata(
-            law_type=law_metadata.get('type', 'ley'),
-            date_str=law_metadata['publication_date'],
-            slug=law_metadata['slug'],
-            title=law_metadata['name']
-        )
+        # V2 uses a more comprehensive dictionary
+        metadata = {
+            'law_id': law_id,
+            'title': law_metadata['name'],
+            'date': law_metadata['publication_date'], # Initial publication
+            'slug': law_metadata['slug'],
+            'law_type': law_metadata.get('type', 'ley'),
+            'status': law_metadata.get('status', 'vigente')
+        }
         
-        # Generate XML
+        # Generate XML using V2 (which handles multi-pass and internal metadata extraction)
+        # Note: metadata dictionary passed here overrides/supplements internal extraction
         self.parser.generate_xml(text, metadata, xml_path)
         
         return xml_path

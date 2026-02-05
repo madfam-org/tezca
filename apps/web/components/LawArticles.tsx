@@ -119,30 +119,30 @@ export default function LawArticles({ lawId }: LawArticlesProps) {
             {/* Articles List */}
             <div className="space-y-4">
                 {filteredArticles.length === 0 ? (
-                    <Card className="p-8 text-center">
-                        <p className="text-gray-600 dark:text-gray-400">
+                    <Card className="p-8 text-center glass border-dashed">
+                        <p className="text-muted-foreground">
                             No se encontraron artículos que coincidan con tu búsqueda.
                         </p>
                     </Card>
                 ) : (
                     filteredArticles.map((article, index) => (
-                        <Card key={article.id} className="p-6 hover:shadow-lg transition-shadow">
+                        <Card key={article.id} className="p-6 hover:shadow-lg transition-all duration-300 glass border-transparent hover:border-primary/20">
                             <div className="flex gap-4">
                                 <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                                        <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">
+                                    <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center shadow-inner">
+                                        <span className="text-primary-600 dark:text-primary-300 font-bold font-display text-sm">
                                             {index + 1}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                                    <h3 className="text-lg font-bold font-display text-primary-700 dark:text-primary-300 mb-3">
                                         {article.number}
                                     </h3>
 
                                     {article.content ? (
-                                        <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                        <div className="text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap font-serif">
                                             {searchQuery ? (
                                                 <HighlightedText text={article.content} query={searchQuery} />
                                             ) : (
@@ -150,7 +150,7 @@ export default function LawArticles({ lawId }: LawArticlesProps) {
                                             )}
                                         </div>
                                     ) : (
-                                        <p className="text-gray-500 dark:text-gray-500 italic">
+                                        <p className="text-muted-foreground italic">
                                             Contenido no disponible
                                         </p>
                                     )}

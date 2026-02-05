@@ -91,6 +91,10 @@ class IngestionManager:
         # We need to wrap it or modify the script to update status.
         # For this iteration, we will wrapp it in a thread here that updates status.
         
+        # Temporary results file
+        results_file = DATA_DIR / 'latest_ingestion_results.json'
+        cmd.extend(["--output", str(results_file)])
+
         # Write initial running status
         initial_status = {
             "status": "running",
@@ -106,7 +110,7 @@ class IngestionManager:
         # Spawn thread to run command
         thread = threading.Thread(
             target=IngestionManager._run_process,
-            args=(cmd,)
+            args=(cmd, results_file)
         )
         thread.daemon = True
         thread.start()
@@ -114,7 +118,7 @@ class IngestionManager:
         return True, "Ingestion started"
 
     @staticmethod
-    def _run_process(cmd):
+    def _run_process(cmd, results_file=None):
         """
         Internal method to run the process and capture output. 
         In a real production system, this would be a Celery task.
@@ -147,19 +151,28 @@ class IngestionManager:
                 process.wait()
                 
             # Completion status
+            status_data = {
+                "timestamp": datetime.now().isoformat()
+            }
+            
             if process.returncode == 0:
-                final_status = "completed"
-                msg = "Ingestion finished successfully"
+                status_data["status"] = "completed"
+                status_data["message"] = "Ingestion finished successfully"
+                
+                # Try to read detailed results
+                if results_file and results_file.exists():
+                    try:
+                        with open(results_file, 'r') as f:
+                            results = json.load(f)
+                            status_data["results"] = results
+                    except Exception as e:
+                        status_data["warning"] = f"Could not read results file: {e}"
             else:
-                final_status = "failed"
-                msg = f"Ingestion failed with code {process.returncode}"
+                status_data["status"] = "failed"
+                status_data["message"] = f"Ingestion failed with code {process.returncode}"
                 
             with open(STATUS_FILE, 'w') as f:
-                json.dump({
-                    "status": final_status,
-                    "message": msg,
-                    "timestamp": datetime.now().isoformat()
-                }, f)
+                json.dump(status_data, f)
                 
         except Exception as e:
             with open(STATUS_FILE, 'w') as f:

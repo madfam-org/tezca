@@ -6,7 +6,7 @@ Calculates accuracy scores, completeness grades, and overall quality metrics.
 
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 from dataclasses import dataclass, field
 import time
 
@@ -123,7 +123,7 @@ class QualityCalculator:
     
     def calculate(
         self,
-        xml_path: Path | str,
+        xml_path: Union[Path, str],
         law_name: str,
         law_slug: str = None,
         articles_expected: int = None,

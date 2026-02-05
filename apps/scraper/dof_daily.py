@@ -17,7 +17,8 @@ class DofScraper:
         Fetches the daily edition index for self.date.
         """
         # TODO: Implement fetching logic using juriscraper or requests
-        print(f"Fetching DOF for {self.date}")
+        # This will be part of Phase 4 (Municipal/Daily updates)
+        print(f"Fetching DOF for {self.date} (Not Implemented)")
         return []
 
     def run(self):

@@ -138,6 +138,11 @@ The API does not store data; it queries the XML and executes the Engines.
 * Routes the request to the compiled Catala/OpenFisca module.
 * Returns the result + a "Trace" explaining which articles were applied.
 
+* **Endpoint C: Smart Search** (`GET /search`)
+* Powered by Elasticsearch.
+* Supports **Structural Filtering**: Query by `jurisdiction`, `state`, `title`, and `chapter`.
+* *Example:* `GET /search?q=impuestos&title=TÍTULO I` returns articles about taxes specifically within Title I.
+
 
 
 ---

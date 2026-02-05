@@ -6,7 +6,7 @@ Validates generated XML against Akoma Ntoso 3.0 schema to ensure specification c
 
 from lxml import etree
 from pathlib import Path
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Union
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -66,7 +66,7 @@ class AKNSchemaValidator:
                 print(f"⚠️  Could not load schema: {e}")
                 print("   Will use well-formedness validation only")
     
-    def validate(self, xml_path: Path | str) -> ValidationResult:
+    def validate(self, xml_path: Union[Path, str]) -> ValidationResult:
         """
         Validate XML file.
         

@@ -7,7 +7,7 @@ Checks for missing content, gaps, and structural issues.
 import re
 from lxml import etree
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -65,7 +65,7 @@ class CompletenessValidator:
             self.check_structure_elements,
         ]
     
-    def validate(self, xml_path: Path | str) -> CompletenessReport:
+    def validate(self, xml_path: Union[Path, str]) -> CompletenessReport:
         """
         Run all completeness checks.
         

@@ -7,18 +7,7 @@ Reusable regex patterns for parsing different structural elements.
 import re
 from typing import List, Pattern
 
-# Article patterns
-ARTICLE_PATTERNS = [
-    r'^Art[íi]culo\s+(\d+[A-Z]?)\.?',           # Standard: Artículo 5, Artículo 5A
-    r'^Art[íi]culo\s+(\d+)-([A-Z])\.?',         # Dash: Artículo 27-A
-    r'^Art[íi]culo\s+(\d+)\s+([A-Z])\.?',       # Space: Artículo 27 A
-    r'^ART[ÍI]CULO\s+(\d+[A-Z]?)\.?',           # Uppercase
-    r'^Art[íi]culo\s+(\d+)o\.?',                # Ordinal: Artículo 1o
-]
-
-def compile_article_patterns() -> List[Pattern]:
-    """Compile article patterns for performance."""
-    return [re.compile(p, re.IGNORECASE | re.MULTILINE) for p in ARTICLE_PATTERNS]
+# Article patterns moved to articles.py
 
 
 # Structure patterns (Titles, Books, Chapters)

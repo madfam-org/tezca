@@ -17,6 +17,8 @@ describe('SearchFilters', () => {
         state: null,
         status: 'all',
         sort: 'relevance',
+        title: '',
+        chapter: '',
     };
 
     const mockOnChange = vi.fn();
@@ -51,5 +53,25 @@ describe('SearchFilters', () => {
 
         // Verify API called
         expect(mockGetStates).toHaveBeenCalled();
+    });
+
+    describe('Structural Filters', () => {
+        it('renders title and chapter inputs', () => {
+            render(<SearchFilters filters={mockFilters} onFiltersChange={mockOnChange} resultCount={10} />);
+            
+            expect(screen.getByPlaceholderText(/Filtrar por título/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/Filtrar por capítulo/i)).toBeInTheDocument();
+        });
+
+        it('calls onFiltersChange when title input changes', () => {
+            render(<SearchFilters filters={mockFilters} onFiltersChange={mockOnChange} resultCount={10} />);
+            
+            const titleInput = screen.getByPlaceholderText(/Filtrar por título/i);
+            fireEvent.change(titleInput, { target: { value: 'Titulo I' } });
+
+            expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({
+                title: 'Titulo I'
+            }));
+        });
     });
 });

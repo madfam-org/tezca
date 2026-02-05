@@ -5,7 +5,7 @@ Patterns for extracting reform annotations, dates, and other metadata.
 """
 
 import re
-from typing import List, Dict, Pattern
+from typing import List, Dict, Pattern, Optional
 from datetime import datetime
 
 # Reform/amendment patterns
@@ -85,7 +85,7 @@ SPANISH_MONTHS = {
     'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
 }
 
-def extract_effective_date(text: str) -> datetime | None:
+def extract_effective_date(text: str) -> Optional[datetime]:
     """
     Extract law effective date from transitory articles.
     
@@ -132,19 +132,3 @@ def extract_cross_references(text: str) -> List[Dict]:
             })
     
     return references
-
-
-# Derogation patterns
-DEROGATION_PATTERNS = [
-    r'Se\s+deroga',
-    r'Queda\s+derogad[oa]',
-    r'\(derogad[oa]\)',
-    r'\(Se\s+deroga\)',
-]
-
-def is_derogated(text: str) -> bool:
-    """Check if article is derogated (repealed)."""
-    for pattern in DEROGATION_PATTERNS:
-        if re.search(pattern, text, re.IGNORECASE):
-            return True
-    return False

@@ -57,6 +57,18 @@ class SearchView(APIView):
             # Category filter
             if category and category != "all":
                 filter_clauses.append({"term": {"category.keyword": category}})
+                
+            # Structural/Hierarchy Filters (New in V2)
+            # Example: ?title=Titulo Primero&chapter=Capitulo I
+            structural_title = request.query_params.get("title", None)
+            structural_chapter = request.query_params.get("chapter", None)
+            
+            if structural_title:
+                filter_clauses.append({"match": {"title": structural_title}})
+            if structural_chapter:
+                filter_clauses.append({"match": {"chapter": structural_chapter}})
+
+            # State filter
 
             # State filter
             state_filter = request.query_params.get("state", None)
@@ -152,7 +164,12 @@ class SearchView(APIView):
                     "article": f"Art. {source.get('article', source.get('article_id'))}",
                     "snippet": highlight,
                     "date": source.get('publication_date'),
-                    "score": hit['_score']
+                    "score": hit['_score'],
+                    # V2 Hierarchy fields
+                    "hierarchy": source.get('hierarchy', []),
+                    "book": source.get('book'),
+                    "title": source.get('title'),
+                    "chapter": source.get('chapter')
                 })
 
             # Calculate pagination metadata

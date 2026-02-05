@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Button } from "@leyesmx/ui";
-import { X, Filter } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Button, Input } from "@leyesmx/ui";
+import { X, Filter, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export interface SearchFilterState {
@@ -12,6 +12,8 @@ export interface SearchFilterState {
     status: string;
     sort: string;
     date_range?: string;
+    title?: string;
+    chapter?: string;
 }
 
 interface SearchFiltersProps {
@@ -97,6 +99,8 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
             state: null,
             status: 'all',
             sort: 'relevance',
+            title: '',
+            chapter: '',
         });
     };
 
@@ -107,6 +111,8 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
         if (filters.state && filters.state !== 'all') count++;
         if (filters.status !== 'all') count++;
         if (filters.sort !== 'relevance') count++;
+        if (filters.title) count++;
+        if (filters.chapter) count++;
         return count;
     };
 
@@ -244,7 +250,42 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                     </Select>
                 </div>
 
-                {/* Date Range */}
+                {/* Structure Filters (New) */}
+                <div>
+                    <h3 className="mb-3 text-sm font-medium flex items-center gap-2 text-muted-foreground border-t pt-4">
+                        <BookOpen className="h-4 w-4" />
+                        Estructura
+                    </h3>
+                    
+                    <div className="space-y-3">
+                        <div>
+                            <Label htmlFor="title_filter" className="mb-2 block text-xs font-medium text-muted-foreground">
+                                Título (ej. "TÍTULO I")
+                            </Label>
+                            <Input
+                                id="title_filter"
+                                placeholder="Filtrar por título..."
+                                value={filters.title || ''}
+                                onChange={(e) => onFiltersChange({ ...filters, title: e.target.value })}
+                                className="h-8 text-sm"
+                            />
+                        </div>
+                        
+                        <div>
+                            <Label htmlFor="chapter_filter" className="mb-2 block text-xs font-medium text-muted-foreground">
+                                Capítulo (ej. "CAPÍTULO I")
+                            </Label>
+                            <Input
+                                id="chapter_filter"
+                                placeholder="Filtrar por capítulo..."
+                                value={filters.chapter || ''}
+                                onChange={(e) => onFiltersChange({ ...filters, chapter: e.target.value })}
+                                className="h-8 text-sm"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <Label htmlFor="date_range" className="mb-2 block text-sm font-medium">
                         Fecha de publicación

@@ -16,6 +16,8 @@ const DEFAULT_FILTERS: SearchFilterState = {
     state: null,
     status: 'all',
     sort: 'relevance',
+    title: '',
+    chapter: '',
 };
 
 const PAGE_SIZE = 10;
@@ -28,7 +30,17 @@ function SearchContent() {
     const initialQuery = searchParams?.get('q') || '';
 
     const [query, setQuery] = useState(initialQuery);
-    const [filters, setFilters] = useState<SearchFilterState>(DEFAULT_FILTERS);
+    const [filters, setFilters] = useState<SearchFilterState>({
+        ...DEFAULT_FILTERS,
+        jurisdiction: searchParams?.get('jurisdiction')?.split(',') || DEFAULT_FILTERS.jurisdiction,
+        category: searchParams?.get('category') || DEFAULT_FILTERS.category,
+        state: searchParams?.get('state') || DEFAULT_FILTERS.state,
+        status: searchParams?.get('status') || DEFAULT_FILTERS.status,
+        sort: searchParams?.get('sort') || DEFAULT_FILTERS.sort,
+        date_range: searchParams?.get('date_range') || DEFAULT_FILTERS.date_range,
+        title: searchParams?.get('title') || DEFAULT_FILTERS.title,
+        chapter: searchParams?.get('chapter') || DEFAULT_FILTERS.chapter,
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const [results, setResults] = useState<SearchResult[]>([]);
     const [total, setTotal] = useState(0);
@@ -66,6 +78,8 @@ function SearchContent() {
                 status: searchFilters.status,
                 sort: searchFilters.sort,
                 date_range: searchFilters.date_range,
+                title: searchFilters.title,
+                chapter: searchFilters.chapter,
                 page,
                 page_size: PAGE_SIZE,
             });
@@ -92,6 +106,15 @@ function SearchContent() {
         if (query.trim()) {
             // Update URL with query params
             const params = new URLSearchParams({ q: query });
+            if (filters.jurisdiction.length) params.set('jurisdiction', filters.jurisdiction.join(','));
+            if (filters.category) params.set('category', filters.category);
+            if (filters.state) params.set('state', filters.state);
+            if (filters.status !== 'all') params.set('status', filters.status);
+            if (filters.sort !== 'relevance') params.set('sort', filters.sort);
+            if (filters.date_range) params.set('date_range', filters.date_range);
+            if (filters.title) params.set('title', filters.title);
+            if (filters.chapter) params.set('chapter', filters.chapter);
+
             router.push(`/search?${params}`);
 
             // Reset to page 1 when new search

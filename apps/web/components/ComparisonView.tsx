@@ -87,25 +87,25 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
 
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 h-full overflow-hidden">
                 {laws.map((law, index) => (
-                    <Card key={law.law_id} className="flex flex-col h-full overflow-hidden border-2 border-muted shadow-sm">
-                        <div className="p-4 border-b bg-muted/40 dark:bg-muted/20">
-                            <h2 className="font-bold text-lg leading-tight mb-2 line-clamp-2 text-foreground" title={law.law_name}>
+                    <Card key={law.law_id} className="flex flex-col h-full overflow-hidden border border-white/20 shadow-xl glass">
+                        <div className="p-4 border-b border-white/10 bg-white/5 backdrop-blur-md">
+                            <h2 className="font-display font-bold text-lg leading-tight mb-2 line-clamp-2 text-primary-700 dark:text-primary-300" title={law.law_name}>
                                 {law.law_name}
                             </h2>
                             <div className="flex gap-2 flex-wrap">
-                                <Badge variant="outline" className="bg-background">{law.articles.length} artículos</Badge>
-                                <Badge variant="secondary">{law.law_id}</Badge>
+                                <Badge variant="outline" className="bg-background/50 backdrop-blur border-primary/20">{law.articles.length} artículos</Badge>
+                                <Badge variant="secondary" className="bg-secondary-100 dark:bg-secondary-900/50 text-secondary-700 dark:text-secondary-300">{law.law_id}</Badge>
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 bg-card/50 dark:bg-background/40">
-                            <div className="prose dark:prose-invert max-w-none text-sm dark:text-stone-300">
+                        <div className="flex-1 overflow-y-auto p-4 bg-white/40 dark:bg-black/20 backdrop-blur-sm scroll-smooth">
+                            <div className="prose dark:prose-invert max-w-none text-sm">
                                 {law.articles.map((article) => (
-                                    <div key={article.article_id} className="mb-6 p-4 rounded-lg hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
-                                        <h3 className="font-bold text-primary mb-2 sticky top-0 bg-background/95 backdrop-blur py-1 border-b w-fit z-10 px-2 rounded">
+                                    <div key={article.article_id} className="mb-6 p-5 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-primary/10 shadow-sm hover:shadow-md group">
+                                        <h3 className="font-display font-bold text-primary-600 dark:text-primary-400 mb-2 sticky top-0 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md py-1.5 border-b border-primary/10 w-fit z-10 px-3 rounded-lg shadow-sm">
                                             {article.article_id}
                                         </h3>
-                                        <div className="leading-relaxed whitespace-pre-wrap font-serif text-stone-800 dark:text-stone-300">
+                                        <div className="leading-relaxed whitespace-pre-wrap font-serif text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">
                                             {article.text}
                                         </div>
                                     </div>

@@ -57,6 +57,25 @@ export default function JobMonitor() {
                         {status?.message || "No hay actividad reciente"}
                     </div>
 
+                    {status?.status === 'completed' && status?.results && (
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="p-3 bg-muted/50 rounded border">
+                                <div className="text-xs text-muted-foreground uppercase">Resultado</div>
+                                <div className="text-xl font-bold text-success-600">
+                                    {status.results.success_count} / {status.results.total_laws}
+                                </div>
+                                <div className="text-xs text-muted-foreground">Leyes procesadas</div>
+                             </div>
+                             <div className="p-3 bg-muted/50 rounded border">
+                                <div className="text-xs text-muted-foreground uppercase">Tiempo</div>
+                                <div className="text-xl font-bold">
+                                    {status.results.duration_seconds?.toFixed(1)}s
+                                </div>
+                                <div className="text-xs text-muted-foreground">Duración total</div>
+                             </div>
+                        </div>
+                    )}
+
                     {isRunning && (
                         <div className="space-y-1">
                             <div className="flex justify-between text-xs text-muted-foreground">

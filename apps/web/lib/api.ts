@@ -78,6 +78,8 @@ export const api = {
             status?: string;
             sort?: string;
             date_range?: string;
+            title?: string;
+            chapter?: string;
             page?: number;
             page_size?: number;
         }
@@ -108,6 +110,14 @@ export const api = {
         }
         if (options?.page_size) {
             params.append('page_size', options.page_size.toString());
+        }
+        
+        // Structural filters
+        if (options?.title) {
+            params.append('title', options.title);
+        }
+        if (options?.chapter) {
+            params.append('chapter', options.chapter);
         }
 
         return fetcher<SearchResponse>(`/search/?${params}`);
