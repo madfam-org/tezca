@@ -3,6 +3,7 @@ from .views import CalculationView, IngestionView
 from .search_views import SearchView
 from .law_views import LawDetailView, LawListView, law_articles, states_list, law_stats, law_structure
 from .admin_views import health_check, system_metrics, job_status, list_jobs
+from .cross_reference_views import article_cross_references, law_cross_references
 
 urlpatterns = [
     path('admin/health/', health_check, name='admin-health'),
@@ -16,6 +17,8 @@ urlpatterns = [
     path('laws/', LawListView.as_view(), name='law-list'),
     path('laws/<str:law_id>/', LawDetailView.as_view(), name='law-detail'),
     path('laws/<str:law_id>/articles/', law_articles, name='law-articles'),
+    path('laws/<str:law_id>/articles/<str:article_id>/references/', article_cross_references, name='article-references'),
     path('laws/<str:law_id>/structure/', law_structure, name='law-structure'),
+    path('laws/<str:law_id>/references/', law_cross_references, name='law-references'),
     path('states/', states_list, name='states-list'),
 ]

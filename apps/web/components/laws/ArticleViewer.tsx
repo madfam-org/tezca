@@ -6,15 +6,18 @@ import { Link as LinkIcon, Check } from 'lucide-react';
 import { Card } from "@leyesmx/ui";
 import { cn } from "@leyesmx/lib";
 import { useInView } from 'react-intersection-observer';
+import { LinkifiedArticle } from './LinkifiedArticle';
 
 interface ArticleViewerProps {
     articles: Article[];
     activeArticle: string | null;
+    lawId: string; // Added for cross-reference detection
 }
 
 export function ArticleViewer({
     articles,
-    activeArticle
+    activeArticle,
+    lawId
 }: ArticleViewerProps) {
     const articleRefs = useRef<Record<string, HTMLElement | null>>({});
     const scrollingRef = useRef(false);
@@ -49,6 +52,7 @@ export function ArticleViewer({
                     <SingleArticle
                         key={article.article_id}
                         article={article}
+                        lawId={lawId}
                         isActive={activeArticle === article.article_id}
                         setRef={(el) => {
                             articleRefs.current[article.article_id] = el;
@@ -62,10 +66,12 @@ export function ArticleViewer({
 
 function SingleArticle({
     article,
+    lawId,
     isActive,
     setRef
 }: {
     article: Article;
+    lawId: string;
     isActive: boolean;
     setRef: (el: HTMLElement | null) => void;
 }) {
@@ -113,11 +119,11 @@ function SingleArticle({
                 </button>
             </div>
 
-            <div className="prose prose-lg prose-slate dark:prose-invert max-w-none font-serif">
-                <p className="whitespace-pre-wrap leading-relaxed text-lg text-foreground/90">
-                    {article.text}
-                </p>
-            </div>
+            <LinkifiedArticle
+                lawId={lawId}
+                articleId={article.article_id}
+                text={article.text}
+            />
         </article>
     );
 }

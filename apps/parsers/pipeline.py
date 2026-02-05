@@ -178,7 +178,18 @@ class IngestionPipeline:
                 metrics = self._calculate_quality(xml_path, law_metadata, parse_time)
                 result.quality_metrics = metrics
                 result.stages_completed.append('quality')
-                print(f"✅ Quality: Grade {metrics.grade} ({metrics.overall_score:.1f}%)")
+                print(f"✅ Quality: Grade {metrics.grade} ({metrics.overall_score:.1f}%)") 
+                
+                # Stage 5: Detect cross-references
+                try:
+                    from apps.parsers.cross_reference_integration import detect_and_store_cross_references
+                    ref_count = detect_and_store_cross_references(law_id, xml_path)
+                    if ref_count > 0:
+                        print(f"✅ Detected {ref_count} cross-references")
+                    result.stages_completed.append('cross_references')
+                except Exception as e:
+                    print(f"⚠️  Cross-reference detection failed: {e}")
+
                 
                 # Success!
                 result.success = True
