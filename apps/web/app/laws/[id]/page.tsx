@@ -64,13 +64,14 @@ export async function generateMetadata({
     }
 }
 
-export default function LawDetailPage({
+export default async function LawDetailPage({
     params
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
     // Decode ID in case it comes encoded
-    const decodedId = decodeURIComponent(params.id);
+    const { id } = await params;
+    const decodedId = decodeURIComponent(id);
 
     return <LawDetail lawId={decodedId} />;
 }
