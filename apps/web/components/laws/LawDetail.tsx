@@ -68,12 +68,12 @@ export function LawDetail({ lawId }: LawDetailProps) {
 
     if (error || !data) {
         return (
-            <div className="container mx-auto px-4 py-12 flex flex-col items-center justify-center text-center">
-                <h1 className="text-2xl font-bold mb-2">Error al cargar la ley</h1>
-                <p className="text-muted-foreground mb-6">{error || 'No se encontró la información solicitada'}</p>
+            <div className="container mx-auto px-4 sm:px-6 py-12 flex flex-col items-center justify-center text-center">
+                <h1 className="text-xl sm:text-2xl font-bold mb-2">Error al cargar la ley</h1>
+                <p className="text-sm sm:text-base text-muted-foreground mb-6">{error || 'No se encontró la información solicitada'}</p>
                 <a
                     href="/search"
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                 >
                     Volver al buscador
                 </a>
@@ -85,12 +85,11 @@ export function LawDetail({ lawId }: LawDetailProps) {
         <div className="min-h-screen bg-background flex flex-col">
             <LawHeader law={data.law} version={data.version} />
 
-            <div className="container mx-auto flex flex-col lg:flex-row gap-8 px-4 py-8 flex-1">
+            <div className="container mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-6 py-6 sm:py-8 flex-1">
                 {/* Left sidebar: TOC */}
-                <aside className="lg:w-80 flex-shrink-0 lg:sticky lg:top-24 h-fit max-h-[calc(100vh-8rem)]">
-                    <div className="bg-card border rounded-lg p-4 h-full shadow-sm overflow-hidden">
-                        {/* Mobile: Collapse logic could go here, for now it's always visible but limited height on mobile via CSS could be added */}
-                        <div className="h-full overflow-hidden">
+                <aside className="lg:w-80 flex-shrink-0">
+                    <div className="bg-card border rounded-lg p-3 sm:p-4 shadow-sm lg:sticky lg:top-24 lg:h-fit lg:max-h-[calc(100vh-8rem)]">
+                        <div className="max-h-[40vh] lg:max-h-full lg:h-full overflow-y-auto">
                             <TableOfContents
                                 articles={data.articles}
                                 activeArticle={activeArticle}
@@ -98,6 +97,14 @@ export function LawDetail({ lawId }: LawDetailProps) {
                                     setActiveArticle(id);
                                     // Update URL without scroll
                                     window.history.pushState(null, '', `#article-${id}`);
+                                    
+                                    // On mobile, scroll to the article
+                                    if (window.innerWidth < 1024) {
+                                        const articleEl = document.getElementById(`article-${id}`);
+                                        if (articleEl) {
+                                            articleEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }
+                                    }
                                 }}
                             />
                         </div>
