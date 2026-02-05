@@ -1,6 +1,4 @@
 
-import { notFound } from 'next/navigation';
-
 export interface Law {
     id: string;
     name: string;
@@ -88,7 +86,7 @@ export async function getAllLaws(): Promise<Law[]> {
             tier: 'general',
             file: ''
         }));
-    } catch (e) {
+    } catch {
         return staticLaws;
     }
 }

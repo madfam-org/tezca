@@ -4,15 +4,25 @@ from unittest.mock import MagicMock
 
 import pytest
 
-# 1. Setup paths
+# ── Temporarily mock Django/ES/models to import the management command,
+#    then restore sys.modules so other test files see the real Django. ────
+_saved_modules = {}
+_modules_to_mock = [
+    "django",
+    "django.core",
+    "django.core.management",
+    "django.core.management.base",
+    "elasticsearch",
+    "apps.api.models",
+]
+for _m in _modules_to_mock:
+    if _m in sys.modules:
+        _saved_modules[_m] = sys.modules[_m]
 
-# 2. Mock Django BEFORE importing the command
-# This is necessary because the environment lacks Django
-mock_django = MagicMock()
-mock_base_command = MagicMock()
 
+class _FakeBaseCommand:
+    """Minimal BaseCommand stub so the management command can be imported."""
 
-class BaseCommand:
     def add_arguments(self, parser):
         pass
 
@@ -20,22 +30,31 @@ class BaseCommand:
         pass
 
 
-mock_django.core.management.base.BaseCommand = BaseCommand
-sys.modules["django"] = mock_django
-sys.modules["django.core"] = mock_django.core
-sys.modules["django.core.management"] = mock_django.core.management
-sys.modules["django.core.management.base"] = mock_django.core.management.base
+_mock_django = MagicMock()
+_mock_django.core.management.base.BaseCommand = _FakeBaseCommand
+sys.modules["django"] = _mock_django
+sys.modules["django.core"] = _mock_django.core
+sys.modules["django.core.management"] = _mock_django.core.management
+sys.modules["django.core.management.base"] = _mock_django.core.management.base
 
-# Mock Elasticsearch
-mock_es = MagicMock()
-sys.modules["elasticsearch"] = mock_es
+sys.modules["elasticsearch"] = MagicMock()
 
-# Mock apps.api.models
-mock_models = MagicMock()
-sys.modules["apps.api.models"] = mock_models
+_mock_models = MagicMock()
+sys.modules["apps.api.models"] = _mock_models
 
-# 3. Now import the command
-from apps.api.management.commands.index_laws import Command
+# Import the command (requires mocked modules above)
+from apps.api.management.commands.index_laws import Command  # noqa: E402
+
+# Restore original sys.modules immediately to prevent leaking mocks
+# to other test files (e.g., those using @pytest.mark.django_db).
+for _m in _modules_to_mock:
+    if _m in _saved_modules:
+        sys.modules[_m] = _saved_modules[_m]
+    elif _m in sys.modules:
+        del sys.modules[_m]
+
+# Keep a reference to the mock Law that the Command module uses internally.
+_MockLaw = _mock_models.Law
 
 MINIMAL_V2_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
@@ -79,7 +98,7 @@ class TestIndexLawsCommand:
         cmd = Command()
         cmd.stdout = MagicMock()
         cmd.stderr = MagicMock()
-        cmd.style = MagicMock()  # Also style is used for warnings
+        cmd.style = MagicMock()
         return cmd
 
     def test_extract_articles_hierarchy(self, command):
@@ -131,21 +150,14 @@ class TestIndexLawsCommand:
         mock_version.publication_date.isoformat.return_value = "2023-01-01"
         mock_law.versions.order_by.return_value.first.return_value = mock_version
 
-        # Mock QuerySet
-        from apps.api.models import Law
-
+        # Use the mock Law bound in the Command module (not a fresh import)
         mock_qs = MagicMock()
         mock_qs.__iter__.return_value = iter([mock_law])
         mock_qs.count.return_value = 1
-        # Also need slicing support if used, but here limit is None so loop iterates
-        # But wait, code does: if options.get('limit'): laws = laws[:limit]
-        # Slicing a MagicMock return another MagicMock by default, which is fine unless we iterate it
-        # If limit is None, we just iterate mock_qs
-        Law.objects.filter.return_value = mock_qs
+        _MockLaw.objects.filter.return_value = mock_qs
 
         # Mock Path/File Operations
         with MagicMock() as mock_path_cls:
-            # We need to mock Path.cwd() / ...
             mock_cwd = MagicMock()
             mock_xml_file = MagicMock()
             mock_xml_file.exists.return_value = True
@@ -157,9 +169,8 @@ class TestIndexLawsCommand:
             with pytest.MonkeyPatch.context() as m:
                 m.setattr("pathlib.Path.cwd", lambda: mock_cwd)
 
-                # Mock helpers.bulk
+                # Mock helpers.bulk via monkeypatch (properly cleaned up)
                 mock_helpers = MagicMock()
-                sys.modules["elasticsearch.helpers"] = mock_helpers
                 from apps.api.management.commands import index_laws
 
                 m.setattr(index_laws, "helpers", mock_helpers)

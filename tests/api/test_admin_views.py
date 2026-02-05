@@ -8,7 +8,6 @@ from apps.api.models import Law
 
 
 @pytest.mark.django_db
-@pytest.mark.skip(reason="Django app registry setup issue - needs investigation")
 class TestAdminViews:
     def setup_method(self):
         self.client = APIClient()

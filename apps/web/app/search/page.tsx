@@ -53,11 +53,12 @@ function SearchContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Perform search when query or filters change
+    // Perform search on initial load from URL params
     useEffect(() => {
         if (initialQuery) {
             performSearch(initialQuery, filters, currentPage);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only runs on initialQuery change (URL-driven)
     }, [initialQuery]);
 
     const performSearch = async (

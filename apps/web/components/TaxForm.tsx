@@ -51,7 +51,7 @@ export default function TaxForm() {
 
             const data = await res.json();
             setResult(data);
-        } catch (err) {
+        } catch {
             setError("Error connecting to the tax engine.");
         } finally {
             setLoading(false);

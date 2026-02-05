@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { SearchFilters, type SearchFilterState } from '@/components/SearchFilters';
 import { api } from '@/lib/api';

@@ -81,12 +81,3 @@ export function Hero() {
         </section>
     );
 }
-
-function Stat({ value, label }: { value: string; label: string }) {
-    return (
-        <div className="flex flex-col items-center gap-1">
-            <div className="text-3xl font-bold text-white sm:text-4xl">{value}</div>
-            <div className="text-sm uppercase tracking-wider">{label}</div>
-        </div>
-    );
-}

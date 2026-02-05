@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { LawArticleResponse } from "@leyesmx/lib";
-import { Card, Badge, Button } from "@leyesmx/ui";
+import { Badge, Button } from "@leyesmx/ui";
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Map } from 'lucide-react';
 
@@ -109,7 +109,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
             {/* Split View */}
             <div className="flex-1 overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 h-full lg:divide-x">
-                    {data.map((law, index) => (
+                    {data.map((law) => (
                         <div key={law.details.law_id} className="flex flex-col h-full overflow-hidden border-b lg:border-b-0">
                             {/* Law Header */}
                             <div className="p-3 sm:p-4 bg-muted/30 border-b">

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { X } from 'lucide-react';
 
 export default function ComparisonFloatingBar() {
-    const { selectedLaws, clearSelection, toggleLaw } = useComparison();
+    const { selectedLaws, clearSelection } = useComparison();
 
     if (selectedLaws.length === 0) return null;
 

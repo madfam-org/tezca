@@ -81,7 +81,7 @@ class CDMXScraper(MunicipalScraper):
 if __name__ == "__main__":
     # Test execution
     scraper = CDMXScraper()
-    results = scraper.scrape()
+    results = scraper.scrape_catalog()
     print(f"Found {len(results)} laws.")
     for l in results[:5]:
         print(l)

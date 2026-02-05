@@ -7,7 +7,6 @@ import { Metadata } from 'next';
  */
 export async function generateMetadata({
     params,
-    searchParams
 }: {
     params: { id: string }
     searchParams: { [key: string]: string | string[] | undefined }

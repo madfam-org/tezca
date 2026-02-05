@@ -29,7 +29,7 @@ interface LinkifiedArticleProps {
 export function LinkifiedArticle({ lawId, articleId, text }: LinkifiedArticleProps) {
     const [references, setReferences] = useState<CrossReference[]>([]);
     const [loading, setLoading] = useState(true);
-    const [hoveredRef, setHoveredRef] = useState<string | null>(null);
+    const [, setHoveredRef] = useState<string | null>(null);
     
     useEffect(() => {
         // Fetch cross-references for this article

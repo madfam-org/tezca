@@ -65,29 +65,7 @@ const SORT_OPTIONS = [
 
 export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchFiltersProps) {
     const [states, setStates] = useState<string[]>([]);
-    const [loadingStates, setLoadingStates] = useState(false);
 
-    useEffect(() => {
-        async function loadStates() {
-            if (filters.jurisdiction.includes('state')) {
-                try {
-                    setLoadingStates(true);
-                    const data = await api.getStates();
-                    setStates(data.states);
-                } catch (e) {
-                    console.error('Failed to load states', e);
-                } finally {
-                    setLoadingStates(false);
-                }
-            }
-        }
-        loadStates();
-    }, [filters.jurisdiction]); // Reload if jurisdiction changes to/from state locally? No, states list is static.
-    // Actually we only need to load once if needed.
-    // Better: load once on mount if likely needed, or just load when needed.
-    // Given the component structure, let's load on mount or when 'state' is selected.
-
-    // Actually, simple effect:
     useEffect(() => {
         api.getStates().then(data => setStates(data.states)).catch(console.error);
     }, []);

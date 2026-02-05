@@ -10,7 +10,6 @@ from apps.api.models import Law, LawVersion
 
 
 @pytest.mark.django_db
-@pytest.mark.skip(reason="Django app registry setup issue - needs investigation")
 class TestLawApi:
     def setup_method(self):
         self.client = APIClient()
