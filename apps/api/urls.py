@@ -2,8 +2,13 @@ from django.urls import path
 from .views import CalculationView, IngestionView
 from .search_views import SearchView
 from .law_views import LawDetailView, LawListView, law_articles, states_list, law_stats, law_structure
+from .admin_views import health_check, system_metrics, job_status, list_jobs
 
 urlpatterns = [
+    path('admin/health/', health_check, name='admin-health'),
+    path('admin/metrics/', system_metrics, name='admin-metrics'),
+    path('admin/jobs/', list_jobs, name='admin-jobs-list'),
+    path('admin/jobs/status/', job_status, name='admin-job-status'),
     path('calculate/', CalculationView.as_view(), name='calculate'),
     path('search/', SearchView.as_view(), name='search'),
     path('ingest/', IngestionView.as_view(), name='ingest'),
