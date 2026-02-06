@@ -44,7 +44,7 @@ This is the repository for Leyes Como Código México, an open-source legal rese
 
 - [DataOps Escalation Playbook](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/dataops/ESCALATION_PLAYBOOK.md): 5-tier gap resolution
 - [System Management](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/SYSTEM_MANAGEMENT.md): Celery workers, Elasticsearch, scheduled tasks
-- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/TESTING_STRATEGY.md): 72 frontend + 191 backend tests
+- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/TESTING_STRATEGY.md): 82 frontend + 203 backend tests
 - [Code Quality](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/code_quality.md): Lint config, file size limits
 - [Environment Config](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/.env.example): All environment variables
 - [Docker Compose](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docker-compose.yml): 7-service stack
@@ -317,8 +317,8 @@ docker compose up -d   # API, Celery, Web, Admin, PostgreSQL, Redis, Elasticsear
 ## Running Tests
 
 ```bash
-poetry run pytest tests/ -v           # Backend (191 tests)
-cd apps/web && npx vitest run         # Frontend (72 tests)
+poetry run pytest tests/ -v           # Backend (203 tests)
+cd apps/web && npx vitest run         # Frontend (82 tests)
 poetry run black --check apps/ tests/ scripts/  # Python formatting
 poetry run isort --check-only apps/ tests/ scripts/  # Import ordering
 npm run lint --workspace=web          # Frontend lint

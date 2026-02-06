@@ -44,7 +44,7 @@ This is the repository for Leyes Como Código México, an open-source legal rese
 
 - [DataOps Escalation Playbook](docs/dataops/ESCALATION_PLAYBOOK.md): 5-tier system for gap resolution + contact templates
 - [System Management](docs/guides/SYSTEM_MANAGEMENT.md): Celery workers, Elasticsearch, scheduled tasks
-- [Testing Strategy](docs/guides/TESTING_STRATEGY.md): 72 frontend (Vitest) + 191 backend (Pytest) tests
+- [Testing Strategy](docs/guides/TESTING_STRATEGY.md): 82 frontend (Vitest) + 203 backend (Pytest) tests
 - [Code Quality](docs/guides/code_quality.md): File size limits, pre-commit hooks, lint configuration
 - [Environment Config](.env.example): All environment variables with descriptions
 - [Docker Compose](docker-compose.yml): 7-service stack (API, Celery, Celery Beat, Web, Admin, PostgreSQL, Redis, Elasticsearch)

@@ -43,7 +43,7 @@ Backend (Django):  ✅ Stable
 Database:          ✅ PostgreSQL production-ready
 Search:            ✅ Elasticsearch operational (860K+ articles)
 Scraping:          ✅ OJN pipeline functional
-Frontend (Next):   🔄 Phase 3 UI/UX in progress (hardening sprint done; comparison tool, mobile, dark mode remaining)
+Frontend (Next):   ✅ Phase 3 UI/UX complete (comparison tool, mobile, dark mode, visual QA, search autocomplete)
 Admin Panel:       🔄 In development
 DataOps:           ✅ Gap tracking, health monitoring, coverage dashboard operational
 ```
@@ -592,9 +592,9 @@ Vigentes:   ██████████████████░░░  93.
 4. ✅ Rich law detail pages (versions, citations, downloads)
 5. ✅ Legal pages (Terms, Disclaimer, Privacy) — bilingual ES/EN
 6. ✅ Site footer + disclaimer banner
-7. 🔄 Comparison tool (killer feature)
-8. 🔄 Mobile optimization
-9. 🔄 Dark mode
+7. ✅ Comparison tool (side-by-side, sync scroll, metadata panel, mobile tabs)
+8. ✅ Mobile optimization (responsive design, 44px touch targets)
+9. ✅ Dark mode + Visual QA (sticky footer, Suspense spinners, tab tooltips)
 
 ### Priority 3: Admin Panel Completion ⭐⭐
 
