@@ -1,3 +1,5 @@
+const TOC_WIDTHS = ['w-4/5', 'w-3/5', 'w-5/6', 'w-2/3', 'w-3/4', 'w-4/6', 'w-5/6', 'w-3/5'];
+
 export function LawDetailSkeleton() {
     return (
         <div className="min-h-screen bg-background animate-pulse">
@@ -17,8 +19,8 @@ export function LawDetailSkeleton() {
                 {/* TOC */}
                 <aside className="lg:w-80 flex-shrink-0">
                     <div className="bg-card border rounded-lg p-4 space-y-3">
-                        {[...Array(8)].map((_, i) => (
-                            <div key={i} className="h-4 rounded bg-muted" style={{ width: `${60 + Math.random() * 30}%` }} />
+                        {TOC_WIDTHS.map((w, i) => (
+                            <div key={i} className={`h-4 rounded bg-muted ${w}`} />
                         ))}
                     </div>
                 </aside>
