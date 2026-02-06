@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "apps.api",
-    # 'apps.scraper', # Not a django app per se yet
+    "apps.scraper.dataops",
+    "django_celery_beat",
 ]
 
 REST_FRAMEWORK = {
@@ -131,3 +132,31 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
+
+# ── Celery Beat Schedule ────────────────────────────────────────────────
+from celery.schedules import crontab  # noqa: E402
+
+CELERY_BEAT_SCHEDULE = {
+    "health-check-critical-daily": {
+        "task": "dataops.run_health_checks",
+        "schedule": crontab(hour=6, minute=0),
+        "kwargs": {"sources": "critical"},
+    },
+    "health-check-all-weekly": {
+        "task": "dataops.run_health_checks",
+        "schedule": crontab(hour=3, minute=0, day_of_week="sunday"),
+        "kwargs": {"sources": "all"},
+    },
+    "detect-staleness-weekly": {
+        "task": "dataops.detect_staleness",
+        "schedule": crontab(hour=4, minute=0, day_of_week="monday"),
+    },
+    "retry-transient-monthly": {
+        "task": "dataops.retry_transient_failures",
+        "schedule": crontab(hour=5, minute=0, day_of_month="1"),
+    },
+    "coverage-report-monthly": {
+        "task": "dataops.generate_coverage_report",
+        "schedule": crontab(hour=6, minute=0, day_of_month="1"),
+    },
+}

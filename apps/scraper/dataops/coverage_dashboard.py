@@ -1,0 +1,262 @@
+"""
+Coverage Dashboard: Calculates coverage metrics across all data sources.
+
+Combines live DB counts with metadata from JSON files to provide
+a comprehensive picture of acquisition status.
+"""
+
+import json
+import logging
+from pathlib import Path
+
+from django.conf import settings
+from django.db.models import Count, Q
+
+logger = logging.getLogger(__name__)
+
+DATA_DIR = Path(settings.BASE_DIR) / "data"
+
+
+def _load_json(path):
+    """Load a JSON file, returning empty dict on failure."""
+    try:
+        return json.loads(Path(path).read_text())
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.warning("Could not load %s: %s", path, e)
+        return {}
+
+
+class CoverageDashboard:
+    """Calculates coverage metrics from DB and metadata files."""
+
+    def federal_coverage(self):
+        """Federal-level coverage stats."""
+        from apps.api.models import Law
+
+        federal_in_db = Law.objects.filter(tier="federal").count()
+
+        # Check scraped metadata
+        metadata = _load_json(DATA_DIR / "law_registry.json")
+        scraped_federal = 0
+        if isinstance(metadata, dict):
+            scraped_federal = len(
+                [
+                    v
+                    for v in metadata.values()
+                    if isinstance(v, dict) and v.get("tier") == "federal"
+                ]
+            )
+        if scraped_federal == 0:
+            # Fallback: count XML files in federal data dir
+            federal_dir = DATA_DIR / "federal"
+            if federal_dir.exists():
+                scraped_federal = len(list(federal_dir.glob("**/*.xml")))
+
+        return {
+            "laws_in_db": federal_in_db,
+            "laws_scraped": scraped_federal,
+            "reglamentos": 0,  # Not yet scraped
+            "noms": 0,  # Not yet scraped
+            "treaties": 0,  # Not yet scraped
+            "gaps": {
+                "reglamentos": "~200 estimated, no scraper",
+                "dof_daily": "Stub scraper only",
+                "noms": "No scraper exists",
+                "scjn": "No scraper exists",
+            },
+        }
+
+    def state_coverage(self):
+        """Per-state coverage stats with anomaly flags."""
+        from apps.api.models import Law
+
+        # DB counts per state
+        db_counts = dict(
+            Law.objects.filter(tier="state")
+            .exclude(state__isnull=True)
+            .exclude(state="")
+            .values_list("state")
+            .annotate(c=Count("id"))
+            .values_list("state", "c")
+        )
+
+        # Scraped metadata
+        state_metadata = _load_json(DATA_DIR / "state_laws_metadata.json")
+        gap_report = _load_json(DATA_DIR / "state_laws" / "gap_report.json")
+        ojn_probe = _load_json(DATA_DIR / "ojn_municipal_probe.json")
+
+        # Build per-state scraped counts from directory
+        states_dir = DATA_DIR / "state_laws"
+        scraped_per_state = {}
+        if states_dir.exists():
+            for state_dir in states_dir.iterdir():
+                if state_dir.is_dir():
+                    pdf_count = len(list(state_dir.glob("*.pdf")))
+                    html_count = len(list(state_dir.glob("*.html")))
+                    total = pdf_count + html_count
+                    if total > 0:
+                        scraped_per_state[state_dir.name] = total
+
+        # Build gap info per state
+        gap_per_state = {}
+        for entry in gap_report.get("states", []):
+            gap_per_state[entry["state_name"]] = {
+                "permanent": entry.get("permanent", 0),
+                "transient": entry.get("transient", 0),
+            }
+
+        # OJN probe data per state
+        probe_per_state = {}
+        for entry in ojn_probe.get("per_state", []):
+            probe_per_state[entry["state_name"]] = {
+                "existing_estatal": entry.get("existing_estatal", 0),
+                "new_from_other_powers": entry.get("new_from_other_powers", 0),
+            }
+
+        # Combine all data
+        all_states = sorted(
+            set(
+                list(db_counts.keys())
+                + list(scraped_per_state.keys())
+                + list(probe_per_state.keys())
+            )
+        )
+
+        per_state = []
+        total_in_db = 0
+        total_scraped = 0
+        total_gaps = 0
+
+        low_count_threshold = 10
+        for state in all_states:
+            in_db = db_counts.get(state, 0)
+            scraped = scraped_per_state.get(state, 0)
+            probe = probe_per_state.get(state, {})
+            gaps = gap_per_state.get(state, {})
+            permanent_gaps = gaps.get("permanent", 0)
+
+            anomaly = None
+            ojn_count = probe.get("existing_estatal", 0)
+            if ojn_count > 0 and ojn_count < low_count_threshold:
+                anomaly = f"Suspiciously low: only {ojn_count} on OJN"
+
+            per_state.append(
+                {
+                    "state": state,
+                    "in_db": in_db,
+                    "scraped": scraped,
+                    "ojn_estatal": ojn_count,
+                    "undiscovered": probe.get("new_from_other_powers", 0),
+                    "permanent_gaps": permanent_gaps,
+                    "anomaly": anomaly,
+                }
+            )
+
+            total_in_db += in_db
+            total_scraped += scraped
+            total_gaps += permanent_gaps
+
+        return {
+            "per_state": per_state,
+            "total_in_db": total_in_db,
+            "total_scraped": total_scraped,
+            "total_permanent_gaps": total_gaps,
+            "states_with_anomalies": [s["state"] for s in per_state if s["anomaly"]],
+        }
+
+    def municipal_coverage(self):
+        """Municipal-level coverage stats."""
+        from apps.api.models import Law
+
+        # DB counts
+        municipal_db = (
+            Law.objects.filter(tier="municipal")
+            .values("municipality")
+            .annotate(c=Count("id"))
+            .order_by("-c")
+        )
+
+        db_counts = {m["municipality"]: m["c"] for m in municipal_db}
+        total_in_db = sum(db_counts.values())
+
+        # Scraped metadata
+        municipal_metadata = _load_json(DATA_DIR / "municipal_laws_metadata.json")
+        scraped_total = 0
+        per_city = []
+
+        if isinstance(municipal_metadata, dict):
+            for city, info in municipal_metadata.items():
+                count = info.get("count", 0) if isinstance(info, dict) else 0
+                scraped_total += count
+                per_city.append(
+                    {
+                        "city": city,
+                        "scraped": count,
+                        "in_db": db_counts.get(city, 0),
+                    }
+                )
+
+        # Fallback: check municipal_laws directory
+        if scraped_total == 0:
+            muni_dir = DATA_DIR / "municipal_laws"
+            if muni_dir.exists():
+                for city_dir in muni_dir.iterdir():
+                    if city_dir.is_dir():
+                        count = len(list(city_dir.glob("*")))
+                        if count > 0:
+                            per_city.append(
+                                {
+                                    "city": city_dir.name,
+                                    "scraped": count,
+                                    "in_db": db_counts.get(city_dir.name, 0),
+                                }
+                            )
+                            scraped_total += count
+
+        per_city.sort(key=lambda x: x["scraped"], reverse=True)
+
+        return {
+            "per_city": per_city,
+            "total_in_db": total_in_db,
+            "total_scraped": scraped_total,
+            "cities_covered": len(per_city),
+            "estimated_total_municipalities": 2468,  # INEGI official count
+        }
+
+    def full_report(self):
+        """Combined coverage report across all levels."""
+        from apps.api.models import Law
+
+        from .models import GapRecord
+
+        federal = self.federal_coverage()
+        state = self.state_coverage()
+        municipal = self.municipal_coverage()
+
+        gap_stats = {
+            "total": GapRecord.objects.count(),
+            "open": GapRecord.objects.filter(status="open").count(),
+            "in_progress": GapRecord.objects.filter(status="in_progress").count(),
+            "resolved": GapRecord.objects.filter(status="resolved").count(),
+            "permanent": GapRecord.objects.filter(status="permanent").count(),
+        }
+
+        total_in_db = Law.objects.count()
+        total_scraped = (
+            federal["laws_scraped"]
+            + state["total_scraped"]
+            + municipal["total_scraped"]
+        )
+
+        return {
+            "summary": {
+                "total_in_db": total_in_db,
+                "total_scraped": total_scraped,
+                "total_gaps": gap_stats["total"],
+                "actionable_gaps": gap_stats["open"] + gap_stats["in_progress"],
+            },
+            "federal": federal,
+            "state": state,
+            "municipal": municipal,
+            "gaps": gap_stats,
+        }

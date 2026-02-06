@@ -28,6 +28,7 @@ requests = "^2.31"
 # openfisca-core = "*" (Blocked on Py3.11/Numpy)
 # numpy = "^1.26"
 drf-spectacular = "^0.29.0"
+django-celery-beat = "^2.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"

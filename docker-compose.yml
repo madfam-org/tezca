@@ -56,6 +56,30 @@ services:
       - postgres
       - redis
 
+  # Celery Beat Scheduler
+  celery-beat:
+    build:
+      context: .
+      dockerfile: apps/indigo/Dockerfile
+    container_name: leyes_mx_celery_beat
+    volumes:
+      - .:/app
+    command: celery -A apps.indigo beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in .env}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-leyes_mx}
+      - DB_USER=${DB_USER:-leyes_mx}
+      - DB_PASSWORD=${DB_PASSWORD:-leyes_mx_dev}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
   # Frontend: Next.js
   web:
     build:

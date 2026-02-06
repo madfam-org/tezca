@@ -19,6 +19,23 @@ class Law(models.Model):
         null=True,
         help_text="Municipality name for municipal laws",
     )
+    state = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="State name (e.g., 'Jalisco', 'Ciudad de México')",
+    )
+    source_url = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="URL where this law was obtained",
+    )
+    last_verified = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Last time this law's source was verified as still available",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
