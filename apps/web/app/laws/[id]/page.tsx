@@ -12,11 +12,11 @@ export async function generateMetadata({
     searchParams: { [key: string]: string | string[] | undefined }
 }): Promise<Metadata> {
     const lawId = decodeURIComponent(params.id);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
     try {
         // Fetch law metadata
-        const lawRes = await fetch(`${apiUrl}/api/v1/laws/${lawId}/`, {
+        const lawRes = await fetch(`${apiUrl}/laws/${lawId}/`, {
             next: { revalidate: 3600 } // Cache for 1 hour
         });
         

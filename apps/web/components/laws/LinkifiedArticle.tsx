@@ -33,9 +33,9 @@ export function LinkifiedArticle({ lawId, articleId, text }: LinkifiedArticlePro
     
     useEffect(() => {
         // Fetch cross-references for this article
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        
-        fetch(`${apiUrl}/api/v1/laws/${lawId}/articles/${articleId}/references/`)
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+        fetch(`${apiUrl}/laws/${lawId}/articles/${articleId}/references/`)
             .then(r => r.ok ? r.json() : { outgoing: [] })
             .then(data => {
                 setReferences(data.outgoing || []);

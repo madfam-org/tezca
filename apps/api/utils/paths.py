@@ -17,22 +17,25 @@ ES_HOST = os.getenv("ES_HOST", "http://localhost:9200")
 
 def resolve_data_path(relative_path: str) -> Path:
     """
-    Resolve a relative data path to an absolute path.
+    Resolve a data path to an absolute path.
 
-    Checks in order:
-    1. /app/<relative_path>  (Docker container)
-    2. BASE_DIR/<relative_path>  (local dev from project root)
-    3. cwd/<relative_path>  (fallback)
+    Handles:
+    - Absolute paths (returned as-is if they exist)
+    - /app/ prefixed paths (Docker)
+    - Relative paths (checked against BASE_DIR then cwd)
 
     Args:
-        relative_path: Path relative to project root, e.g. "data/state_laws/colima/text.txt"
+        relative_path: Path to resolve (absolute or relative)
 
     Returns:
         Resolved absolute Path (may not exist yet for write destinations)
-
-    Raises:
-        FileNotFoundError: If path doesn't exist in any location
     """
+    # If already an absolute path that exists, return directly
+    if relative_path.startswith("/") and not relative_path.startswith("/app/"):
+        abs_path = Path(relative_path)
+        if abs_path.exists():
+            return abs_path
+
     # Strip leading slashes to normalize
     clean_path = relative_path.lstrip("/")
 
@@ -60,6 +63,12 @@ def resolve_data_path_or_none(relative_path: str) -> Path | None:
     """
     if not relative_path:
         return None
+
+    # If already an absolute path that exists, return directly
+    if relative_path.startswith("/") and not relative_path.startswith("/app/"):
+        abs_path = Path(relative_path)
+        if abs_path.exists():
+            return abs_path
 
     clean_path = relative_path.lstrip("/")
     if clean_path.startswith("app/"):

@@ -85,7 +85,7 @@ class StateLawParser:
         state = law_metadata.get("state", "unknown")
         tier = law_metadata.get("tier", "state")
         municipality = law_metadata.get("municipality", "")
-        pub_date = law_metadata.get("publication_date", "2023-01-01")
+        pub_date = law_metadata.get("publication_date") or "2023-01-01"
         official_id = law_metadata.get("official_id", "unknown")
 
         state_slug = self._slugify(state)
@@ -178,10 +178,31 @@ class StateLawParser:
             result.text_path = text_path
 
             # 2. Read text content
-            if text_path.suffix.lower() == ".pdf":
+            # For .doc files, look for pre-extracted .txt in state_laws_processed/
+            if text_path.suffix.lower() == ".doc":
+                txt_equivalent = (
+                    str(text_path)
+                    .replace("/state_laws/", "/state_laws_processed/")
+                    .replace(".doc", ".txt")
+                )
+                txt_path = Path(txt_equivalent)
+                if txt_path.exists():
+                    text = txt_path.read_text(encoding="utf-8", errors="ignore")
+                else:
+                    result.error = (
+                        f"Text file not found: {text_file} "
+                        f"(no .txt in state_laws_processed/)"
+                    )
+                    return result
+            elif text_path.suffix.lower() == ".pdf":
                 text = self._extract_pdf_text(text_path)
             else:
                 text = text_path.read_text(encoding="utf-8", errors="ignore")
+
+            # Strip NULL bytes and control characters (common in .doc extracts)
+            import re as _re
+
+            text = _re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", text)
 
             if not text or len(text.strip()) < 100:
                 result.error = f"Text too short ({len(text.strip())} chars)"

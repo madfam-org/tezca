@@ -91,3 +91,4 @@ data/state_laws_processed/
 data/*_conversion*.json
 # Keep metadata for reference
 !data/state_laws_metadata.json
+node_modules

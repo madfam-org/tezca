@@ -122,7 +122,7 @@ def law_articles(request, law_id):
         # Use match_phrase on text field to handle unicode normalization differences
         body = {
             "query": {"match_phrase": {"law_id": law.official_id}},
-            "sort": [{"article.keyword": {"order": "asc"}}],
+            "sort": [{"article": {"order": "asc"}}],
             "size": 10000,  # Max articles per law
         }
 
@@ -174,15 +174,13 @@ def law_structure(request, law_id):
         # Ideally we re-index with an 'index_order' field.
         # For now, we fetch large size and trust the parser order if we could.
         # Actually, standard ES search might return random order if scoring is identical.
-        # We will use 'article.keyword' sort as a fallback, but it is alphanumeric (1, 10, 2).
+        # We will use 'article' sort as a fallback, but it is alphanumeric (1, 10, 2).
         # Fix: We will rely on simple aggregation? No, aggregation buckets keys are sorted alphanumeric.
 
         # Strategy: Fetch *all* hits (up to 10k), and build tree.
         body = {
             "query": {"match_phrase": {"law_id": law.official_id}},
-            "sort": [
-                {"article.keyword": "asc"}
-            ],  # Imperfect but needed for consistency
+            "sort": [{"article": "asc"}],  # Imperfect but needed for consistency
             "_source": ["hierarchy", "text", "article"],
             "size": 10000,
         }
@@ -296,6 +294,7 @@ def law_stats(request):
     total_laws = Law.objects.count()
     federal_count = Law.objects.filter(tier="federal").count()
     state_count = Law.objects.filter(tier="state").count()
+    municipal_count = Law.objects.filter(tier="municipal").count()
 
     # Get recent laws (most recent version publication date)
     recent_versions = LawVersion.objects.select_related("law").order_by(
@@ -320,6 +319,7 @@ def law_stats(request):
             "total_laws": total_laws,
             "federal_count": federal_count,
             "state_count": state_count,
+            "municipal_count": municipal_count,
             "last_update": last_update,
             "recent_laws": recent_laws,
         }

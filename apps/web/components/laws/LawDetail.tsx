@@ -22,15 +22,15 @@ export function LawDetail({ lawId }: LawDetailProps) {
             try {
                 setLoading(true);
                 // Note: Using the API URL from environment, or defaulting to localhost for dev
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
                 // Fetch law metadata
-                const lawRes = await fetch(`${apiUrl}/api/v1/laws/${lawId}/`);
+                const lawRes = await fetch(`${apiUrl}/laws/${lawId}/`);
                 if (!lawRes.ok) throw new Error('No se pudo cargar la ley');
                 const lawData = await lawRes.json();
 
                 // Fetch articles
-                const articlesRes = await fetch(`${apiUrl}/api/v1/laws/${lawId}/articles/`);
+                const articlesRes = await fetch(`${apiUrl}/laws/${lawId}/articles/`);
                 if (!articlesRes.ok) throw new Error('No se pudieron cargar los artículos');
                 const articlesData = await articlesRes.json();
 

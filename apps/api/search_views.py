@@ -36,7 +36,7 @@ class SearchView(APIView):
                 )
 
             # Get filter parameters
-            jurisdiction = request.query_params.get("jurisdiction", "federal")
+            jurisdiction = request.query_params.get("jurisdiction", "all")
             category = request.query_params.get("category", None)
             search_status = request.query_params.get("status", "all")
             sort_by = request.query_params.get("sort", "relevance")
@@ -59,12 +59,12 @@ class SearchView(APIView):
 
             # Category filter
             if category and category != "all":
-                filter_clauses.append({"term": {"category.keyword": category}})
+                filter_clauses.append({"term": {"category": category}})
 
             # Municipality filter
             municipality = request.query_params.get("municipality", None)
             if municipality and municipality != "all":
-                filter_clauses.append({"term": {"municipality.keyword": municipality}})
+                filter_clauses.append({"term": {"municipality": municipality}})
 
             # Jurisdiction filter (Enhanced for municipal)
             if jurisdiction and jurisdiction != "all":
@@ -73,11 +73,11 @@ class SearchView(APIView):
                 # Build should clauses for selected jurisdictions
                 tier_should = []
                 if "federal" in jurisdictions:
-                    tier_should.append({"term": {"tier.keyword": "federal"}})
+                    tier_should.append({"term": {"tier": "federal"}})
                 if "state" in jurisdictions:
-                    tier_should.append({"term": {"tier.keyword": "state"}})
+                    tier_should.append({"term": {"tier": "state"}})
                 if "municipal" in jurisdictions:
-                    tier_should.append({"term": {"tier.keyword": "municipal"}})
+                    tier_should.append({"term": {"tier": "municipal"}})
 
                 # If we have specific tiers selected, enforce at least one matches
                 if tier_should:
@@ -100,7 +100,7 @@ class SearchView(APIView):
             if state_filter and state_filter != "all":
                 # State ID prefix (e.g., "Colima" -> "colima_")
                 prefix = f"{state_filter.lower()}_"
-                filter_clauses.append({"prefix": {"law_id.keyword": prefix}})
+                filter_clauses.append({"prefix": {"law_id": prefix}})
 
             # Date Range Filter
             date_range = request.query_params.get("date_range", None)
@@ -166,7 +166,7 @@ class SearchView(APIView):
             elif sort_by == "date_asc":
                 sort_option = [{"publication_date": {"order": "asc"}}]
             elif sort_by == "name":
-                sort_option = [{"law_id.keyword": {"order": "asc"}}]
+                sort_option = [{"law_id": {"order": "asc"}}]
             # Default to relevance (no explicit sort, uses _score)
 
             # Calculate pagination

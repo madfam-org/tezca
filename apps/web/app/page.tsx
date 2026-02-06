@@ -36,12 +36,12 @@ export default function HomePage() {
           <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-3">
             <Feature
               icon="✨"
-              title="87% Cobertura Legal"
-              description="Mas de 10,000 leyes federales y estatales completamente digitalizadas" />
+              title="92% Cobertura Legal"
+              description="22,000+ leyes federales, estatales y municipales completamente digitalizadas" />
             <Feature
               icon="🔍"
               title="Búsqueda Completa"
-              description="550,000+ artículos indexados con búsqueda de texto completo"
+              description="930,000+ artículos indexados con búsqueda de texto completo"
             />
             <Feature
               icon="📊"
