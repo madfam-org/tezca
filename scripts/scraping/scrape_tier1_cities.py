@@ -30,6 +30,10 @@ MUNICIPAL_DIR = PROJECT_ROOT / "data" / "municipal_laws"
 
 def download_pdf(url, output_path, session=None, timeout=60):
     """Download a document with retry logic."""
+    # Skip if file already exists and is valid (>1KB)
+    if output_path.exists() and output_path.stat().st_size > 1024:
+        return True
+
     session = session or requests.Session()
     for attempt in range(3):
         try:
@@ -95,6 +99,10 @@ def scrape_city(muni_id, limit=None):
         safe_name = re.sub(r"[^\w\s-]", "", name)[:80]
         safe_name = safe_name.replace(" ", "_").lower()
         file_path = city_dir / f"{safe_name}.pdf"
+
+        # Log skip for already-existing files
+        if file_path.exists() and file_path.stat().st_size > 1024:
+            print(f"   ⏭️  [{i}/{len(catalog)}] Already exists: {file_path.name}")
 
         if download_pdf(url, file_path, session=scraper.session):
             laws.append(

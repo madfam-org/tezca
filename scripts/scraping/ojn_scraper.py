@@ -172,6 +172,11 @@ class OJNScraper:
         Returns:
             True if successful, False otherwise
         """
+        # Skip if file already exists and is valid (>1KB)
+        if output_path.exists() and output_path.stat().st_size > 1024:
+            print(f"   ⏭️  Already downloaded: {output_path.name}")
+            return True
+
         print(f"   📥 Downloading: {output_path.name}")
 
         response = self._request(download_url)
@@ -204,6 +209,23 @@ class OJNScraper:
 
         Shared logic for scrape_state() and scrape_state_comprehensive().
         """
+        # Check if already downloaded (any extension) — skip metadata fetch too
+        safe_name = re.sub(r"[^\w\s-]", "", law["name"])[:100]
+        safe_name = safe_name.replace(" ", "_").lower()
+        existing = list(state_dir.glob(f"{safe_name}_{law['file_id']}.*"))
+        if existing and existing[0].stat().st_size > 1024:
+            print(f"   ⏭️  Already exists: {existing[0].name}")
+            results["successful"] += 1
+            results["laws"].append(
+                {
+                    "file_id": law["file_id"],
+                    "law_name": law["name"],
+                    "local_path": str(existing[0]),
+                    "skipped": True,
+                }
+            )
+            return
+
         metadata = self.get_law_metadata(law["file_id"])
         if not metadata:
             print("   ❌ Failed to fetch metadata")
@@ -444,6 +466,23 @@ class OJNScraper:
 
         for i, law in enumerate(all_laws, 1):
             print(f"\n[{i}/{len(all_laws)}] Processing: {law['name'][:60]}...")
+
+            # Check if already downloaded (any extension) — skip metadata fetch too
+            safe_name = re.sub(r"[^\w\s-]", "", law["name"])[:100]
+            safe_name = safe_name.replace(" ", "_").lower()
+            existing = list(state_dir.glob(f"{safe_name}_{law['file_id']}.*"))
+            if existing and existing[0].stat().st_size > 1024:
+                print(f"   ⏭️  Already exists: {existing[0].name}")
+                results["successful"] += 1
+                results["laws"].append(
+                    {
+                        "file_id": law["file_id"],
+                        "law_name": law["name"],
+                        "local_path": str(existing[0]),
+                        "skipped": True,
+                    }
+                )
+                continue
 
             # Use MUNICIPAL ambito for metadata
             metadata = self.get_law_metadata(law["file_id"], ambito="MUNICIPAL")
