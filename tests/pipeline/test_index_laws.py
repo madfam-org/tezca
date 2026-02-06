@@ -176,7 +176,13 @@ class TestIndexLawsCommand:
                 m.setattr(index_laws, "helpers", mock_helpers)
 
                 # Run handle
-                command.handle(law_id="reglamento_gdl", dry_run=False, limit=None)
+                command.handle(
+                    law_id="reglamento_gdl",
+                    dry_run=False,
+                    limit=None,
+                    create_indices=False,
+                    tier="all",
+                )
 
                 # Verify bulk called
                 assert mock_helpers.bulk.called

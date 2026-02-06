@@ -179,6 +179,7 @@ def _build_pipeline_phases(params):
     skip_states = params.get("skip_states", False)
     skip_municipal = params.get("skip_municipal", False)
     skip_municipal_ojn = params.get("skip_municipal_ojn", False)
+    skip_parse = params.get("skip_parse", False)
     skip_index = params.get("skip_index", False)
     workers = params.get("workers", 4)
 
@@ -186,6 +187,7 @@ def _build_pipeline_phases(params):
 
     phases = []
 
+    # === PHASE GROUP 1: SCRAPING ===
     if not skip_scrape:
         phases.append(
             {
@@ -219,6 +221,7 @@ def _build_pipeline_phases(params):
                     }
                 )
 
+    # === PHASE GROUP 2: CONSOLIDATE METADATA ===
     # Always consolidate state metadata (needed for ingestion, cheap to run)
     phases.append(
         {
@@ -228,7 +231,6 @@ def _build_pipeline_phases(params):
         }
     )
 
-    # Consolidate municipal metadata
     if not skip_municipal:
         phases.append(
             {
@@ -241,7 +243,40 @@ def _build_pipeline_phases(params):
             }
         )
 
-    # Federal ingestion
+    # === PHASE GROUP 3: PARSE TO AKN XML ===
+    if not skip_parse:
+        if not skip_states:
+            phases.append(
+                {
+                    "name": "Parse state laws to AKN XML",
+                    "cmd": [
+                        "python",
+                        "scripts/ingestion/parse_state_laws.py",
+                        "--all",
+                        "--workers",
+                        str(workers),
+                    ],
+                    "cwd": str(BASE_DIR),
+                }
+            )
+        if not skip_municipal:
+            phases.append(
+                {
+                    "name": "Parse municipal laws to AKN XML",
+                    "cmd": [
+                        "python",
+                        "scripts/ingestion/parse_state_laws.py",
+                        "--municipal",
+                        "--all",
+                        "--workers",
+                        str(workers),
+                    ],
+                    "cwd": str(BASE_DIR),
+                }
+            )
+
+    # === PHASE GROUP 4: DB INGESTION ===
+    # Federal ingestion (includes its own parsing via bulk_ingest.py)
     phases.append(
         {
             "name": "Ingest federal laws",
@@ -259,7 +294,7 @@ def _build_pipeline_phases(params):
         }
     )
 
-    # State ingestion
+    # State ingestion (now reads AKN paths from metadata)
     phases.append(
         {
             "name": "Ingest state laws",
@@ -278,12 +313,18 @@ def _build_pipeline_phases(params):
             }
         )
 
-    # Elasticsearch indexing
+    # === PHASE GROUP 5: ELASTICSEARCH INDEXING ===
     if not skip_index:
         phases.append(
             {
                 "name": "Index to Elasticsearch",
-                "cmd": ["python", "manage.py", "index_laws", "--all"],
+                "cmd": [
+                    "python",
+                    "manage.py",
+                    "index_laws",
+                    "--all",
+                    "--create-indices",
+                ],
                 "cwd": str(BASE_DIR),
             }
         )
@@ -354,6 +395,9 @@ def run_full_pipeline(self, params=None):
         log.write(f"{'=' * 70}\n")
 
     phase_results = []
+
+    # DataOps logging (optional - fails gracefully if models not available)
+    pipeline_log = _create_acquisition_log("full_pipeline", params)
 
     for i, phase in enumerate(phases):
         phase_number = i + 1
@@ -453,4 +497,37 @@ def run_full_pipeline(self, params=None):
         log.write(f"Succeeded: {succeeded}/{total_phases}\n")
         log.write(f"{'=' * 70}\n")
 
+    # Finalize DataOps log
+    _finish_acquisition_log(pipeline_log, succeeded, failed, total_phases)
+
     return status_data
+
+
+def _create_acquisition_log(operation, params):
+    """Create a DataOps AcquisitionLog entry (fails gracefully)."""
+    try:
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        return AcquisitionLog.objects.create(
+            operation=operation,
+            parameters=params or {},
+        )
+    except Exception:
+        return None
+
+
+def _finish_acquisition_log(log_entry, succeeded, failed, total):
+    """Finalize a DataOps AcquisitionLog entry."""
+    if log_entry is None:
+        return
+    try:
+        error_summary = ""
+        if failed > 0:
+            error_summary = f"{failed}/{total} phases failed"
+        log_entry.found = total
+        log_entry.downloaded = succeeded
+        log_entry.failed = failed
+        log_entry.ingested = succeeded
+        log_entry.finish(error_summary=error_summary)
+    except Exception:
+        pass

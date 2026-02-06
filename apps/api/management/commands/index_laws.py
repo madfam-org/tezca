@@ -1,10 +1,13 @@
 """
-Management command to index ALL laws (Federal & State) in Elasticsearch.
-Parses V2 XML to extract rich hierarchy (Book, Title, Chapter).
+Management command to index ALL laws (Federal, State, Municipal) in Elasticsearch.
+Parses V2 AKN XML to extract rich hierarchy (Book, Title, Chapter).
+Falls back to raw text indexing for laws without AKN XML.
 
 Usage:
     python manage.py index_laws --all
+    python manage.py index_laws --all --create-indices
     python manage.py index_laws --law-id federal_ley_123
+    python manage.py index_laws --all --tier state
 """
 
 import re
@@ -15,10 +18,10 @@ from elasticsearch import Elasticsearch, helpers
 from lxml import etree
 
 from apps.api.models import Law
+from apps.api.utils.paths import ES_HOST, resolve_data_path_or_none
 
-# Elasticsearch config
-ES_HOST = "http://elasticsearch:9200"
-INDEX_NAME = "articles"
+INDEX_LAWS = "laws"
+INDEX_ARTICLES = "articles"
 
 NS = {"akn": "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"}
 
@@ -34,12 +37,84 @@ class Command(BaseCommand):
         )
 
         parser.add_argument("--dry-run", action="store_true", help="No ES writes")
-        parser.add_argument("--batch_size", type=int, default=500, help="Batch size")
+        parser.add_argument("--batch-size", type=int, default=500, help="Batch size")
         parser.add_argument("--limit", type=int, help="Limit number of laws to process")
+        parser.add_argument(
+            "--create-indices",
+            action="store_true",
+            help="Create ES indices if they don't exist",
+        )
+        parser.add_argument(
+            "--tier",
+            type=str,
+            choices=["federal", "state", "municipal", "all"],
+            default="all",
+            help="Filter by law tier (default: all)",
+        )
+
+    def _create_indices(self, es):
+        """Create Elasticsearch indices with proper mappings."""
+        # Laws index
+        if not es.indices.exists(index=INDEX_LAWS):
+            es.indices.create(
+                index=INDEX_LAWS,
+                body={
+                    "mappings": {
+                        "properties": {
+                            "id": {"type": "keyword"},
+                            "name": {"type": "text", "analyzer": "spanish"},
+                            "category": {"type": "keyword"},
+                            "tier": {"type": "keyword"},
+                            "state": {"type": "keyword"},
+                            "municipality": {"type": "keyword"},
+                            "publication_date": {"type": "date"},
+                            "status": {"type": "keyword"},
+                            "total_articles": {"type": "integer"},
+                        }
+                    }
+                },
+            )
+            self.stdout.write(self.style.SUCCESS(f"Created index: {INDEX_LAWS}"))
+
+        # Articles index
+        if not es.indices.exists(index=INDEX_ARTICLES):
+            es.indices.create(
+                index=INDEX_ARTICLES,
+                body={
+                    "settings": {
+                        "analysis": {
+                            "analyzer": {
+                                "spanish_legal": {
+                                    "type": "spanish",
+                                    "stopwords": "_spanish_",
+                                }
+                            }
+                        }
+                    },
+                    "mappings": {
+                        "properties": {
+                            "law_id": {"type": "keyword"},
+                            "law_name": {"type": "text", "analyzer": "spanish"},
+                            "article": {"type": "keyword"},
+                            "text": {"type": "text", "analyzer": "spanish"},
+                            "category": {"type": "keyword"},
+                            "tier": {"type": "keyword"},
+                            "state": {"type": "keyword"},
+                            "municipality": {"type": "keyword"},
+                            "book": {"type": "text"},
+                            "title": {"type": "text"},
+                            "chapter": {"type": "text"},
+                            "hierarchy": {"type": "keyword"},
+                            "publication_date": {"type": "date"},
+                            "tags": {"type": "keyword"},
+                        }
+                    },
+                },
+            )
+            self.stdout.write(self.style.SUCCESS(f"Created index: {INDEX_ARTICLES}"))
 
     def _get_element_metadata(self, element, tag_name):
         """Extract num and heading from an ancestor tag (e.g., chapter)."""
-        # Find the specific ancestor
         ancestor = element.xpath(f"ancestor::akn:{tag_name}", namespaces=NS)
         if not ancestor:
             return None
@@ -56,7 +131,7 @@ class Command(BaseCommand):
         }
 
     def extract_articles_from_xml(self, xml_content, law_official_id):
-        """Parse XML and extract articles with hierarchy."""
+        """Parse AKN XML and extract articles with hierarchy."""
         try:
             root = etree.fromstring(xml_content.encode("utf-8"))
         except Exception as e:
@@ -64,24 +139,20 @@ class Command(BaseCommand):
             return []
 
         articles = []
-
-        # Find all articles
         article_nodes = root.xpath("//akn:article", namespaces=NS)
 
         for node in article_nodes:
-            # Basic Article Info
             eid = node.get("eId")
             num = node.find("akn:num", NS)
-            content = node.find("akn:content", NS)
 
-            if content is None:
+            # Get text content recursively from the whole article
+            text_content = "".join(node.itertext()).strip()
+
+            if not text_content:
                 continue
 
-            # Get text content recursively
-            text_content = "".join(content.itertext()).strip()
-
             article_data = {
-                "article_id": num.text.strip() if num is not None else eid,
+                "article_id": num.text.strip() if num is not None and num.text else eid,
                 "eId": eid,
                 "text": text_content,
                 "book": self._get_element_metadata(node, "book"),
@@ -94,42 +165,113 @@ class Command(BaseCommand):
 
         return articles
 
+    def _index_law_doc(self, law, version, article_count, es, dry_run=False):
+        """Index the law-level document into the laws index."""
+        if dry_run:
+            return
+
+        doc = {
+            "_index": INDEX_LAWS,
+            "_id": law.official_id,
+            "_source": {
+                "id": law.official_id,
+                "name": law.name,
+                "category": law.category or "unknown",
+                "tier": law.tier or "federal",
+                "state": law.state or "",
+                "municipality": law.municipality or "",
+                "publication_date": (
+                    version.publication_date.isoformat()
+                    if version.publication_date
+                    else None
+                ),
+                "status": "active",
+                "total_articles": article_count,
+            },
+        }
+        helpers.bulk(es, [doc])
+
+    def _index_raw_text(self, law, version, text, es, dry_run=False):
+        """Index raw text as a single article (degraded but searchable)."""
+        if dry_run:
+            self.stdout.write(
+                f"Dry run: Would index raw text for {law.official_id} "
+                f"({len(text):,} chars)"
+            )
+            return 1
+
+        doc = {
+            "_index": INDEX_ARTICLES,
+            "_source": {
+                "law_id": law.official_id,
+                "law_name": law.name,
+                "article": "full_text",
+                "text": text[:50000],  # Cap at 50KB to avoid ES limits
+                "category": law.category or "unknown",
+                "tier": law.tier or "state",
+                "state": law.state or "",
+                "municipality": law.municipality or "",
+                "book": None,
+                "title": None,
+                "chapter": None,
+                "hierarchy": [],
+                "publication_date": (
+                    version.publication_date.isoformat()
+                    if version.publication_date
+                    else None
+                ),
+                "tags": [
+                    law.tier or "unknown",
+                    (law.category or "unknown").lower(),
+                    "raw_text",
+                ],
+            },
+        }
+        helpers.bulk(es, [doc])
+
+        # Also index law-level doc
+        self._index_law_doc(law, version, 0, es, dry_run)
+
+        return 1
+
     def index_law(self, law, es, dry_run=False):
-        """Index a single law."""
-        version = law.versions.last()  # Get latest
+        """Index a single law with articles or raw text fallback."""
+        version = law.versions.last()
         if not version or not version.xml_file_path:
             return 0
 
-        xml_path = Path("/app/" + version.xml_file_path)
-        if not xml_path.exists():
-            # Try relative to repo root if /app/ fails (local dev vs docker)
-            if not xml_path.exists():
-                # Fallback for local run
-                xml_path = Path.cwd() / version.xml_file_path
+        file_path = resolve_data_path_or_none(version.xml_file_path)
 
-        if not xml_path.exists():
+        if not file_path:
             self.stdout.write(
-                self.style.WARNING(f"XML not found for {law.official_id}: {xml_path}")
+                self.style.WARNING(
+                    f"File not found for {law.official_id}: {version.xml_file_path}"
+                )
             )
             return 0
 
-        # Read XML
-        text = xml_path.read_text(encoding="utf-8")
+        # Read file content
+        text = file_path.read_text(encoding="utf-8")
 
-        # Extract Structure
+        # Check if this is AKN XML or raw text
+        is_akn = text.strip().startswith("<?xml") or "<akomaNtoso" in text[:500]
+
+        if not is_akn:
+            return self._index_raw_text(law, version, text, es, dry_run)
+
+        # Extract articles from AKN XML
         extracted_articles = self.extract_articles_from_xml(text, law.official_id)
 
         if dry_run:
             self.stdout.write(
-                f"Dry run: Would index {len(extracted_articles)} articles for {law.official_id}"
+                f"Dry run: Would index {len(extracted_articles)} articles "
+                f"for {law.official_id}"
             )
             return len(extracted_articles)
 
-        # Prepare ES Docs
+        # Prepare ES article docs
         actions = []
         for art in extracted_articles:
-
-            # Format hierarchy for display/search
             hierarchy_breadcrumbs = []
             if art["title"]:
                 hierarchy_breadcrumbs.append(
@@ -141,17 +283,16 @@ class Command(BaseCommand):
                 )
 
             doc = {
-                "_index": INDEX_NAME,
+                "_index": INDEX_ARTICLES,
                 "_source": {
                     "law_id": law.official_id,
                     "law_name": law.name,
                     "article": art["article_id"],
                     "text": art["text"],
-                    "category": law.category,
-                    "tier": law.tier,
-                    "municipality": law.municipality,
-                    "status": law.status,
-                    # Structural Fields
+                    "category": law.category or "unknown",
+                    "tier": law.tier or "federal",
+                    "state": law.state or "",
+                    "municipality": law.municipality or "",
                     "book": art["book"]["heading"] if art["book"] else None,
                     "title": art["title"]["heading"] if art["title"] else None,
                     "chapter": art["chapter"]["heading"] if art["chapter"] else None,
@@ -162,8 +303,8 @@ class Command(BaseCommand):
                         else None
                     ),
                     "tags": [
-                        law.tier,
-                        law.category.lower() if law.category else "unknown",
+                        law.tier or "federal",
+                        (law.category or "unknown").lower(),
                     ],
                 },
             }
@@ -172,6 +313,9 @@ class Command(BaseCommand):
         if actions:
             helpers.bulk(es, actions)
 
+        # Index law-level document
+        self._index_law_doc(law, version, len(actions), es, dry_run)
+
         return len(actions)
 
     def handle(self, *args, **options):
@@ -179,8 +323,13 @@ class Command(BaseCommand):
         if not options["dry_run"]:
             es = Elasticsearch([ES_HOST])
             if not es.ping():
-                self.stderr.write("Elasticsearch offline")
+                self.stderr.write(f"Elasticsearch offline at {ES_HOST}")
                 return
+            self.stdout.write(f"Connected to Elasticsearch at {ES_HOST}")
+
+            # Create indices if requested
+            if options["create_indices"]:
+                self._create_indices(es)
         else:
             es = None
 
@@ -190,27 +339,45 @@ class Command(BaseCommand):
         else:
             laws = Law.objects.all()
 
+        # Filter by tier
+        tier = options.get("tier", "all")
+        if tier and tier != "all":
+            laws = laws.filter(tier=tier)
+
         if options.get("limit"):
             laws = laws[: options["limit"]]
 
         total = laws.count()
-        self.stdout.write(f"Indexing {total} laws...")
+        self.stdout.write(f"Indexing {total} laws (tier={tier})...")
 
         count = 0
         total_articles = 0
+        skipped = 0
+        raw_text_count = 0
 
         for law in laws:
             try:
                 n = self.index_law(law, es, options["dry_run"])
-                total_articles += n
+                if n == 0:
+                    skipped += 1
+                else:
+                    total_articles += n
                 count += 1
-                if count % 10 == 0:
-                    self.stdout.write(f"Processed {count}/{total} laws...")
+                if count % 50 == 0:
+                    self.stdout.write(
+                        f"  Processed {count}/{total} laws "
+                        f"({total_articles} articles)..."
+                    )
             except Exception as e:
                 self.stderr.write(f"Error indexing {law.official_id}: {e}")
 
+        self.stdout.write("")
+        self.stdout.write("=" * 60)
         self.stdout.write(
             self.style.SUCCESS(
                 f"Done! Indexed {total_articles} articles from {count} laws."
             )
         )
+        if skipped:
+            self.stdout.write(f"Skipped {skipped} laws (no file found)")
+        self.stdout.write("=" * 60)

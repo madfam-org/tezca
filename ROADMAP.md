@@ -1,7 +1,9 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-02-03  
+**Last Updated**: 2026-02-05
 **Current Status**: 87% Coverage (11,667 laws)
+**Data Motor**: Pipeline fix in progress (state/municipal AKN parsing + unified indexer)
+**DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
 
 ---
 
@@ -104,15 +106,72 @@
 
 ---
 
-## Phase 4: Municipal Coverage 🏘️ PLANNED
+## Current Sprint: Data Motor (Pipeline Fix) 🔧 IN PROGRESS
 
-**Timeline**: Q2-Q4 2026 (6-12 months)  
+**Sprint Goal**: Fix the broken ingestion/indexing pipeline so all 11,580+ scraped laws flow through scrape → parse → DB → ES end-to-end.
+
+**Status**: In Progress
+
+| # | Task | Status | Blocker |
+|---|------|--------|---------|
+| 1 | Unified path resolution (Docker/local) | Done | -- |
+| 2 | State/Municipal AKN parser pipeline | Done | -- |
+| 3 | Fix ingestion commands to use AKN paths | Done | Task 2 |
+| 4 | Unified ES indexer (merge two indexers) | Done | Task 3 |
+| 5 | Pipeline orchestration update (tasks.py) | Done | Tasks 2-4 |
+| 6 | Municipal scraper completion (tier-1 cities) | Done | -- |
+| 7 | End-to-end validation + integration tests | Done | Tasks 1-5 |
+
+**Definition of Done**: `python scripts/validation/validate_pipeline.py` reports 100% for federal, >90% for state, >80% for municipal tiers.
+
+**Recently Completed (Previous Sprint: DataOps Protocol):**
+- DataOps protocol: DataSource, GapRecord, AcquisitionLog models
+- Gap Registry + 53 gap records bootstrapped
+- Health Monitor with 5 source probes
+- Coverage Dashboard + CLI reports
+- Source Discovery framework (32 state congress portals)
+- Celery Beat scheduling (5 scheduled tasks)
+- Escalation Playbook (5-tier system + 3 contact templates)
+- Law model enhancement (state, source_url, last_verified fields)
+
+---
+
+## Next Sprint: Data Expansion + Search Quality
+
+**Sprint Goal**: Expand data coverage and improve search quality once the pipeline is running.
+
+| # | Task | Priority | Notes |
+|---|------|----------|-------|
+| 1 | OJN powers 1/3/4 scraper extension (23,660 state laws) | High | Needs OJN scraper modification |
+| 2 | Municipal scraper: Guadalajara + Monterrey content download | High | Content download now implemented |
+| 3 | ES search quality: spanish_legal analyzer tuning, synonym list | Medium | -- |
+| 4 | DOF daily monitoring scraper (replace stub) | Medium | -- |
+| 5 | Federal Reglamentos scraper (diputados.gob.mx separate page) | Medium | -- |
+| 6 | Embeddings/vector search integration | Low | -- |
+| 7 | Coverage dashboard: admin UI integration | Low | -- |
+
+**Backlog (Future Sprints):**
+- Remaining 25+ municipal scraper implementations (Tier 2: state capitals)
+- State Periodicos Oficiales scrapers
+- SCJN Jurisprudencia scraper
+- SIL legislative tracking integration
+- International Treaties (Senado)
+- Comparison tool UI (Phase 3 remainder)
+- Auto-update system (DOF monitoring → parse → ingest → index cycle)
+
+---
+
+## Phase 4: Municipal Coverage 🏘️ IN PROGRESS
+
+**Timeline**: Q2-Q4 2026 (6-12 months)
 **Coverage Target**: +500-2,000 laws
+**Current**: 217 municipal laws scraped (5 tier-1 cities), CDMX fully operational
 
 ### Tier 1: Major Cities (Q2 2026)
-- **Cities**: CDMX, Guadalajara, Monterrey, Puebla, Tijuana, etc.
-- **Target**: 10 largest municipalities (~500 laws)
-- **Approach**: Custom scrapers, municipal partnerships
+- **Cities**: CDMX, Guadalajara, Monterrey, Puebla, Tijuana, León
+- **Target**: 6 largest municipalities (~500 laws)
+- **Approach**: Custom scrapers with content download (implemented), municipal partnerships
+- **Progress**: CDMX complete (217 laws), other 5 cities have catalog scrapers + content download
 - **Timeline**: 3-4 months
 
 ### Tier 2: State Capitals (Q3 2026)

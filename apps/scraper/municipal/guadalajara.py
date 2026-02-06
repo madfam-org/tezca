@@ -84,10 +84,12 @@ class GuadalajaraScraper(MunicipalScraper):
             keyword in text_lower or keyword in href_lower for keyword in keywords
         )
 
-    def scrape_law_content(self, url: str) -> Optional[Dict]:
+    def scrape_law_content(self, url: str, output_dir: str = None) -> Optional[Dict]:
         """
-        Fetch content of a specific law.
+        Download and extract content of a specific law.
 
-        Most Guadalajara regulations are PDFs.
+        Most Guadalajara regulations are PDFs hosted on the transparency portal.
         """
-        return {"url": url, "file_type": "pdf" if self.is_pdf(url) else "html"}
+        if output_dir is None:
+            output_dir = f"data/municipal/guadalajara/raw"
+        return self.download_law_content(url, output_dir)

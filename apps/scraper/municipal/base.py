@@ -183,6 +183,116 @@ class MunicipalScraper:
         else:
             return "Otro"
 
+    def download_law_content(self, url: str, output_dir: str) -> Optional[Dict]:
+        """
+        Download law content (PDF or HTML) and extract text.
+
+        Args:
+            url: URL of the law document
+            output_dir: Directory to save downloaded files
+
+        Returns:
+            Dict with file_type, file_path, text_content, or None on failure
+        """
+        from pathlib import Path
+
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        try:
+            self._rate_limit()
+
+            if self.is_pdf(url):
+                return self._download_pdf(url, output_path)
+            else:
+                return self._download_html(url, output_path)
+        except Exception as e:
+            logger.error(f"Error downloading {url}: {e}")
+            return None
+
+    def _download_pdf(self, url: str, output_dir) -> Optional[Dict]:
+        """Download a PDF and extract text using pdfplumber."""
+        from pathlib import Path
+
+        response = self.session.get(url, timeout=60)
+        response.raise_for_status()
+
+        # Generate filename from URL
+        filename = url.split("/")[-1]
+        if not filename.endswith(".pdf"):
+            filename = filename + ".pdf"
+        # Sanitize
+        filename = "".join(c if c.isalnum() or c in ".-_" else "_" for c in filename)
+
+        pdf_path = output_dir / filename
+        pdf_path.write_bytes(response.content)
+
+        # Extract text
+        text_content = ""
+        try:
+            import pdfplumber
+
+            with pdfplumber.open(pdf_path) as pdf:
+                text_parts = []
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text_parts.append(page_text)
+                text_content = "\n".join(text_parts)
+        except ImportError:
+            logger.warning(
+                "pdfplumber not installed, saving PDF without text extraction"
+            )
+        except Exception as e:
+            logger.warning(f"PDF text extraction failed: {e}")
+
+        # Save extracted text alongside PDF
+        text_path = pdf_path.with_suffix(".txt")
+        if text_content:
+            text_path.write_text(text_content, encoding="utf-8")
+
+        return {
+            "url": url,
+            "file_type": "pdf",
+            "file_path": str(pdf_path),
+            "text_path": str(text_path) if text_content else None,
+            "text_content": text_content,
+            "size_bytes": len(response.content),
+        }
+
+    def _download_html(self, url: str, output_dir) -> Optional[Dict]:
+        """Download an HTML page and extract text content."""
+        html = self.fetch_page(url)
+        if not html:
+            return None
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        # Remove script/style elements
+        for tag in soup(["script", "style", "nav", "footer", "header"]):
+            tag.decompose()
+
+        # Extract text
+        text_content = soup.get_text(separator="\n", strip=True)
+
+        # Save text file
+        filename = url.split("/")[-1].split("?")[0] or "page"
+        filename = "".join(c if c.isalnum() or c in ".-_" else "_" for c in filename)
+        if not filename.endswith(".txt"):
+            filename = filename + ".txt"
+
+        text_path = output_dir / filename
+        text_path.write_text(text_content, encoding="utf-8")
+
+        return {
+            "url": url,
+            "file_type": "html",
+            "file_path": str(text_path),
+            "text_path": str(text_path),
+            "text_content": text_content,
+            "size_bytes": len(text_content),
+        }
+
     # Abstract methods - must be implemented by subclasses
 
     def scrape_catalog(self) -> List[Dict]:

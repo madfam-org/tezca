@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.api.models import Law, LawVersion
+from apps.api.utils.paths import resolve_data_path_or_none, resolve_metadata_file
 
 
 class Command(BaseCommand):
@@ -60,6 +61,12 @@ class Command(BaseCommand):
                     "law_name": law_name,
                 }
 
+            # Determine best file path for xml_file_path:
+            # Prefer AKN XML if it exists, fall back to raw text
+            akn_file = metadata.get("akn_file_path", "")
+            akn_path = resolve_data_path_or_none(akn_file) if akn_file else None
+            stored_path = akn_file if akn_path else (text_file or "")
+
             # Check if law already exists
             existing_law = Law.objects.filter(official_id=official_id).first()
 
@@ -67,6 +74,9 @@ class Command(BaseCommand):
                 existing_law.name = law_name
                 existing_law.tier = tier
                 existing_law.category = category
+                existing_law.state = state
+                existing_law.municipality = municipality
+                existing_law.source_url = metadata.get("url", "") or ""
                 existing_law.save()
                 law = existing_law
                 action = "updated"
@@ -76,6 +86,9 @@ class Command(BaseCommand):
                     name=law_name,
                     tier=tier,
                     category=category,
+                    state=state,
+                    municipality=municipality,
+                    source_url=metadata.get("url", "") or "",
                 )
                 action = "created"
 
@@ -85,7 +98,7 @@ class Command(BaseCommand):
                 law=law,
                 publication_date=pub_date,
                 dof_url=metadata.get("url", ""),
-                xml_file_path=text_file or "",
+                xml_file_path=stored_path,
             )
 
             return {
@@ -106,7 +119,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("🏘️  Loading municipal law metadata...")
-        metadata_file = Path("/app/data/municipal_laws_metadata.json")
+        metadata_file = resolve_metadata_file("municipal_laws_metadata.json")
 
         if not metadata_file.exists():
             self.stdout.write(

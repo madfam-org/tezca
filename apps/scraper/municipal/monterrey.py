@@ -102,6 +102,8 @@ class MonterreyScraper(MunicipalScraper):
 
         return True
 
-    def scrape_law_content(self, url: str) -> Optional[Dict]:
-        """Fetch content of a specific law."""
-        return {"url": url, "file_type": "pdf" if self.is_pdf(url) else "html"}
+    def scrape_law_content(self, url: str, output_dir: str = None) -> Optional[Dict]:
+        """Download and extract content of a specific law."""
+        if output_dir is None:
+            output_dir = "data/municipal/monterrey/raw"
+        return self.download_law_content(url, output_dir)
