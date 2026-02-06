@@ -60,6 +60,12 @@ export interface DashboardStats {
     total_laws: number;
     federal_count: number;
     state_count: number;
+    municipal_count: number;
+    total_articles: number;
+    federal_coverage: number;
+    state_coverage: number;
+    municipal_coverage: number;
+    total_coverage: number;
     last_update: string | null;
     recent_laws: {
         id: string;

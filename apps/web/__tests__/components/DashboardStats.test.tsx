@@ -13,6 +13,12 @@ const mockStats = {
     total_laws: 11667,
     federal_count: 330,
     state_count: 11337,
+    municipal_count: 0,
+    total_articles: 550000,
+    federal_coverage: 99.1,
+    state_coverage: 94,
+    municipal_coverage: 0,
+    total_coverage: 87,
     last_update: '2026-01-15',
     recent_laws: [
         { id: 'ley-1', name: 'Ley Federal de Test', date: '2026-01-10', tier: 'federal', category: 'ley' },

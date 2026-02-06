@@ -1,11 +1,19 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input, Button } from "@leyesmx/ui";
+import { api } from '@/lib/api';
 
 export function Hero() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [totalLaws, setTotalLaws] = useState<number | null>(null);
+
+    useEffect(() => {
+        api.getStats()
+            .then(stats => setTotalLaws(stats.total_laws))
+            .catch(() => {});
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,7 +66,7 @@ export function Hero() {
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Buscar en 11,667 leyes..."
+                                    placeholder={totalLaws ? `Buscar en ${totalLaws.toLocaleString('es-MX')} leyes...` : 'Buscar leyes...'}
                                     className="flex-1 border-0 bg-transparent text-base sm:text-lg text-neutral-900 placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-0"
                                 />
                             </div>

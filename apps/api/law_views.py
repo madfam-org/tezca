@@ -296,6 +296,30 @@ def law_stats(request):
     state_count = Law.objects.filter(tier="state").count()
     municipal_count = Law.objects.filter(tier="municipal").count()
 
+    # Article count from Elasticsearch
+    total_articles = 0
+    try:
+        es = Elasticsearch([ES_HOST])
+        if es.ping():
+            count_res = es.count(index=INDEX_NAME)
+            total_articles = count_res.get("count", 0)
+    except Exception:
+        pass
+
+    # Coverage percentages (known universe of Mexican laws)
+    # Federal: ~336 laws in DOF catalog
+    # State: ~12,100 laws across 32 states (OJN catalog)
+    # Municipal: ~1,800 estimated (tier-1 cities)
+    FEDERAL_UNIVERSE = 336
+    STATE_UNIVERSE = 12100
+    MUNICIPAL_UNIVERSE = 1800
+    total_universe = FEDERAL_UNIVERSE + STATE_UNIVERSE + MUNICIPAL_UNIVERSE
+
+    federal_coverage = round(min(federal_count / FEDERAL_UNIVERSE * 100, 100), 1)
+    state_coverage = round(min(state_count / STATE_UNIVERSE * 100, 100), 1)
+    municipal_coverage = round(min(municipal_count / MUNICIPAL_UNIVERSE * 100, 100), 1)
+    total_coverage = round(min(total_laws / total_universe * 100, 100), 1)
+
     # Get recent laws (most recent version publication date)
     recent_versions = LawVersion.objects.select_related("law").order_by(
         "-publication_date"
@@ -320,6 +344,11 @@ def law_stats(request):
             "federal_count": federal_count,
             "state_count": state_count,
             "municipal_count": municipal_count,
+            "total_articles": total_articles,
+            "federal_coverage": federal_coverage,
+            "state_coverage": state_coverage,
+            "municipal_coverage": municipal_coverage,
+            "total_coverage": total_coverage,
             "last_update": last_update,
             "recent_laws": recent_laws,
         }

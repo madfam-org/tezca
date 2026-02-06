@@ -87,6 +87,12 @@ export const DashboardStatsSchema = z.object({
     total_laws: z.number(),
     federal_count: z.number(),
     state_count: z.number(),
+    municipal_count: z.number(),
+    total_articles: z.number(),
+    federal_coverage: z.number(),
+    state_coverage: z.number(),
+    municipal_coverage: z.number(),
+    total_coverage: z.number(),
     last_update: z.string().nullable(),
     recent_laws: z.array(RecentLawSchema),
 });
