@@ -29,7 +29,7 @@ export function DashboardStatsGrid() {
         </div>;
     }
 
-    if (!stats) return null;
+    if (!stats) return <p className="text-center text-muted-foreground">No se pudieron cargar las estadísticas.</p>;
 
     return (
         <div className="space-y-8">

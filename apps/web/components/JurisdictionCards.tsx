@@ -94,9 +94,14 @@ function CoverageDisplay({
 
 export function JurisdictionCards() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
-        api.getStats().then(setStats).catch(console.error);
+        api.getStats()
+            .then(setStats)
+            .catch(() => setError(true))
+            .finally(() => setLoading(false));
     }, []);
 
     return (
@@ -110,6 +115,15 @@ export function JurisdictionCards() {
                 </p>
             </div>
 
+            {loading ? (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-64 rounded-xl bg-muted animate-pulse" />
+                    ))}
+                </div>
+            ) : error ? (
+                <p className="text-center text-muted-foreground">No se pudieron cargar las estadísticas.</p>
+            ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {jurisdictionConfig.map((jurisdiction) => {
                     const count = stats ? stats[jurisdiction.countKey] : 0;
@@ -160,6 +174,7 @@ export function JurisdictionCards() {
                     );
                 })}
             </div>
+            )}
         </div>
     );
 }

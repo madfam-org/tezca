@@ -102,7 +102,11 @@ function SingleArticle({
         >
             <div className="flex items-start justify-between mb-4">
                 <h3 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-                    {article.article_id === 'texto_completo' ? 'Texto Completo' : `Artículo ${article.article_id}`}
+                    {article.article_id === 'texto_completo' || article.article_id === 'full_text'
+                        ? 'Texto Completo'
+                        : /^Art[ií]culo/i.test(article.article_id)
+                            ? article.article_id
+                            : `Artículo ${article.article_id}`}
                 </h3>
 
                 <button
@@ -113,6 +117,7 @@ function SingleArticle({
                             ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                     )}
+                    aria-label="Copiar enlace directo al artículo"
                     title="Copiar enlace directo"
                 >
                     {copied ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}

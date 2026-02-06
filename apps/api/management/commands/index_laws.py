@@ -130,6 +130,46 @@ class Command(BaseCommand):
             ),
         }
 
+    def _extract_article_text(self, node):
+        """Extract article text preserving paragraph structure.
+
+        - Extracts from <p> elements (semantic paragraphs) instead of raw itertext()
+        - Skips <note> children (reform notices like "Artículo reformado DOF 07-06-2024")
+        - Strips duplicated article number from paragraph body
+        - Rejoins mid-sentence line breaks while preserving intentional breaks
+        - Joins paragraphs with double newline for clear visual separation
+        """
+        paragraphs = []
+        for p_elem in node.xpath(".//akn:p", namespaces=NS):
+            # Skip <p> inside <note> (reform notices)
+            if any(anc.tag.endswith("note") for anc in p_elem.iterancestors()):
+                continue
+            raw = "".join(p_elem.itertext()).strip()
+            if not raw:
+                continue
+            # Remove repeated article number from paragraph start
+            cleaned = re.sub(r"^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w\s]*\.\s*", "", raw)
+            # Rejoin mid-sentence hard line breaks (column wraps from PDF)
+            cleaned = re.sub(
+                r"(?<=[a-záéíóúñü,;])\n(?=[a-záéíóúñü])",
+                " ",
+                cleaned,
+                flags=re.IGNORECASE,
+            )
+            # Collapse multiple spaces
+            cleaned = re.sub(r" {2,}", " ", cleaned)
+            paragraphs.append(cleaned.strip())
+
+        if not paragraphs:
+            # Fallback for articles without <p> elements
+            raw = "".join(node.itertext()).strip()
+            num_el = node.find("akn:num", namespaces=NS)
+            if num_el is not None and num_el.text:
+                raw = raw.replace(num_el.text.strip(), "", 1).strip()
+            return raw
+
+        return "\n\n".join(paragraphs)
+
     def extract_articles_from_xml(self, xml_content, law_official_id):
         """Parse AKN XML and extract articles with hierarchy."""
         try:
@@ -145,14 +185,20 @@ class Command(BaseCommand):
             eid = node.get("eId")
             num = node.find("akn:num", NS)
 
-            # Get text content recursively from the whole article
-            text_content = "".join(node.itertext()).strip()
+            # Clean article_id: strip "Artículo " prefix and trailing period
+            raw_num = num.text.strip() if num is not None and num.text else eid
+            article_id = (
+                re.sub(r"^(?:Art[ií]culo|ARTÍCULO)\s*", "", raw_num).rstrip(".").strip()
+            )
+
+            # Extract structured text
+            text_content = self._extract_article_text(node)
 
             if not text_content:
                 continue
 
             article_data = {
-                "article_id": num.text.strip() if num is not None and num.text else eid,
+                "article_id": article_id,
                 "eId": eid,
                 "text": text_content,
                 "book": self._get_element_metadata(node, "book"),

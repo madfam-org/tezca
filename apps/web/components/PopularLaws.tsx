@@ -2,14 +2,14 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 
 const popularLaws = [
-    { id: 'constitucion', name: 'Constitución', href: '/laws/constitucion' },
-    { id: 'codigo-civil', name: 'Código Civil', href: '/laws/codigo-civil' },
-    { id: 'codigo-penal', name: 'Código Penal', href: '/laws/codigo-penal' },
-    { id: 'isr', name: 'ISR', href: '/laws/isr' },
-    { id: 'iva', name: 'IVA', href: '/laws/iva' },
-    { id: 'trabajo', name: 'Ley Federal del Trabajo', href: '/laws/lft' },
-    { id: 'imss', name: 'Seguro Social', href: '/laws/lss' },
-    { id: 'amparo', name: 'Amparo', href: '/laws/amparo' },
+    { id: 'mx-fed-cpeum', name: 'Constitución', href: '/laws/mx-fed-cpeum' },
+    { id: 'mx-fed-ccf', name: 'Código Civil Federal', href: '/laws/mx-fed-ccf' },
+    { id: 'mx-fed-cpf', name: 'Código Penal Federal', href: '/laws/mx-fed-cpf' },
+    { id: 'mx-fed-lisr', name: 'ISR', href: '/laws/mx-fed-lisr' },
+    { id: 'mx-fed-liva', name: 'IVA', href: '/laws/mx-fed-liva' },
+    { id: 'mx-fed-lft', name: 'Ley Federal del Trabajo', href: '/laws/mx-fed-lft' },
+    { id: 'mx-fed-lss', name: 'Seguro Social', href: '/laws/mx-fed-lss' },
+    { id: 'mx-fed-amparo', name: 'Amparo', href: '/laws/mx-fed-amparo' },
 ];
 
 export function PopularLaws() {

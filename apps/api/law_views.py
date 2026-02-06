@@ -130,11 +130,16 @@ def law_articles(request, law_id):
         res = es.search(index=INDEX_NAME, body=body)
 
         articles = []
+        seen = set()
         for hit in res["hits"]["hits"]:
             source = hit["_source"]
+            aid = source.get("article")
+            if aid in seen:
+                continue
+            seen.add(aid)
             articles.append(
                 {
-                    "article_id": source.get("article"),
+                    "article_id": aid,
                     "text": source.get("text"),
                 }
             )

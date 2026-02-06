@@ -109,7 +109,7 @@ class TestIndexLawsCommand:
 
         # Test Article 1 (Deep Hierarchy)
         art1 = articles[0]
-        assert art1["article_id"] == "Artículo 1."
+        assert art1["article_id"] == "1"
         assert "orden público" in art1["text"]
 
         # Check hierarchy matches
@@ -127,7 +127,7 @@ class TestIndexLawsCommand:
         articles = command.extract_articles_from_xml(MINIMAL_V2_XML, "test_law")
         art2 = articles[1]
 
-        assert art2["article_id"] == "Artículo 2."
+        assert art2["article_id"] == "2"
         assert art2["book"] is None
         assert art2["title"] is None
         assert art2["title"] is None

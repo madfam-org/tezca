@@ -14,7 +14,7 @@ export function TableOfContents({
     onArticleClick
 }: TableOfContentsProps) {
     return (
-        <nav className="h-full flex flex-col">
+        <nav className="h-full flex flex-col" aria-label="Tabla de contenidos">
             <div className="flex items-center gap-2 pb-4 mb-2 border-b">
                 <ScrollText className="w-5 h-5 text-muted-foreground" />
                 <h2 className="font-semibold">Tabla de Contenidos</h2>
@@ -36,7 +36,11 @@ export function TableOfContents({
                             )}
                         >
                             <span className="truncate mr-2">
-                                {article.article_id === 'texto_completo' ? 'Texto Completo' : `Artículo ${article.article_id}`}
+                                {article.article_id === 'texto_completo' || article.article_id === 'full_text'
+                                    ? 'Texto Completo'
+                                    : /^Art[ií]culo/i.test(article.article_id)
+                                        ? article.article_id
+                                        : `Artículo ${article.article_id}`}
                             </span>
                             {activeArticle === article.article_id && (
                                 <ChevronRight className="w-4 h-4 text-primary" />

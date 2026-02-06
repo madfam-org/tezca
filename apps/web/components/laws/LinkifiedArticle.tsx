@@ -26,10 +26,12 @@ interface LinkifiedArticleProps {
  * Fetches cross-references from API and makes legal references clickable.
  * Example: "artículo 5 de la Ley de Amparo" becomes a clickable link.
  */
-export function LinkifiedArticle({ lawId, articleId, text }: LinkifiedArticleProps) {
+export function LinkifiedArticle({ lawId, articleId, text: rawText }: LinkifiedArticleProps) {
+    // Strip leading "Artículo N." from body since the heading already shows it
+    const text = rawText.replace(/^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w]*\.?\s*/i, '').trim();
+
     const [references, setReferences] = useState<CrossReference[]>([]);
     const [loading, setLoading] = useState(true);
-    const [, setHoveredRef] = useState<string | null>(null);
     
     useEffect(() => {
         // Fetch cross-references for this article
@@ -73,16 +75,12 @@ export function LinkifiedArticle({ lawId, articleId, text }: LinkifiedArticlePro
             }
             
             // Add the linked reference
-            const refKey = `${ref.targetLawSlug}-${ref.targetArticle}`;
-            
             if (ref.targetUrl) {
                 parts.push(
                     <Link
                         key={`ref-${i}`}
                         href={ref.targetUrl}
                         className="text-primary underline decoration-dotted hover:decoration-solid hover:bg-primary/5 rounded px-0.5 transition-colors"
-                        onMouseEnter={() => setHoveredRef(refKey)}
-                        onMouseLeave={() => setHoveredRef(null)}
                         title={`Ver ${ref.text}`}
                     >
                         {ref.text}

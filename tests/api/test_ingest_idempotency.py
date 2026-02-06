@@ -264,5 +264,5 @@ class TestIndexLawsIdempotency:
         assert len(article_docs) == 2
 
         ids = {doc["_id"] for doc in article_docs}
-        assert f"{uid}-Artículo 1" in ids
-        assert f"{uid}-Artículo 2" in ids
+        assert f"{uid}-1" in ids
+        assert f"{uid}-2" in ids
