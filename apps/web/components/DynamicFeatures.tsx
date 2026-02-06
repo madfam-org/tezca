@@ -47,7 +47,7 @@ export function DynamicFeatures() {
         ? t.coverageDesc(
             coverage.count.toLocaleString(locale),
             coverage.universe?.toLocaleString(locale) ?? '0',
-            coverage.percentage
+            coverage.percentage ?? 0
           )
         : t.coverageDescFallback((stats?.total_laws ?? 0).toLocaleString(locale));
 
@@ -56,7 +56,7 @@ export function DynamicFeatures() {
             <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-3">
                 <Feature
                     icon="✨"
-                    title={coverage ? t.coverageWithPct(coverage.percentage) : t.coverageFallback}
+                    title={coverage ? t.coverageWithPct(coverage.percentage ?? 0) : t.coverageFallback}
                     description={coverageLabel}
                 />
                 <Feature

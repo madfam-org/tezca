@@ -72,7 +72,7 @@ export function LawHeader({ law, version }: LawHeaderProps) {
 
 
                     <div className="flex flex-wrap gap-2">
-                        <BookmarkButton lawId={law.id || ''} lawName={law.name} />
+                        <BookmarkButton lawId={law.official_id || ''} lawName={law.name} />
                         <PDFExportButton />
 
                         {version.xml_file && (

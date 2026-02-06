@@ -299,7 +299,7 @@ html {
 @media print {
   nav,
   footer,
-  .print\\:hidden,
+  [data-print-hide],
   [class*="fixed"],
   [class*="sticky"] {
     display: none !important;

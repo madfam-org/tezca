@@ -15,7 +15,6 @@ function renderWithProviders(ui: React.ReactElement) {
 describe('LawHeader', () => {
     const mockLaw = {
         official_id: 'test_law',
-        id: 'test_law',
         name: 'Ley de Prueba',
         category: 'ley',
         tier: 'federal',
