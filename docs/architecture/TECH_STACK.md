@@ -88,10 +88,8 @@ Our stack is chosen to support **Isomorphism**: the ability to prove that the co
 │   └── scraper/         # Juriscraper spiders for DOF/OJN
 ├── data/
 │   ├── federal/         # Akoma Ntoso XML files (The "Git for Law")
-│   └── ontology/        # OWL/RDF definitions
 ├── engines/
 │   ├── catala/          # Tax algorithms (.catala files)
-│   ├── blawx/           # Rule logic (.blawx files)
 │   └── openfisca/       # Python wrappers for the engines
 └── scripts/             # DevOps and maintenance scripts
 

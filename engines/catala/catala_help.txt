@@ -1,0 +1,173 @@
+NAME
+       catala - Compiler for Catala, a specification language for tax and
+       social benefits computation rules.
+
+SYNOPSIS
+       catala [OPTION]… COMMAND FILE
+
+DESCRIPTION
+       Catala is a domain-specific language for deriving
+       faithful-by-construction algorithms from legislative texts.
+
+COMMANDS
+       Intepret
+           Runs the interpreter on the Catala program, executing the scope
+           specified by the -s option assuming no additional external inputs.
+
+       Typecheck
+           Parses and typechecks a Catala program, without interpreting it.
+
+       Proof
+           Generates and proves verification conditions about the
+           well-behaved execution of the Catala program.
+
+       OCaml
+           Generates an OCaml translation of the Catala program.
+
+       Python
+           Generates a Python translation of the Catala program.
+
+       LaTeX
+           Weaves a LaTeX literate programming output of the Catala program.
+
+       HTML
+           Weaves an HTML literate programming output of the Catala program.
+
+       Makefile
+           Generates a Makefile-compatible list of the file dependencies of a
+           Catala program.
+
+       Scopelang
+           Prints a debugging verbatim of the scope language intermediate
+           representation of the Catala program. Use the -s option to
+           restrict the output to a particular scope.
+
+       Dcalc
+           Prints a debugging verbatim of the default calculus intermediate
+           representation of the Catala program. Use the -s option to
+           restrict the output to a particular scope.
+
+       Lcalc
+           Prints a debugging verbatim of the lambda calculus intermediate
+           representation of the Catala program. Use the -s option to
+           restrict the output to a particular scope.
+
+       Scalc
+           Prints a debugging verbatim of the statement calculus intermediate
+           representation of the Catala program. Use the -s option to
+           restrict the output to a particular scope.
+
+ARGUMENTS
+       COMMAND (required)
+           Backend selection (see the list of commands for available
+           options).
+
+       FILE (required)
+           Catala master file to be compiled.
+
+OPTIONS
+       --avoid_exceptions
+           Compiles the default calculus without exceptions
+
+       --closure_conversion
+           Performs closure conversion on the lambda calculus
+
+       --color[=ENUM] (default=always) (absent=auto)
+           Allow output of colored and styled text. If set to auto, enabled
+           when the standard output is to a terminal.
+
+       -d, --debug
+           Prints debug information.
+
+       --disable_counterexamples
+           Disables the search for counterexamples in proof mode. Useful when
+           you want a deterministic output from the Catala compiler, since
+           provers can have some randomness in them.
+
+       -l LANG, --language=LANG
+           Input language among: en, fr, pl.
+
+       -o OUTPUT, --output=OUTPUT
+            OUTPUT is the file that will contain the output of the compiler.
+           Defaults to FILE.EXT where EXT depends on the chosen backend. Use
+           -o - for stdout.
+
+       -O, --optimize
+           Run compiler optimizations.
+
+       -p DIGITS, --max_digits_printed=DIGITS
+           Maximum number of significant digits printed for decimal results
+           (default 20).
+
+       --plugin-dir=DIR (absent CATALA_PLUGINS env)
+           Set the given directory to be searched for backend plugins.
+
+       --print_only_law
+           In literate programming output, skip all code and metadata
+           sections and print only the text of the law.
+
+       -s SCOPE, --scope=SCOPE
+           Scope to be focused on.
+
+       -t, --trace
+           Displays a trace of the interpreter's computation or generates
+           logging instructions in translate programs.
+
+       -u, --unstyled
+           Removes styling (colors, etc.) from terminal output. Equivalent to
+           --color=never
+
+       -w, --wrap
+           Wraps literate programming output with a minimal preamble.
+
+COMMON OPTIONS
+       --help[=FMT] (default=auto)
+           Show this help in format FMT. The value FMT must be one of auto,
+           pager, groff or plain. With auto, the format is pager or plain
+           whenever the TERM env var is dumb or undefined.
+
+       --version
+           Show version information.
+
+EXIT STATUS
+       catala exits with:
+
+       0   on success.
+
+       1   on error.
+
+       123 on indiscriminate errors reported on standard error.
+
+       124 on command line parsing errors.
+
+       125 on unexpected internal errors (bugs).
+
+ENVIRONMENT
+       These environment variables affect the execution of catala:
+
+       CATALA_PLUGINS
+           Set the given directory to be searched for backend plugins.
+
+AUTHORS
+       The authors are listed by alphabetical order.
+
+       Nicolas Chataing <nicolas.chataing@ens.fr>
+
+       Alain Delaët-Tixeuil <alain.delaet--tixeuil@inria.fr>
+
+       Aymeric Fromherz <aymeric.fromherz@inria.fr>
+
+       Louis Gesbert <louis.gesbert@ocamlpro.com>
+
+       Denis Merigoux <denis.merigoux@inria.fr>
+
+       Emile Rolley <erolley@tutamail.com>
+
+EXAMPLES
+       catala Interpret -s Foo file.catala_en
+
+       catala Ocaml -o target/file.ml file.catala_en
+
+BUGS
+       Please file bug reports at https://github.com/CatalaLang/catala/issues
+

@@ -160,8 +160,7 @@ leyes-como-codigo-mx/
 │   └── tsconfig/         # Shared TS config
 ├── engines/
 │   ├── catala/           # Tax algorithms
-│   ├── openfisca/        # Microsimulation
-│   └── blawx/            # Rule logic
+│   └── openfisca/        # Microsimulation
 ├── data/                 # Law registry, XMLs, logs
 ├── tests/                # Backend test suite (Pytest)
 ├── docs/                 # Documentation

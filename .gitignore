@@ -109,6 +109,18 @@ data/*_conversion*.json
 # Pipeline runtime artifacts
 data/pipeline_status.json
 
+# Viewer data at root (canonical copy in apps/web/public/)
+/viewer_data/
+
+# Bulk scraping logs
+scripts/scraping/*.log
+
+# Non-legislative state law source files
+data/state_laws_non_legislative/**/*.doc
+data/state_laws_non_legislative/**/*.pdf
+data/state_laws_non_legislative/**/*.docx
+data/state_laws_non_legislative/**/*.txt
+
 # Logs
 logs/
 *.log

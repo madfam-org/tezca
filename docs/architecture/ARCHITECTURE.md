@@ -42,11 +42,9 @@ This repository is a **Polyglot Monorepo**. Agents must respect the specific lan
 ├── data/
 │   ├── federal/             # The "Git for Law" - Federal Akoma Ntoso XMLs
 │   ├── state/               # State-level Akoma Ntoso XMLs (e.g., /state/nl)
-│   └── ontology/            # OWL/RDF definitions of Mexican Legal Concepts
 │
 ├── engines/
 │   ├── catala/              # Tax algorithms (File extension:.catala_en)
-│   ├── blawx/               # Logical rules (File extension:.blawx)
 │   └── openfisca/           # Python wrappers for microsimulation
 │
 ├── scrapers/                # Python spiders (Juriscraper) for DOF/OJN
@@ -103,18 +101,16 @@ Code in this layer is **derived** from Layer 1. It is not the law; it is a *repr
 * **Output:** The Catala compiler generates a Python module inside `/engines/openfisca/`.
 * **Constraint:** You cannot manually edit the generated Python files. You must edit the `.catala` source.
 
-### 4.2 Blawx (General Rules) — *Experimental*
+### 4.2 Blawx (General Rules) — *Removed*
 
-* **Location:** `/engines/blawx/`
-* **Mapping:** Used for logic that requires "Defeasible Reasoning" (rules with exceptions).
-* **Execution:** Blawx exports to **s(CASP)** (Prolog), which runs via a Python bridge in the API.
+* **Status:** Placeholder removed. Blawx remains in the architectural vision for defeasible reasoning but has no implementation yet.
+* **Mapping:** Would be used for logic that requires "Defeasible Reasoning" (rules with exceptions).
 
 ---
 
-## 5. Layer 3: The Semantic Layer (Knowledge Graph)
+## 5. Layer 3: The Semantic Layer (Knowledge Graph) — *Planned*
 
-* **Location:** `/data/ontology/`
-* **Ontology File:** `mexico-legal.owl`
+* **Status:** Placeholder directories removed. Ontology layer remains in the architectural vision.
 * **Purpose:** To define relationships that are not explicit in the text.
 * *Example:* `Sat` `is_a` `DecentralizedOrgan` `subordinate_to` `SHCP`.
 

@@ -173,7 +173,7 @@ Examples:
 ## Logic Layer (Layer 2) — Status: Experimental/Blocked
 
 - **Catala** (fiscal logic): `/engines/catala/` — Experimental, not yet production
-- **Blawx** (general rules): `/engines/blawx/` — Experimental
+- **Blawx** (general rules): Removed (empty placeholder)
 - **OpenFisca** (microsimulation): Blocked on Python 3.11/NumPy compatibility
 
 ## Semantic Layer (Layer 3) — Status: Planned
@@ -262,8 +262,7 @@ Examples:
 │   └── tsconfig/       # Shared TypeScript config
 ├── engines/
 │   ├── catala/         # Tax algorithms (experimental)
-│   ├── openfisca/      # Microsimulation (blocked)
-│   └── blawx/          # Rule logic (experimental)
+│   └── openfisca/      # Microsimulation (blocked)
 ├── data/               # Law registries, XMLs, scraped files
 ├── tests/              # Backend test suite (Pytest)
 ├── scripts/            # Ingestion, scraping, DataOps CLI tools
