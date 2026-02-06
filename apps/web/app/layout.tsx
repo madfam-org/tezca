@@ -25,16 +25,16 @@ export const metadata: Metadata = {
   title: "Leyes Como Código México",
   description: "Legislación Federal Mexicana en formato Akoma Ntoso. Acceso profesional a 50+ leyes federales con búsqueda avanzada y referencias cruzadas.",
   keywords: ["leyes mexicanas", "código civil", "Akoma Ntoso", "legislación", "México"],
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#3b82f6" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e40af" }
-  ],
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#3b82f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e40af" },
+  ],
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -55,6 +55,12 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen bg-background text-foreground`}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:rounded-md focus:ring-2 focus:ring-ring"
+        >
+          Saltar al contenido principal
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -67,7 +73,7 @@ export default function RootLayout({
                 <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50">
                   <ModeToggle />
                 </div>
-                {children}
+                <main id="main-content">{children}</main>
                 <Footer />
                 <ComparisonFloatingBar />
               </ComparisonProvider>

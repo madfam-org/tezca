@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Database, Settings, BarChart3 } from 'lucide-react';
+import { Database, Settings, BarChart3, Activity } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@leyesmx/ui";
 
 export default function Home() {
     return (
         <div className="px-4 py-6 sm:px-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 {/* Ingestion Card */}
                 <Link href="/ingestion" className="block transition-transform hover:scale-105">
@@ -40,6 +40,25 @@ export default function Home() {
                         <CardContent>
                             <CardDescription>
                                 Estadísticas del sistema, distribución por jurisdicción y categorías.
+                            </CardDescription>
+                        </CardContent>
+                    </Card>
+                </Link>
+
+                {/* DataOps Card */}
+                <Link href="/dataops" className="block transition-transform hover:scale-105">
+                    <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-green-200 dark:border-green-900">
+                        <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+                            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-4">
+                                <Activity className="w-6 h-6 text-green-600 dark:text-green-300" />
+                            </div>
+                            <div className="flex flex-col">
+                                <CardTitle className="text-lg">DataOps</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <CardDescription>
+                                Cobertura de datos, salud de fuentes, y brechas de adquisición.
                             </CardDescription>
                         </CardContent>
                     </Card>

@@ -181,6 +181,16 @@ export const api = {
     },
 
     /**
+     * Get municipalities with law counts
+     */
+    getMunicipalities: async (state?: string): Promise<{ municipality: string; state: string; count: number }[]> => {
+        const params = state ? `?state=${encodeURIComponent(state)}` : '';
+        const res = await fetch(`${API_BASE_URL}/municipalities/${params}`);
+        if (!res.ok) return [];
+        return res.json();
+    },
+
+    /**
      * Admin Dashboard endpoints
      */
     getAdminMetrics: async () => {

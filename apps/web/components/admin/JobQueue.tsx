@@ -46,7 +46,7 @@ export function JobQueue() {
                         {job.status === 'running' && <PlayCircle className="text-blue-500 mt-1" />}
                         {job.status === 'completed' && <CheckCircle className="text-green-500 mt-1" />}
                         {job.status === 'error' && <AlertCircle className="text-red-500 mt-1" />}
-                        {job.status === 'idle' && <Clock className="text-gray-400 mt-1" />}
+                        {job.status === 'idle' && <Clock className="text-muted-foreground mt-1" />}
                         
                         <div>
                             <h3 className="font-medium capitalize">{job.status} Job</h3>

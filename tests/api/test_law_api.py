@@ -552,3 +552,85 @@ class TestLawApi:
         assert len(most_citing) == 1
         assert most_citing[0]["slug"] == "codigo_penal"
         assert most_citing[0]["count"] == 1
+
+
+@pytest.mark.django_db
+class TestMunicipalitiesList:
+    def setup_method(self):
+        self.client = APIClient()
+
+    def test_empty_when_no_municipal_laws(self):
+        """Returns empty list when no laws have municipality set."""
+        Law.objects.create(
+            official_id="fed_test", name="Federal Test", tier="federal", category="ley"
+        )
+        url = reverse("municipalities-list")
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_returns_municipalities_with_counts(self):
+        """Returns distinct municipalities with correct counts."""
+        Law.objects.create(
+            official_id="muni_1",
+            name="Reglamento 1",
+            tier="municipal",
+            category="reglamento",
+            municipality="Guadalajara",
+            state="Jalisco",
+        )
+        Law.objects.create(
+            official_id="muni_2",
+            name="Reglamento 2",
+            tier="municipal",
+            category="reglamento",
+            municipality="Guadalajara",
+            state="Jalisco",
+        )
+        Law.objects.create(
+            official_id="muni_3",
+            name="Reglamento 3",
+            tier="municipal",
+            category="reglamento",
+            municipality="Monterrey",
+            state="Nuevo León",
+        )
+
+        url = reverse("municipalities-list")
+        response = self.client.get(url)
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 2
+
+        gdl = next(m for m in data if m["municipality"] == "Guadalajara")
+        assert gdl["count"] == 2
+        assert gdl["state"] == "Jalisco"
+
+        mty = next(m for m in data if m["municipality"] == "Monterrey")
+        assert mty["count"] == 1
+
+    def test_state_filter(self):
+        """?state= filter narrows results to a single state."""
+        Law.objects.create(
+            official_id="muni_a",
+            name="Reg A",
+            tier="municipal",
+            category="reglamento",
+            municipality="Guadalajara",
+            state="Jalisco",
+        )
+        Law.objects.create(
+            official_id="muni_b",
+            name="Reg B",
+            tier="municipal",
+            category="reglamento",
+            municipality="Monterrey",
+            state="Nuevo León",
+        )
+
+        url = reverse("municipalities-list")
+        response = self.client.get(url, {"state": "Jalisco"})
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["municipality"] == "Guadalajara"

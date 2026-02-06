@@ -1,7 +1,10 @@
 from django.urls import path
 
 from .admin_views import (
+    coverage_summary,
+    gap_records,
     health_check,
+    health_sources,
     job_status,
     list_jobs,
     pipeline_status,
@@ -15,6 +18,7 @@ from .law_views import (
     law_articles,
     law_stats,
     law_structure,
+    municipalities_list,
     states_list,
 )
 from .search_views import SearchView
@@ -27,6 +31,9 @@ urlpatterns = [
     path("admin/jobs/status/", job_status, name="admin-job-status"),
     path("admin/config/", system_config, name="admin-config"),
     path("admin/pipeline/status/", pipeline_status, name="admin-pipeline-status"),
+    path("admin/coverage/", coverage_summary, name="admin-coverage"),
+    path("admin/health-sources/", health_sources, name="admin-health-sources"),
+    path("admin/gaps/", gap_records, name="admin-gaps"),
     path("calculate/", CalculationView.as_view(), name="calculate"),
     path("search/", SearchView.as_view(), name="search"),
     path("ingest/", IngestionView.as_view(), name="ingest"),
@@ -42,4 +49,5 @@ urlpatterns = [
     path("laws/<str:law_id>/structure/", law_structure, name="law-structure"),
     path("laws/<str:law_id>/references/", law_cross_references, name="law-references"),
     path("states/", states_list, name="states-list"),
+    path("municipalities/", municipalities_list, name="municipalities-list"),
 ]

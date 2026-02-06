@@ -31,6 +31,7 @@ export function Hero() {
                 {/* Icon */}
                 <div className="mb-4 sm:mb-6 inline-flex animate-scale-in rounded-full bg-white/10 p-3 sm:p-4 backdrop-blur-sm">
                     <svg
+                        aria-hidden="true"
                         className="h-10 w-10 sm:h-12 sm:w-12 lg:h-16 lg:w-16 text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -59,15 +60,16 @@ export function Hero() {
                 {/* Search bar - Stacked on mobile, horizontal on larger screens */}
                 <div className="mt-6 sm:mt-10 animate-slide-up [animation-delay:200ms]">
                     <form onSubmit={handleSearch} className="mx-auto max-w-2xl">
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 rounded-xl bg-white p-3 sm:p-2 shadow-xl transition-all hover:shadow-2xl">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 rounded-xl bg-white dark:bg-neutral-900 p-3 sm:p-2 shadow-xl transition-all hover:shadow-2xl">
                             <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-neutral-400 flex-shrink-0" />
+                                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
                                 <Input
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder={totalLaws ? `Buscar en ${totalLaws.toLocaleString('es-MX')} leyes...` : 'Buscar leyes...'}
-                                    className="flex-1 border-0 bg-transparent text-base sm:text-lg text-neutral-900 placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-0"
+                                    aria-label="Buscar leyes mexicanas"
+                                    className="flex-1 border-0 bg-transparent text-base sm:text-lg text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-0"
                                 />
                             </div>
                             <Button

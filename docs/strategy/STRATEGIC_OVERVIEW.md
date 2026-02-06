@@ -95,6 +95,7 @@ DataOps:           ✅ Gap tracking, health monitoring, coverage dashboard opera
            │   (apps/admin)         │  Next.js
            │   - Ingestion status   │  Real-time
            │   - Quality dashboard  │  monitoring
+           │   - DataOps dashboard  │  coverage/gaps
            │   - Trigger jobs       │
            └───────────┬────────────┘
                        │
@@ -173,10 +174,11 @@ leyes-como-codigo-mx/
 │   │   ├── components/            # React components
 │   │   └── lib/                   # API clients
 │   │
-│   └── admin/                     # Next.js Admin Panel (19 files)
+│   └── admin/                     # Next.js Admin Panel (20 files)
 │       ├── app/
 │       │   ├── dashboard/         # Status dashboard
-│       │   └── ingestion/         # Job management
+│       │   ├── ingestion/         # Job management
+│       │   └── dataops/           # DataOps coverage, health, gaps
 │       └── components/            # Admin UI components
 │
 ├── scripts/                       # Automation (32 files)

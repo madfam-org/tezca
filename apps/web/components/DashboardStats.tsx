@@ -38,22 +38,22 @@ export function DashboardStatsGrid() {
                 <StatCard
                     label="Total de Leyes"
                     value={stats.total_laws.toLocaleString()}
-                    icon={<BookOpen className="h-5 w-5 text-primary" />}
+                    icon={<BookOpen aria-hidden="true" className="h-5 w-5 text-primary" />}
                 />
                 <StatCard
                     label="Federales"
                     value={stats.federal_count.toLocaleString()}
-                    icon={<Scale className="h-5 w-5 text-blue-500" />}
+                    icon={<Scale aria-hidden="true" className="h-5 w-5 text-blue-500" />}
                 />
                 <StatCard
                     label="Estatales"
                     value={stats.state_count.toLocaleString()}
-                    icon={<Building2 className="h-5 w-5 text-green-500" />}
+                    icon={<Building2 aria-hidden="true" className="h-5 w-5 text-green-500" />}
                 />
                 <StatCard
                     label="Última Actualización"
                     value={stats.last_update ? new Date(stats.last_update).toLocaleDateString('es-MX') : '-'}
-                    icon={<Calendar className="h-5 w-5 text-orange-500" />}
+                    icon={<Calendar aria-hidden="true" className="h-5 w-5 text-orange-500" />}
                 />
             </div>
         </div>
@@ -113,7 +113,7 @@ export function RecentLawsList() {
                                         {law.name}
                                     </h4>
                                     {isNew(law.date) && (
-                                        <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 h-5 px-1.5 text-[10px]">
+                                        <Badge variant="secondary" className="bg-success-50 text-success-700 dark:bg-success-700/15 dark:text-success-500 hover:bg-success-50 h-5 px-1.5 text-[10px]">
                                             NUEVO
                                         </Badge>
                                     )}

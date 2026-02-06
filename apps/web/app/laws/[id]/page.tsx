@@ -8,10 +8,10 @@ import { Metadata } from 'next';
 export async function generateMetadata({
     params,
 }: {
-    params: { id: string }
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<{ id: string }>
 }): Promise<Metadata> {
-    const lawId = decodeURIComponent(params.id);
+    const { id } = await params;
+    const lawId = decodeURIComponent(id);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
     try {

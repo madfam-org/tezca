@@ -155,3 +155,77 @@ class TestAdminViews:
         assert data["database"]["status"] == "connected"
         assert "environment" in data
         assert "data" in data
+
+    @patch("apps.scraper.dataops.coverage_dashboard.CoverageDashboard")
+    def test_coverage_summary_returns_200(self, mock_class):
+        """Test GET /admin/coverage/ returns 200."""
+        mock_instance = mock_class.return_value
+        mock_instance.full_report.return_value = {
+            "summary": {
+                "total_in_db": 10,
+                "total_scraped": 20,
+                "total_gaps": 5,
+                "actionable_gaps": 2,
+            },
+            "federal": {"laws_in_db": 5, "laws_scraped": 10},
+            "state": {"total_in_db": 3, "total_scraped": 8, "total_permanent_gaps": 1},
+            "municipal": {"total_in_db": 2, "total_scraped": 2, "cities_covered": 1},
+            "gaps": {
+                "total": 5,
+                "open": 2,
+                "in_progress": 1,
+                "resolved": 1,
+                "permanent": 1,
+            },
+        }
+
+        url = reverse("admin-coverage")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "summary" in data
+        assert data["summary"]["total_in_db"] == 10
+
+    @patch("apps.scraper.dataops.health_monitor.HealthMonitor")
+    def test_health_sources_returns_200(self, mock_class):
+        """Test GET /admin/health-sources/ returns 200."""
+        mock_instance = mock_class.return_value
+        mock_instance.get_summary.return_value = {
+            "total_sources": 10,
+            "healthy": 7,
+            "degraded": 2,
+            "down": 1,
+            "unknown": 0,
+            "never_checked": 0,
+        }
+
+        url = reverse("admin-health-sources")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total_sources"] == 10
+        assert data["healthy"] == 7
+
+    @patch("apps.scraper.dataops.gap_registry.GapRegistry")
+    def test_gap_records_returns_200(self, mock_class):
+        """Test GET /admin/gaps/ returns 200."""
+        mock_instance = mock_class.return_value
+        mock_instance.get_dashboard_stats.return_value = {
+            "total": 53,
+            "by_status": {"open": 40, "resolved": 10, "permanent": 3},
+            "by_tier": {},
+            "by_level": {},
+            "by_type": {},
+            "actionable": 30,
+            "overdue": 5,
+        }
+
+        url = reverse("admin-gaps")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 53
+        assert data["actionable"] == 30

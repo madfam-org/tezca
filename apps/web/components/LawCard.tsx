@@ -20,10 +20,16 @@ export default function LawCard({ law }: LawCardProps) {
     const isSelected = isLawSelected(law.id);
 
     // Prevent navigation when clicking the checkbox area
-    const handleCheckboxClick = (e: React.MouseEvent) => {
+    const handleCheckboxClick = (e: React.MouseEvent | React.KeyboardEvent) => {
         e.preventDefault();
         e.stopPropagation();
         toggleLaw(law.id);
+    };
+
+    const handleCheckboxKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+            handleCheckboxClick(e);
+        }
     };
 
     return (
@@ -32,7 +38,11 @@ export default function LawCard({ law }: LawCardProps) {
                 <div
                     className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-muted/50 transition-colors"
                     onClick={handleCheckboxClick}
-                    title="Comparar ley"
+                    onKeyDown={handleCheckboxKeyDown}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    aria-label="Seleccionar para comparar"
+                    tabIndex={0}
                 >
                     <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-input bg-background/50'}`}>
                         {isSelected && <span className="text-primary-foreground text-xs">✓</span>}

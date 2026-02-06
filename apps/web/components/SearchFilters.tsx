@@ -29,15 +29,7 @@ const JURISDICTIONS = [
     { id: 'municipal', name: 'Municipal', icon: '🏘️' },
 ];
 
-const MUNICIPALITIES = [
-    { value: 'all', label: 'Todos los municipios' },
-    { value: 'cdmx', label: 'Ciudad de México' },
-    { value: 'guadalajara', label: 'Guadalajara' },
-    { value: 'monterrey', label: 'Monterrey' },
-    { value: 'puebla', label: 'Puebla' },
-    { value: 'tijuana', label: 'Tijuana' },
-    { value: 'leon', label: 'León' },
-];
+// Municipalities are now fetched dynamically from the API
 
 const CATEGORIES = [
     { value: 'all', label: 'Todas las categorías' },
@@ -65,10 +57,21 @@ const SORT_OPTIONS = [
 
 export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchFiltersProps) {
     const [states, setStates] = useState<string[]>([]);
+    const [municipalities, setMunicipalities] = useState<{ municipality: string; state: string; count: number }[]>([]);
 
     useEffect(() => {
         api.getStates().then(data => setStates(data.states)).catch(console.error);
     }, []);
+
+    const showMunicipalitySelector = filters.jurisdiction.includes('municipal');
+
+    useEffect(() => {
+        if (showMunicipalitySelector) {
+            api.getMunicipalities(filters.state || undefined)
+                .then(setMunicipalities)
+                .catch(() => setMunicipalities([]));
+        }
+    }, [showMunicipalitySelector, filters.state]);
 
     const toggleJurisdiction = (jurisdictionId: string) => {
         const newJurisdictions = filters.jurisdiction.includes(jurisdictionId)
@@ -109,7 +112,6 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
 
     const activeCount = activeFilterCount();
     const showStateSelector = filters.jurisdiction.includes('state');
-    const showMunicipalitySelector = filters.jurisdiction.includes('municipal');
 
     return (
         <Card className="mb-6">
@@ -117,7 +119,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <CardTitle className="text-lg">
-                            <Filter className="inline h-5 w-5 mr-2" />
+                            <Filter aria-hidden="true" className="inline h-5 w-5 mr-2" />
                             Filtros
                         </CardTitle>
                         {activeCount > 0 && (
@@ -158,6 +160,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                                 variant={filters.jurisdiction.includes(jurisdiction.id) ? 'default' : 'outline'}
                                 size="sm"
                                 onClick={() => toggleJurisdiction(jurisdiction.id)}
+                                aria-pressed={filters.jurisdiction.includes(jurisdiction.id)}
                                 className="transition-all"
                             >
                                 <span className="mr-1.5">{jurisdiction.icon}</span>
@@ -210,9 +213,10 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                                 <SelectValue placeholder="Todos los municipios" />
                             </SelectTrigger>
                             <SelectContent>
-                                {MUNICIPALITIES.map((muni) => (
-                                    <SelectItem key={muni.value} value={muni.value}>
-                                        {muni.label}
+                                <SelectItem value="all">Todos los municipios</SelectItem>
+                                {municipalities.map((m) => (
+                                    <SelectItem key={m.municipality} value={m.municipality}>
+                                        {m.municipality} ({m.count})
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -269,7 +273,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                 {/* Structure Filters (New) */}
                 <div>
                     <h3 className="mb-3 text-sm font-medium flex items-center gap-2 text-muted-foreground border-t pt-4">
-                        <BookOpen className="h-4 w-4" />
+                        <BookOpen aria-hidden="true" className="h-4 w-4" />
                         Estructura
                     </h3>
                     

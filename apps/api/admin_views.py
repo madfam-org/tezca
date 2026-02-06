@@ -248,3 +248,30 @@ def pipeline_status(request):
         return Response(data)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET"])
+def coverage_summary(request):
+    """DataOps coverage report across federal, state, and municipal tiers."""
+    from apps.scraper.dataops.coverage_dashboard import CoverageDashboard
+
+    dashboard = CoverageDashboard()
+    return Response(dashboard.full_report())
+
+
+@api_view(["GET"])
+def health_sources(request):
+    """DataOps source health summary."""
+    from apps.scraper.dataops.health_monitor import HealthMonitor
+
+    monitor = HealthMonitor()
+    return Response(monitor.get_summary())
+
+
+@api_view(["GET"])
+def gap_records(request):
+    """DataOps gap registry dashboard stats."""
+    from apps.scraper.dataops.gap_registry import GapRegistry
+
+    registry = GapRegistry()
+    return Response(registry.get_dashboard_stats())

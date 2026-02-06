@@ -90,7 +90,7 @@ export default function TaxForm() {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
+                    <Button type="submit" className="w-full bg-primary-600 hover:bg-primary-700" disabled={loading}>
                         {loading ? "Calculando..." : "Calcular Impuestos"}
                     </Button>
                 </form>
@@ -106,36 +106,36 @@ export default function TaxForm() {
                 {result && (
                     <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
 
-                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100 space-y-3">
+                        <div className="p-4 bg-muted rounded-lg border border-border space-y-3">
                             <div className="flex items-center gap-2 mb-2 border-b pb-2">
-                                <Info className="h-4 w-4 text-blue-600" />
-                                <h3 className="font-semibold text-gray-800">Desglose del Cálculo</h3>
+                                <Info className="h-4 w-4 text-primary" />
+                                <h3 className="font-semibold text-foreground">Desglose del Cálculo</h3>
                             </div>
 
                             <div className="grid grid-cols-2 text-sm gap-y-1">
-                                <span className="text-gray-500">Ingreso Gravable:</span>
+                                <span className="text-muted-foreground">Ingreso Gravable:</span>
                                 <span className="text-right font-medium">${result.gross_income.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
 
-                                <span className="text-gray-500">(-) Límite Inferior:</span>
+                                <span className="text-muted-foreground">(-) Límite Inferior:</span>
                                 <span className="text-right">${result.breakdown.lower_limit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
 
-                                <span className="text-gray-500">(=) Excedente:</span>
+                                <span className="text-muted-foreground">(=) Excedente:</span>
                                 <span className="text-right">${(result.gross_income - result.breakdown.lower_limit).toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
 
-                                <span className="text-gray-500">(x) Tasa:</span>
+                                <span className="text-muted-foreground">(x) Tasa:</span>
                                 <span className="text-right">{result.breakdown.rate}%</span>
 
-                                <span className="text-gray-500">(+) Cuota Fija:</span>
+                                <span className="text-muted-foreground">(+) Cuota Fija:</span>
                                 <span className="text-right">${result.breakdown.fixed_fee.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
                             </div>
                         </div>
 
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200 shadow-sm flex justify-between items-center">
+                        <div className="p-4 bg-success-50 dark:bg-success-700/15 rounded-lg border border-success-500/20 shadow-sm flex justify-between items-center">
                             <div>
-                                <h3 className="font-bold text-green-900 text-lg">Total a Pagar</h3>
-                                <p className="text-xs text-green-700">ISR Personas Físicas</p>
+                                <h3 className="font-bold text-success-700 dark:text-success-500 text-lg">Total a Pagar</h3>
+                                <p className="text-xs text-success-700 dark:text-success-500">ISR Personas Físicas</p>
                             </div>
-                            <div className="text-2xl font-extrabold text-green-800">
+                            <div className="text-2xl font-extrabold text-success-700 dark:text-success-500">
                                 ${result.isr_obligation.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                             </div>
                         </div>

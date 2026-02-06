@@ -1,51 +1,51 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { LawArticleResponse } from "@leyesmx/lib";
-import { Badge, Button } from "@leyesmx/ui";
+import { Button } from "@leyesmx/ui";
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Map } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ComparisonPane } from './comparison/ComparisonPane';
+import { ComparisonMetadataPanel } from './comparison/ComparisonMetadataPanel';
+import { ComparisonToolbar } from './comparison/ComparisonToolbar';
+import type { ComparisonLawData } from './comparison/types';
 
 interface ComparisonViewProps {
     lawIds: string[];
 }
 
-interface LawStructureNode {
-    label: string;
-    children: LawStructureNode[];
-}
-
-interface LawData {
-    details: LawArticleResponse;
-    structure: LawStructureNode[];
-}
-
 export default function ComparisonView({ lawIds }: ComparisonViewProps) {
-    const [data, setData] = useState<LawData[]>([]);
+    const [data, setData] = useState<ComparisonLawData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [syncScroll, setSyncScroll] = useState(false);
 
-    // Initial load
+    const scrollRefA = useRef<HTMLDivElement | null>(null);
+    const scrollRefB = useRef<HTMLDivElement | null>(null);
+    const isSyncing = useRef(false);
+
     useEffect(() => {
         async function fetchData() {
             if (lawIds.length < 2) {
-                setLoading(false); 
+                setLoading(false);
                 return;
             }
 
             try {
                 setLoading(true);
                 const promises = lawIds.map(async (id) => {
-                    const [articles, structureData] = await Promise.all([
+                    const [meta, articles, structureData] = await Promise.all([
+                        api.getLaw(id),
                         api.getLawArticles(id),
-                        api.getLawStructure(id)
+                        api.getLawStructure(id),
                     ]);
                     return {
+                        meta,
                         details: articles,
-                        structure: structureData?.structure ?? []
-                    };
+                        structure: structureData?.structure ?? [],
+                    } satisfies ComparisonLawData;
                 });
 
                 const results = await Promise.all(promises);
@@ -60,9 +60,41 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
         fetchData();
     }, [lawIds]);
 
+    // Article matching: intersection of article IDs across both laws
+    const matchedIds = useMemo(() => {
+        if (data.length < 2) return new Set<string>();
+        const idsA = new Set(data[0].details.articles.map(a => a.article_id));
+        const idsB = new Set(data[1].details.articles.map(a => a.article_id));
+        const intersection = new Set<string>();
+        for (const id of idsA) {
+            if (idsB.has(id)) intersection.add(id);
+        }
+        return intersection;
+    }, [data]);
+
+    // Synced scroll handler using scroll ratio
+    const handleScroll = useCallback((source: 'a' | 'b') => {
+        if (!syncScroll || isSyncing.current) return;
+        isSyncing.current = true;
+
+        requestAnimationFrame(() => {
+            const srcEl = source === 'a' ? scrollRefA.current : scrollRefB.current;
+            const tgtEl = source === 'a' ? scrollRefB.current : scrollRefA.current;
+
+            if (srcEl && tgtEl) {
+                const maxScroll = srcEl.scrollHeight - srcEl.clientHeight;
+                const ratio = maxScroll > 0 ? srcEl.scrollTop / maxScroll : 0;
+                const targetMax = tgtEl.scrollHeight - tgtEl.clientHeight;
+                tgtEl.scrollTop = ratio * targetMax;
+            }
+
+            isSyncing.current = false;
+        });
+    }, [syncScroll]);
+
     if (loading) {
         return (
-            <div className="flex h-[80vh] items-center justify-center flex-col px-4">
+            <div className="flex h-[80vh] items-center justify-center flex-col px-4" aria-live="polite">
                 <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary mb-4" />
                 <h2 className="text-lg sm:text-xl font-medium text-center">Analizando estructura legal...</h2>
                 <p className="text-muted-foreground text-xs sm:text-sm mt-2 text-center">Comparando {lawIds.length} documentos</p>
@@ -70,10 +102,10 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
         );
     }
 
-    if (error) return <div className="text-destructive text-center p-6 sm:p-10 text-sm sm:text-base">{error}</div>;
+    if (error) return <div role="alert" className="text-destructive text-center p-6 sm:p-10 text-sm sm:text-base">{error}</div>;
 
     if (lawIds.length < 2) {
-         return (
+        return (
             <div className="flex flex-col items-center justify-center py-12 sm:py-20 px-4">
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">Selecciona leyes para comparar</h2>
                 <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-md text-center">
@@ -98,7 +130,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
                     </Link>
                 </Button>
                 <div>
-                     <h1 className="text-base sm:text-xl font-bold flex items-center gap-2">
+                    <h1 className="text-base sm:text-xl font-bold flex items-center gap-2">
                         <Map className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         <span className="hidden sm:inline">Comparación Estructural</span>
                         <span className="sm:hidden">Comparación</span>
@@ -106,69 +138,48 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
                 </div>
             </div>
 
+            {/* Metadata Panel */}
+            <ComparisonMetadataPanel laws={data} matchCount={matchedIds.size} />
+
+            {/* Toolbar */}
+            <ComparisonToolbar
+                syncScroll={syncScroll}
+                onToggleSync={() => setSyncScroll(prev => !prev)}
+            />
+
             {/* Split View */}
             <div className="flex-1 overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-2 h-full lg:divide-x">
-                    {data.map((law) => (
-                        <div key={law.details.law_id} className="flex flex-col h-full overflow-hidden border-b lg:border-b-0">
-                            {/* Law Header */}
-                            <div className="p-3 sm:p-4 bg-muted/30 border-b">
-                                <h2 className="text-sm sm:text-base font-bold truncate" title={law.details.law_name}>
-                                    {law.details.law_name}
-                                </h2>
-                                <div className="flex gap-2 mt-1">
-                                    <Badge variant="outline" className="text-xs">{law.details.articles.length} artículos</Badge>
-                                </div>
-                            </div>
-                            
-                            {/* Content & Structure */}
-                            <div className="flex-1 overflow-hidden flex">
-                                {/* Structure Sidebar (Mini) */}
-                                <div className="w-1/3 border-r overflow-y-auto bg-muted/10 p-2 hidden xl:block text-xs">
-                                     <h3 className="font-semibold mb-2 text-muted-foreground uppercase tracking-wider text-[10px]">Estructura</h3>
-                                     <StructureTree nodes={law.structure} />
-                                </div>
-
-                                {/* Main Text */}
-                                <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
-                                    <div className="prose dark:prose-invert max-w-none text-xs sm:text-sm">
-                                        {law.details.articles.map(article => (
-                                            <div key={article.article_id} className="mb-4">
-                                                <span className="font-bold text-primary block mb-1 sticky top-0 bg-background/90 backdrop-blur z-10 text-xs sm:text-sm">
-                                                    {article.article_id}
-                                                </span>
-                                                <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-xs sm:text-sm">
-                                                    {article.text}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {/* Desktop: side-by-side */}
+                <div className="hidden lg:grid grid-cols-2 h-full divide-x">
+                    {data.map((law, i) => (
+                        <ComparisonPane
+                            key={law.details.law_id}
+                            law={law}
+                            matchedIds={matchedIds}
+                            scrollRef={i === 0 ? scrollRefA : scrollRefB}
+                            onScroll={() => handleScroll(i === 0 ? 'a' : 'b')}
+                        />
                     ))}
+                </div>
+
+                {/* Mobile: tabs */}
+                <div className="lg:hidden h-full">
+                    <Tabs defaultValue={data[0]?.details.law_id} className="flex flex-col h-full">
+                        <TabsList className="mx-4 mt-2 grid grid-cols-2">
+                            {data.map((law) => (
+                                <TabsTrigger key={law.details.law_id} value={law.details.law_id} className="truncate text-xs">
+                                    {law.details.law_name}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                        {data.map((law) => (
+                            <TabsContent key={law.details.law_id} value={law.details.law_id} className="flex-1 overflow-hidden mt-0">
+                                <ComparisonPane law={law} matchedIds={matchedIds} />
+                            </TabsContent>
+                        ))}
+                    </Tabs>
                 </div>
             </div>
         </div>
-    );
-}
-
-// Recursive Tree Component
-function StructureTree({ nodes, level = 0 }: { nodes: LawStructureNode[], level?: number }) {
-    if (!nodes || nodes.length === 0) return <div className="text-muted-foreground italic pl-2">Sin estructura</div>;
-
-    return (
-        <ul className={`space-y-1 ${level > 0 ? 'ml-2 border-l pl-2' : ''}`}>
-             {nodes.map((node, i) => (
-                 <li key={i}>
-                     <div className="py-1 px-2 rounded hover:bg-muted cursor-pointer truncate" title={node.label}>
-                         {node.label}
-                     </div>
-                     {node.children && node.children.length > 0 && (
-                         <StructureTree nodes={node.children} level={level + 1} />
-                     )}
-                 </li>
-             ))}
-        </ul>
     );
 }

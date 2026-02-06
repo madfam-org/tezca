@@ -10,6 +10,9 @@ htmlcov/
 .coverage
 *.cover
 .hypothesis/
+test-results/
+playwright-report/
+blob-report/
 
 # Production builds
 build/

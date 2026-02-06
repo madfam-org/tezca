@@ -97,6 +97,18 @@ export const api = {
     getHealth: async (): Promise<HealthCheck> => {
         return fetcher<HealthCheck>('/admin/health/');
     },
+
+    getCoverage: async () => {
+        return fetcher<Record<string, unknown>>('/admin/coverage/');
+    },
+
+    getHealthSources: async () => {
+        return fetcher<Record<string, unknown>>('/admin/health-sources/');
+    },
+
+    getGaps: async () => {
+        return fetcher<Record<string, unknown>>('/admin/gaps/');
+    },
 };
 
 export { APIError };

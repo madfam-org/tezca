@@ -1,14 +1,27 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import ComparisonView from '@/components/ComparisonView';
 
 export const dynamic = 'force-dynamic';
 
-export default function ComparePage({
+export const metadata: Metadata = {
+    title: 'Comparación Estructural | Leyes Como Código México',
+    description: 'Compara la estructura y artículos de dos leyes mexicanas lado a lado con resaltado de artículos en común.',
+    openGraph: {
+        title: 'Comparación Estructural de Leyes',
+        description: 'Herramienta de comparación lado a lado de legislación mexicana.',
+        type: 'website',
+        siteName: 'Leyes MX',
+    },
+};
+
+export default async function ComparePage({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const lawsParam = searchParams.laws;
+    const params = await searchParams;
+    const lawsParam = params.laws;
     const lawIds = typeof lawsParam === 'string' ? lawsParam.split(',') : [];
 
     return (

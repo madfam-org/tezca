@@ -110,13 +110,13 @@ Code cannot merge to `main` unless:
 
 ### Backend (Pytest)
 - **Location:** `tests/`
-- **Tests:** 191 tests (189 passed, 2 skipped — CalculationApiTests blocked on OpenFisca)
+- **Tests:** 197 tests (195 passed, 2 skipped — CalculationApiTests blocked on OpenFisca)
 - **Run:** `poetry run pytest tests/ -v`
 - **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`
 
 ### Frontend (Vitest)
 - **Location:** `apps/web/__tests__/`
-- **Tests:** 72 tests across 12 files
+- **Tests:** 75 tests across 12 files
 - **Run:** `cd apps/web && npx vitest run`
 - **Framework:** Vitest + @testing-library/react
 

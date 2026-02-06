@@ -51,7 +51,7 @@ export function Footer() {
       {/* Disclaimer bar */}
       <div className="bg-warning-50 dark:bg-warning-700/15 border-b border-warning-500/20">
         <div className="container mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs sm:text-sm text-warning-700 dark:text-warning-500">
-          <Scale className="h-4 w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+          <Scale aria-hidden="true" className="h-4 w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
           <p>
             {t.disclaimer}{' '}
             <a

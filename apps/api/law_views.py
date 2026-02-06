@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from elasticsearch import Elasticsearch
@@ -286,6 +287,21 @@ def states_list(request):
                 break
 
     return Response({"states": sorted(list(found_states))})
+
+
+@api_view(["GET"])
+def municipalities_list(request):
+    """Distinct municipalities with law counts, optionally filtered by state."""
+    state = request.query_params.get("state")
+    qs = Law.objects.exclude(municipality__isnull=True).exclude(municipality="")
+    if state:
+        qs = qs.filter(state=state)
+    municipalities = (
+        qs.values("municipality", "state")
+        .annotate(count=Count("id"))
+        .order_by("state", "municipality")
+    )
+    return Response(list(municipalities))
 
 
 def _safe_pct(count, universe):
