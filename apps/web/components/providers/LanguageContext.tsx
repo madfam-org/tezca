@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useSyncExternalStore } from 'react';
 
 export type Lang = 'es' | 'en';
 
@@ -13,28 +13,36 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'preferred-lang';
 
+function getSnapshot(): Lang {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'es';
+  } catch {
+    return 'es';
+  }
+}
+
+function getServerSnapshot(): Lang {
+  return 'es';
+}
+
+function subscribe(callback: () => void): () => void {
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('es');
+  const storedLang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [override, setOverride] = useState<Lang | null>(null);
+  const lang = override ?? storedLang;
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored === 'en') {
-        setLangState('en');
-      }
-    } catch {
-      // localStorage unavailable
-    }
-  }, []);
-
-  const setLang = (newLang: Lang) => {
-    setLangState(newLang);
+  const setLang = useCallback((newLang: Lang) => {
+    setOverride(newLang);
     try {
       localStorage.setItem(STORAGE_KEY, newLang);
     } catch {
       // localStorage unavailable
     }
-  };
+  }, []);
 
   return (
     <LanguageContext.Provider value={{ lang, setLang }}>

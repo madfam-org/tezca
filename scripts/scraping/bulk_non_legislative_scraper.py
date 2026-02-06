@@ -136,9 +136,7 @@ def main():
     )
 
     completed_state_ids = {
-        r["state_id"]
-        for r in total_stats.get("state_results", [])
-        if "error" not in r
+        r["state_id"] for r in total_stats.get("state_results", []) if "error" not in r
     }
 
     log("=" * 80)
@@ -227,9 +225,7 @@ def main():
     log(f"Total failed:     {total_stats['total_laws_failed']}")
     if total_stats["total_laws_found"] > 0:
         rate = (
-            total_stats["total_laws_downloaded"]
-            / total_stats["total_laws_found"]
-            * 100
+            total_stats["total_laws_downloaded"] / total_stats["total_laws_found"] * 100
         )
         log(f"Success rate:     {rate:.1f}%")
     log(f"End time:         {total_stats['end_time']}")

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore, useCallback } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, X } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
@@ -22,29 +22,38 @@ const content = {
   },
 };
 
+function getSnapshot(): boolean {
+  try {
+    return !localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return false;
+  }
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
+
+function subscribe(callback: () => void): () => void {
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
+}
+
 export function DisclaimerBanner() {
   const { lang } = useLang();
   const t = content[lang];
-  const [visible, setVisible] = useState(false);
+  const shouldShow = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [dismissed, setDismissed] = useState(false);
+  const visible = shouldShow && !dismissed;
 
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        setVisible(true);
-      }
-    } catch {
-      // localStorage unavailable — keep hidden
-    }
-  }, []);
-
-  const dismiss = () => {
-    setVisible(false);
+  const dismiss = useCallback(() => {
+    setDismissed(true);
     try {
       localStorage.setItem(STORAGE_KEY, '1');
     } catch {
       // localStorage unavailable
     }
-  };
+  }, []);
 
   if (!visible) return null;
 
