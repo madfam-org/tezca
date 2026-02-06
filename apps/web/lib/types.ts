@@ -49,6 +49,27 @@ export interface APIError {
     details?: string;
 }
 
+export interface CoverageItem {
+    label?: string;
+    count: number;
+    universe: number | null;
+    percentage: number | null;
+    description?: string;
+    source?: string;
+    last_verified?: string;
+    permanent_gaps?: number;
+    cities_covered?: number;
+    total_municipalities?: number;
+}
+
+export interface CoverageBreakdown {
+    leyes_vigentes: CoverageItem;
+    federal: CoverageItem;
+    state: CoverageItem;
+    state_all_powers: CoverageItem;
+    municipal: CoverageItem;
+}
+
 export interface DashboardStats {
     total_laws: number;
     federal_count: number;
@@ -67,6 +88,7 @@ export interface DashboardStats {
         tier: string;
         category: string;
     }[];
+    coverage?: CoverageBreakdown;
 }
 
 export interface LawArticle {

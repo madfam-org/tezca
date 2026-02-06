@@ -2,9 +2,7 @@
 
 **The definitive digital platform for Mexican legal research** - comprehensive, machine-readable database of Mexican laws (federal, state, municipal) with intuitive interfaces for professionals and citizens.
 
-**Coverage**: 87% of Mexican Legal System (11,667 laws)  
-**Accuracy**: 98.9%  
-**Quality Score**: 97.9%  
+**Coverage**: 93.9% of Legislative Laws (11,904 of 12,456) — [sourced from `data/universe_registry.json`]
 **Status**: Production Ready
 
 ## Quick Start
@@ -38,17 +36,22 @@
 
 ## Coverage
 
-| Level | Laws | Percentage | Status |
-|-------|------|------------|--------|
-| **Federal** | 330/336 | 99.1% | ✅ Production |
-| **State** | 11,337/~12,000 | ~94% | 🔄 Processing |
-| **Municipal** | 0/~10,000 | 0% | 📋 Planned |
-| **TOTAL** | **11,667/~22,000** | **~87%** | 🚀 **Excellent** |
+All numbers sourced from `data/universe_registry.json` with links to official sources.
+
+| Level | Laws | Universe | Coverage | Source |
+|-------|------|----------|----------|--------|
+| **Federal** | 333/336 | 336 | 99.1% | [Cámara de Diputados](https://www.diputados.gob.mx/LeyesBiblio/) |
+| **State (Legislativo)** | 11,363/12,120 | 12,120 | 93.7% | [OJN - Poder Legislativo](https://compilacion.ordenjuridico.gob.mx/) |
+| **State (Other Powers)** | 0/23,660 | 23,660 | 0% | OJN - Poderes 1/3/4 (not yet scraped) |
+| **Municipal** | 208 | Unknown | N/A | 5 city portals (no census exists) |
+| **Leyes Vigentes** | **11,696/12,456** | **12,456** | **93.9%** | Federal + State Legislativo |
+
+**Note**: 782 OJN links are permanently dead (Michoacán 504, EDOMEX 141, SLP 47). Municipal universe is unknown — INEGI reports 2,468 municipalities but no authoritative count of municipal laws exists.
 
 ## Features
 
-- ✅ **87% Legal Coverage** - 11,667 laws across federal and state levels
-- ✅ **98.9% Parser Accuracy** - Exceeds industry standards
+- ✅ **93.9% Legislative Coverage** - 11,696 of 12,456 legislative laws (federal + state)
+- ✅ **Structured Parsing** - Akoma Ntoso XML output with automated validation
 - ✅ **Dynamic Dashboard** - Real-time statistics and recent legislation feed
 - ✅ **Advanced Search** - Date range filtering, state filters, and auto-complete
 - ✅ **Law Detail 2.0** - Enhanced typography, improved ease-of-reading, and citations
@@ -90,14 +93,12 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 - [Setup Guide](docs/guides/SETUP.md) - Installation and configuration
 - [Tech Stack](docs/architecture/TECH_STACK.md) - Approved technologies
 - [Architecture](docs/architecture/ARCHITECTURE.md) - System design
-- [Testing](tests/) - Test suite (84+ backend, 50+ frontend tests)
+- [Testing](tests/) - Test suite (backend + frontend)
 
 ## Performance
 
 | Metric | Result |
 |--------|--------|
-| Parser Accuracy | 98.9% |
-| Quality Score | 97.9% |
 | Processing Speed | 23s per law |
 | Parallel Speedup | 3-4x |
 | Schema Compliance | 100% |
@@ -105,13 +106,12 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 ## Project Roadmap
 
 **Phase 1: Federal Laws** - ✅ COMPLETE
-- ✅ 330 federal laws ingested (99.1% coverage)
-- ✅ Parser V2 with 98.9% accuracy
+- ✅ 333 federal laws ingested (99.1% of 336)
 - ✅ Quality validation framework
 - ✅ Elasticsearch full-text search
 
 **Phase 2: State Laws** - ✅ COMPLETE
-- ✅ 11,337 state laws downloaded (94% coverage)
+- ✅ 11,363 state laws downloaded (93.7% of 12,120 OJN Legislativo)
 - ✅ Database schema update
 - ✅ State law processing pipeline
 - ✅ Frontend state filters

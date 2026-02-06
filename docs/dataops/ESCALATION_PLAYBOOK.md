@@ -372,7 +372,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > Dear [NAME / TITLE],
 >
-> I am writing on behalf of **Leyes como Codigo Mexico**, an open-source platform dedicated to making Mexican legislation accessible, searchable, and machine-readable. We currently index over 11,000 federal, state, and municipal laws and are working toward comprehensive national coverage.
+> I am writing on behalf of **Leyes como Codigo Mexico**, an open-source platform dedicated to making Mexican legislation accessible, searchable, and machine-readable. We currently index approximately 11,900 federal, state, and municipal laws (93.9% of known legislative laws) and are working toward comprehensive national coverage.
 >
 > **Proposal Summary**
 >
@@ -386,8 +386,8 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > **About the Platform**
 >
-> - **Coverage**: 11,600+ laws across federal, state, and municipal levels (87% of estimated total)
-> - **Data quality**: 98.9% parser accuracy on structured legal text
+> - **Coverage**: ~11,900 laws across federal, state, and municipal levels (93.9% of legislative laws)
+> - **Data quality**: Automated Akoma Ntoso schema validation
 > - **Technology**: Django REST API, Elasticsearch, Next.js frontend, Celery task pipeline
 > - **License**: Open source (code and data)
 > - **Standards**: Akoma Ntoso XML for legislative markup; structured metadata in PostgreSQL

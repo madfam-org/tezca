@@ -83,6 +83,27 @@ export const RecentLawSchema = z.object({
     category: z.string(),
 });
 
+export const CoverageItemSchema = z.object({
+    label: z.string().optional(),
+    count: z.number(),
+    universe: z.number().nullable(),
+    percentage: z.number().nullable(),
+    description: z.string().optional(),
+    source: z.string().optional(),
+    last_verified: z.string().optional(),
+    permanent_gaps: z.number().optional(),
+    cities_covered: z.number().optional(),
+    total_municipalities: z.number().optional(),
+});
+
+export const CoverageBreakdownSchema = z.object({
+    leyes_vigentes: CoverageItemSchema,
+    federal: CoverageItemSchema,
+    state: CoverageItemSchema,
+    state_all_powers: CoverageItemSchema,
+    municipal: CoverageItemSchema,
+});
+
 export const DashboardStatsSchema = z.object({
     total_laws: z.number(),
     federal_count: z.number(),
@@ -95,6 +116,7 @@ export const DashboardStatsSchema = z.object({
     total_coverage: z.number(),
     last_update: z.string().nullable(),
     recent_laws: z.array(RecentLawSchema),
+    coverage: CoverageBreakdownSchema.optional(),
 });
 
 // ── Error ───────────────────────────────────────────────────────────────

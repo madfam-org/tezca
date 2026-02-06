@@ -107,16 +107,23 @@ class Command(BaseCommand):
                 )
                 action = "created"
 
-            # Create law version
+            # Create or update law version (idempotent)
             # Use publication_date if available, otherwise use a default date
             pub_date = publication_date if publication_date else "2023-01-01"
 
-            version = LawVersion.objects.create(
+            version, v_created = LawVersion.objects.get_or_create(
                 law=law,
                 publication_date=pub_date,
-                dof_url=metadata.get("url", ""),
-                xml_file_path=stored_path,
+                defaults={
+                    "dof_url": metadata.get("url", ""),
+                    "xml_file_path": stored_path,
+                },
             )
+            if not v_created:
+                version.dof_url = metadata.get("url", "")
+                version.xml_file_path = stored_path
+                version.save()
+                action = "updated"
 
             return {
                 "success": True,
@@ -124,6 +131,7 @@ class Command(BaseCommand):
                 "action": action,
                 "law_id": law.id,
                 "version_id": version.id,
+                "version_created": v_created,
                 "law_name": law_name,
                 "category": category,
                 "text_length": len(text_content),

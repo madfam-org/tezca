@@ -202,6 +202,7 @@ class Command(BaseCommand):
 
         doc = {
             "_index": INDEX_ARTICLES,
+            "_id": f"{law.official_id}-full_text",
             "_source": {
                 "law_id": law.official_id,
                 "law_name": law.name,
@@ -284,6 +285,7 @@ class Command(BaseCommand):
 
             doc = {
                 "_index": INDEX_ARTICLES,
+                "_id": f"{law.official_id}-{art['article_id']}",
                 "_source": {
                     "law_id": law.official_id,
                     "law_name": law.name,

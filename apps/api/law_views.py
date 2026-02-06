@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -282,6 +283,38 @@ def states_list(request):
     return Response({"states": sorted(list(found_states))})
 
 
+def _safe_pct(count, universe):
+    """Calculate coverage percentage, returning None if universe is None or 0."""
+    if not universe:
+        return None
+    return round(min(count / universe * 100, 100), 1)
+
+
+# Universe registry cache (file-mtime based)
+_registry_cache = {"data": None, "mtime": 0}
+
+REGISTRY_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "universe_registry.json",
+)
+
+
+def _load_universe_registry():
+    """Load universe_registry.json with file-mtime caching."""
+    try:
+        mtime = os.path.getmtime(REGISTRY_PATH)
+        if _registry_cache["data"] is not None and _registry_cache["mtime"] == mtime:
+            return _registry_cache["data"]
+        with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        _registry_cache["data"] = data
+        _registry_cache["mtime"] = mtime
+        return data
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 @extend_schema(
     tags=["Laws"],
     summary="Dashboard statistics",
@@ -306,19 +339,75 @@ def law_stats(request):
     except Exception:
         pass
 
-    # Coverage percentages (known universe of Mexican laws)
-    # Federal: ~336 laws in DOF catalog
-    # State: ~12,100 laws across 32 states (OJN catalog)
-    # Municipal: ~1,800 estimated (tier-1 cities)
-    FEDERAL_UNIVERSE = 336
-    STATE_UNIVERSE = 12100
-    MUNICIPAL_UNIVERSE = 1800
-    total_universe = FEDERAL_UNIVERSE + STATE_UNIVERSE + MUNICIPAL_UNIVERSE
+    # Load universe registry for honest coverage numbers
+    registry = _load_universe_registry()
 
-    federal_coverage = round(min(federal_count / FEDERAL_UNIVERSE * 100, 100), 1)
-    state_coverage = round(min(state_count / STATE_UNIVERSE * 100, 100), 1)
-    municipal_coverage = round(min(municipal_count / MUNICIPAL_UNIVERSE * 100, 100), 1)
-    total_coverage = round(min(total_laws / total_universe * 100, 100), 1)
+    if registry:
+        src = registry.get("sources", {})
+        fed_src = src.get("federal_leyes_vigentes", {})
+        state_src = src.get("state_legislativo", {})
+        state_all_src = src.get("state_non_legislativo", {})
+        muni_src = src.get("municipal", {})
+
+        fed_universe = fed_src.get("known_count")
+        state_universe = state_src.get("known_count")
+        state_all_universe = (state_universe or 0) + (
+            state_all_src.get("known_count") or 0
+        )
+
+        leyes_vigentes_universe = (fed_universe or 0) + (state_universe or 0)
+        leyes_vigentes_count = federal_count + state_count
+
+        coverage = {
+            "leyes_vigentes": {
+                "label": "Leyes Legislativas Vigentes",
+                "count": leyes_vigentes_count,
+                "universe": leyes_vigentes_universe,
+                "percentage": _safe_pct(leyes_vigentes_count, leyes_vigentes_universe),
+                "description": "Leyes federales + estatales del Poder Legislativo",
+            },
+            "federal": {
+                "count": federal_count,
+                "universe": fed_universe,
+                "percentage": _safe_pct(federal_count, fed_universe),
+                "source": fed_src.get("source_name"),
+                "last_verified": fed_src.get("last_verified"),
+            },
+            "state": {
+                "count": state_count,
+                "universe": state_universe,
+                "percentage": _safe_pct(state_count, state_universe),
+                "source": state_src.get("source_name"),
+                "permanent_gaps": state_src.get("permanent_gaps"),
+            },
+            "state_all_powers": {
+                "count": state_count,
+                "universe": state_all_universe,
+                "percentage": _safe_pct(state_count, state_all_universe),
+                "description": "Incluye 23,660 leyes de otros poderes no descargadas aún",
+            },
+            "municipal": {
+                "count": municipal_count,
+                "universe": muni_src.get("known_count"),
+                "percentage": None,
+                "cities_covered": muni_src.get("cities_covered"),
+                "total_municipalities": muni_src.get("total_municipalities"),
+                "description": f"{municipal_count} leyes de {muni_src.get('cities_covered', 0)} municipios",
+            },
+        }
+
+        # Backward-compatible coverage fields
+        federal_coverage = _safe_pct(federal_count, fed_universe) or 0
+        state_coverage = _safe_pct(state_count, state_universe) or 0
+        municipal_coverage = 0  # No known universe
+        total_coverage = _safe_pct(leyes_vigentes_count, leyes_vigentes_universe) or 0
+    else:
+        # Fallback if registry is missing
+        coverage = None
+        federal_coverage = 0
+        state_coverage = 0
+        municipal_coverage = 0
+        total_coverage = 0
 
     # Get recent laws (most recent version publication date)
     recent_versions = LawVersion.objects.select_related("law").order_by(
@@ -338,18 +427,21 @@ def law_stats(request):
 
     last_update = recent_versions[0].publication_date if recent_versions else None
 
-    return Response(
-        {
-            "total_laws": total_laws,
-            "federal_count": federal_count,
-            "state_count": state_count,
-            "municipal_count": municipal_count,
-            "total_articles": total_articles,
-            "federal_coverage": federal_coverage,
-            "state_coverage": state_coverage,
-            "municipal_coverage": municipal_coverage,
-            "total_coverage": total_coverage,
-            "last_update": last_update,
-            "recent_laws": recent_laws,
-        }
-    )
+    response_data = {
+        "total_laws": total_laws,
+        "federal_count": federal_count,
+        "state_count": state_count,
+        "municipal_count": municipal_count,
+        "total_articles": total_articles,
+        "federal_coverage": federal_coverage,
+        "state_coverage": state_coverage,
+        "municipal_coverage": municipal_coverage,
+        "total_coverage": total_coverage,
+        "last_update": last_update,
+        "recent_laws": recent_laws,
+    }
+
+    if coverage is not None:
+        response_data["coverage"] = coverage
+
+    return Response(response_data)

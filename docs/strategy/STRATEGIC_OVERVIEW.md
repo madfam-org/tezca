@@ -1,9 +1,9 @@
 # Leyes Como Código - Strategic Overview & Vision
 
-**Date**: 2026-02-03  
-**Current Coverage**: 87% of Mexican Legal System  
-**Total Laws**: 11,667 (330 federal + 11,337 state)  
-**Lines of Code**: ~262,000
+**Date**: 2026-02-05
+**Current Coverage**: 93.9% of Legislative Laws (11,696 of 12,456)
+**Total Laws in DB**: ~11,904 (333 federal + 11,363 state + 208 municipal)
+**Coverage Source**: `data/universe_registry.json`
 
 ---
 
@@ -17,22 +17,24 @@
 
 ### Data Coverage
 
-| Level | Laws | Coverage | Status |
-|-------|------|----------|--------|
-| **Federal** | 330/336 | 99.1% | ✅ Production |
-| **State** | 11,337/~12,000 | ~94% | 🔄 Processing |
-| **Municipal** | 0/~10,000+ | 0% | 📋 Planned |
-| **TOTAL** | **11,667/~22,000** | **~87%** | 🚀 **Excellent** |
+All numbers sourced from `data/universe_registry.json`.
 
-###  Quality Metrics
+| Level | Laws | Universe | Coverage | Source |
+|-------|------|----------|----------|--------|
+| **Federal** | 333 | 336 | 99.1% | Cámara de Diputados |
+| **State (Legislativo)** | 11,363 | 12,120 | 93.7% | OJN Poder Legislativo |
+| **State (Other Powers)** | 0 | 23,660 | 0% | OJN Poderes 1/3/4 |
+| **Municipal** | 208 | Unknown | N/A | 5 city portals |
+| **Leyes Vigentes** | **11,696** | **12,456** | **93.9%** | Federal + State Legislativo |
 
-| Metric | Value | Grade |
+### Quality Metrics
+
+| Metric | Value | Notes |
 |--------|-------|-------|
-| **Federal Parser Accuracy** | 98.9% | A+ |
-| **State Scraping Success** | 93.5% | A |
-| **Overall Quality Score** | 97.9% | A+ |
-| **Schema Compliance** | 100% | A+ |
-| **Elasticsearch Index** | 53,777 articles | ✅ |
+| **Federal Coverage** | 99.1% (333/336) | Cámara de Diputados catalog |
+| **State Legislative Coverage** | 93.7% (11,363/12,120) | OJN Poder Legislativo |
+| **Schema Compliance** | 100% | Akoma Ntoso validation |
+| **Permanent OJN Gaps** | 782 dead links | Michoacán 504, EDOMEX 141, SLP 47 |
 
 ### Platform Health
 
@@ -151,7 +153,7 @@ leyes-como-codigo-mx/
 │   │
 │   ├── parsers/                   # XML processing (25 files)
 │   │   ├── pipeline.py            # Main ingestion orchestrator
-│   │   ├── akn_generator_v2.py    # Akoma Ntoso XML generator (98.9% accuracy)
+│   │   ├── akn_generator_v2.py    # Akoma Ntoso XML generator
 │   │   ├── validators/            # Schema + completeness validation
 │   │   └── quality.py             # A-F grading system
 │   │
@@ -223,20 +225,19 @@ leyes-como-codigo-mx/
 
 **Status**: Production-ready for federal laws
 
-✅ Parser V2 (98.9% accuracy)  
-✅ Quality validation framework  
-✅ Batch processing  
-✅ Elasticsearch integration  
-✅ REST API  
-✅ 330 federal laws ingested  
-✅ Test suite (>20 tests)
+✅ Quality validation framework
+✅ Batch processing
+✅ Elasticsearch integration
+✅ REST API
+✅ 333 federal laws ingested (99.1% of 336)
+✅ Test suite
 
 ### Phase 2: State Expansion 🔄 IN PROGRESS
 
 **Status**: Data collected, processing in progress
 
-✅ OJN scraper built  
-✅ 11,337 state laws downloaded  
+✅ OJN scraper built
+✅ 11,363 state laws downloaded (93.7% of 12,120 OJN Legislativo)
 ✅ 4-week processing roadmap  
 🔄 Database schema update (Week 1-2)  
 🔄 State ingestion pipeline (Week 2)  
@@ -278,76 +279,45 @@ leyes-como-codigo-mx/
 
 ---
 
-## 📈 Data Completeness Trajectory
+## Data Completeness Trajectory
 
 ### Current State (Feb 2026)
 
+All figures sourced from `data/universe_registry.json` with official citations.
+
 ```
-Total Mexican Laws: ~22,000 (conservative estimate)
-Our Coverage:       11,667 laws
-Percentage:         87%
+Legislative Laws (Federal + State Legislativo):
+  Universe:   12,456 (336 federal + 12,120 state)
+  We have:    11,696 (333 federal + 11,363 state)
+  Coverage:   93.9%
+  Gaps:       782 permanent OJN dead links
+
+Full Legal Framework (including non-legislative state laws):
+  Universe:   36,116 (adds 23,660 from OJN poderes 1/3/4)
+  We have:    11,696
+  Coverage:   32.4%
+
+Municipal:
+  Universe:   Unknown (2,468 municipalities, no census of laws)
+  We have:    208 from 5 city portals
 ```
 
 #### Breakdown by Jurisdiction
 
-**Federal Level**:
-```
-✅ Constitution: Yes (1 law)
-✅ Federal Codes: 100% (Civil, Penal, Commerce, etc.)
-✅ Federal Laws: 99.1% (330/336)
-✅ Annual Laws: 100% (Budget, Income)
-Total: 330 laws ✅
-```
-
-**State Level**:
-```
-✅ Aguascalientes: 127 laws (100%)
-✅ Baja California Sur: 411 laws (100%)
-✅ Colima: 1,325 laws (100%)
-✅ Guanajuato: 708 laws (100%)
-✅ Jalisco: 448 laws (100%)
-... (22 states at 100%)
-⚠️  Estado de México: 492/633 (78%)
-⚠️  Michoacán: 163/667 (24% - needs retry)
-❌ CDMX: 0 laws (investigation needed)
-Total: ~11,337/12,000 (94%) 🔄
-```
-
-**Municipal Level**:
-```
-Tier 1 (10 cities): 0/~500 (0%)
-Tier 2 (32 capitals): 0/~1,600 (0%)
-Tier 3 (Top 100): 0/~3,000 (0%)
-Tier 4 (Remaining): 0/~5,000 (0%)
-Total: 0/~10,000 (0%) 📋
-```
+**Federal Level**: 333/336 (99.1%) — Source: Cámara de Diputados
+**State Legislativo**: 11,363/12,120 (93.7%) — Source: OJN Poder Legislativo
+**State Other Powers**: 0/23,660 (0%) — Source: OJN Poderes 1/3/4 (Ejecutivo/Judicial/Autónomos)
+**Municipal**: 208 laws from 5 cities — No known universe
 
 ### 6-Month Projection (Aug 2026)
 
 ```
-Federal:    330 laws     (99.1%)  ✅
-State:      11,800 laws  (98%+)   ✅
-Municipal:  500 laws     (Tier 1) ⏳
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL:      12,630 laws  (93%)
+Federal:         333 laws     (99.1% of 336)     ✅
+State Legis:     11,800 laws  (97%+ of 12,120)   ✅
+Municipal:       500 laws     (5-10 cities)       ⏳
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Leyes Vigentes:  12,133 laws  (97.4% of 12,456)
 ```
-
-### 2-Year Vision (2028)
-
-```
-Federal:    336 laws     (100%)   ✅
-State:      12,500 laws  (100%)   ✅
-Municipal:  8,000 laws   (80%)    ✅
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL:      20,836 laws  (95%+)
-```
-
-**Achieving 100%** would require:
-- Municipal digitization partnerships
-- Crowdsourced collection
-- OCR for historical documents
-- 3-5 year timeline
-- Dedicated team
 
 ---
 
@@ -375,17 +345,17 @@ TOTAL:      20,836 laws  (95%+)
 ║     El Sistema Legal Mexicano, Digitalizado          ║
 ║                                                       ║
 ║   ┌─────────────────────────────────────────┐       ║
-║   │  🔍  Buscar en 11,667 leyes...          │       ║
+║   │  🔍  Buscar en 11,900+ leyes...          │       ║
 ║   └─────────────────────────────────────────┘       ║
 ║                                                       ║
-║    ✨ Cobertura: 87% del marco legal mexicano        ║
+║    ✨ Cobertura: 93.9% de leyes legislativas vigentes ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
 
 ┌──────────────────┬──────────────────┬──────────────────┐
 │  🏛️ Federal      │  🏢 Estatal      │  🏘️ Municipal    │
-│  330 leyes       │  11,337 leyes    │  Próximamente    │
-│  99% completo    │  94% completo    │  En desarrollo   │
+│  333 leyes       │  11,363 leyes    │  208 leyes       │
+│  99.1% of 336    │  93.7% of 12,120 │  5 cities        │
 └──────────────────┴──────────────────┴──────────────────┘
 
 📚 Leyes Populares
@@ -395,9 +365,9 @@ TOTAL:      20,836 laws  (95%+)
 └──────────────────────────────────────────────────────┘
 
 📊 Estadísticas en Vivo
-• 11,667 leyes procesadas
-• 550,000+ artículos indexados
-• 98.9% precisión de parsing
+• ~11,900 leyes procesadas
+• Artículos indexados en Elasticsearch
+• 93.9% cobertura de leyes legislativas
 • Actualizado: 2026-02-03
 ```
 
@@ -554,15 +524,15 @@ Pág. 1 of 5    [<]  1  2  3  4  5  [>]
 ┌────────────────┬────────────────┬────────────────────┐
 │  🟢 API        │  🟢 Database   │  🟢 Elasticsearch  │
 │  Healthy       │  Healthy       │  Healthy           │
-│  98.7% uptime  │  11,667 laws   │  53,777 articles   │
+│  Operational   │  ~11,904 laws  │  Indexed           │
 └────────────────┴────────────────┴────────────────────┘
 
 📊 Cobertura de Datos
-Federal:    ████████████████████░  99.1%  (330/336)
-Estatal:    ███████████████████░░  94%    (11,337/12,000)
-Municipal:  ░░░░░░░░░░░░░░░░░░░░░  0%     (0/10,000)
+Federal:    ████████████████████░  99.1%  (333/336)
+Estatal:    ██████████████████░░░  93.7%  (11,363/12,120)
+Municipal:  █░░░░░░░░░░░░░░░░░░░░  208    (5 cities, no universe)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Total:      ████████████████████░  87%    (11,667/22,336)
+Vigentes:   ██████████████████░░░  93.9%  (11,696/12,456)
 
 🔄 Trabajos en Curso
 ┌────────────────────────────────────────────────────┐
@@ -597,7 +567,7 @@ Total:      ████████████████████░  87%
 
 ### Priority 1: Complete State Law Processing ⭐⭐⭐
 
-**Impact**: 11,337 → 11,800 laws (+94% → 98%)  
+**Impact**: 11,363 → 11,800 laws (93.7% → 97%+ of OJN Legislativo)  
 **Timeline**: 4 weeks  
 **Effort**: High
 
@@ -668,7 +638,7 @@ Total:      ████████████████████░  87%
 ## 💎 Unique Value Propositions
 
 ### For Legal Professionals
-- ✅ **Complete Coverage**: 87% → 99% of all Mexican laws
+- ✅ **Comprehensive Coverage**: 93.9% of legislative laws, growing toward 97%+
 - ✅ **Version History**: Track legal evolution over time
 - ✅ **Comparison Tool**: Side-by-side analysis (federal vs state)
 - ✅ **Machine-Readable**: API access for legal tech startups
@@ -700,10 +670,9 @@ Total:      ████████████████████░  87%
 ## 🎯 Success Metrics (6-Month Goals)
 
 ### Data Metrics
-- ✅ **Coverage**: 87% → **95%+**
-- ✅ **Quality**: 97.9% → **98.5%+**
-- ✅ **State Laws**: 11,337 → **11,800+**
-- ✅ **Municipal**: 0 → **500** (Tier 1 cities)
+- ✅ **Legislative Coverage**: 93.9% → **97%+**
+- ✅ **State Laws**: 11,363 → **11,800+** (of 12,120 OJN Legislativo)
+- ✅ **Municipal**: 208 → **500** (Tier 1 cities)
 
 ### Platform Metrics
 - ✅ **API Uptime**: **99.5%+**
@@ -757,7 +726,7 @@ Total:      ████████████████████░  87%
 
 **Leyes Como Código is positioned to become the definitive platform for Mexican legal research.**
 
-**Current Status**: Excellent foundation (87% coverage, production-ready backend)
+**Current Status**: Strong foundation (93.9% legislative coverage, production-ready backend)
 
 **Next Steps**: UI/UX polish + state law completion = world-class platform
 

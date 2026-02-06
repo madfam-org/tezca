@@ -90,14 +90,22 @@ def create_law_and_version(metadata: Dict, dry_run: bool = False) -> Dict:
             )
             action = "created"
 
-        # Create law version
-        version = LawVersion.objects.create(
+        # Create or update law version (idempotent)
+        pub_date = publication_date if publication_date else "2023-01-01"
+
+        version, v_created = LawVersion.objects.get_or_create(
             law=law,
-            publication_date=publication_date,
-            full_text=text_content[:500000],  # Limit to 500K chars for DB
-            dof_url=metadata.get("url", ""),
-            xml_file_path=text_file,
+            publication_date=pub_date,
+            defaults={
+                "dof_url": metadata.get("url", ""),
+                "xml_file_path": text_file,
+            },
         )
+        if not v_created:
+            version.dof_url = metadata.get("url", "")
+            version.xml_file_path = text_file
+            version.save()
+            action = "updated"
 
         return {
             "success": True,
@@ -105,6 +113,7 @@ def create_law_and_version(metadata: Dict, dry_run: bool = False) -> Dict:
             "action": action,
             "law_id": law.id,
             "version_id": version.id,
+            "version_created": v_created,
             "law_name": law_name,
             "category": category,
             "text_length": len(text_content),

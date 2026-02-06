@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-02-05",
+  "methodology": "Only includes counts verified from official government sources. Each source entry includes the URL, institution name, and date of last verification. 'known_count' is null when no official census exists for that category.",
+  "sources": {
+    "federal_leyes_vigentes": {
+      "known_count": 336,
+      "scraped_count": 336,
+      "source_url": "https://www.diputados.gob.mx/LeyesBiblio/",
+      "source_name": "Cámara de Diputados - Leyes Vigentes",
+      "last_verified": "2026-02-03",
+      "confidence": "high",
+      "notes": "Complete catalog of federal laws and codes currently in force."
+    },
+    "state_legislativo": {
+      "known_count": 12120,
+      "scraped_count": 11363,
+      "permanent_gaps": 782,
+      "source_url": "https://compilacion.ordenjuridico.gob.mx/",
+      "source_name": "OJN - Poder Legislativo (poder=2)",
+      "last_verified": "2026-02-03",
+      "confidence": "high",
+      "notes": "State-level legislation from all 32 states via OJN. 782 permanent dead links (Michoacán 504, EDOMEX 141, SLP 47, others <30 each). Remaining 975 gap = 12120 - 11363 - 782 = difference likely in low-count states."
+    },
+    "state_non_legislativo": {
+      "known_count": 23660,
+      "scraped_count": 0,
+      "source_url": "https://compilacion.ordenjuridico.gob.mx/",
+      "source_name": "OJN - Poderes Ejecutivo/Judicial/Autónomos (poderes 1/3/4)",
+      "last_verified": "2026-02-03",
+      "confidence": "high",
+      "notes": "State-level regulations from executive, judicial, and autonomous bodies. Not yet scraped. These are NOT municipal laws."
+    },
+    "municipal": {
+      "known_count": null,
+      "scraped_count": 217,
+      "cities_covered": 5,
+      "cities": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "León"],
+      "total_municipalities": 2468,
+      "source_name": "Municipal government portals (5 cities)",
+      "last_verified": "2026-02-03",
+      "confidence": "low",
+      "notes": "No authoritative census of municipal legislation exists. INEGI reports 2,468 municipalities. Only 5 tier-1 city portals have been scraped so far."
+    }
+  },
+  "coverage_views": {
+    "leyes_vigentes": {
+      "label": "Leyes Legislativas Vigentes",
+      "description": "Federal laws (Cámara de Diputados) + state laws from Poder Legislativo (OJN). This is the most comparable apples-to-apples metric.",
+      "universe": 12456,
+      "components": [
+        {"key": "federal_leyes_vigentes", "count_field": "scraped_count"},
+        {"key": "state_legislativo", "count_field": "scraped_count"}
+      ]
+    },
+    "marco_juridico_completo": {
+      "label": "Marco Jurídico Completo",
+      "description": "All known legislation including state executive/judicial/autonomous body regulations. Municipal excluded due to unknown universe.",
+      "universe": 36116,
+      "components": [
+        {"key": "federal_leyes_vigentes", "count_field": "scraped_count"},
+        {"key": "state_legislativo", "count_field": "scraped_count"},
+        {"key": "state_non_legislativo", "count_field": "scraped_count"}
+      ]
+    }
+  }
+}

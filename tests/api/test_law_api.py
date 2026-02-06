@@ -1,3 +1,6 @@
+import json
+import os
+import tempfile
 import uuid
 from datetime import date
 from unittest.mock import MagicMock, patch
@@ -385,6 +388,88 @@ class TestLawApi:
         assert incoming[0]["sourceLawSlug"] == "cpeum"
         assert incoming[0]["sourceArticle"] == "103"
         assert incoming[0]["confidence"] == 0.90
+
+    @patch("apps.api.law_views.Elasticsearch")
+    @patch("apps.api.law_views.REGISTRY_PATH")
+    def test_stats_coverage_field(self, mock_registry_path, mock_es_class):
+        """Test that /stats/ returns the coverage breakdown from universe registry."""
+        # Create a temp registry file
+        registry = {
+            "version": "1.0",
+            "sources": {
+                "federal_leyes_vigentes": {
+                    "known_count": 336,
+                    "source_name": "Camara de Diputados",
+                    "last_verified": "2026-02-03",
+                },
+                "state_legislativo": {
+                    "known_count": 12120,
+                    "source_name": "OJN - Poder Legislativo",
+                    "permanent_gaps": 782,
+                },
+                "state_non_legislativo": {"known_count": 23660},
+                "municipal": {
+                    "known_count": None,
+                    "cities_covered": 5,
+                    "total_municipalities": 2468,
+                },
+            },
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(registry, f)
+            tmp_path = f.name
+
+        try:
+            # Patch the registry path and clear cache
+            mock_registry_path.__str__ = lambda self: tmp_path
+            import apps.api.law_views as lv
+
+            original_path = lv.REGISTRY_PATH
+            lv.REGISTRY_PATH = tmp_path
+            lv._registry_cache["data"] = None
+            lv._registry_cache["mtime"] = 0
+
+            mock_es = mock_es_class.return_value
+            mock_es.ping.return_value = True
+            mock_es.count.return_value = {"count": 500000}
+
+            url = reverse("law-stats")
+            response = self.client.get(url)
+
+            assert response.status_code == 200
+            data = response.json()
+
+            # Legacy fields still present
+            assert "total_laws" in data
+            assert "federal_coverage" in data
+
+            # New coverage field present
+            assert "coverage" in data
+            cov = data["coverage"]
+            assert "leyes_vigentes" in cov
+            assert "federal" in cov
+            assert "state" in cov
+            assert "municipal" in cov
+
+            # Federal coverage
+            assert cov["federal"]["universe"] == 336
+            assert cov["federal"]["source"] == "Camara de Diputados"
+
+            # State coverage
+            assert cov["state"]["universe"] == 12120
+            assert cov["state"]["permanent_gaps"] == 782
+
+            # Municipal has no universe
+            assert cov["municipal"]["universe"] is None
+            assert cov["municipal"]["percentage"] is None
+            assert cov["municipal"]["cities_covered"] == 5
+
+            # Leyes vigentes = federal + state
+            assert cov["leyes_vigentes"]["universe"] == 336 + 12120
+        finally:
+            lv.REGISTRY_PATH = original_path
+            lv._registry_cache["data"] = None
+            os.unlink(tmp_path)
 
     def test_law_cross_references(self):
         """Test GET /laws/{id}/references/ returns aggregated statistics."""

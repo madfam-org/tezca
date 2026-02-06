@@ -10,20 +10,57 @@ vi.mock('@/lib/api', () => ({
 }));
 
 const mockStats = {
-    total_laws: 11667,
-    federal_count: 330,
-    state_count: 11337,
-    municipal_count: 0,
+    total_laws: 11904,
+    federal_count: 333,
+    state_count: 11363,
+    municipal_count: 208,
     total_articles: 550000,
     federal_coverage: 99.1,
-    state_coverage: 94,
+    state_coverage: 93.7,
     municipal_coverage: 0,
-    total_coverage: 87,
+    total_coverage: 93.9,
     last_update: '2026-01-15',
     recent_laws: [
         { id: 'ley-1', name: 'Ley Federal de Test', date: '2026-01-10', tier: 'federal', category: 'ley' },
         { id: 'ley-2', name: 'Código Civil de Colima', date: '2025-06-01', tier: 'state', category: 'codigo' },
     ],
+    coverage: {
+        leyes_vigentes: {
+            label: 'Leyes Legislativas Vigentes',
+            count: 11696,
+            universe: 12456,
+            percentage: 93.9,
+            description: 'Leyes federales + estatales del Poder Legislativo',
+        },
+        federal: {
+            count: 333,
+            universe: 336,
+            percentage: 99.1,
+            source: 'Cámara de Diputados',
+            last_verified: '2026-02-03',
+        },
+        state: {
+            count: 11363,
+            universe: 12120,
+            percentage: 93.7,
+            source: 'OJN - Poder Legislativo',
+            permanent_gaps: 782,
+        },
+        state_all_powers: {
+            count: 11363,
+            universe: 35780,
+            percentage: 31.7,
+            description: 'Incluye 23,660 leyes de otros poderes no descargadas aún',
+        },
+        municipal: {
+            count: 208,
+            universe: null,
+            percentage: null,
+            cities_covered: 5,
+            total_municipalities: 2468,
+            description: '208 leyes de 5 municipios',
+        },
+    },
 };
 
 describe('DashboardStatsGrid', () => {
@@ -44,11 +81,11 @@ describe('DashboardStatsGrid', () => {
         render(<DashboardStatsGrid />);
 
         await waitFor(() => {
-            expect(screen.getByText('11,667')).toBeInTheDocument();
+            expect(screen.getByText('11,904')).toBeInTheDocument();
         });
 
-        expect(screen.getByText('330')).toBeInTheDocument();
-        expect(screen.getByText('11,337')).toBeInTheDocument();
+        expect(screen.getByText('333')).toBeInTheDocument();
+        expect(screen.getByText('11,363')).toBeInTheDocument();
         expect(screen.getByText('Total de Leyes')).toBeInTheDocument();
         expect(screen.getByText('Federales')).toBeInTheDocument();
         expect(screen.getByText('Estatales')).toBeInTheDocument();
