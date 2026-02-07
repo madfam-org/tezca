@@ -97,6 +97,32 @@ class LawStatsSchema(serializers.Serializer):
     degraded = serializers.BooleanField(required=False)
 
 
+# ── Related laws ────────────────────────────────────────────────────────
+
+
+class RelatedLawSchema(serializers.Serializer):
+    law_id = serializers.CharField()
+    name = serializers.CharField()
+    tier = serializers.CharField()
+    category = serializers.CharField(allow_null=True)
+    state = serializers.CharField(allow_null=True)
+    score = serializers.FloatField()
+
+
+class RelatedLawsResponseSchema(serializers.Serializer):
+    law_id = serializers.CharField()
+    related = RelatedLawSchema(many=True)
+
+
+# ── Categories ──────────────────────────────────────────────────────────
+
+
+class CategoryListItemSchema(serializers.Serializer):
+    category = serializers.CharField()
+    count = serializers.IntegerField()
+    label = serializers.CharField()
+
+
 # ── Search endpoint ──────────────────────────────────────────────────────
 
 

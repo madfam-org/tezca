@@ -13,19 +13,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${BASE_URL}/laws`,
+      url: `${BASE_URL}/leyes`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/search`,
+      url: `${BASE_URL}/busqueda`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/compare`,
+      url: `${BASE_URL}/comparar`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
@@ -59,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const results: Array<{ id: string }> = data.results || [];
       lawRoutes.push(
         ...results.map((law) => ({
-          url: `${BASE_URL}/laws/${encodeURIComponent(law.id)}`,
+          url: `${BASE_URL}/leyes/${encodeURIComponent(law.id)}`,
           lastModified: new Date(),
           changeFrequency: 'monthly' as const,
           priority: 0.7,

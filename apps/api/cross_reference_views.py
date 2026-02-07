@@ -60,7 +60,7 @@ def article_cross_references(request, law_id, article_id):
             "sourceArticle": ref.source_article_id,
             "text": ref.reference_text,
             "confidence": ref.confidence,
-            "sourceUrl": f"/laws/{ref.source_law_slug}#article-{ref.source_article_id}",
+            "sourceUrl": f"/leyes/{ref.source_law_slug}#article-{ref.source_article_id}",
         }
         for ref in incoming_refs
     ]

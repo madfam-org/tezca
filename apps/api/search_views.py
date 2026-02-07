@@ -183,6 +183,13 @@ class SearchView(APIView):
                 "highlight": {"fields": {"text": {}}},
                 "from": offset,
                 "size": page_size,
+                "aggs": {
+                    "by_tier": {"terms": {"field": "tier"}},
+                    "by_category": {"terms": {"field": "category", "size": 20}},
+                    "by_status": {"terms": {"field": "status"}},
+                    "by_law_type": {"terms": {"field": "law_type"}},
+                    "by_state": {"terms": {"field": "state", "size": 35}},
+                },
             }
 
             if sort_option:
@@ -192,6 +199,15 @@ class SearchView(APIView):
             res = es.search(index=INDEX_NAME, body=body)
             hits = res["hits"]["hits"]
             total = res["hits"]["total"]["value"]
+
+            # Parse aggregation facets
+            facets = {
+                key: [
+                    {"key": b["key"], "count": b["doc_count"]}
+                    for b in agg["buckets"]
+                ]
+                for key, agg in res.get("aggregations", {}).items()
+            }
 
             # Format results
             results = []
@@ -233,6 +249,7 @@ class SearchView(APIView):
                     "page": page,
                     "page_size": page_size,
                     "total_pages": total_pages,
+                    "facets": facets,
                 }
             )
             response["Cache-Control"] = "public, max-age=300"

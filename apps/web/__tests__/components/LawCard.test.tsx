@@ -57,7 +57,7 @@ describe('LawCard', () => {
     it('generates correct link to law detail', () => {
         renderWithLang(<LawCard law={mockLaw} />);
         const link = screen.getByRole('link');
-        expect(link).toHaveAttribute('href', '/laws/ley-de-amparo');
+        expect(link).toHaveAttribute('href', '/leyes/ley-de-amparo');
     });
 
     it('renders priority badge', () => {

@@ -47,7 +47,7 @@ export default function NotFound() {
                     {t.goHome}
                 </Link>
                 <Link
-                    href="/search"
+                    href="/busqueda"
                     className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
                     <Search className="h-4 w-4" />

@@ -96,7 +96,7 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
             case 'Enter':
                 e.preventDefault();
                 if (activeIndex >= 0 && activeIndex < suggestions.length) {
-                    router.push(`/laws/${suggestions[activeIndex].id}`);
+                    router.push(`/leyes/${suggestions[activeIndex].id}`);
                     setIsOpen(false);
                 } else {
                     setIsOpen(false);
@@ -112,7 +112,7 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
 
     const handleSuggestionClick = (suggestion: Suggestion) => {
         setIsOpen(false);
-        router.push(`/laws/${suggestion.id}`);
+        router.push(`/leyes/${suggestion.id}`);
     };
 
     return (

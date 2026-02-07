@@ -166,7 +166,7 @@ export function RecentLawsList() {
                 {stats.recent_laws.map((law, i) => (
                     <Link
                         key={law.id}
-                        href={`/laws/${law.id}`}
+                        href={`/leyes/${law.id}`}
                         className={`flex items-center justify-between p-4 transition-colors hover:bg-muted/50 ${i !== stats.recent_laws.length - 1 ? 'border-b' : ''
                             }`}
                     >
@@ -197,7 +197,7 @@ export function RecentLawsList() {
                 ))}
             </div>
             <div className="border-t p-4 text-center">
-                <Link href="/search" className="text-sm font-medium text-primary hover:underline">
+                <Link href="/busqueda" className="text-sm font-medium text-primary hover:underline">
                     {t.viewAll}
                 </Link>
             </div>

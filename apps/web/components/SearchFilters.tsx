@@ -19,10 +19,16 @@ export interface SearchFilterState {
     chapter?: string;
 }
 
+interface FacetBucket {
+    key: string;
+    count: number;
+}
+
 interface SearchFiltersProps {
     filters: SearchFilterState;
     onFiltersChange: (filters: SearchFilterState) => void;
     resultCount?: number;
+    facets?: Record<string, FacetBucket[]>;
 }
 
 const content = {
@@ -191,7 +197,13 @@ function getSortOptions(lang: Lang) {
     ];
 }
 
-export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchFiltersProps) {
+function getFacetCount(facets: Record<string, FacetBucket[]> | undefined, facetKey: string, value: string): number | null {
+    if (!facets?.[facetKey]) return null;
+    const bucket = facets[facetKey].find(b => b.key === value);
+    return bucket ? bucket.count : 0;
+}
+
+export function SearchFilters({ filters, onFiltersChange, resultCount, facets }: SearchFiltersProps) {
     const { lang } = useLang();
     const t = content[lang];
 
@@ -300,19 +312,25 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                 <div>
                     <Label className="mb-3 block text-sm font-medium">{t.jurisdiction}</Label>
                     <div className="flex flex-wrap gap-2">
-                        {JURISDICTIONS.map((jurisdiction) => (
-                            <Button
-                                key={jurisdiction.id}
-                                variant={filters.jurisdiction.includes(jurisdiction.id) ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => toggleJurisdiction(jurisdiction.id)}
-                                aria-pressed={filters.jurisdiction.includes(jurisdiction.id)}
-                                className="transition-all"
-                            >
-                                <span className="mr-1.5">{jurisdiction.icon}</span>
-                                {jurisdiction.name}
-                            </Button>
-                        ))}
+                        {JURISDICTIONS.map((jurisdiction) => {
+                            const count = getFacetCount(facets, 'by_tier', jurisdiction.id);
+                            return (
+                                <Button
+                                    key={jurisdiction.id}
+                                    variant={filters.jurisdiction.includes(jurisdiction.id) ? 'default' : 'outline'}
+                                    size="sm"
+                                    onClick={() => toggleJurisdiction(jurisdiction.id)}
+                                    aria-pressed={filters.jurisdiction.includes(jurisdiction.id)}
+                                    className={`transition-all ${count === 0 ? 'opacity-50' : ''}`}
+                                >
+                                    <span className="mr-1.5">{jurisdiction.icon}</span>
+                                    {jurisdiction.name}
+                                    {count !== null && (
+                                        <span className="ml-1.5 text-xs opacity-70">({count.toLocaleString()})</span>
+                                    )}
+                                </Button>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -385,11 +403,14 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                             <SelectValue placeholder={t.selectCategory} />
                         </SelectTrigger>
                         <SelectContent>
-                            {CATEGORIES.map((cat) => (
-                                <SelectItem key={cat.value} value={cat.value}>
-                                    {cat.label}
-                                </SelectItem>
-                            ))}
+                            {CATEGORIES.map((cat) => {
+                                const count = cat.value !== 'all' ? getFacetCount(facets, 'by_category', cat.value) : null;
+                                return (
+                                    <SelectItem key={cat.value} value={cat.value} className={count === 0 ? 'opacity-50' : ''}>
+                                        {cat.label}{count !== null ? ` (${count.toLocaleString()})` : ''}
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
                 </div>
@@ -407,11 +428,14 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            {STATUS_OPTIONS.map((opt) => (
-                                <SelectItem key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </SelectItem>
-                            ))}
+                            {STATUS_OPTIONS.map((opt) => {
+                                const count = opt.value !== 'all' ? getFacetCount(facets, 'by_status', opt.value) : null;
+                                return (
+                                    <SelectItem key={opt.value} value={opt.value} className={count === 0 ? 'opacity-50' : ''}>
+                                        {opt.label}{count !== null ? ` (${count.toLocaleString()})` : ''}
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
                 </div>
@@ -430,8 +454,15 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">{t.allTypes}</SelectItem>
-                            <SelectItem value="legislative">{t.legislative}</SelectItem>
-                            <SelectItem value="non_legislative">{t.nonLegislative}</SelectItem>
+                            {(['legislative', 'non_legislative'] as const).map((val) => {
+                                const count = getFacetCount(facets, 'by_law_type', val);
+                                const label = val === 'legislative' ? t.legislative : t.nonLegislative;
+                                return (
+                                    <SelectItem key={val} value={val} className={count === 0 ? 'opacity-50' : ''}>
+                                        {label}{count !== null ? ` (${count.toLocaleString()})` : ''}
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
                 </div>

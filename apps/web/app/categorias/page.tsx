@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent } from '@tezca/ui';
 import type { Metadata } from 'next';
+import { API_BASE_URL } from '@/lib/config';
 
 export function generateMetadata(): Metadata {
   return {
@@ -40,15 +41,6 @@ export function generateMetadata(): Metadata {
   };
 }
 
-type CategoryKey =
-  | 'civil'
-  | 'penal'
-  | 'mercantil'
-  | 'fiscal'
-  | 'laboral'
-  | 'administrativo'
-  | 'constitucional';
-
 interface CategoryMeta {
   es: string;
   en: string;
@@ -59,7 +51,7 @@ interface CategoryMeta {
   desc_nah: string;
 }
 
-const CATEGORIES: Record<CategoryKey, CategoryMeta> = {
+const CATEGORY_META: Record<string, CategoryMeta> = {
   civil: {
     es: 'Civil',
     en: 'Civil',
@@ -131,18 +123,21 @@ const content = {
     subtitle: 'Explora la legislacion mexicana por categoria juridica',
     home: 'Inicio',
     viewCategory: 'Ver leyes',
+    laws: 'leyes',
   },
   en: {
     title: 'Categories',
     subtitle: 'Explore Mexican legislation by legal category',
     home: 'Home',
     viewCategory: 'View laws',
+    laws: 'laws',
   },
   nah: {
     title: 'Tlamantli',
     subtitle: 'Xictlachia in mexihcatl tenahuatilli ic tlamantli',
     home: 'Caltenco',
     viewCategory: 'Xicnextia tenahuatilli',
+    laws: 'tenahuatilli',
   },
 };
 
@@ -152,22 +147,26 @@ const content = {
  */
 function CategoryCard({
   slug,
-  category,
+  meta,
+  count,
   lang,
   viewLabel,
+  lawsLabel,
 }: {
-  slug: CategoryKey;
-  category: CategoryMeta;
+  slug: string;
+  meta: CategoryMeta;
+  count: number | null;
   lang: 'es' | 'en' | 'nah';
   viewLabel: string;
+  lawsLabel: string;
 }) {
-  const name = category[lang];
+  const name = meta[lang];
   const desc =
     lang === 'en'
-      ? category.desc_en
+      ? meta.desc_en
       : lang === 'nah'
-        ? category.desc_nah
-        : category.desc_es;
+        ? meta.desc_nah
+        : meta.desc_es;
 
   return (
     <Link
@@ -181,7 +180,7 @@ function CategoryCard({
             role="img"
             aria-hidden="true"
           >
-            {category.icon}
+            {meta.icon}
           </span>
           <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
             {name}
@@ -189,6 +188,11 @@ function CategoryCard({
           <p className="text-sm text-muted-foreground leading-relaxed">
             {desc}
           </p>
+          {count !== null && (
+            <p className="text-xs text-muted-foreground">
+              {count.toLocaleString()} {lawsLabel}
+            </p>
+          )}
           <span className="mt-auto inline-flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
             {viewLabel} &rarr;
           </span>
@@ -198,28 +202,48 @@ function CategoryCard({
   );
 }
 
+interface APICategory {
+  category: string;
+  count: number;
+  label: string;
+}
+
+async function fetchCategories(): Promise<APICategory[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/categories/`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 /**
  * CategoriesIndexPage — server component listing all legal categories.
  *
- * Because this is a server component it cannot call `useLang()`.
- * We render all three language blocks and use a client wrapper
- * (LangSwitch) to conditionally display the active language, OR
- * we can simply default to Spanish for the server-rendered page
- * (consistent with the rest of the App Router pages that use
- * `generateMetadata` for SEO in Spanish).
- *
- * For maximum simplicity and SEO, the page renders in Spanish
- * with all content statically available for crawlers.  The
- * client-side LanguageToggle in the site layout already handles
- * the lang attribute on <html>.
+ * Fetches real category counts from the API. Falls back to hardcoded
+ * category list if the API is unavailable.
  */
-export default function CategoriesIndexPage() {
-  // Default language for the server-rendered page (SEO-optimized).
+export default async function CategoriesIndexPage() {
   const lang = 'es' as const;
   const t = content[lang];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
-  const categoryKeys = Object.keys(CATEGORIES) as CategoryKey[];
+  const apiCategories = await fetchCategories();
+
+  // Build counts map from API data
+  const countsMap = new Map(apiCategories.map((c) => [c.category, c.count]));
+
+  // Merge: known categories first (preserve order), then any API-only categories
+  const knownKeys = Object.keys(CATEGORY_META);
+  const allSlugs = [
+    ...knownKeys,
+    ...apiCategories
+      .map((c) => c.category)
+      .filter((slug) => !knownKeys.includes(slug)),
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -281,15 +305,28 @@ export default function CategoriesIndexPage() {
       {/* Category grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {categoryKeys.map((slug) => (
-            <CategoryCard
-              key={slug}
-              slug={slug}
-              category={CATEGORIES[slug]}
-              lang={lang}
-              viewLabel={t.viewCategory}
-            />
-          ))}
+          {allSlugs.map((slug) => {
+            const meta = CATEGORY_META[slug] || {
+              es: slug.charAt(0).toUpperCase() + slug.slice(1),
+              en: slug.charAt(0).toUpperCase() + slug.slice(1),
+              nah: slug.charAt(0).toUpperCase() + slug.slice(1),
+              icon: '\uD83D\uDCCB',
+              desc_es: '',
+              desc_en: '',
+              desc_nah: '',
+            };
+            return (
+              <CategoryCard
+                key={slug}
+                slug={slug}
+                meta={meta}
+                count={countsMap.get(slug) ?? null}
+                lang={lang}
+                viewLabel={t.viewCategory}
+                lawsLabel={t.laws}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

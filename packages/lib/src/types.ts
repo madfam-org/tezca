@@ -59,6 +59,11 @@ export interface SearchResult {
     chapter?: string;
 }
 
+export interface FacetBucket {
+    key: string;
+    count: number;
+}
+
 export interface SearchResponse {
     results: SearchResult[];
     total?: number;
@@ -66,6 +71,7 @@ export interface SearchResponse {
     page_size?: number;
     total_pages?: number;
     warning?: string;
+    facets?: Record<string, FacetBucket[]>;
 }
 
 export interface APIError {
@@ -128,6 +134,23 @@ export interface LawArticleResponse {
     law_name: string;
     total: number;
     articles: LawArticle[];
+}
+
+// Related Laws
+export interface RelatedLaw {
+    law_id: string;
+    name: string;
+    tier: string;
+    category?: string;
+    state?: string;
+    score: number;
+}
+
+// Categories
+export interface CategoryItem {
+    category: string;
+    count: number;
+    label?: string;
 }
 
 // Admin / Ingestion Types

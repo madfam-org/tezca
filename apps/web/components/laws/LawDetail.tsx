@@ -13,6 +13,7 @@ import type { FontSize } from '@/components/FontSizeControl';
 import { LawDetailSkeleton } from '@/components/skeletons/LawDetailSkeleton';
 import { ArticleSearch } from './ArticleSearch';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
+import { RelatedLaws } from './RelatedLaws';
 import { recordLawView } from '@/components/RecentlyViewed';
 
 const content = {
@@ -106,7 +107,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
                 <h1 className="text-xl sm:text-2xl font-bold mb-2">{t.errorTitle}</h1>
                 <p className="text-sm sm:text-base text-muted-foreground mb-6">{error || t.notFound}</p>
                 <a
-                    href="/search"
+                    href="/busqueda"
                     className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                 >
                     {t.backToSearch}
@@ -179,6 +180,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
                         onFocusSearch={() => searchInputRef.current?.focus()}
                         lawId={lawId}
                     />
+                    <RelatedLaws lawId={lawId} />
                 </main>
             </div>
         </div>

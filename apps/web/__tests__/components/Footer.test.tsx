@@ -23,10 +23,10 @@ describe('Footer', () => {
     expect(homeLink).toHaveAttribute('href', '/');
 
     const searchLink = screen.getByRole('link', { name: 'Buscar Leyes' });
-    expect(searchLink).toHaveAttribute('href', '/search');
+    expect(searchLink).toHaveAttribute('href', '/busqueda');
 
     const catalogLink = screen.getByRole('link', { name: 'Catálogo' });
-    expect(catalogLink).toHaveAttribute('href', '/laws');
+    expect(catalogLink).toHaveAttribute('href', '/leyes');
 
     const aboutLink = screen.getByRole('link', { name: 'Acerca de' });
     expect(aboutLink).toHaveAttribute('href', '/acerca-de');

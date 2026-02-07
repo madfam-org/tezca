@@ -110,12 +110,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/search" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
+                <Link href="/busqueda" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
                   {t.search}
                 </Link>
               </li>
               <li>
-                <Link href="/laws" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
+                <Link href="/leyes" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
                   {t.catalog}
                 </Link>
               </li>

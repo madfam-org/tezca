@@ -23,7 +23,7 @@ function buildJsonLd(law: Record<string, string>, siteUrl: string, lawId: string
             name: jurisdiction,
         },
         inLanguage: 'es',
-        url: `${siteUrl}/laws/${lawId}`,
+        url: `${siteUrl}/leyes/${lawId}`,
         isPartOf: {
             '@type': 'WebSite',
             name: 'Tezca',
@@ -79,7 +79,7 @@ export async function generateMetadata({
                 title: law.name || law.official_id,
                 description,
                 type: 'article',
-                url: `${siteUrl}/laws/${lawId}`,
+                url: `${siteUrl}/leyes/${lawId}`,
                 siteName: 'Tezca',
             },
             twitter: {

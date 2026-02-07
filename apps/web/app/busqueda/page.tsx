@@ -12,7 +12,7 @@ import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { Pagination } from '@/components/Pagination';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
-import type { SearchResult } from "@tezca/lib";
+import type { SearchResult, FacetBucket } from "@tezca/lib";
 
 const content = {
     es: {
@@ -38,6 +38,7 @@ const content = {
         dateLocale: 'es-MX' as const,
         shareSearch: 'Compartir búsqueda',
         copied: '¡Copiado!',
+        removeFilter: 'Quitar filtro:',
     },
     en: {
         searchError: 'Search error',
@@ -62,6 +63,7 @@ const content = {
         dateLocale: 'en-US' as const,
         shareSearch: 'Share search',
         copied: 'Copied!',
+        removeFilter: 'Remove filter:',
     },
     nah: {
         searchError: 'Tlatemoliztli tlahtlac\u014Dlli',
@@ -86,6 +88,7 @@ const content = {
         dateLocale: 'es-MX' as const,
         shareSearch: 'Xict\u0113maca tlatemoliztli',
         copied: '\u014Cmot\u0113cac!',
+        removeFilter: 'Xicpohua:',
     },
 };
 
@@ -137,6 +140,7 @@ function SearchContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [shareCopied, setShareCopied] = useState(false);
+    const [facets, setFacets] = useState<Record<string, FacetBucket[]> | undefined>(undefined);
 
     const buildSearchParams = (q: string, f: SearchFilterState, page: number) => {
         const params = new URLSearchParams();
@@ -197,6 +201,7 @@ function SearchContent() {
             setResults(data.results || []);
             setTotal(data.total || data.results.length);
             setTotalPages(data.total_pages || Math.ceil((data.total || data.results.length) / PAGE_SIZE));
+            setFacets(data.facets);
 
             if (data.warning) {
                 setError(data.warning);
@@ -215,7 +220,7 @@ function SearchContent() {
         if (q.trim()) {
             setQuery(q);
             setCurrentPage(1);
-            router.push(`/search?${buildSearchParams(q, filters, 1)}`);
+            router.push(`/busqueda?${buildSearchParams(q, filters, 1)}`);
             performSearch(q, filters, 1);
         }
     };
@@ -224,14 +229,14 @@ function SearchContent() {
         setFilters(newFilters);
         setCurrentPage(1);
         if (query.trim()) {
-            router.push(`/search?${buildSearchParams(query, newFilters, 1)}`);
+            router.push(`/busqueda?${buildSearchParams(query, newFilters, 1)}`);
             performSearch(query, newFilters, 1);
         }
     };
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        router.push(`/search?${buildSearchParams(query, filters, page)}`);
+        router.push(`/busqueda?${buildSearchParams(query, filters, page)}`);
         performSearch(query, filters, page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -298,6 +303,7 @@ function SearchContent() {
                             filters={filters}
                             onFiltersChange={handleFiltersChange}
                             resultCount={total}
+                            facets={facets}
                         />
                     </aside>
 
@@ -319,6 +325,38 @@ function SearchContent() {
                                 <p className="mt-2 text-sm text-muted-foreground">
                                     {t.tryDifferent}
                                 </p>
+
+                                {/* Suggest removing active filters */}
+                                {(() => {
+                                    const activeFilters: { label: string; reset: () => void }[] = [];
+                                    if (filters.category && filters.category !== 'all')
+                                        activeFilters.push({ label: filters.category, reset: () => handleFiltersChange({ ...filters, category: null }) });
+                                    if (filters.state && filters.state !== 'all')
+                                        activeFilters.push({ label: filters.state, reset: () => handleFiltersChange({ ...filters, state: null }) });
+                                    if (filters.status !== 'all')
+                                        activeFilters.push({ label: filters.status, reset: () => handleFiltersChange({ ...filters, status: 'all' }) });
+                                    if (filters.law_type && filters.law_type !== 'all')
+                                        activeFilters.push({ label: filters.law_type, reset: () => handleFiltersChange({ ...filters, law_type: 'all' }) });
+                                    if (filters.jurisdiction.length !== 3)
+                                        activeFilters.push({ label: 'jurisdiction', reset: () => handleFiltersChange({ ...filters, jurisdiction: ['federal', 'state', 'municipal'] }) });
+                                    return activeFilters.length > 0 ? (
+                                        <div className="mt-4">
+                                            <p className="text-xs text-muted-foreground mb-2">{t.removeFilter}</p>
+                                            <div className="flex flex-wrap justify-center gap-2">
+                                                {activeFilters.map((f) => (
+                                                    <button
+                                                        key={f.label}
+                                                        onClick={f.reset}
+                                                        className="inline-flex items-center rounded-full border border-destructive/30 bg-destructive/5 px-3 py-1 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                                                    >
+                                                        &times; {f.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : null;
+                                })()}
+
                                 <div className="mt-6">
                                     <p className="text-xs text-muted-foreground mb-3">{t.suggestions}</p>
                                     <div className="flex flex-wrap justify-center gap-2">
@@ -377,7 +415,7 @@ function SearchContent() {
                                 <div className="space-y-4">
                                     {results.map((result, index) => (
                                         <Link
-                                            href={`/laws/${result.law_id}#article-${result.article.replace('Art. ', '')}`}
+                                            href={`/leyes/${result.law_id}#article-${result.article.replace('Art. ', '')}`}
                                             key={result.id || index}
                                             className="block"
                                         >
@@ -411,6 +449,13 @@ function SearchContent() {
                                                                     </span>
                                                                 )}
                                                             </div>
+
+                                                            {/* Hierarchy breadcrumb */}
+                                                            {result.hierarchy && result.hierarchy.length > 0 && (
+                                                                <div className="mb-1.5 text-xs text-muted-foreground truncate">
+                                                                    {result.hierarchy.join(' \u203A ')}
+                                                                </div>
+                                                            )}
 
                                                             <div
                                                                 className="text-sm text-foreground line-clamp-3"

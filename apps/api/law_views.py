@@ -127,9 +127,19 @@ class LawListView(APIView):
         responses={200: LawListItemSchema(many=True)},
     )
     def get(self, request):
-        qs = Law.objects.annotate(version_count=Count("versions")).order_by(
-            "official_id"
-        )
+        qs = Law.objects.annotate(version_count=Count("versions"))
+
+        # Sort param
+        sort = request.query_params.get("sort", "name_asc")
+        sort_map = {
+            "name_asc": "official_id",
+            "name_desc": "-official_id",
+            "date_desc": "-versions__publication_date",
+            "date_asc": "versions__publication_date",
+            "article_count": "-version_count",
+        }
+        ordering = sort_map.get(sort, "official_id")
+        qs = qs.order_by(ordering)
 
         # Filtering
         tier = request.query_params.get("tier")
@@ -172,6 +182,164 @@ class LawListView(APIView):
             for law in page
         ]
         return paginator.get_paginated_response(data)
+
+
+class RelatedLawsView(APIView):
+    @extend_schema(
+        tags=["Laws"],
+        summary="Get related laws",
+        description="Find thematically related laws using Elasticsearch more_like_this.",
+        responses={200: dict, 404: ErrorSchema},
+    )
+    def get(self, request, law_id):
+        law = get_object_or_404(Law, official_id=law_id)
+
+        related = []
+        try:
+            es = es_client
+            if es.ping():
+                # Get first 3 article texts for similarity context
+                articles_body = {
+                    "query": {"match_phrase": {"law_id": law.official_id}},
+                    "sort": [{"article": "asc"}],
+                    "_source": ["text"],
+                    "size": 3,
+                }
+                articles_res = es.search(index=INDEX_NAME, body=articles_body)
+                article_texts = [
+                    hit["_source"]["text"][:500]
+                    for hit in articles_res["hits"]["hits"]
+                    if hit["_source"].get("text")
+                ]
+
+                like_text = f"{law.name} {' '.join(article_texts)}"
+
+                mlt_body = {
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {
+                                    "more_like_this": {
+                                        "fields": ["law_name", "text"],
+                                        "like": like_text,
+                                        "min_term_freq": 1,
+                                        "min_doc_freq": 1,
+                                        "max_query_terms": 25,
+                                    }
+                                }
+                            ],
+                            "must_not": [
+                                {"match_phrase": {"law_id": law.official_id}}
+                            ],
+                        }
+                    },
+                    "aggs": {
+                        "by_law": {
+                            "terms": {"field": "law_id", "size": 8},
+                            "aggs": {
+                                "top_hit": {
+                                    "top_hits": {
+                                        "_source": [
+                                            "law_name",
+                                            "tier",
+                                            "category",
+                                            "state",
+                                        ],
+                                        "size": 1,
+                                    }
+                                }
+                            },
+                        }
+                    },
+                    "size": 0,
+                }
+
+                mlt_res = es.search(index=INDEX_NAME, body=mlt_body)
+                buckets = (
+                    mlt_res.get("aggregations", {})
+                    .get("by_law", {})
+                    .get("buckets", [])
+                )
+
+                for bucket in buckets:
+                    top = bucket["top_hit"]["hits"]["hits"]
+                    if not top:
+                        continue
+                    src = top[0]["_source"]
+                    related.append(
+                        {
+                            "law_id": bucket["key"],
+                            "name": src.get("law_name", bucket["key"]),
+                            "tier": src.get("tier", ""),
+                            "category": src.get("category", ""),
+                            "state": src.get("state"),
+                            "score": round(bucket["doc_count"], 1),
+                        }
+                    )
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "ES unavailable for related laws %s", law_id, exc_info=True
+            )
+
+        # Fallback: if ES returned nothing, use DB same-category same-tier laws
+        if not related:
+            fallback_qs = (
+                Law.objects.filter(category=law.category, tier=law.tier)
+                .exclude(official_id=law.official_id)
+                .order_by("name")[:8]
+            )
+            related = [
+                {
+                    "law_id": r.official_id,
+                    "name": r.short_name or r.name,
+                    "tier": r.tier,
+                    "category": r.category,
+                    "state": None,
+                    "score": 0,
+                }
+                for r in fallback_qs
+            ]
+
+        response = Response({"law_id": law_id, "related": related})
+        response["Cache-Control"] = "public, max-age=3600"
+        return response
+
+
+@api_view(["GET"])
+def categories_list(request):
+    """Get all categories with law counts."""
+    CATEGORY_LABELS = {
+        "civil": "Derecho Civil",
+        "penal": "Derecho Penal",
+        "mercantil": "Derecho Mercantil",
+        "fiscal": "Derecho Fiscal",
+        "laboral": "Derecho Laboral",
+        "administrativo": "Derecho Administrativo",
+        "constitucional": "Derecho Constitucional",
+    }
+
+    rows = (
+        Law.objects.exclude(category__isnull=True)
+        .exclude(category="")
+        .values("category")
+        .annotate(count=Count("id"))
+        .order_by("-count")
+    )
+
+    data = [
+        {
+            "category": row["category"],
+            "count": row["count"],
+            "label": CATEGORY_LABELS.get(row["category"], row["category"].title()),
+        }
+        for row in rows
+    ]
+
+    response = Response(data)
+    response["Cache-Control"] = "public, max-age=3600"
+    return response
 
 
 @extend_schema(

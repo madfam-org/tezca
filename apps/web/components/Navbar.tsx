@@ -46,11 +46,11 @@ const content = {
 
 const NAV_LINKS = [
     { href: '/', key: 'home' as const },
-    { href: '/search', key: 'search' as const },
-    { href: '/laws', key: 'explore' as const },
+    { href: '/busqueda', key: 'search' as const },
+    { href: '/leyes', key: 'explore' as const },
     { href: '/categorias', key: 'categories' as const },
     { href: '/estados', key: 'states' as const },
-    { href: '/compare', key: 'compare' as const },
+    { href: '/comparar', key: 'compare' as const },
     { href: '/favoritos', key: 'favorites' as const },
 ];
 

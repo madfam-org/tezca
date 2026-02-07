@@ -20,14 +20,14 @@ const content = {
 };
 
 const popularLaws = [
-    { id: 'mx-fed-cpeum', name: 'Constitución', href: '/laws/mx-fed-cpeum' },
-    { id: 'mx-fed-ccf', name: 'Código Civil Federal', href: '/laws/mx-fed-ccf' },
-    { id: 'mx-fed-cpf', name: 'Código Penal Federal', href: '/laws/mx-fed-cpf' },
-    { id: 'mx-fed-lisr', name: 'ISR', href: '/laws/mx-fed-lisr' },
-    { id: 'mx-fed-liva', name: 'IVA', href: '/laws/mx-fed-liva' },
-    { id: 'mx-fed-lft', name: 'Ley Federal del Trabajo', href: '/laws/mx-fed-lft' },
-    { id: 'mx-fed-lss', name: 'Seguro Social', href: '/laws/mx-fed-lss' },
-    { id: 'mx-fed-amparo', name: 'Amparo', href: '/laws/mx-fed-amparo' },
+    { id: 'mx-fed-cpeum', name: 'Constitución', href: '/leyes/mx-fed-cpeum' },
+    { id: 'mx-fed-ccf', name: 'Código Civil Federal', href: '/leyes/mx-fed-ccf' },
+    { id: 'mx-fed-cpf', name: 'Código Penal Federal', href: '/leyes/mx-fed-cpf' },
+    { id: 'mx-fed-lisr', name: 'ISR', href: '/leyes/mx-fed-lisr' },
+    { id: 'mx-fed-liva', name: 'IVA', href: '/leyes/mx-fed-liva' },
+    { id: 'mx-fed-lft', name: 'Ley Federal del Trabajo', href: '/leyes/mx-fed-lft' },
+    { id: 'mx-fed-lss', name: 'Seguro Social', href: '/leyes/mx-fed-lss' },
+    { id: 'mx-fed-amparo', name: 'Amparo', href: '/leyes/mx-fed-amparo' },
 ];
 
 export function PopularLaws() {

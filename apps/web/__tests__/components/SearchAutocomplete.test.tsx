@@ -87,7 +87,7 @@ describe('SearchAutocomplete', () => {
         // mouseDown to simulate click (onMouseDown handler)
         fireEvent.mouseDown(screen.getByText('Ley de Amparo'));
 
-        expect(mockPush).toHaveBeenCalledWith('/laws/ley_amparo');
+        expect(mockPush).toHaveBeenCalledWith('/leyes/ley_amparo');
     });
 
     it('closes dropdown on Escape', async () => {

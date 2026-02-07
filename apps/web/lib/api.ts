@@ -1,4 +1,4 @@
-import type { Law, LawListItem, SearchResponse, DashboardStats, LawArticleResponse, IngestionStatus } from "@tezca/lib";
+import type { Law, LawListItem, SearchResponse, DashboardStats, LawArticleResponse, IngestionStatus, RelatedLaw, CategoryItem } from "@tezca/lib";
 import {
     LawSchema,
     SearchResponseSchema,
@@ -94,6 +94,8 @@ export const api = {
         state?: string;
         category?: string;
         status?: string;
+        law_type?: string;
+        sort?: string;
         q?: string;
     }): Promise<PaginatedResponse<LawListItem>> => {
         const params = new URLSearchParams();
@@ -103,6 +105,8 @@ export const api = {
         if (options?.state) params.set('state', options.state);
         if (options?.category) params.set('category', options.category);
         if (options?.status) params.set('status', options.status);
+        if (options?.law_type) params.set('law_type', options.law_type);
+        if (options?.sort) params.set('sort', options.sort);
         if (options?.q) params.set('q', options.q);
         const qs = params.toString();
         return fetcher<PaginatedResponse<LawListItem>>(`/laws/${qs ? `?${qs}` : ''}`);
@@ -234,6 +238,20 @@ export const api = {
         if (!res.ok) return [];
         const data = await res.json();
         return data.suggestions ?? data;
+    },
+
+    /**
+     * Get related laws for a given law
+     */
+    getRelatedLaws: async (lawId: string): Promise<{ law_id: string; related: RelatedLaw[] }> => {
+        return fetcher<{ law_id: string; related: RelatedLaw[] }>(`/laws/${lawId}/related/`);
+    },
+
+    /**
+     * Get all categories with law counts
+     */
+    getCategories: async (): Promise<CategoryItem[]> => {
+        return fetcher<CategoryItem[]>('/categories/');
     },
 
     /**

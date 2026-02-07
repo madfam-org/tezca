@@ -44,7 +44,7 @@ export function Hero() {
 
     const handleSearch = (query: string) => {
         if (query.trim()) {
-            window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            window.location.href = `/busqueda?q=${encodeURIComponent(query)}`;
         }
     };
 

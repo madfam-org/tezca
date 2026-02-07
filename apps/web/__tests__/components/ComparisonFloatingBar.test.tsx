@@ -62,7 +62,7 @@ describe('ComparisonFloatingBar', () => {
         mockSelectedLaws = ['law-1', 'law-2'];
         render(<ComparisonFloatingBar />);
         const compareLink = screen.getByText('Comparar Leyes').closest('a');
-        expect(compareLink).toHaveAttribute('href', '/compare?laws=law-1,law-2');
+        expect(compareLink).toHaveAttribute('href', '/comparar?laws=law-1,law-2');
     });
 
     it('shows select another hint when only one law selected', () => {

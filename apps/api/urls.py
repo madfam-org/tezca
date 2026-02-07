@@ -20,6 +20,8 @@ from .cross_reference_views import article_cross_references, law_cross_reference
 from .law_views import (
     LawDetailView,
     LawListView,
+    RelatedLawsView,
+    categories_list,
     law_articles,
     law_search,
     law_stats,
@@ -81,6 +83,8 @@ urlpatterns = [
     ),
     path("laws/<str:law_id>/structure/", law_structure, name="law-structure"),
     path("laws/<str:law_id>/references/", law_cross_references, name="law-references"),
+    path("laws/<str:law_id>/related/", RelatedLawsView.as_view(), name="law-related"),
+    path("categories/", categories_list, name="categories-list"),
     path("states/", states_list, name="states-list"),
     path("municipalities/", municipalities_list, name="municipalities-list"),
     path("suggest/", suggest, name="law-suggest"),

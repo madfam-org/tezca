@@ -57,7 +57,7 @@ export default function ComparisonFloatingBar() {
                         variant={selectedLaws.length >= 2 ? "default" : "secondary"}
                         className="w-full sm:w-auto"
                     >
-                        <Link href={`/compare?laws=${selectedLaws.join(',')}`}>
+                        <Link href={`/comparar?laws=${selectedLaws.join(',')}`}>
                             {t.compare}
                         </Link>
                     </Button>

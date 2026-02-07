@@ -172,7 +172,7 @@ export default function StateLawsPage() {
                             {laws.map((law) => (
                                 <Link
                                     key={law.id}
-                                    href={`/laws/${law.id}`}
+                                    href={`/leyes/${law.id}`}
                                     className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
                                 >
                                     <Card className="transition-all duration-200 group-hover:shadow-lg group-hover:border-primary/50">

@@ -60,7 +60,7 @@ export default function FavoritosPage() {
                         <p className="text-lg text-muted-foreground">{t.empty}</p>
                         <p className="mt-2 text-sm text-muted-foreground">{t.emptyHint}</p>
                         <Link
-                            href="/search"
+                            href="/busqueda"
                             className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                         >
                             {t.browse}
@@ -71,7 +71,7 @@ export default function FavoritosPage() {
                         {bookmarks.map((bm) => (
                             <Card key={bm.id} className="transition-all hover:shadow-md">
                                 <CardContent className="flex items-center justify-between p-4">
-                                    <Link href={`/laws/${bm.id}`} className="flex-1 min-w-0">
+                                    <Link href={`/leyes/${bm.id}`} className="flex-1 min-w-0">
                                         <h3 className="font-medium truncate hover:text-primary transition-colors">
                                             {bm.name}
                                         </h3>

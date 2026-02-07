@@ -61,7 +61,7 @@ describe('LinkifiedArticle', () => {
                         confidence: 0.95,
                         startPos: 18,
                         endPos: 32,
-                        targetUrl: '/laws/amparo#article-5',
+                        targetUrl: '/leyes/amparo#article-5',
                     },
                 ],
             }),
@@ -77,7 +77,7 @@ describe('LinkifiedArticle', () => {
 
         await waitFor(() => {
             const link = screen.getByRole('link', { name: 'Ley de Amparo' });
-            expect(link).toHaveAttribute('href', '/laws/amparo#article-5');
+            expect(link).toHaveAttribute('href', '/leyes/amparo#article-5');
         });
     });
 

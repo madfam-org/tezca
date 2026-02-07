@@ -154,7 +154,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
                     {t.selectDesc}
                 </p>
                 <Button asChild>
-                    <Link href="/search">{t.goToSearch}</Link>
+                    <Link href="/busqueda">{t.goToSearch}</Link>
                 </Button>
             </div>
         );
@@ -165,7 +165,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
             {/* Header */}
             <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4 px-4 sm:px-6 border-b">
                 <Button asChild variant="ghost" size="sm">
-                    <Link href="/search">
+                    <Link href="/busqueda">
                         <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         <span className="hidden sm:inline">{t.backFull}</span>
                         <span className="sm:hidden text-xs">{t.backShort}</span>

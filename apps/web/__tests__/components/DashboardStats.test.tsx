@@ -175,7 +175,7 @@ describe('RecentLawsList', () => {
 
         await waitFor(() => {
             const link = screen.getByText('Ley Federal de Test').closest('a');
-            expect(link).toHaveAttribute('href', '/laws/ley-1');
+            expect(link).toHaveAttribute('href', '/leyes/ley-1');
         });
     });
 });

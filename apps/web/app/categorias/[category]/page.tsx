@@ -452,7 +452,7 @@ export default async function CategoryDetailPage({
               {data.results.map((law) => (
                 <Link
                   key={law.id}
-                  href={`/laws/${law.id}`}
+                  href={`/leyes/${law.id}`}
                   className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
                 >
                   <Card className="transition-all duration-200 hover:shadow-lg hover:border-primary/30 border border-border">

@@ -72,6 +72,11 @@ export const SearchResultSchema = z.object({
     municipality: z.string().optional(),
 });
 
+export const FacetBucketSchema = z.object({
+    key: z.string(),
+    count: z.number(),
+});
+
 export const SearchResponseSchema = z.object({
     results: z.array(SearchResultSchema),
     total: z.number().optional(),
@@ -79,6 +84,7 @@ export const SearchResponseSchema = z.object({
     page_size: z.number().optional(),
     total_pages: z.number().optional(),
     warning: z.string().optional(),
+    facets: z.record(z.string(), z.array(FacetBucketSchema)).optional(),
 });
 
 // ── Dashboard ───────────────────────────────────────────────────────────

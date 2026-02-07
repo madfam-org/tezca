@@ -154,7 +154,7 @@ class CrossReference(models.Model):
         if not self.target_law_slug:
             return None
 
-        url = f"/laws/{self.target_law_slug}"
+        url = f"/leyes/{self.target_law_slug}"
         if self.target_article_num:
             url += f"#article-{self.target_article_num}"
 
