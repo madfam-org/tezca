@@ -170,6 +170,9 @@ export function LawDetail({ lawId }: LawDetailProps) {
                             articles={data.articles}
                             activeArticle={activeArticle}
                             lawId={lawId}
+                            lawName={data.law.name}
+                            publicationDate={data.version.publication_date}
+                            tier={data.law.tier}
                         />
                     </div>
                     <KeyboardShortcuts

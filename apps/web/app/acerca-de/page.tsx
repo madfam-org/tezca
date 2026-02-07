@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Database, Cog, Mail } from 'lucide-react';
+import { Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
 
@@ -41,6 +42,24 @@ const content = {
     ],
     cta: 'Bienvenido a Tezca',
     ctaSub: 'El sistema legal mexicano, reflejado con claridad.',
+    dataSources: {
+      title: 'Fuentes de Datos',
+      items: [
+        { name: 'Diario Oficial de la Federación (DOF)', desc: 'Leyes federales, reglamentos y normas oficiales mexicanas.' },
+        { name: 'Orden Jurídico Nacional (OJN)', desc: 'Legislación estatal y municipal de las 32 entidades federativas.' },
+        { name: 'Gacetas Oficiales Estatales', desc: 'Publicaciones legislativas directas de cada estado.' },
+      ],
+    },
+    methodology: {
+      title: 'Metodología',
+      body: 'Cada documento se descarga de su fuente oficial, se extrae el texto completo, se parsea en artículos individuales preservando la estructura jerárquica (libros, títulos, capítulos, secciones), y se indexa en Elasticsearch para búsqueda de texto completo. Utilizamos el estándar Akoma Ntoso para la representación semántica de la legislación. La actualización es diaria vía el DOF.',
+    },
+    contact: {
+      title: 'Contacto',
+      body: 'Para consultas, sugerencias o reportes de errores:',
+      email: 'admin@madfam.io',
+    },
+    copyright: '© 2026 Innovaciones MADFAM SAS de CV. Todos los derechos reservados.',
   },
   en: {
     back: 'Back to home',
@@ -77,6 +96,24 @@ const content = {
     ],
     cta: 'Welcome to Tezca',
     ctaSub: 'The Mexican legal system, reflected with clarity.',
+    dataSources: {
+      title: 'Data Sources',
+      items: [
+        { name: 'Diario Oficial de la Federación (DOF)', desc: 'Federal laws, regulations, and official Mexican standards.' },
+        { name: 'Orden Jurídico Nacional (OJN)', desc: 'State and municipal legislation from all 32 federal entities.' },
+        { name: 'State Official Gazettes', desc: 'Direct legislative publications from each state.' },
+      ],
+    },
+    methodology: {
+      title: 'Methodology',
+      body: 'Each document is downloaded from its official source, full text is extracted, parsed into individual articles preserving the hierarchical structure (books, titles, chapters, sections), and indexed in Elasticsearch for full-text search. We use the Akoma Ntoso standard for semantic representation of legislation. Updates are daily via the DOF.',
+    },
+    contact: {
+      title: 'Contact',
+      body: 'For inquiries, suggestions, or error reports:',
+      email: 'admin@madfam.io',
+    },
+    copyright: '© 2026 Innovaciones MADFAM SAS de CV. All rights reserved.',
   },
   nah: {
     back: 'Xicmocuepa caltenco',
@@ -113,6 +150,24 @@ const content = {
     ],
     cta: 'Ximopanōlti Tezca',
     ctaSub: 'In mēxihcatl tenahuatiliz tēyācanaliztli, tēzcahuīlli ica nelli.',
+    dataSources: {
+      title: 'Tlamachilizpialōyan',
+      items: [
+        { name: 'Diario Oficial de la Federación (DOF)', desc: 'Federal tenahuatilli, reglamentos ihuan normas oficiales.' },
+        { name: 'Orden Jurídico Nacional (OJN)', desc: 'Altepetl ihuan calpulli tenahuatilli mochi 32 altepetl.' },
+        { name: 'Altepetl Gacetas', desc: 'Tenahuatilli tlahcuilōlli mochi altepetl.' },
+      ],
+    },
+    methodology: {
+      title: 'Tlachihualiztli',
+      body: 'Mochi āmatl moquīxtia ītēuctlahtōlpialōyan, motēmoa mochi tlahcuilōlli, motemachilia mochi tlanahuatilli ic ītlachiyaliz (āmoxtli, tōcāitl, capítulos), ihuan motemoa Elasticsearch ipan. Tictēquitiltia Akoma Ntoso ic tenahuatilli tlamachiliztli. Mōztla yancuīc ic DOF.',
+    },
+    contact: {
+      title: 'Tēnōnōtzaliztli',
+      body: 'Ic tlatlaniliztli, tlanēmilīlli, ahnōzo tlahtlacōlli:',
+      email: 'admin@madfam.io',
+    },
+    copyright: '© 2026 Innovaciones MADFAM SAS de CV. Mochi tlanahuatilli motlapiā.',
   },
 };
 
@@ -171,6 +226,59 @@ export default function AcercaDePage() {
           ))}
         </div>
 
+        {/* Data Sources */}
+        <section className="mt-20 sm:mt-28 pt-12 border-t border-border space-y-6">
+          <div className="flex items-center gap-3">
+            <Database className="h-6 w-6 text-primary" aria-hidden="true" />
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              {t.dataSources.title}
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {t.dataSources.items.map((item) => (
+              <Card key={item.name}>
+                <CardContent className="p-5">
+                  <h3 className="font-semibold text-sm text-foreground">{item.name}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Methodology */}
+        <section className="mt-14 sm:mt-20 space-y-4">
+          <div className="flex items-center gap-3">
+            <Cog className="h-6 w-6 text-primary" aria-hidden="true" />
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              {t.methodology.title}
+            </h2>
+          </div>
+          <p className="font-serif text-base sm:text-lg leading-relaxed text-muted-foreground">
+            {t.methodology.body}
+          </p>
+        </section>
+
+        {/* Contact */}
+        <section className="mt-14 sm:mt-20 space-y-4">
+          <div className="flex items-center gap-3">
+            <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              {t.contact.title}
+            </h2>
+          </div>
+          <p className="font-serif text-base sm:text-lg text-muted-foreground">
+            {t.contact.body}
+          </p>
+          <a
+            href={`mailto:${t.contact.email}`}
+            className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+          >
+            <Mail className="h-4 w-4" />
+            {t.contact.email}
+          </a>
+        </section>
+
         {/* Closing CTA */}
         <div className="mt-20 sm:mt-28 text-center border-t border-border pt-12">
           <p className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
@@ -178,6 +286,9 @@ export default function AcercaDePage() {
           </p>
           <p className="mt-3 font-serif text-base sm:text-lg text-muted-foreground italic">
             {t.ctaSub}
+          </p>
+          <p className="mt-8 text-xs text-muted-foreground">
+            {t.copyright}
           </p>
         </div>
       </div>

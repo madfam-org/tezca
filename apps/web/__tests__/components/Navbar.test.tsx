@@ -19,6 +19,11 @@ vi.mock('@/components/providers/LanguageContext', () => ({
     LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock CommandSearch
+vi.mock('@/components/CommandSearch', () => ({
+    CommandSearchTrigger: () => <button data-testid="command-search-trigger" aria-label="Buscar leyes y artículos...">Search</button>,
+}));
+
 import { Navbar } from '@/components/Navbar';
 
 describe('Navbar', () => {
@@ -58,5 +63,10 @@ describe('Navbar', () => {
         const searchLinks = screen.getAllByText('Buscar');
         const desktopLink = searchLinks[0];
         expect(desktopLink.className).toContain('text-primary');
+    });
+
+    it('renders command search trigger', () => {
+        render(<Navbar />);
+        expect(screen.getByTestId('command-search-trigger')).toBeDefined();
     });
 });

@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Article } from "@tezca/lib";
-import { Link as LinkIcon, Check, Quote } from 'lucide-react';
+import { Link as LinkIcon, Check, Quote, BookOpen } from 'lucide-react';
 import { Card } from "@tezca/ui";
 import { cn } from "@tezca/lib";
 import { useInView } from 'react-intersection-observer';
 import { LinkifiedArticle } from './LinkifiedArticle';
-import { useLang, type Lang } from '@/components/providers/LanguageContext';
+import { useLang, LOCALE_MAP, type Lang } from '@/components/providers/LanguageContext';
 
 const content = {
     es: {
@@ -16,8 +16,11 @@ const content = {
         articlePrefix: 'Artículo',
         copyLink: 'Copiar enlace directo al artículo',
         copyLinkShort: 'Copiar enlace directo',
-        copyCitation: 'Copiar cita',
+        copyCitation: 'Copiar cita legal',
+        copyCitationBibtex: 'Copiar cita BibTeX',
         citationCopied: 'Cita copiada',
+        bibtexCopied: 'BibTeX copiado',
+        linkCopied: 'Enlace copiado',
     },
     en: {
         noArticles: 'No articles available to display.',
@@ -25,8 +28,11 @@ const content = {
         articlePrefix: 'Article',
         copyLink: 'Copy direct link to article',
         copyLinkShort: 'Copy direct link',
-        copyCitation: 'Copy citation',
+        copyCitation: 'Copy legal citation',
+        copyCitationBibtex: 'Copy BibTeX citation',
         citationCopied: 'Citation copied',
+        bibtexCopied: 'BibTeX copied',
+        linkCopied: 'Link copied',
     },
     nah: {
         noArticles: 'Ahmo oncah tlanahuatilli ic tlachiyaliztli.',
@@ -35,7 +41,10 @@ const content = {
         copyLink: 'Xiccopīna tlanahuatilli tlahcuilōltzintli',
         copyLinkShort: 'Xiccopīna tlahcuilōltzintli',
         copyCitation: 'Xiccopīna tlanāhuatīlli',
+        copyCitationBibtex: 'Xiccopīna BibTeX',
         citationCopied: 'Ōmocopīnac',
+        bibtexCopied: 'BibTeX ōmocopīnac',
+        linkCopied: 'Tlahcuilōltzintli ōmocopīnac',
     },
 };
 
@@ -44,6 +53,8 @@ interface ArticleViewerProps {
     activeArticle: string | null;
     lawId: string;
     lawName?: string;
+    publicationDate?: string | null;
+    tier?: string;
 }
 
 export function ArticleViewer({
@@ -51,6 +62,8 @@ export function ArticleViewer({
     activeArticle,
     lawId,
     lawName,
+    publicationDate,
+    tier,
 }: ArticleViewerProps) {
     const { lang } = useLang();
     const t = content[lang];
@@ -83,6 +96,8 @@ export function ArticleViewer({
                         article={article}
                         lawId={lawId}
                         lawName={lawName}
+                        publicationDate={publicationDate}
+                        tier={tier}
                         isActive={activeArticle === article.article_id}
                         setRef={(el) => {
                             articleRefs.current[article.article_id] = el;
@@ -95,10 +110,56 @@ export function ArticleViewer({
     );
 }
 
+function formatDofDate(dateStr: string | null | undefined, locale: string): string {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr);
+        return `DOF ${date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+    } catch {
+        return '';
+    }
+}
+
+function buildCitationText(
+    articleId: string,
+    lawName: string,
+    publicationDate: string | null | undefined,
+    locale: string,
+): string {
+    const artNum = articleId.replace(/^Art[ií]culo\s*/i, '');
+    const parts = [`Art. ${artNum}`, lawName];
+    const dofDate = formatDofDate(publicationDate, locale);
+    if (dofDate) parts.push(dofDate);
+    return parts.join(', ');
+}
+
+function buildBibtexCitation(
+    articleId: string,
+    lawId: string,
+    lawName: string,
+    publicationDate: string | null | undefined,
+    tier: string | undefined,
+): string {
+    const artNum = articleId.replace(/^Art[ií]culo\s*/i, '');
+    const year = publicationDate ? new Date(publicationDate).getFullYear() : new Date().getFullYear();
+    const key = `${lawId.replace(/[^a-zA-Z0-9]/g, '_')}_art${artNum}`;
+    const jurisdiction = tier === 'state' ? 'Estatal' : tier === 'municipal' ? 'Municipal' : 'Federal';
+
+    return `@misc{${key},
+  title = {Art. ${artNum}, ${lawName}},
+  author = {{Congreso de la Unión}},
+  year = {${year}},
+  howpublished = {${jurisdiction}},
+  note = {Disponible en https://tezca.mx/leyes/${encodeURIComponent(lawId)}},
+}`;
+}
+
 function SingleArticle({
     article,
     lawId,
     lawName,
+    publicationDate,
+    tier,
     isActive,
     setRef,
     lang,
@@ -106,32 +167,43 @@ function SingleArticle({
     article: Article;
     lawId: string;
     lawName?: string;
+    publicationDate?: string | null;
+    tier?: string;
     isActive: boolean;
     setRef: (el: HTMLElement | null) => void;
     lang: Lang;
 }) {
     const t = content[lang];
-    const [copied, setCopied] = useState(false);
-    const [citationCopied, setCitationCopied] = useState(false);
+    const locale = LOCALE_MAP[lang];
+    const [copiedState, setCopiedState] = useState<'none' | 'citation' | 'bibtex' | 'link'>('none');
     const { ref } = useInView({
         threshold: 0.5,
         triggerOnce: false
     });
 
+    const clearCopied = () => setTimeout(() => setCopiedState('none'), 2000);
+
     const copyToClipboard = () => {
         const url = `${window.location.origin}${window.location.pathname}#article-${article.article_id}`;
         navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setCopiedState('link');
+        clearCopied();
     };
 
     const copyCitation = () => {
-        const artNum = article.article_id.replace(/^Art[ií]culo\s*/i, '');
         const name = lawName || lawId;
-        const citation = `Art. ${artNum}, ${name}`;
+        const citation = buildCitationText(article.article_id, name, publicationDate, locale);
         navigator.clipboard.writeText(citation);
-        setCitationCopied(true);
-        setTimeout(() => setCitationCopied(false), 2000);
+        setCopiedState('citation');
+        clearCopied();
+    };
+
+    const copyBibtex = () => {
+        const name = lawName || lawId;
+        const bibtex = buildBibtexCitation(article.article_id, lawId, name, publicationDate, tier);
+        navigator.clipboard.writeText(bibtex);
+        setCopiedState('bibtex');
+        clearCopied();
     };
 
     const articleLabel = article.article_id === 'texto_completo' || article.article_id === 'full_text'
@@ -158,32 +230,48 @@ function SingleArticle({
                     {articleLabel}
                 </h3>
 
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                    {/* Copy legal citation */}
                     <button
                         onClick={copyCitation}
                         className={cn(
                             "p-2 rounded-md transition-all",
-                            citationCopied
+                            copiedState === 'citation'
                                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                                 : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                         )}
                         aria-label={t.copyCitation}
-                        title={citationCopied ? t.citationCopied : t.copyCitation}
+                        title={copiedState === 'citation' ? t.citationCopied : t.copyCitation}
                     >
-                        {citationCopied ? <Check className="w-4 h-4" /> : <Quote className="w-4 h-4" />}
+                        {copiedState === 'citation' ? <Check className="w-4 h-4" /> : <Quote className="w-4 h-4" />}
                     </button>
+                    {/* Copy BibTeX */}
+                    <button
+                        onClick={copyBibtex}
+                        className={cn(
+                            "p-2 rounded-md transition-all",
+                            copiedState === 'bibtex'
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                        )}
+                        aria-label={t.copyCitationBibtex}
+                        title={copiedState === 'bibtex' ? t.bibtexCopied : t.copyCitationBibtex}
+                    >
+                        {copiedState === 'bibtex' ? <Check className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
+                    </button>
+                    {/* Copy direct link */}
                     <button
                         onClick={copyToClipboard}
                         className={cn(
                             "p-2 rounded-md transition-all",
-                            copied
+                            copiedState === 'link'
                                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                                 : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                         )}
                         aria-label={t.copyLink}
-                        title={t.copyLinkShort}
+                        title={copiedState === 'link' ? t.linkCopied : t.copyLinkShort}
                     >
-                        {copied ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+                        {copiedState === 'link' ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
                     </button>
                 </div>
             </div>

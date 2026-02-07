@@ -21,7 +21,7 @@ const content = {
     sources: 'Fuentes Oficiales',
     about: 'Acerca de',
     tagline: 'El Espejo de la Ley',
-    copyright: `© ${new Date().getFullYear()} Tezca. Todos los derechos reservados.`,
+    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. Todos los derechos reservados.`,
     ip: 'Las leyes son de dominio público. La presentación y código de esta plataforma son propiedad de sus autores.',
   },
   en: {
@@ -39,7 +39,7 @@ const content = {
     sources: 'Official Sources',
     about: 'About',
     tagline: 'The Mirror of the Law',
-    copyright: `© ${new Date().getFullYear()} Tezca. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. All rights reserved.`,
     ip: 'The laws are in the public domain. The presentation and code of this platform are the property of their authors.',
   },
   nah: {
@@ -57,7 +57,7 @@ const content = {
     sources: 'Tlahtōlpialōyan',
     about: 'Tlen Tezca',
     tagline: 'In Tezcatl in Tenahuatilli',
-    copyright: `© ${new Date().getFullYear()} Tezca. Mochi tlanahuatilli motlapiā.`,
+    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. Mochi tlanahuatilli motlapiā.`,
     ip: 'In tenahuatilli mochi tlācameh impan. In tlaixiptlaliztli ihuan tlahcuilōlli intēch in tlachihuanih.',
   },
 };

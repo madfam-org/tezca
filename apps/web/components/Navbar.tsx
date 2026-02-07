@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { BookOpen, Menu, X } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { CommandSearchTrigger } from '@/components/CommandSearch';
 import { useLang } from '@/components/providers/LanguageContext';
 
 const content = {
@@ -110,8 +111,9 @@ export function Navbar() {
                         })}
                     </div>
 
-                    {/* Right side: toggles */}
+                    {/* Right side: search + toggles */}
                     <div className="flex items-center gap-2">
+                        <CommandSearchTrigger />
                         <div className="hidden sm:block">
                             <LanguageToggle />
                         </div>
