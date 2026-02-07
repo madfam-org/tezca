@@ -26,6 +26,6 @@ images:
 - digest: sha256:01db693cb9b8ac802d12cd79b16f8bf6664a2680dc6bb75505de14cdf508d323
   name: ghcr.io/madfam-org/tezca/api
   newName: ghcr.io/madfam-org/tezca/api
-- digest: sha256:9735323b29623f9e49c9a4cb2ad689ea76013cff4b9a600360fdb4a93b6293b9
+- digest: sha256:8dfe49e6dc9854f867ea5a337c4b871fede9377ec3aa8992b793b3b5dff00132
   name: ghcr.io/madfam-org/tezca/web
   newName: ghcr.io/madfam-org/tezca/web
