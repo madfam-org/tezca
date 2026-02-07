@@ -126,24 +126,27 @@ async function JsonLdScript({ lawId }: { lawId: string }) {
     const apiUrl = API_BASE_URL;
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
+    let jsonLd: ReturnType<typeof buildJsonLd> | null = null;
     try {
         const lawRes = await fetch(`${apiUrl}/laws/${lawId}/`, {
             next: { revalidate: 3600 }
         });
 
-        if (!lawRes.ok) return null;
-
-        const lawData = await lawRes.json();
-        const law = lawData.law || lawData;
-        const jsonLd = buildJsonLd(law, siteUrl, lawId);
-
-        return (
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-        );
+        if (lawRes.ok) {
+            const lawData = await lawRes.json();
+            const law = lawData.law || lawData;
+            jsonLd = buildJsonLd(law, siteUrl, lawId);
+        }
     } catch {
-        return null;
+        // Fetch failed — jsonLd stays null
     }
+
+    if (!jsonLd) return null;
+
+    return (
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+    );
 }
