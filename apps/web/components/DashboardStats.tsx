@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import type { DashboardStats } from '@tezca/lib';
 import { Card, CardContent, Badge } from '@tezca/ui';
-import { BookOpen, Scale, Building2, Calendar, FileText, ArrowRight } from 'lucide-react';
+import { BookOpen, Scale, Building2, Calendar, FileText, ArrowRight, Landmark, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
 
@@ -14,6 +14,8 @@ const content = {
         totalLaws: 'Total de Leyes',
         federal: 'Federales',
         state: 'Estatales',
+        legislative: 'Legislativas',
+        nonLegislative: 'No Legislativas',
         lastUpdate: 'Última Actualización',
         recentTitle: 'Actualizaciones Recientes',
         recentDesc: 'Últimas leyes modificadas o publicadas en el DOF/Gacetas',
@@ -27,6 +29,8 @@ const content = {
         totalLaws: 'Total Laws',
         federal: 'Federal',
         state: 'State',
+        legislative: 'Legislative',
+        nonLegislative: 'Non-Legislative',
         lastUpdate: 'Last Update',
         recentTitle: 'Recent Updates',
         recentDesc: 'Latest laws modified or published in the DOF/Gazettes',
@@ -40,6 +44,8 @@ const content = {
         totalLaws: 'Mochi Tenahuatilli',
         federal: 'Federal',
         state: 'Altepetl',
+        legislative: 'Tenahuatīlli',
+        nonLegislative: 'Ahmo Tenahuatīlli',
         lastUpdate: 'Tlāmian Yancuīliztli',
         recentTitle: 'Yancuīc Tlanemilīlli',
         recentDesc: 'Tlāmian tenahuatilli ōmopātih DOF/Gacetas',
@@ -79,7 +85,7 @@ export function DashboardStatsGrid() {
     return (
         <div className="space-y-8">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
                 <StatCard
                     label={t.totalLaws}
                     value={stats.total_laws.toLocaleString(locale)}
@@ -94,6 +100,16 @@ export function DashboardStatsGrid() {
                     label={t.state}
                     value={stats.state_count.toLocaleString(locale)}
                     icon={<Building2 aria-hidden="true" className="h-5 w-5 text-green-500" />}
+                />
+                <StatCard
+                    label={t.legislative}
+                    value={(stats.legislative_count ?? 0).toLocaleString(locale)}
+                    icon={<Landmark aria-hidden="true" className="h-5 w-5 text-indigo-500" />}
+                />
+                <StatCard
+                    label={t.nonLegislative}
+                    value={(stats.non_legislative_count ?? 0).toLocaleString(locale)}
+                    icon={<Briefcase aria-hidden="true" className="h-5 w-5 text-amber-500" />}
                 />
                 <StatCard
                     label={t.lastUpdate}

@@ -87,6 +87,7 @@ export function StateCoverageTable({ states }: StateCoverageTableProps) {
                 {sortTh("Legislativo", "legislative_in_db")}
                 {sortTh("No Legislativo", "non_legislative_in_db")}
                 {sortTh("Total", "total_in_db")}
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Calidad</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Anomalía</th>
               </tr>
             </thead>
@@ -101,6 +102,7 @@ export function StateCoverageTable({ states }: StateCoverageTableProps) {
                 <td className="py-2 px-3 text-sm text-right tabular-nums">{totalLeg.toLocaleString()}</td>
                 <td className="py-2 px-3 text-sm text-right tabular-nums">{totalNonLeg.toLocaleString()}</td>
                 <td className="py-2 px-3 text-sm text-right tabular-nums">{totalAll.toLocaleString()}</td>
+                <td />
                 <td />
               </tr>
             </tfoot>

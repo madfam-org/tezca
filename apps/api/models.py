@@ -10,6 +10,10 @@ class Law(models.Model):
         DEROGADA = "derogada", "Derogada"
         UNKNOWN = "unknown", "Unknown"
 
+    class LawType(models.TextChoices):
+        LEGISLATIVE = "legislative", "Legislative"
+        NON_LEGISLATIVE = "non_legislative", "Non-Legislative"
+
     official_id = models.CharField(
         max_length=OFFICIAL_ID_MAX_LENGTH,
         unique=True,
@@ -48,6 +52,13 @@ class Law(models.Model):
         default=Status.UNKNOWN,
         db_index=True,
         help_text="Legal status: vigente, abrogada, derogada, unknown",
+    )
+    law_type = models.CharField(
+        max_length=20,
+        choices=LawType.choices,
+        default=LawType.LEGISLATIVE,
+        db_index=True,
+        help_text="Legislative (from Congress) or Non-Legislative (executive, judicial, autonomous)",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

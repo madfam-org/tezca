@@ -297,32 +297,98 @@ html {
 
 /* PRINT STYLES */
 @media print {
+  /* Hide non-content elements */
   nav,
   footer,
+  aside,
   [data-print-hide],
   [class*="fixed"],
-  [class*="sticky"] {
+  [class*="sticky"],
+  .mode-toggle,
+  button,
+  [role="group"][aria-label="Language"],
+  [class*="floating"],
+  [class*="disclaimer"] {
     display: none !important;
   }
 
+  /* Base typography */
   body {
     background: white !important;
     color: black !important;
+    font-family: "Georgia", "Times New Roman", serif !important;
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
   }
 
   main {
     padding: 0 !important;
+    max-width: 100% !important;
   }
 
+  /* Clean card backgrounds */
+  .bg-card,
+  .bg-background,
+  .bg-muted,
+  [class*="bg-"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Article styling for print */
+  article {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.5rem 0 !important;
+    margin-bottom: 0.5rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4 {
+    font-family: "Georgia", "Times New Roman", serif !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  h1 {
+    font-size: 18pt !important;
+    margin-bottom: 12pt !important;
+  }
+
+  h3 {
+    font-size: 13pt !important;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4pt;
+  }
+
+  /* Links */
   a {
     text-decoration: underline;
     color: inherit;
   }
 
-  .bg-card,
-  .bg-background {
+  /* Page margins */
+  @page {
+    margin: 2cm;
+    size: letter;
+  }
+
+  /* Badges — show as inline text */
+  [class*="badge"] {
+    border: 1px solid #999 !important;
     background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    color: black !important;
+    padding: 1px 4px !important;
+    font-size: 9pt !important;
+  }
+
+  /* Law name should be prominent */
+  header h1 {
+    text-align: center;
+    border-bottom: 2px solid black;
+    padding-bottom: 8pt;
   }
 }

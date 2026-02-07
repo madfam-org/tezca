@@ -140,6 +140,7 @@ export const api = {
             state?: string | null;
             municipality?: string | null;
             status?: string;
+            law_type?: string;
             sort?: string;
             date_range?: string;
             title?: string;
@@ -165,6 +166,9 @@ export const api = {
         }
         if (options?.status && options.status !== 'all') {
             params.append('status', options.status);
+        }
+        if (options?.law_type && options.law_type !== 'all') {
+            params.append('law_type', options.law_type);
         }
         if (options?.sort && options.sort !== 'relevance') {
             params.append('sort', options.sort);

@@ -22,6 +22,7 @@ export const LawSchema = z.object({
     fullName: z.string().optional(),
     category: z.string().optional(),
     tier: z.string().optional(),
+    law_type: z.enum(["legislative", "non_legislative"]).optional(),
     state: z.string().optional(),
     status: z.string().optional(),
     last_verified: z.string().optional(),
@@ -66,6 +67,8 @@ export const SearchResultSchema = z.object({
     snippet: z.string(),
     score: z.number(),
     date: z.string().optional(),
+    tier: z.string().optional().nullable(),
+    law_type: z.string().optional().nullable(),
     municipality: z.string().optional(),
 });
 
@@ -114,6 +117,8 @@ export const DashboardStatsSchema = z.object({
     federal_count: z.number(),
     state_count: z.number(),
     municipal_count: z.number(),
+    legislative_count: z.number(),
+    non_legislative_count: z.number(),
     total_articles: z.number(),
     federal_coverage: z.number(),
     state_coverage: z.number(),

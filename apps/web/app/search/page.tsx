@@ -95,6 +95,7 @@ const DEFAULT_FILTERS: SearchFilterState = {
     state: null,
     municipality: null,
     status: 'all',
+    law_type: 'all',
     sort: 'relevance',
     title: '',
     chapter: '',
@@ -121,6 +122,7 @@ function SearchContent() {
         state: searchParams?.get('state') || DEFAULT_FILTERS.state,
         municipality: searchParams?.get('municipality') || DEFAULT_FILTERS.municipality,
         status: searchParams?.get('status') || DEFAULT_FILTERS.status,
+        law_type: searchParams?.get('law_type') || DEFAULT_FILTERS.law_type,
         sort: searchParams?.get('sort') || DEFAULT_FILTERS.sort,
         date_range: searchParams?.get('date_range') || DEFAULT_FILTERS.date_range,
         title: searchParams?.get('title') || DEFAULT_FILTERS.title,
@@ -144,6 +146,7 @@ function SearchContent() {
         if (f.state) params.set('state', f.state);
         if (f.municipality) params.set('municipality', f.municipality);
         if (f.status !== 'all') params.set('status', f.status);
+        if (f.law_type && f.law_type !== 'all') params.set('law_type', f.law_type);
         if (f.sort !== 'relevance') params.set('sort', f.sort);
         if (f.date_range) params.set('date_range', f.date_range);
         if (f.title) params.set('title', f.title);
@@ -182,6 +185,7 @@ function SearchContent() {
                 state: searchFilters.state,
                 municipality: searchFilters.municipality,
                 status: searchFilters.status,
+                law_type: searchFilters.law_type,
                 sort: searchFilters.sort,
                 date_range: searchFilters.date_range,
                 title: searchFilters.title,
@@ -273,6 +277,8 @@ function SearchContent() {
                         variant="outline"
                         className="w-full flex items-center justify-center gap-2"
                         onClick={() => setShowFilters(!showFilters)}
+                        aria-expanded={showFilters}
+                        aria-controls="search-filters"
                     >
                         <FilterIcon className="h-4 w-4" />
                         {showFilters ? t.hideFilters : t.showFilters}
@@ -287,7 +293,7 @@ function SearchContent() {
                 {/* Layout: Sidebar + Main */}
                 <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
                     {/* Filters Sidebar */}
-                    <aside className={`lg:w-64 lg:flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+                    <aside id="search-filters" className={`lg:w-64 lg:flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
                         <SearchFilters
                             filters={filters}
                             onFiltersChange={handleFiltersChange}
@@ -381,11 +387,21 @@ function SearchContent() {
                                                         {/* Content */}
                                                         <div className="flex-1">
                                                             <div className="mb-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
-                                                                <Badge variant="secondary" className="font-mono text-[10px] sm:text-xs truncate max-w-[200px] sm:max-w-[300px]">
+                                                                <Badge variant="secondary" className="font-mono text-xs truncate max-w-[200px] sm:max-w-[300px]">
                                                                     {result.law_name}
                                                                 </Badge>
+                                                                {result.tier && (
+                                                                    <Badge variant="outline" className="text-xs capitalize">
+                                                                        {result.tier}
+                                                                    </Badge>
+                                                                )}
+                                                                {result.law_type === 'non_legislative' && (
+                                                                    <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                                                                        No Legislativa
+                                                                    </Badge>
+                                                                )}
                                                                 {result.municipality && (
-                                                                    <Badge variant="outline" className="text-[10px] sm:text-xs">
+                                                                    <Badge variant="outline" className="text-xs">
                                                                         {result.municipality}
                                                                     </Badge>
                                                                 )}

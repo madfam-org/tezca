@@ -26,6 +26,7 @@ describe('SearchFilters', () => {
         sort: 'relevance',
         title: '',
         chapter: '',
+        law_type: 'all',
     };
 
     const mockOnChange = vi.fn();

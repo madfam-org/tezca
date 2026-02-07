@@ -14,6 +14,7 @@ export interface Law {
     fullName?: string;
     category?: string;
     tier?: string;
+    law_type?: 'legislative' | 'non_legislative';
     state?: string;
     status?: string;
     last_verified?: string;
@@ -34,6 +35,7 @@ export interface LawListItem {
     id: string;
     name: string;
     tier?: string;
+    law_type?: 'legislative' | 'non_legislative';
     category?: string;
     status?: string;
     versions: number;
@@ -47,6 +49,8 @@ export interface SearchResult {
     snippet: string;
     score: number;
     date?: string;
+    tier?: string | null;
+    law_type?: string | null;
     state?: string;
     municipality?: string;
     hierarchy?: string[];
@@ -95,6 +99,8 @@ export interface DashboardStats {
     federal_count: number;
     state_count: number;
     municipal_count: number;
+    legislative_count: number;
+    non_legislative_count: number;
     total_articles: number;
     federal_coverage: number;
     state_coverage: number;

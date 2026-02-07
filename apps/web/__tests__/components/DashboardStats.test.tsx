@@ -15,10 +15,12 @@ vi.mock('@/lib/api', () => ({
 }));
 
 const mockStats = {
-    total_laws: 11904,
+    total_laws: 30343,
     federal_count: 333,
     state_count: 11363,
     municipal_count: 208,
+    legislative_count: 11904,
+    non_legislative_count: 18439,
     total_articles: 550000,
     federal_coverage: 99.1,
     state_coverage: 93.7,
@@ -86,7 +88,7 @@ describe('DashboardStatsGrid', () => {
         renderWithLang(<DashboardStatsGrid />);
 
         await waitFor(() => {
-            expect(screen.getByText('11,904')).toBeInTheDocument();
+            expect(screen.getByText('30,343')).toBeInTheDocument();
         });
 
         expect(screen.getByText('333')).toBeInTheDocument();

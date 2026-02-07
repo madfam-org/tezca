@@ -18,6 +18,7 @@ const content = {
         municipalitiesCovered: 'municipios cubiertos',
         ofMunicipalities: (total: string) => `de ${total} municipios en el país`,
         ofUniverse: (universe: string) => `de ${universe}`,
+        includesNonLeg: (count: string) => `Incluye ${count} leyes de otros poderes`,
     },
     en: {
         heading: 'Coverage by Jurisdiction',
@@ -28,6 +29,7 @@ const content = {
         municipalitiesCovered: 'municipalities covered',
         ofMunicipalities: (total: string) => `of ${total} municipalities in the country`,
         ofUniverse: (universe: string) => `of ${universe}`,
+        includesNonLeg: (count: string) => `Includes ${count} non-legislative laws`,
     },
     nah: {
         heading: 'Tlanextīliztli Altepetl',
@@ -38,6 +40,7 @@ const content = {
         municipalitiesCovered: 'calpulli tlanextīlli',
         ofMunicipalities: (total: string) => `ipan ${total} calpulli in tlālticpac`,
         ofUniverse: (universe: string) => `ipan ${universe}`,
+        includesNonLeg: (count: string) => `Quināmiqui ${count} ahmo tenahuatīlli`,
     },
 };
 
@@ -208,6 +211,13 @@ export function JurisdictionCards() {
                                             </span>
                                             <span className="text-base text-muted-foreground">{t.laws}</span>
                                         </div>
+
+                                        {/* Non-legislative sub-line for state */}
+                                        {jurisdiction.id === 'state' && stats?.non_legislative_count != null && stats.non_legislative_count > 0 && (
+                                            <p className="text-xs text-muted-foreground">
+                                                {t.includesNonLeg(stats.non_legislative_count.toLocaleString(locale))}
+                                            </p>
+                                        )}
 
                                         {/* Coverage display */}
                                         <CoverageDisplay

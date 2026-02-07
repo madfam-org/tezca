@@ -12,6 +12,7 @@ export interface SearchFilterState {
     state: string | null;
     municipality: string | null;
     status: string;
+    law_type: string;
     sort: string;
     date_range?: string;
     title?: string;
@@ -53,6 +54,10 @@ const content = {
         lastYear: 'A\u00f1o pasado',
         last5Years: '\u00daltimos 5 a\u00f1os',
         older: 'M\u00e1s antiguos',
+        lawType: 'Tipo de Ley',
+        allTypes: 'Todas',
+        legislative: 'Legislativas',
+        nonLegislative: 'No Legislativas',
         sortBy: 'Ordenar por',
     },
     en: {
@@ -83,6 +88,10 @@ const content = {
         lastYear: 'Last year',
         last5Years: 'Last 5 years',
         older: 'Older',
+        lawType: 'Law Type',
+        allTypes: 'All',
+        legislative: 'Legislative',
+        nonLegislative: 'Non-Legislative',
         sortBy: 'Sort by',
     },
     nah: {
@@ -113,6 +122,10 @@ const content = {
         lastYear: 'Achtopa xihuitl',
         last5Years: 'Tlāmian 5 xihuitl',
         older: 'Huēhcāuh',
+        lawType: 'Tenahuatilli tlamantli',
+        allTypes: 'Mochi',
+        legislative: 'Tenahuatīlli',
+        nonLegislative: 'Ahmo Tenahuatīlli',
         sortBy: 'Xictlalia ic',
     },
 } as const;
@@ -222,6 +235,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
             state: null,
             municipality: null,
             status: 'all',
+            law_type: 'all',
             sort: 'relevance',
             title: '',
             chapter: '',
@@ -235,6 +249,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
         if (filters.state && filters.state !== 'all') count++;
         if (filters.municipality && filters.municipality !== 'all') count++;
         if (filters.status !== 'all') count++;
+        if (filters.law_type && filters.law_type !== 'all') count++;
         if (filters.sort !== 'relevance') count++;
         if (filters.title) count++;
         if (filters.chapter) count++;
@@ -245,7 +260,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
     const showStateSelector = filters.jurisdiction.includes('state');
 
     return (
-        <Card className="mb-6">
+        <Card className="mb-6" role="search" aria-label={t.filters}>
             <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -274,7 +289,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                 </div>
 
                 {resultCount !== undefined && (
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-2" aria-live="polite">
                         {resultCount} {resultCount !== 1 ? t.resultPlural : t.resultSingular} {resultCount !== 1 ? t.foundPlural : t.foundSingular}
                     </p>
                 )}
@@ -397,6 +412,26 @@ export function SearchFilters({ filters, onFiltersChange, resultCount }: SearchF
                                     {opt.label}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Law Type */}
+                <div>
+                    <Label htmlFor="law_type" className="mb-2 block text-sm font-medium">
+                        {t.lawType}
+                    </Label>
+                    <Select
+                        value={filters.law_type || 'all'}
+                        onValueChange={(value) => onFiltersChange({ ...filters, law_type: value })}
+                    >
+                        <SelectTrigger id="law_type">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">{t.allTypes}</SelectItem>
+                            <SelectItem value="legislative">{t.legislative}</SelectItem>
+                            <SelectItem value="non_legislative">{t.nonLegislative}</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

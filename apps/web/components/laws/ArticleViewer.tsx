@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Article } from "@tezca/lib";
-import { Link as LinkIcon, Check } from 'lucide-react';
+import { Link as LinkIcon, Check, Quote } from 'lucide-react';
 import { Card } from "@tezca/ui";
 import { cn } from "@tezca/lib";
 import { useInView } from 'react-intersection-observer';
@@ -16,6 +16,8 @@ const content = {
         articlePrefix: 'Artículo',
         copyLink: 'Copiar enlace directo al artículo',
         copyLinkShort: 'Copiar enlace directo',
+        copyCitation: 'Copiar cita',
+        citationCopied: 'Cita copiada',
     },
     en: {
         noArticles: 'No articles available to display.',
@@ -23,6 +25,8 @@ const content = {
         articlePrefix: 'Article',
         copyLink: 'Copy direct link to article',
         copyLinkShort: 'Copy direct link',
+        copyCitation: 'Copy citation',
+        citationCopied: 'Citation copied',
     },
     nah: {
         noArticles: 'Ahmo oncah tlanahuatilli ic tlachiyaliztli.',
@@ -30,6 +34,8 @@ const content = {
         articlePrefix: 'Tlanahuatilli',
         copyLink: 'Xiccopīna tlanahuatilli tlahcuilōltzintli',
         copyLinkShort: 'Xiccopīna tlahcuilōltzintli',
+        copyCitation: 'Xiccopīna tlanāhuatīlli',
+        citationCopied: 'Ōmocopīnac',
     },
 };
 
@@ -37,12 +43,14 @@ interface ArticleViewerProps {
     articles: Article[];
     activeArticle: string | null;
     lawId: string;
+    lawName?: string;
 }
 
 export function ArticleViewer({
     articles,
     activeArticle,
-    lawId
+    lawId,
+    lawName,
 }: ArticleViewerProps) {
     const { lang } = useLang();
     const t = content[lang];
@@ -74,6 +82,7 @@ export function ArticleViewer({
                         key={article.article_id}
                         article={article}
                         lawId={lawId}
+                        lawName={lawName}
                         isActive={activeArticle === article.article_id}
                         setRef={(el) => {
                             articleRefs.current[article.article_id] = el;
@@ -89,18 +98,21 @@ export function ArticleViewer({
 function SingleArticle({
     article,
     lawId,
+    lawName,
     isActive,
     setRef,
     lang,
 }: {
     article: Article;
     lawId: string;
+    lawName?: string;
     isActive: boolean;
     setRef: (el: HTMLElement | null) => void;
     lang: Lang;
 }) {
     const t = content[lang];
     const [copied, setCopied] = useState(false);
+    const [citationCopied, setCitationCopied] = useState(false);
     const { ref } = useInView({
         threshold: 0.5,
         triggerOnce: false
@@ -111,6 +123,15 @@ function SingleArticle({
         navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const copyCitation = () => {
+        const artNum = article.article_id.replace(/^Art[ií]culo\s*/i, '');
+        const name = lawName || lawId;
+        const citation = `Art. ${artNum}, ${name}`;
+        navigator.clipboard.writeText(citation);
+        setCitationCopied(true);
+        setTimeout(() => setCitationCopied(false), 2000);
     };
 
     const articleLabel = article.article_id === 'texto_completo' || article.article_id === 'full_text'
@@ -126,6 +147,7 @@ function SingleArticle({
                 setRef(el);
                 ref(el);
             }}
+            aria-label={articleLabel}
             className={cn(
                 "group relative scroll-mt-24 rounded-lg border bg-card p-6 shadow-sm transition-all",
                 isActive ? "ring-2 ring-primary border-primary" : "hover:border-primary/50"
@@ -136,19 +158,34 @@ function SingleArticle({
                     {articleLabel}
                 </h3>
 
-                <button
-                    onClick={copyToClipboard}
-                    className={cn(
-                        "p-2 rounded-md transition-all opacity-0 group-hover:opacity-100",
-                        copied
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                            : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                    )}
-                    aria-label={t.copyLink}
-                    title={t.copyLinkShort}
-                >
-                    {copied ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
-                </button>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                        onClick={copyCitation}
+                        className={cn(
+                            "p-2 rounded-md transition-all",
+                            citationCopied
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                        )}
+                        aria-label={t.copyCitation}
+                        title={citationCopied ? t.citationCopied : t.copyCitation}
+                    >
+                        {citationCopied ? <Check className="w-4 h-4" /> : <Quote className="w-4 h-4" />}
+                    </button>
+                    <button
+                        onClick={copyToClipboard}
+                        className={cn(
+                            "p-2 rounded-md transition-all",
+                            copied
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                        )}
+                        aria-label={t.copyLink}
+                        title={t.copyLinkShort}
+                    >
+                        {copied ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+                    </button>
+                </div>
             </div>
 
             <LinkifiedArticle

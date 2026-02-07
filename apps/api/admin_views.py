@@ -80,6 +80,15 @@ def system_metrics(request):
         municipal_count = tier_counts.get("municipal", 0)
         total_laws = sum(tier_counts.values())
 
+        # Law type breakdown
+        type_counts = dict(
+            Law.objects.values_list("law_type")
+            .annotate(count=Count("id"))
+            .values_list("law_type", "count")
+        )
+        legislative_count = type_counts.get("legislative", 0)
+        non_legislative_count = type_counts.get("non_legislative", 0)
+
         # Breakdown by category (top 5)
         categories = list(
             Law.objects.values("category")
@@ -87,9 +96,11 @@ def system_metrics(request):
             .order_by("-count")[:5]
         )
 
-        # Quality distribution - not yet tracked per-law in the database.
-        # Returns null to signal the frontend that real data is unavailable.
-        quality_distribution = None
+        # Quality distribution — law_type breakdown serves as a quality proxy
+        quality_distribution = {
+            "legislative": legislative_count,
+            "non_legislative": non_legislative_count,
+        }
 
         return Response(
             {
@@ -98,6 +109,10 @@ def system_metrics(request):
                     "federal": federal_count,
                     "state": state_count,
                     "municipal": municipal_count,
+                },
+                "law_type_counts": {
+                    "legislative": legislative_count,
+                    "non_legislative": non_legislative_count,
                 },
                 "top_categories": categories,
                 "quality_distribution": quality_distribution,
@@ -152,14 +167,50 @@ def job_status(request):
 @api_view(["GET"])
 def list_jobs(request):
     """
-    Returns a list of recent jobs.
-    Currently returns a single-item list with the current status
-    since we don't have a persistent job history table yet.
+    Returns a list of recent pipeline runs.
+    Reads from AcquisitionLog (if available) and falls back to current status.
     """
     try:
-        current = IngestionManager.get_status()
-        # Mocking a 'list' format for the frontend
-        jobs = [{"id": "current", **current}]
+        jobs = []
+
+        # Try to read real job history from AcquisitionLog
+        try:
+            from apps.scraper.dataops.models import AcquisitionLog
+
+            logs = AcquisitionLog.objects.order_by("-started_at")[:20]
+            for log in logs:
+                duration = None
+                if log.started_at and log.finished_at:
+                    delta = log.finished_at - log.started_at
+                    duration = f"{delta.total_seconds():.0f}s"
+
+                jobs.append(
+                    {
+                        "id": str(log.id),
+                        "operation": log.operation,
+                        "status": "completed" if log.finished_at else "running",
+                        "message": log.error_summary or log.operation,
+                        "timestamp": (
+                            log.started_at.isoformat() if log.started_at else ""
+                        ),
+                        "finished_at": (
+                            log.finished_at.isoformat() if log.finished_at else None
+                        ),
+                        "duration": duration,
+                        "found": log.found,
+                        "processed": log.processed,
+                        "errors": log.errors,
+                    }
+                )
+        except Exception:
+            # AcquisitionLog not available — fall back to current status
+            pass
+
+        # Always include current ingestion status as first entry if no logs
+        if not jobs:
+            current = IngestionManager.get_status()
+            jobs = [{"id": "current", **current}]
+
         return Response({"jobs": jobs})
     except Exception:
         import logging

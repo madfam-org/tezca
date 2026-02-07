@@ -149,8 +149,14 @@ class SearchView(APIView):
                         {"range": {"publication_date": {"lt": end_date}}}
                     )
 
-            # Search status (vigente/abrogado) - not fully indexed yet, placeholder
-            # if search_status and search_status != "all": ...
+            # Search status (vigente/abrogado)
+            if search_status and search_status != "all":
+                filter_clauses.append({"term": {"status": search_status}})
+
+            # Law type filter (legislative / non_legislative)
+            law_type = request.query_params.get("law_type", "all")
+            if law_type and law_type != "all":
+                filter_clauses.append({"term": {"law_type": law_type}})
 
             # Build the full query
             es_query = {"bool": {"must": must_clauses}}
@@ -205,6 +211,8 @@ class SearchView(APIView):
                         "snippet": highlight,
                         "date": source.get("publication_date"),
                         "score": hit["_score"],
+                        "tier": source.get("tier"),
+                        "law_type": source.get("law_type"),
                         "state": source.get("state"),
                         "municipality": source.get("municipality"),
                         # V2 Hierarchy fields

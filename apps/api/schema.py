@@ -23,6 +23,7 @@ class LawDetailSchema(serializers.Serializer):
     short_name = serializers.CharField(allow_null=True)
     category = serializers.CharField()
     tier = serializers.CharField()
+    law_type = serializers.CharField()
     state = serializers.CharField(allow_null=True)
     status = serializers.CharField(allow_null=True)
     last_verified = serializers.DateTimeField(allow_null=True)
@@ -38,6 +39,7 @@ class LawListItemSchema(serializers.Serializer):
     id = serializers.CharField()
     name = serializers.CharField()
     tier = serializers.CharField(allow_null=True)
+    law_type = serializers.CharField()
     category = serializers.CharField(allow_null=True)
     status = serializers.CharField(allow_null=True)
     versions = serializers.IntegerField()
@@ -82,6 +84,8 @@ class LawStatsSchema(serializers.Serializer):
     federal_count = serializers.IntegerField()
     state_count = serializers.IntegerField()
     municipal_count = serializers.IntegerField()
+    legislative_count = serializers.IntegerField()
+    non_legislative_count = serializers.IntegerField()
     total_articles = serializers.IntegerField()
     federal_coverage = serializers.FloatField()
     state_coverage = serializers.FloatField()
@@ -104,6 +108,8 @@ class SearchResultSchema(serializers.Serializer):
     snippet = serializers.CharField()
     date = serializers.DateField(allow_null=True)
     score = serializers.FloatField(allow_null=True)
+    tier = serializers.CharField(allow_null=True)
+    law_type = serializers.CharField(allow_null=True)
     state = serializers.CharField(allow_null=True)
     municipality = serializers.CharField(allow_null=True)
     hierarchy = serializers.ListField(child=serializers.CharField(), default=[])
@@ -148,6 +154,12 @@ SEARCH_PARAMETERS = [
     ),
     OpenApiParameter("title", str, description="Filter by structural title"),
     OpenApiParameter("chapter", str, description="Filter by structural chapter"),
+    OpenApiParameter(
+        "law_type",
+        str,
+        description="Filter by law type",
+        enum=["all", "legislative", "non_legislative"],
+    ),
     OpenApiParameter("page", int, description="Page number (default: 1)"),
     OpenApiParameter("page_size", int, description="Results per page (default: 10)"),
 ]

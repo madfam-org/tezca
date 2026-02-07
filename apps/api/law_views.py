@@ -82,6 +82,7 @@ class LawDetailView(APIView):
             "short_name": law.short_name,
             "category": law.category,
             "tier": law.tier,
+            "law_type": law.law_type,
             "state": state,
             "status": law.status,
             "last_verified": law.last_verified,
@@ -147,6 +148,10 @@ class LawListView(APIView):
         if law_status:
             qs = qs.filter(status=law_status)
 
+        law_type = request.query_params.get("law_type")
+        if law_type and law_type != "all":
+            qs = qs.filter(law_type=law_type)
+
         q = request.query_params.get("q")
         if q:
             qs = qs.filter(name__icontains=q)
@@ -159,6 +164,7 @@ class LawListView(APIView):
                 "id": law.official_id,
                 "name": law.short_name or law.name,
                 "tier": law.tier,
+                "law_type": law.law_type,
                 "category": law.category,
                 "status": law.status,
                 "versions": law.version_count,
@@ -490,6 +496,8 @@ def law_stats(request):
     federal_count = Law.objects.filter(tier="federal").count()
     state_count = Law.objects.filter(tier="state").count()
     municipal_count = Law.objects.filter(tier="municipal").count()
+    legislative_count = Law.objects.filter(law_type="legislative").count()
+    non_legislative_count = Law.objects.filter(law_type="non_legislative").count()
 
     # Article count from Elasticsearch
     total_articles = 0
@@ -551,10 +559,13 @@ def law_stats(request):
                 "permanent_gaps": state_src.get("permanent_gaps"),
             },
             "state_all_powers": {
-                "count": state_count,
+                "count": state_count + non_legislative_count,
                 "universe": state_all_universe,
-                "percentage": _safe_pct(state_count, state_all_universe),
-                "description": "Incluye 23,660 leyes de otros poderes no descargadas aún",
+                "percentage": _safe_pct(
+                    state_count + non_legislative_count, state_all_universe
+                ),
+                "non_legislative_count": non_legislative_count,
+                "description": f"Incluye {non_legislative_count:,} leyes de otros poderes ya indexadas",
             },
             "municipal": {
                 "count": municipal_count,
@@ -602,6 +613,8 @@ def law_stats(request):
         "federal_count": federal_count,
         "state_count": state_count,
         "municipal_count": municipal_count,
+        "legislative_count": legislative_count,
+        "non_legislative_count": non_legislative_count,
         "total_articles": total_articles,
         "federal_coverage": federal_coverage,
         "state_coverage": state_coverage,
