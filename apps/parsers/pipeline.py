@@ -85,13 +85,14 @@ class IngestionPipeline:
             print(f"❌ {result.law_id}: {result.error}")
     """
 
-    def __init__(self, data_dir: Path = None, skip_download: bool = False):
+    def __init__(self, data_dir: Path = None, skip_download: bool = False, storage=None):
         """
         Initialize pipeline.
 
         Args:
-            data_dir: Base directory for data storage
+            data_dir: Base directory for data storage (local backend only)
             skip_download: If True, use existing PDFs
+            storage: Optional StorageBackend override (defaults to get_storage_backend())
         """
         if data_dir is None:
             data_dir = Path(__file__).parent.parent.parent / "data"
@@ -99,7 +100,18 @@ class IngestionPipeline:
         self.data_dir = Path(data_dir)
         self.skip_download = skip_download
 
-        # Directories
+        # Storage backend (local or R2)
+        if storage is not None:
+            self.storage = storage
+        else:
+            try:
+                from apps.api.storage import get_storage_backend
+
+                self.storage = get_storage_backend()
+            except Exception:
+                self.storage = None
+
+        # Directories (used for local operations / fallback)
         self.pdf_dir = self.data_dir / "raw" / "pdfs"
         self.text_dir = self.data_dir / "raw"
         self.xml_dir = self.data_dir / "federal"
@@ -203,6 +215,15 @@ class IngestionPipeline:
                     except Exception as e:
                         print(f"⚠️  Failed to save to DB: {e}")
 
+                # Sync outputs to storage backend (R2 in production)
+                if self.storage:
+                    try:
+                        self._sync_to_storage(law_id, pdf_path, text_path, xml_path)
+                        result.stages_completed.append("storage_sync")
+                        print("✅ Synced to storage backend")
+                    except Exception as e:
+                        print(f"⚠️  Storage sync failed: {e}")
+
                 print(
                     f"\n🎉 Success! {law_id} completed in {result.duration_seconds:.1f}s"
                 )
@@ -302,6 +323,17 @@ class IngestionPipeline:
         self.parser.generate_xml(text, metadata, xml_path)
 
         return xml_path
+
+    def _sync_to_storage(
+        self, law_id: str, pdf_path: Path, text_path: Path, xml_path: Path
+    ) -> None:
+        """Sync pipeline outputs to the configured storage backend."""
+        if pdf_path and pdf_path.exists():
+            self.storage.put_file(f"raw/pdfs/{pdf_path.name}", pdf_path)
+        if text_path and text_path.exists():
+            self.storage.put_file(f"raw/text/{text_path.name}", text_path)
+        if xml_path and xml_path.exists():
+            self.storage.put_file(f"federal/{xml_path.name}", xml_path)
 
     def _calculate_quality(
         self, xml_path: Path, law_metadata: Dict, parse_time: float

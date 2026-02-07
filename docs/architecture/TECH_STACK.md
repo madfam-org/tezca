@@ -66,6 +66,8 @@ Our stack is chosen to support **Isomorphism**: the ability to prove that the co
 * **API Framework:** **Django REST Framework** (Integrated with Indigo).
 * **API Documentation:** **drf-spectacular** (OpenAPI 3.0 schema at `/api/docs/`, `/api/redoc/`, `/api/schema/`)
 * **Task Queue:** **Celery** + **Redis 7** (for background ingestion jobs; thread fallback when Redis unavailable).
+* **Document Storage:** Dual-backend — **Local filesystem** (dev default) or **Cloudflare R2** (production). See `apps/api/storage.py`.
+* **Error Tracking:** **Sentry** (optional) — Django API via `sentry-sdk`, Next.js via `@sentry/nextjs`. Both are optional dependencies.
 * **Containerization:** Docker & Docker Compose.
 * **Formatting:** `Black` + `isort` (Python), `ESLint` (TypeScript).
 

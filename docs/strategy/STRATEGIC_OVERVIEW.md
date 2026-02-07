@@ -41,11 +41,14 @@ All numbers sourced from `data/universe_registry.json`.
 ```
 Backend (Django):  ✅ Stable (production-hardened: HSTS, secure cookies, structured logging)
 Database:          ✅ PostgreSQL production-ready (shared MADFAM cluster)
-Search:            ✅ Elasticsearch operational (860K+ articles)
-Scraping:          ✅ OJN pipeline functional
+Search:            ✅ Elasticsearch operational (860K+ articles, resilient client: retry/timeout/pooling)
+Scraping:          ✅ OJN pipeline functional, DOF daily wired to Celery Beat
 Frontend (Next):   ✅ Phase 3 UI/UX complete (comparison tool, mobile, dark mode, visual QA, search autocomplete)
 Admin Panel:       ✅ Functional (Janua auth integrated, 4 dashboard pages)
 DataOps:           ✅ Gap tracking, health monitoring, coverage dashboard operational
+Storage:           ✅ Dual-backend abstraction (local dev / Cloudflare R2 production)
+Observability:     ✅ Sentry integration (Django API + Next.js web, optional)
+SEO:               ✅ JSON-LD structured data (schema.org Legislation) on law detail pages
 Deployment:        🔄 Infrastructure ready, pending manual provisioning (see below)
 ```
 
@@ -792,6 +795,6 @@ Vigentes:   ██████████████████░░░  93.
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2026-02-06
-**Next Review**: 2026-03-06
+**Document Version**: 1.2
+**Last Updated**: 2026-02-07
+**Next Review**: 2026-03-07

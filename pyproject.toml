@@ -34,6 +34,15 @@ psycopg2-binary = "^2.9.11"
 gunicorn = "^23.0"
 PyJWT = {version = "^2.8", extras = ["crypto"]}
 cryptography = "^44.0"
+# Sentry error tracking
+sentry-sdk = {version = "^2.0", extras = ["django", "celery"], optional = true}
+# Cloud storage (Cloudflare R2 / S3-compatible)
+boto3 = {version = "^1.34", optional = true}
+
+[tool.poetry.extras]
+r2 = ["boto3"]
+sentry = ["sentry-sdk"]
+production = ["boto3", "sentry-sdk"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"

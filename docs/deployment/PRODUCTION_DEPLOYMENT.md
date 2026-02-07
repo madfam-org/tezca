@@ -39,8 +39,12 @@
 | **M8** | Collect static files | DevOps | enclii CLI | `enclii exec tezca-api -- python apps/manage.py collectstatic --noinput` |
 | **M9** | Build Elasticsearch indices | DevOps | enclii CLI | `enclii exec tezca-api -- python apps/manage.py index_laws --all --create-indices` |
 | **M10** | Smoke test all domains | QA | All above complete | See [Verification Checklist](#verification-checklist) |
+| **M11** | Create `tezca-r2-credentials` K8s Secret | DevOps | R2 API token | See [R2 Credentials](#k8s-secret-tezca-r2-credentials) |
+| **M12** | Create `tezca-sentry` K8s Secret | DevOps | Sentry DSN | See [Sentry Secret](#k8s-secret-tezca-sentry) |
+| **M13** | Create `tezca-documents` R2 bucket | DevOps | Cloudflare dashboard | On existing CF R2 account (same as PG backups) |
+| **M14** | Run R2 data migration | DevOps | enclii CLI + R2 bucket | `scripts/migrate_to_r2.py --dry-run` then without flag |
 
-**Recommended execution order**: M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10
+**Recommended execution order**: M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → M14
 
 ---
 
@@ -148,6 +152,24 @@ enclii secrets set JANUA_PUBLISHABLE_KEY "pk_live_..." --env production
 enclii secrets set JANUA_SECRET_KEY "sk_live_..." --env production
 ```
 
+### K8s Secret: `tezca-r2-credentials`
+
+```bash
+enclii secrets set R2_ACCESS_KEY_ID "<from-existing-cf-account>" --env production
+enclii secrets set R2_SECRET_ACCESS_KEY "<from-existing-cf-account>" --env production
+enclii secrets set R2_ENDPOINT_URL "https://<account_id>.r2.cloudflarestorage.com" --env production
+enclii secrets set R2_BUCKET_NAME "tezca-documents" --env production
+enclii secrets set STORAGE_BACKEND "r2" --env production
+```
+
+### K8s Secret: `tezca-sentry`
+
+```bash
+enclii secrets set SENTRY_DSN "https://<key>@o<org>.ingest.sentry.io/<proj>" --env production
+enclii secrets set SENTRY_ENVIRONMENT "production" --env production
+enclii secrets set NEXT_PUBLIC_SENTRY_DSN "https://<key>@o<org>.ingest.sentry.io/<proj>" --env production
+```
+
 ### GitHub Secrets
 
 | Secret | Purpose |
@@ -209,8 +231,11 @@ After completing all manual steps (M1-M9), verify:
 6. **JanuaProvider placement**: Must wrap inside `<html><body>` but before all other providers
 7. **Internal DNS pattern**: `{service}.tezca.svc.cluster.local:{port}` — used in env vars for inter-service communication
 8. **ENCLII_PORT**: Enclii may set this env var — apps should respect it if present
+9. **R2 storage backend**: `STORAGE_BACKEND=r2` must be set in production K8s env; defaults to `local` for dev. boto3 is an optional dep — only imported when R2 is active
+10. **Sentry optional**: Both `sentry-sdk` (API) and `@sentry/nextjs` (web) are optional. Code gracefully degrades when not installed
 
 ---
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2026-02-06
+**Updated**: 2026-02-07 (R2 storage, Sentry, ES resilience)

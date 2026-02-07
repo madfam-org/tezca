@@ -77,8 +77,9 @@ MISSING_SOURCES = [
     {
         "level": "federal",
         "gap_type": "not_scraped",
-        "description": "DOF daily monitoring (dof_daily.py is a TODO stub)",
+        "description": "DOF daily monitoring (dof_daily.py complete, wired into Celery Beat at 7 AM)",
         "priority": 3,
+        "status_note": "Implemented in apps/scraper/federal/dof_daily.py. Scheduled via dataops.check_dof_daily task.",
     },
     {
         "level": "federal",

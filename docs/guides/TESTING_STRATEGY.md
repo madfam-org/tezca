@@ -110,15 +110,15 @@ Code cannot merge to `main` unless:
 
 ### Backend (Pytest)
 - **Location:** `tests/`
-- **Tests:** 201 passed, 2 skipped (CalculationApiTests blocked on OpenFisca)
-- **Key test files:** test_admin_views.py (17 tests incl. coverage dashboard + roadmap CRUD), test_law_api.py (18 tests), parser tests (50+), scraper tests (40+)
+- **Tests:** 210+ passed, 2 skipped (CalculationApiTests blocked on OpenFisca)
+- **Key test files:** test_admin_views.py (17 tests incl. coverage dashboard + roadmap CRUD), test_law_api.py (18 tests), test_storage.py (20 tests — Local + R2 backends), parser tests (50+), scraper tests (40+)
 - **Run:** `poetry run pytest tests/ -v`
 - **Coverage:** `poetry run pytest tests/ --cov=apps --cov-report=term`
 - **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`
 
 ### Frontend (Vitest)
 - **Location:** `apps/web/__tests__/`
-- **Tests:** 152 tests across 25 files
+- **Tests:** 156 tests across 25 files
 - **Run:** `cd apps/web && npx vitest run`
 - **Coverage:** `cd apps/web && npx vitest run --coverage` (uses @vitest/coverage-v8)
 - **Coverage thresholds:** statements 60%, branches 50%, functions 60%, lines 60%
@@ -137,4 +137,4 @@ Code cannot merge to `main` unless:
 
 > **Note:** The computational law testing layers (Catala proofs, Oracle validation, Legislative Trace) described above are aspirational design targets. The current test suite covers API endpoints, parser functionality, scraper logic, and React components.
 
-*Last verified: 2026-02-06*
+*Last verified: 2026-02-07*

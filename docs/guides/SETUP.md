@@ -47,6 +47,12 @@ Key variables:
 - `ES_HOST` - Elasticsearch URL (default: `http://localhost:9200`)
 - `CELERY_BROKER_URL` - Redis URL for task queue (default: `redis://localhost:6379/0`)
 
+Optional (production):
+- `STORAGE_BACKEND` - `local` (default) or `r2` (Cloudflare R2 for production)
+- `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ENDPOINT_URL` - Required when `STORAGE_BACKEND=r2`
+- `SENTRY_DSN` - Sentry error tracking for Django API (optional)
+- `NEXT_PUBLIC_SENTRY_DSN` - Sentry error tracking for Next.js web (optional)
+
 ### 5. Run Database Migrations
 
 ```bash

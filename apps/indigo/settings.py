@@ -178,6 +178,27 @@ LOGGING = {
     },
 }
 
+# ── Sentry Error Tracking ─────────────────────────────────────────────
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            environment=os.environ.get("SENTRY_ENVIRONMENT", "development"),
+            traces_sample_rate=float(
+                os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1")
+            ),
+            send_default_pii=False,
+            # Integrate with Django + Celery if available
+            integrations=[],
+            # Only send errors, not warnings
+            before_send=lambda event, hint: event,
+        )
+    except ImportError:
+        pass  # sentry-sdk not installed (optional dependency)
+
 # ── Celery ──────────────────────────────────────────────────────────────
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get(
