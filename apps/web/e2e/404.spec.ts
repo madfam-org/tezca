@@ -4,16 +4,16 @@ test.describe('404 page', () => {
     test('navigating to nonexistent page shows 404 heading', async ({ page }) => {
         await page.goto('/nonexistent-page-xyz');
 
-        // The not-found page renders "Pagina no encontrada" (Spanish default)
-        await expect(page.getByRole('heading', { name: 'Pagina no encontrada' })).toBeVisible();
-        await expect(page.getByText('La pagina que buscas no existe o fue movida.')).toBeVisible();
+        // The not-found page renders "Página no encontrada" (Spanish default)
+        await expect(page.getByRole('heading', { name: 'Página no encontrada' })).toBeVisible();
+        await expect(page.getByText('La página que buscas no existe o fue movida.')).toBeVisible();
         await expect(page.getByText('404')).toBeVisible();
     });
 
     test('404 page has link back to home', async ({ page }) => {
         await page.goto('/nonexistent-page-xyz');
 
-        await expect(page.getByRole('heading', { name: 'Pagina no encontrada' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Página no encontrada' })).toBeVisible();
 
         // "Ir al inicio" link navigates to /
         const homeLink = page.getByRole('link', { name: 'Ir al inicio' });
@@ -24,7 +24,7 @@ test.describe('404 page', () => {
     test('404 page has link to search', async ({ page }) => {
         await page.goto('/nonexistent-page-xyz');
 
-        await expect(page.getByRole('heading', { name: 'Pagina no encontrada' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Página no encontrada' })).toBeVisible();
 
         // "Buscar leyes" link navigates to /search (use exact to avoid footer match)
         const searchLink = page.getByRole('link', { name: 'Buscar leyes', exact: true });
