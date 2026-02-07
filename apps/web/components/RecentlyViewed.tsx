@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 import Link from 'next/link';
 import { Clock, ChevronRight } from 'lucide-react';
 import { Badge, Card } from '@leyesmx/ui';
@@ -44,28 +44,40 @@ export function recordLawView(entry: Omit<RecentLawEntry, 'viewedAt'>) {
     }
 }
 
+function getSnapshot(): string {
+    try {
+        return localStorage.getItem(STORAGE_KEY) || '[]';
+    } catch {
+        return '[]';
+    }
+}
+
+function getServerSnapshot(): string {
+    return '[]';
+}
+
+function subscribe(callback: () => void): () => void {
+    const handler = (e: StorageEvent) => {
+        if (e.key === STORAGE_KEY) callback();
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+}
+
 export function RecentlyViewed() {
     const { lang } = useLang();
     const t = content[lang];
-    const [items, setItems] = useState<RecentLawEntry[]>([]);
+    const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+    const items: RecentLawEntry[] = JSON.parse(raw);
 
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) setItems(JSON.parse(raw));
-        } catch {
-            // ignore
-        }
-    }, []);
+    const tierLabel = useCallback((tier: string) => {
+        if (tier === 'federal') return 'Federal';
+        if (tier === 'state') return lang === 'es' ? 'Estatal' : 'State';
+        if (tier === 'municipal') return 'Municipal';
+        return tier;
+    }, [lang]);
 
     if (items.length === 0) return null;
-
-    const tierLabel = (tier: string) => {
-        if (tier === 'federal') return lang === 'es' ? 'Federal' : 'Federal';
-        if (tier === 'state') return lang === 'es' ? 'Estatal' : 'State';
-        if (tier === 'municipal') return lang === 'es' ? 'Municipal' : 'Municipal';
-        return tier;
-    };
 
     return (
         <section>
