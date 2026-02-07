@@ -39,6 +39,7 @@ data/conversion_results.json
 
 # Auto-generated framework files
 **/next-env.d.ts
+*.tsbuildinfo
 
 # OS
 .DS_Store
