@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 export type UserTier = 'anon' | 'free' | 'premium';
 
@@ -20,38 +20,30 @@ const defaultState: AuthState = {
 
 const AuthContext = createContext<AuthState>(defaultState);
 
+function resolveAuthState(): AuthState {
+    const token = getToken();
+    if (!token) return defaultState;
+
+    const claims = decodeJwtPayload(token);
+    if (!claims) return defaultState;
+
+    const tier = (claims.tier || claims.plan || 'free') as UserTier;
+    const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
+
+    return {
+        isAuthenticated: true,
+        tier: validTier as UserTier,
+        loginUrl: DEFAULT_LOGIN_URL,
+    };
+}
+
 /**
  * Lightweight auth provider that checks for a Janua JWT in cookies/localStorage.
  * Does NOT manage the auth flow — Janua handles that.
  * Used by ExportDropdown to conditionally show format access.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<AuthState>(defaultState);
-
-    useEffect(() => {
-        // Check for JWT in cookie or localStorage
-        const token = getToken();
-        if (!token) {
-            setState(defaultState);
-            return;
-        }
-
-        // Decode payload (no verification — server handles that)
-        const claims = decodeJwtPayload(token);
-        if (!claims) {
-            setState(defaultState);
-            return;
-        }
-
-        const tier = (claims.tier || claims.plan || 'free') as UserTier;
-        const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
-
-        setState({
-            isAuthenticated: true,
-            tier: validTier as UserTier,
-            loginUrl: DEFAULT_LOGIN_URL,
-        });
-    }, []);
+    const [state] = useState<AuthState>(resolveAuthState);
 
     return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
@@ -61,12 +53,10 @@ export function useAuth(): AuthState {
 }
 
 function getToken(): string | null {
-    // Check cookie first
     if (typeof document !== 'undefined') {
         const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
         if (match) return decodeURIComponent(match[1]);
     }
-    // Fall back to localStorage
     if (typeof localStorage !== 'undefined') {
         return localStorage.getItem('janua_token');
     }

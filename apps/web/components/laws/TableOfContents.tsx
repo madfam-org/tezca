@@ -58,18 +58,6 @@ interface TableOfContentsProps {
     structure?: StructureNode[];
 }
 
-/**
- * Build a mapping from hierarchy labels to article IDs.
- * Articles whose text starts with a hierarchy crumb label belong to that section.
- */
-function buildHierarchyArticleMap(articles: Article[]): Map<string, string[]> {
-    const map = new Map<string, string[]>();
-    // We'll just group articles by extracting any "TITULO", "CAPITULO", "LIBRO", "SECCION" prefix
-    // from their article_id or the first line of their text.
-    // For now we use the structure tree to group.
-    return map;
-}
-
 function TreeNode({
     node,
     articles,
@@ -92,7 +80,6 @@ function TreeNode({
     fullTextLabel: string;
 }) {
     const hasChildren = node.children.length > 0;
-    const isLeaf = !hasChildren;
 
     return (
         <div>
