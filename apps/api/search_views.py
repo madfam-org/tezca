@@ -203,8 +203,7 @@ class SearchView(APIView):
             # Parse aggregation facets
             facets = {
                 key: [
-                    {"key": b["key"], "count": b["doc_count"]}
-                    for b in agg["buckets"]
+                    {"key": b["key"], "count": b["doc_count"]} for b in agg["buckets"]
                 ]
                 for key, agg in res.get("aggregations", {}).items()
             }

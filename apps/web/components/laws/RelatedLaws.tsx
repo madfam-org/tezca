@@ -46,6 +46,7 @@ export function RelatedLaws({ lawId }: RelatedLawsProps) {
 
     useEffect(() => {
         let cancelled = false;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- valid data-fetching pattern
         setLoading(true);
         api.getRelatedLaws(lawId)
             .then((data) => {

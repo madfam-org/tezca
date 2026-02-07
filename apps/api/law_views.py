@@ -228,9 +228,7 @@ class RelatedLawsView(APIView):
                                     }
                                 }
                             ],
-                            "must_not": [
-                                {"match_phrase": {"law_id": law.official_id}}
-                            ],
+                            "must_not": [{"match_phrase": {"law_id": law.official_id}}],
                         }
                     },
                     "aggs": {
@@ -256,9 +254,7 @@ class RelatedLawsView(APIView):
 
                 mlt_res = es.search(index=INDEX_NAME, body=mlt_body)
                 buckets = (
-                    mlt_res.get("aggregations", {})
-                    .get("by_law", {})
-                    .get("buckets", [])
+                    mlt_res.get("aggregations", {}).get("by_law", {}).get("buckets", [])
                 )
 
                 for bucket in buckets:

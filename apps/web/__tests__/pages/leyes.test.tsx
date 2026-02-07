@@ -31,7 +31,7 @@ vi.mock('next/link', () => ({
 
 // Mock @tezca/ui Select components
 vi.mock('@tezca/ui', () => ({
-    Select: ({ children, value, onValueChange }: { children: React.ReactNode; value?: string; onValueChange?: (v: string) => void }) => (
+    Select: ({ children, value, onValueChange: _onValueChange }: { children: React.ReactNode; value?: string; onValueChange?: (v: string) => void }) => (
         <div data-testid="select" data-value={value}>{children}</div>
     ),
     SelectTrigger: ({ children, className }: { children: React.ReactNode; className?: string }) => (
@@ -57,7 +57,7 @@ vi.mock('@/components/LawCard', () => ({
 
 // Mock Pagination
 vi.mock('@/components/Pagination', () => ({
-    Pagination: ({ currentPage, totalPages, onPageChange }: { currentPage: number; totalPages: number; onPageChange: (p: number) => void }) => (
+    Pagination: ({ currentPage, totalPages, onPageChange: _onPageChange }: { currentPage: number; totalPages: number; onPageChange: (p: number) => void }) => (
         <div data-testid="pagination">Page {currentPage} of {totalPages}</div>
     ),
 }));
