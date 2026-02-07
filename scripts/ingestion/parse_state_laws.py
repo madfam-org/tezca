@@ -15,6 +15,9 @@ Usage:
     # Parse municipal laws
     python scripts/ingestion/parse_state_laws.py --municipal --all
 
+    # Parse non-legislative state laws (poderes 1/3/4)
+    python scripts/ingestion/parse_state_laws.py --non-legislative --all
+
     # Parallel workers
     python scripts/ingestion/parse_state_laws.py --all --workers 4
 """
@@ -82,6 +85,11 @@ def main():
         action="store_true",
         help="Parse municipal laws instead of state laws",
     )
+    arg_parser.add_argument(
+        "--non-legislative",
+        action="store_true",
+        help="Parse non-legislative state laws (OJN poderes 1/3/4)",
+    )
     arg_parser.add_argument("--limit", type=int, help="Limit number of laws")
     arg_parser.add_argument(
         "--workers", type=int, default=1, help="Number of parallel workers (default: 1)"
@@ -101,6 +109,9 @@ def main():
     if args.municipal:
         metadata_filename = "municipal_laws_metadata.json"
         label = "municipal"
+    elif args.non_legislative:
+        metadata_filename = "state_laws_non_legislative_metadata.json"
+        label = "non-legislative state"
     else:
         metadata_filename = "state_laws_metadata.json"
         label = "state"

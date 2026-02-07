@@ -23,21 +23,25 @@ from multiprocessing import Pool
 from pathlib import Path
 
 
-def convert_doc_to_text(doc_path: Path) -> dict:
+def convert_doc_to_text(args_tuple) -> dict:
     """Convert single .doc to .txt using textutil.
 
     Args:
-        doc_path: Path to .doc file
+        args_tuple: (doc_path, source_dir, output_dir) or just doc_path for backwards compat
 
     Returns:
         dict with conversion results
     """
-    # Create output directory structure
-    # Input: data/state_laws/colima/law_123.doc
-    # Output: data/state_laws_processed/colima/law_123.txt
+    if isinstance(args_tuple, tuple):
+        doc_path, source_dir, output_dir = args_tuple
+    else:
+        doc_path = args_tuple
+        source_dir = Path("data/state_laws")
+        output_dir = Path("data/state_laws_processed")
 
-    relative_path = doc_path.relative_to(Path("data/state_laws"))
-    txt_path = Path("data/state_laws_processed") / relative_path.with_suffix(".txt")
+    # Create output directory structure
+    relative_path = doc_path.relative_to(source_dir)
+    txt_path = output_dir / relative_path.with_suffix(".txt")
     txt_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -107,25 +111,42 @@ def main():
         "--limit", type=int, help="Limit number of files to process (for testing)"
     )
     parser.add_argument(
+        "--non-legislative",
+        action="store_true",
+        help="Convert non-legislative state laws (from data/state_laws_non_legislative/)",
+    )
+    parser.add_argument(
         "--output",
         type=str,
-        default="data/conversion_results.json",
+        default=None,
         help="Output JSON file for results",
     )
 
     args = parser.parse_args()
 
+    # Determine source and output directories
+    if args.non_legislative:
+        source_dir = Path("data/state_laws_non_legislative")
+        output_dir = Path("data/state_laws_non_legislative_processed")
+        default_output = "data/conversion_results_non_legislative.json"
+    else:
+        source_dir = Path("data/state_laws")
+        output_dir = Path("data/state_laws_processed")
+        default_output = "data/conversion_results.json"
+
+    output_file = args.output or default_output
+
     # Find .doc files
     if args.all:
-        doc_files = list(Path("data/state_laws").rglob("*.doc"))
-        selection_desc = "all states"
+        doc_files = list(source_dir.rglob("*.doc"))
+        selection_desc = f"all states ({'non-legislative' if args.non_legislative else 'legislative'})"
     elif args.state:
-        state_dir = Path("data/state_laws") / args.state.lower().replace(" ", "_")
+        state_dir = source_dir / args.state.lower().replace(" ", "_")
         if not state_dir.exists():
-            print(f"❌ State directory not found: {state_dir}")
+            print(f"State directory not found: {state_dir}")
             return 1
         doc_files = list(state_dir.glob("*.doc"))
-        selection_desc = f"state: {args.state}"
+        selection_desc = f"state: {args.state} ({'non-legislative' if args.non_legislative else 'legislative'})"
     else:
         print("Error: Must specify --all or --state")
         return 1
@@ -147,16 +168,19 @@ def main():
     print(f"Selection: {selection_desc}")
     print(f"Files to convert: {len(doc_files):,}")
     print(f"Workers: {args.workers}")
-    print(f"Output: {args.output}")
+    print(f"Output: {output_file}")
     print("=" * 70)
     print()
 
     # Create output directory
-    Path("data/state_laws_processed").mkdir(exist_ok=True)
+    output_dir.mkdir(exist_ok=True)
+
+    # Build args tuples for worker function
+    work_items = [(f, source_dir, output_dir) for f in doc_files]
 
     # Process files
     start_time = datetime.now()
-    print(f"🚀 Starting conversion...")
+    print(f"Starting conversion...")
     print(f"Started: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
     # Use multiprocessing pool
@@ -164,7 +188,7 @@ def main():
         with Pool(processes=args.workers) as pool:
             # Use imap for progress tracking
             results = []
-            for i, result in enumerate(pool.imap(convert_doc_to_text, doc_files), 1):
+            for i, result in enumerate(pool.imap(convert_doc_to_text, work_items), 1):
                 results.append(result)
 
                 # Progress indicator every 100 files
@@ -177,8 +201,8 @@ def main():
     else:
         # Single-threaded for debugging
         results = []
-        for i, doc_file in enumerate(doc_files, 1):
-            result = convert_doc_to_text(doc_file)
+        for i, work_item in enumerate(work_items, 1):
+            result = convert_doc_to_text(work_item)
             results.append(result)
 
             if i % 100 == 0:
@@ -225,8 +249,8 @@ def main():
             doc_name = Path(result["doc_path"]).name
             print(f"  • {doc_name}: {result['error']}")
     elif failed:
-        print(f"\n❌ {len(failed)} files failed")
-        print(f"   (First 20 errors saved to {args.output})")
+        print(f"\n{len(failed)} files failed")
+        print(f"   (First 20 errors saved to {output_file})")
 
     print("=" * 70)
 
@@ -243,9 +267,9 @@ def main():
         "results": results,
     }
 
-    output_path = Path(args.output)
+    output_path = Path(output_file)
     output_path.write_text(json.dumps(output_data, indent=2))
-    print(f"\n💾 Results saved to: {output_path}")
+    print(f"\nResults saved to: {output_path}")
 
     # Return error code if any failures
     return 0 if len(failed) == 0 else 1

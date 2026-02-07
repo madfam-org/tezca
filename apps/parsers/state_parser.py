@@ -178,20 +178,24 @@ class StateLawParser:
             result.text_path = text_path
 
             # 2. Read text content
-            # For .doc files, look for pre-extracted .txt in state_laws_processed/
+            # For .doc files, look for pre-extracted .txt in *_processed/ dirs
             if text_path.suffix.lower() == ".doc":
-                txt_equivalent = (
-                    str(text_path)
-                    .replace("/state_laws/", "/state_laws_processed/")
-                    .replace(".doc", ".txt")
-                )
-                txt_path = Path(txt_equivalent)
-                if txt_path.exists():
+                text_path_str = str(text_path)
+                candidates = [
+                    Path(text_path_str.replace("/state_laws/", "/state_laws_processed/").replace(".doc", ".txt")),
+                    Path(text_path_str.replace("/state_laws_non_legislative/", "/state_laws_non_legislative_processed/").replace(".doc", ".txt")),
+                ]
+                txt_path = None
+                for candidate in candidates:
+                    if candidate.exists():
+                        txt_path = candidate
+                        break
+                if txt_path:
                     text = txt_path.read_text(encoding="utf-8", errors="ignore")
                 else:
                     result.error = (
                         f"Text file not found: {text_file} "
-                        f"(no .txt in state_laws_processed/)"
+                        f"(no .txt in *_processed/ directory)"
                     )
                     return result
             elif text_path.suffix.lower() == ".pdf":
