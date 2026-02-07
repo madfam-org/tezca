@@ -47,12 +47,12 @@ Backend (Django):  ✅ Stable (production-hardened: HSTS, secure cookies, struct
 Database:          ✅ PostgreSQL production-ready (shared MADFAM cluster)
 Search:            ✅ Elasticsearch operational (3.48M+ articles, resilient client: retry/timeout/pooling)
 Scraping:          ✅ OJN pipeline functional, DOF daily wired to Celery Beat
-Frontend (Next):   ✅ Phase 3 UI/UX complete (comparison tool, mobile, dark mode, visual QA, search autocomplete)
-Admin Panel:       ✅ Functional (Janua auth integrated, 4 dashboard pages)
+Frontend (Next):   ✅ Phase 11 complete (all user-facing features: faceted search, export, Cmd+K, citation, OG images, compare diff)
+Admin Panel:       ✅ Functional (Janua auth integrated, 5 dashboard pages: Ingestion, Metrics, DataOps, Roadmap, Settings)
 DataOps:           ✅ Gap tracking, health monitoring, coverage dashboard operational
 Storage:           ✅ Dual-backend abstraction (local dev / Cloudflare R2 production)
 Observability:     ✅ Sentry integration (Django API + Next.js web, optional)
-SEO:               ✅ JSON-LD structured data (schema.org Legislation) on law detail pages
+SEO:               ✅ JSON-LD (Legislation + WebSite + Organization), dynamic OG images, canonical URLs, expanded sitemap
 Deployment:        🔄 Infrastructure ready, pending manual provisioning (see below)
 ```
 
@@ -273,9 +273,9 @@ tezca/
 ✅ Elasticsearch re-indexing complete (3.48M+ articles)
 ✅ Frontend state filters deployed
 
-### Phase 3: Municipal Coverage 🔄 IN PROGRESS
+### Municipal Coverage 🔄 IN PROGRESS
 
-**Status**: Design phase (Q2 2026)
+**Status**: Pilot phase (Q2 2026)
 
 **Challenges**:
 - 2,465 municipalities
@@ -290,19 +290,22 @@ tezca/
 
 **ETA**: Tier  1 in 6 months, full coverage 2-3 years
 
-### Phase 4: Advanced Features 🎨 VISION
+### Advanced Features 🎨 VISION
 
 **Computational Law**:
 - ✅ Akoma Ntoso XML (machine-readable)
-- ⏳ Tax calculation engine (Catala/OpenFisca - needs fixing)
+- ⏳ Tax calculation engine (Catala/OpenFisca — experimental/blocked)
 - 📋 Contract compliance checking
 - 📋 Legal reasoning AI
 
-**Platform Intelligence**:
-- Citation network analysis
-- Legal precedent matching
-- Automatic updates from DOF
-- Version diffing visualization
+**Platform Intelligence** (many already built):
+- ✅ Cross-reference panel (outgoing + incoming refs)
+- ✅ Version timeline with change_summary
+- ✅ Word-level compare diff
+- ✅ DOF daily monitoring (Celery Beat, 7 AM)
+- 📋 Citation network visualization (graph view)
+- 📋 Embeddings / vector search
+- 📋 Legal precedent matching
 
 ---
 
@@ -358,12 +361,12 @@ Leyes Vigentes:  12,133 laws  (97.4% of 12,456)
 
 **Target Users**: Legal professionals, researchers, students, citizens
 
-**Current State**:
-- ⚠️ **Basic**: Simple law list and search
-- ⚠️ **Functional**: API-driven but minimal UX
-- ❌ **Not Premium**: Lacks polish and engagement
+**Current State** (Phase 11 complete):
+- ✅ **Feature-Rich**: Faceted search, export, comparison, citation, Cmd+K, OG images
+- ✅ **Trilingual**: ES/EN/NAH across all UI components
+- ✅ **Professional**: SEO-hardened, accessible (WCAG 2.1 AA), mobile-optimized
 
-**Vision**: **World-Class Legal Research Platform**
+**Vision**: **World-Class Legal Research Platform** — largely achieved, ongoing polish
 
 ##### Homepage (Reimagined)
 
@@ -507,7 +510,7 @@ Pág. 1 of 5    [<]  1  2  3  4  5  [>]
 - Annotate & bookmark
 - Share specific articles (deep links)
 - AI-powered summaries
-- Translation (EN/ES toggle — implemented for legal pages and footer; law content remains Spanish-only)
+- ✅ Trilingual UI (ES/EN/NAH) — implemented across all components; law content remains Spanish-only
 
 ##### Comparison Tool (Killer Feature)
 
@@ -553,7 +556,7 @@ Pág. 1 of 5    [<]  1  2  3  4  5  [>]
 ┌────────────────┬────────────────┬────────────────────┐
 │  🟢 API        │  🟢 Database   │  🟢 Elasticsearch  │
 │  Healthy       │  Healthy       │  Healthy           │
-│  Operational   │  ~11,904 laws  │  Indexed           │
+│  Operational   │  30,343 laws  │  Indexed           │
 └────────────────┴────────────────┴────────────────────┘
 
 📊 Cobertura de Datos
@@ -637,46 +640,37 @@ Vigentes:   ██████████████████░░░  93.
 5. Elasticsearch re-indexing
 6. Frontend state filters
 
-### Priority 3: Public UI/UX Overhaul ⭐⭐⭐ ✅ COMPLETE
+### Priority 3: Public UI/UX + Search Intelligence + Professional Polish ⭐⭐⭐ ✅ COMPLETE (Phases 3-11)
 
-**Status**: All tasks delivered
+**Status**: All tasks delivered through Phase 11
 
-1. ✅ Complete design system (colors, typography, components)
-2. ✅ Homepage redesign (gorgeous first impression)
-3. ✅ Enhanced search page (filters, previews, highlights)
-4. ✅ Rich law detail pages (versions, citations, downloads)
-5. ✅ Legal pages (Terms, Disclaimer, Privacy) — bilingual ES/EN
-6. ✅ Site footer + disclaimer banner
-7. ✅ Comparison tool (side-by-side, sync scroll, metadata panel, mobile tabs)
-8. ✅ Mobile optimization (responsive design, 44px touch targets)
-9. ✅ Dark mode + Visual QA (sticky footer, Suspense spinners, tab tooltips)
-10. ✅ Search autocomplete with typeahead
+- ✅ Design system, homepage, search, law detail, comparison, legal pages, footer, dark mode
+- ✅ Trilingual UI (ES/EN/NAH), search autocomplete, bookmarks, reading UX, keyboard shortcuts
+- ✅ Faceted search with ES aggregations, browse by category/state, related laws
+- ✅ Spanish URL paths with 301 redirects, URL-synced search
+- ✅ SEO hardening (JSON-LD, canonical URLs, alternates, OG images, expanded sitemap)
+- ✅ Cross-reference panel, version timeline, 6-format export (TXT/PDF/LaTeX/DOCX/EPUB/JSON)
+- ✅ Word-level compare diff, Cmd+K search, citation + BibTeX export
+- ✅ Homepage refresh (FeaturedLaws, QuickLinks, trilingual headings)
 
-### Priority 4: Admin Panel Completion ⭐⭐
+### Priority 4: Admin Panel ⭐⭐ ✅ COMPLETE
 
-**Impact**: Operational efficiency
-**Timeline**: 3-4 weeks
-**Effort**: Medium
+**Status**: 5 dashboard pages delivered (Ingestion, Metrics, DataOps, Roadmap, Settings)
 
-**Tasks**:
-1. Real-time job monitoring
-2. Manual ingestion triggers
-3. Quality dashboard
-4. Error log viewer
-5. System health metrics
+- ✅ Real-time job monitoring (from AcquisitionLog, last 20 runs)
+- ✅ System metrics with law_type breakdown
+- ✅ Coverage dashboard with tier progress and state table
+- ✅ Quality indicators (Buena/Media/Baja) on state coverage
+- ✅ Janua JWT auth for all admin endpoints
 
-### Priority 5: Data Quality & Stability ⭐⭐
+### Priority 5: Data Quality & Stability ⭐⭐ ✅ LARGELY COMPLETE
 
-**Impact**: Long-term maintainability
-**Timeline**: Ongoing
-**Effort**: Medium
-
-**Tasks**:
-1. Automated testing expansion
-2. Continuous DOF monitoring
-3. Quality assurance (QA) framework
-4. Error handling improvements
-5. Documentation updates
+- ✅ 229 web + 51 admin + ~201 backend tests + 8 E2E specs
+- ✅ DOF daily monitoring (Celery Beat, 7 AM)
+- ✅ ES resilience (retry/timeout/pooling)
+- ✅ Sentry integration (Django + Next.js)
+- ✅ Dual storage backend (local / R2)
+- 🔄 Ongoing: documentation updates, test expansion
 
 ### Priority 6: Municipal Law Pilot (Tier 1) ⭐
 
@@ -779,7 +773,7 @@ Vigentes:   ██████████████████░░░  93.
 **Mitigation**: Quality metrics, error reporting, version control
 
 **Risk**: Legal liability from user reliance
-**Mitigation**: Terms & Conditions (`/terminos`), Legal Disclaimer (`/aviso-legal`), dismissable homepage banner, footer disclaimer bar — all bilingual
+**Mitigation**: Terms & Conditions (`/terminos`), Legal Disclaimer (`/aviso-legal`), dismissable homepage banner, footer disclaimer bar — all trilingual
 
 ---
 
@@ -789,7 +783,7 @@ Vigentes:   ██████████████████░░░  93.
 
 **Current Status**: Strong foundation (93.9% legislative coverage, 30,343 total laws processed, 3.48M+ articles, production-ready backend)
 
-**Next Steps**: UI/UX polish + state law completion = world-class platform
+**Next Steps**: Production go-live at tezca.mx + municipal pilot + vector search
 
 **Timeline**: 6 months to 95%+ coverage with gorgeous interfaces
 

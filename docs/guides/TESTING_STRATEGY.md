@@ -110,19 +110,29 @@ Code cannot merge to `main` unless:
 
 ### Backend (Pytest)
 - **Location:** `tests/`
-- **Tests:** 210+ passed, 2 skipped (CalculationApiTests blocked on OpenFisca)
-- **Key test files:** test_admin_views.py (17 tests incl. coverage dashboard + roadmap CRUD), test_law_api.py (18 tests), test_storage.py (20 tests — Local + R2 backends), parser tests (50+), scraper tests (40+)
+- **Tests:** ~201 passed, 2 skipped (CalculationApiTests blocked on OpenFisca)
+- **Key test files:** test_admin_views.py (17 tests incl. coverage dashboard + roadmap CRUD), test_law_api.py (18 tests), test_storage.py (20 tests — Local + R2 backends, R2 tests skip without boto3), parser tests (100+ incl. Parser V2), scraper tests (40+)
 - **Run:** `poetry run pytest tests/ -v`
 - **Coverage:** `poetry run pytest tests/ --cov=apps --cov-report=term`
 - **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`
+- **Note:** Always use `poetry run black` (not system black) to match CI version (24.10.0)
 
-### Frontend (Vitest)
+### Web Frontend (Vitest)
 - **Location:** `apps/web/__tests__/`
-- **Tests:** 156 tests across 25 files
+- **Tests:** 229 tests across 33 files
 - **Run:** `cd apps/web && npx vitest run`
 - **Coverage:** `cd apps/web && npx vitest run --coverage` (uses @vitest/coverage-v8)
 - **Coverage thresholds:** statements 60%, branches 50%, functions 60%, lines 60%
 - **Framework:** Vitest + @testing-library/react
+- **Key test areas:** search, laws, compare, dashboard, categories, states, CommandSearch, FeaturedLaws, ExportDropdown, CrossReferencePanel, VersionTimeline, RelatedLaws
+
+### Admin Frontend (Vitest)
+- **Location:** `apps/admin/__tests__/`
+- **Tests:** 51 tests across 8 files
+- **Run:** `cd apps/admin && npx vitest run`
+- **Framework:** Vitest + @testing-library/react
+- **Key test areas:** useApiData hook, API client, home/metrics/settings/dataops/ingestion/roadmap pages
+- **Mocking:** `@tezca/ui` and `next/link` mocked inline via `vi.mock()`
 
 ### E2E (Playwright)
 - **Location:** `apps/web/e2e/`
@@ -134,6 +144,7 @@ Code cannot merge to `main` unless:
 - **Jobs:** `test-backend` + `test-frontend` (parallel) → `test-e2e` (advisory, needs both)
 - **Coverage artifacts:** pytest XML + vitest JSON uploaded per run
 - **E2E artifacts:** Playwright HTML report uploaded on failure
+- **Deploy:** 3 deploy pipelines (web, admin, API) via GHCR + ArgoCD
 
 > **Note:** The computational law testing layers (Catala proofs, Oracle validation, Legislative Trace) described above are aspirational design targets. The current test suite covers API endpoints, parser functionality, scraper logic, and React components.
 

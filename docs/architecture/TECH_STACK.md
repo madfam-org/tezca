@@ -73,7 +73,7 @@ Our stack is chosen to support **Isomorphism**: the ability to prove that the co
 
 ### Layer 4b: Frontend Stack
 
-* **Framework:** **Next.js 15** (public portal), **Next.js 16** (admin console)
+* **Framework:** **Next.js 16** (public portal + admin console)
 * **UI Library:** React 19 + **Shadcn/ui** + **Tailwind CSS 4** (CSS-first config, no `tailwind.config.ts`)
 * **Shared Packages:** `@tezca/ui`, `@tezca/lib` (Zod v4 schemas for runtime API validation)
 * **Monorepo:** NPM Workspaces

@@ -1,16 +1,33 @@
 # Admin Console
 
-The administrative dashboard for operating the Leyes Como Código ingestion pipeline.
+The administrative dashboard for operating the Tezca platform (law ingestion, monitoring, coverage tracking).
 
 ## Features
-- **Job Monitoring**: Real-time status of scraping and processing jobs.
-- **Ingestion Control**: Trigger new ingestion runs (All Laws or High Priority).
-- **System Stats**: View database statistics and health metrics.
+- **Ingestion Control**: Trigger new ingestion runs (All Laws or High Priority), view real-time job status.
+- **System Metrics**: Law counts by tier and law_type, coverage percentages, article counts.
+- **DataOps Dashboard**: Coverage by tier with progress bars, state coverage table with quality indicators (Buena/Media/Baja), gap summary, health source grid.
+- **Expansion Roadmap**: Phase tracking with status updates, next priorities.
+- **Settings**: System configuration, environment info, Elasticsearch status.
+- **Job History**: Real job history from AcquisitionLog (last 20 runs).
+- **Authentication**: Janua JWT auth for all admin endpoints.
+
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/dashboard` | Main dashboard with navigation to all sections |
+| `/dashboard/ingestion` | Ingestion job monitoring and triggers |
+| `/dashboard/metrics` | System metrics and jurisdiction breakdown |
+| `/dashboard/dataops` | Coverage dashboard, state table, gaps, health |
+| `/dashboard/roadmap` | Expansion roadmap with phase tracking |
+| `/dashboard/settings` | System configuration and health |
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router)
-- **UI**: React 19, Tailwind CSS, @tezca/ui (Shadcn)
+- **UI**: React 19, Tailwind CSS 4, @tezca/ui (Shadcn)
+- **Auth**: @janua/nextjs (optional, stub fallback for local dev / CI)
 - **State**: React Hooks for polling and data fetching
+- **Testing**: Vitest + @testing-library/react (8 test files, 51 tests)
 
 ## Development
 
@@ -21,3 +38,9 @@ npm run dev --workspace=apps/admin
 ```
 
 The console will be available at [http://localhost:3001](http://localhost:3001).
+
+## Testing
+
+```bash
+cd apps/admin && npx vitest run
+```

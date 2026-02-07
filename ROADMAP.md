@@ -21,7 +21,7 @@
 - **98.9% parser accuracy** (world-class quality)
 - **3,480,000+ articles** indexed and searchable
 - **Production-ready** backend infrastructure
-- **Full-stack Testing** (101 Vitest + 201 Pytest + 13 E2E)
+- **Full-stack Testing** (229 web Vitest + 51 admin Vitest + ~201 Pytest + 8 E2E)
 
 ### 🔄 In Progress
 - Tezca production deployment
@@ -89,12 +89,12 @@
 - ✅ **Legal Pages**: Terms & Conditions (`/terminos`), Legal Disclaimer (`/aviso-legal`), Privacy Policy (`/privacidad`)
 - ✅ **Site Footer**: 4-column navigation, official source links, disclaimer bar, copyright
 - ✅ **Disclaimer Banner**: Dismissable homepage warning (localStorage persistence)
-- ✅ **Bilingual Toggle**: ES/EN language switch for legal pages and footer
+- ✅ **Trilingual Toggle**: ES/EN/NAH language switch across all UI components
 - ✅ **Comparison Tool**: Side-by-side law comparison with sync scroll, metadata panel, mobile tabs
 - ✅ **Mobile**: Fully responsive design (44px touch targets, responsive tabs, stacked layouts)
 - ✅ **Dark Mode**: Complete theme support
 - ✅ **Visual QA**: Sticky footer, Suspense fallback spinners, tab tooltips, WCAG 2.1 AA touch targets
-- ✅ **Persistent Navbar**: Sticky nav with brand, bilingual links, mobile hamburger, transparent-on-homepage
+- ✅ **Persistent Navbar**: Sticky nav with brand, trilingual links, mobile hamburger, transparent-on-homepage
 - ✅ **Reading UX**: Progress bar, font size control (A-/A/A+), back-to-top button, breadcrumbs
 - ✅ **Bookmarks**: Heart toggle, localStorage persistence, `/favoritos` page
 - ✅ **Share & Export**: Social sharing (Twitter, LinkedIn, WhatsApp), copy link, PDF print export
@@ -206,19 +206,65 @@
 
 ---
 
-## Next Sprint: Data Expansion + Search Quality
+## Completed: Phases 4-7 — Data Depth & Infrastructure ✅
 
-**Sprint Goal**: Expand data coverage and improve search quality once the pipeline is running.
+**Sprints**: Audit, Parser V2, Reglamentos, Non-Legislative, Trilingual, Infrastructure
+
+- ✅ Codebase audit: 67 fixes across 5 categories (security, dedup, API, UX, cleanup)
+- ✅ Parser V2: TRANSITORIOS boundary, dedup, Bis patterns (100 tests)
+- ✅ 150 federal reglamentos ingested via spider
+- ✅ 18,439 non-legislative state laws (77.9% of OJN Poderes 1/3/4)
+- ✅ Trilingual UI (ES/EN/NAH — Classical Nahuatl) across all 45 web components
+- ✅ DOF daily scraper wired to Celery Beat (7 AM)
+- ✅ Dual storage backend (local dev / Cloudflare R2)
+- ✅ ES resilience (retry/timeout/pooling), Sentry integration
+- ✅ JSON-LD structured data (schema.org Legislation)
+- ✅ Docker Compose healthchecks
+- ✅ Vitest suite: 36 tests across 5 files (admin)
+
+---
+
+## Completed: Phases 8-9 — Surface & Search Intelligence ✅
+
+- ✅ law_type field on Law model (migration 0006+0007), backfilled 18,439 non-legislative
+- ✅ Faceted search: ES aggregations (by_tier, by_category, by_status, by_law_type, by_state)
+- ✅ Browse by category (/categorias/) and state (/estados/) with API-backed counts
+- ✅ Related laws (/laws/{id}/related/) using ES more_like_this + DB fallback
+- ✅ Categories API (/categories/) with real DB counts
+- ✅ Sort param on LawListView (name_asc/desc, date_desc/asc, article_count)
+- ✅ Spanish URL paths (/leyes, /busqueda, /comparar) with 301 redirects
+- ✅ Hierarchical TOC (tree/flat toggle), citation copy, search UX enhancements
+- ✅ DashboardStats 6-card grid, tier/law_type badges on search results
+
+---
+
+## Completed: Phases 10-11 — Professional Polish & User Magnet ✅
+
+- ✅ SEO hardening: canonical URLs, alternates (es/en/x-default), WebSite + Organization JSON-LD, expanded sitemap
+- ✅ Cross-reference panel (outgoing + incoming refs, confidence threshold)
+- ✅ Version timeline (collapsible, change_summary, valid_to)
+- ✅ 6-format export (TXT/PDF/LaTeX/DOCX/EPUB/JSON) with tier-based rate limits (anon: 10/hr, free: 30/hr, premium: 100/hr)
+- ✅ Word-level compare diff (green=added, red=removed, blue=unique)
+- ✅ Cmd+K global search overlay with debounced suggestions
+- ✅ Citation + BibTeX export from article viewer
+- ✅ Dynamic OG images per law (Next.js ImageResponse)
+- ✅ Homepage refresh: FeaturedLaws, QuickLinks, trilingual headings
+- ✅ About page (/acerca-de) with data sources, methodology, contact
+
+---
+
+## Next Sprint: Phase 12 — Production & Expansion
+
+**Sprint Goal**: Ship to production and begin municipal expansion.
 
 | # | Task | Priority | Notes |
 |---|------|----------|-------|
-| 1 | Municipal scraper: Guadalajara + Monterrey content download | High | Content download now implemented |
-| 2 | Federal Reglamentos scraper (diputados.gob.mx/LeyesBiblio/regla.htm) | High | ~800 instruments, similar portal to Tier 1 |
-| 3 | ES search quality: spanish_legal analyzer tuning, synonym list | Medium | -- |
-| 4 | DOF daily monitoring scraper (replace stub) | Medium | -- |
-| 5 | CONAMER CNARTyS integration exploration | Medium | 113,373 regulations — assess API/bulk access |
-| 6 | Embeddings/vector search integration | Low | -- |
-| 7 | Coverage dashboard: admin UI integration | Low | -- |
+| 1 | Production go-live at tezca.mx | High | Infrastructure code done, manual provisioning remaining |
+| 2 | Municipal scraper: Guadalajara + Monterrey content | High | Content download implemented, needs execution |
+| 3 | CONAMER CNARTyS integration exploration | Medium | 113,373 regulations — assess API/bulk access |
+| 4 | Embeddings/vector search integration | Medium | Semantic search for legal queries |
+| 5 | ES search quality: spanish_legal analyzer tuning | Medium | Synonym list, stemmer tuning |
+| 6 | Federal Reglamentos expansion (150 → 800) | Low | Spider works, need to discover remaining URLs |
 
 **Backlog (Future Sprints):**
 - Remaining 25+ municipal scraper implementations (Tier 2: state capitals)
@@ -296,7 +342,7 @@
 ## Success Metrics
 
 ### 6-Month Goals (Aug 2026)
-- ✅ **Coverage**: 87% → 95%+ (add 1,000+ laws)
+- ✅ **Coverage**: 93.9% legislative + 77.9% non-legislative (30,343 total)
 - ✅ **Quality**: 97.9% → 98.5%+
 - ✅ **Municipal**: 0 → 500 laws (Tier 1)
 - ✅ **Users**: 10,000+ monthly active users
@@ -317,19 +363,26 @@
 ## Priority Matrix
 
 ### High Priority (Next 3 Months)
-1. ⭐⭐⭐ Complete state law processing (4 weeks)
-2. ⭐⭐⭐ Public UI/UX overhaul (6-8 weeks)
-3. ⭐⭐ Admin panel completion (3-4 weeks)
+1. ⭐⭐⭐ Production go-live at tezca.mx (1-2 weeks)
+2. ⭐⭐⭐ Municipal pilot — Tier 1 cities (3-4 months)
+3. ⭐⭐ CONAMER CNARTyS integration (113K regulations)
 
 ### Medium Priority (3-6 Months)
-4. ⭐⭐ Municipal pilot (Tier 1 cities)
-5. ⭐⭐ Auto-update system (DOF monitoring)
-6. ✅ ~~Comparison tool implementation~~ (completed Feb 2026)
+4. ⭐⭐ Embeddings / vector search
+5. ⭐⭐ ES search quality tuning (spanish_legal analyzer)
+6. ⭐⭐ Federal Reglamentos expansion (150 → 800)
 
 ### Low Priority (6-12 Months)
-7. ⭐ Tax calculator (Catala fix)
-8. ⭐ Citation network visualization
-9. ⭐ Translation feature
+7. ⭐ Tax calculator (Catala — experimental/blocked)
+8. ⭐ Citation network visualization (graph view)
+9. ⭐ GraphQL API / SDK
+
+### Completed (Phases 1-11) ✅
+- ✅ State law processing (93.7%)
+- ✅ Non-legislative state laws (77.9%)
+- ✅ Public UI/UX (Phases 3-11: all features built)
+- ✅ Admin panel (5 pages)
+- ✅ Comparison tool, trilingual UI, faceted search, export, Cmd+K, citation, SEO
 
 ---
 

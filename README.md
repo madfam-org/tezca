@@ -2,7 +2,7 @@
 
 **The definitive digital platform for Mexican legal research** - comprehensive, machine-readable database of Mexican laws (federal, state, municipal) with intuitive interfaces for professionals and citizens.
 
-**Coverage**: 93.9% of Legislative Laws (11,904 of 12,456) + 18,439 non-legislative (30,343 total) — [sourced from `data/universe_registry.json`]
+**Coverage**: 93.9% of Legislative Laws (11,696 of 12,456) + 18,439 non-legislative (30,343 total) — [sourced from `data/universe_registry.json`]
 **Status**: Production Ready
 
 ## Quick Start
@@ -60,7 +60,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech (paginated, filtered, rate-limited)
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
-- ✅ **Production Ready** - Full-stack testing (156 Vitest + 201 Pytest + 8 E2E specs)
+- ✅ **Production Ready** - Full-stack testing (229 web Vitest + 51 admin Vitest + ~201 Pytest + 8 E2E specs)
 - ✅ **OpenAPI Documentation** - Swagger UI, ReDoc at `/api/docs/`
 - ✅ **Background Processing** - Celery + Redis for ingestion jobs
 - ✅ **Cross-References** - Automatic detection and linking between laws
@@ -81,6 +81,22 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Recently Viewed** - Homepage section showing last 10 visited laws (localStorage)
 - ✅ **SEO Foundation** - Dynamic sitemap, robots.txt, OG metadata, trilingual 404 page
 - ✅ **URL-Synced Search** - Pagination, filters, and query persisted in URL (shareable/bookmarkable)
+- ✅ **Faceted Search** - ES aggregations (by tier, category, status, law_type, state) with live filter counts
+- ✅ **Browse Pages** - Browse by Category (/categorias/) and State (/estados/) with API-backed counts
+- ✅ **Related Laws** - Elasticsearch more_like_this recommendations on law detail
+- ✅ **6-Format Export** - TXT/PDF/LaTeX/DOCX/EPUB/JSON with tier-based rate limits (anon/free/premium)
+- ✅ **Word-Level Compare Diff** - Side-by-side comparison with green (added) / red (removed) inline highlights
+- ✅ **Cross-Reference Panel** - Outgoing + incoming law references with confidence threshold filter
+- ✅ **Version Timeline** - Collapsible history with change_summary and valid_to dates
+- ✅ **Cmd+K Global Search** - Overlay with debounced suggestions and keyboard navigation
+- ✅ **Citation Export** - Legal citation + BibTeX copy from article viewer
+- ✅ **Dynamic OG Images** - Per-law opengraph images via Next.js ImageResponse
+- ✅ **Homepage Refresh** - FeaturedLaws grid, QuickLinks, trilingual headings
+- ✅ **JSON-LD Structured Data** - schema.org Legislation + WebSite + Organization
+- ✅ **Canonical URLs** - alternates for es/en/x-default, expanded sitemap with categories + states
+- ✅ **Spanish URL Paths** - /leyes, /busqueda, /comparar with 301 redirects from English
+- ✅ **Dual Storage** - Local dev / Cloudflare R2 production backend
+- ✅ **Sentry Integration** - Django API + Next.js web (optional)
 
 ## Architecture
 
@@ -94,7 +110,7 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 │   ├── lib/         # Shared Utilities & Types (@tezca/lib)
 │   └── tsconfig/    # Shared TypeScript configurations
 ├── apps/
-│   ├── web/         # Public Portal (Next.js 15)
+│   ├── web/         # Public Portal (Next.js 16)
 │   ├── admin/       # Management Console (Next.js 16)
 │   └── api/         # Backend API (Django / Python)
 └── package.json     # Workspace Root
@@ -145,10 +161,35 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 - ✅ API Hardening (pagination, filtering, rate limiting, search-within-law)
 - ✅ CI/CD (coverage, E2E in CI, Dockerfile verification)
 
-**Phase 4: Municipal Laws** - 📋 PLANNED (Q2 2026)
-- 📋 Tier 1: 10 largest cities
-- 📋 Tier 2: 32 state capitals
-- 📋 Long-term: Full municipal coverage
+**Phase 4-7: Data Depth & Infrastructure** - ✅ COMPLETE
+- ✅ 150 federal reglamentos ingested
+- ✅ 18,439 non-legislative state laws (77.9% of OJN Poderes 1/3/4)
+- ✅ Parser V2 (TRANSITORIOS boundary, dedup, Bis patterns)
+- ✅ DOF daily scraper wired to Celery Beat (7 AM)
+- ✅ Dual storage backend (local / Cloudflare R2)
+- ✅ Sentry integration, ES resilience (retry/timeout/pooling)
+- ✅ JSON-LD structured data on law detail pages
+- ✅ Trilingual UI (ES/EN/NAH — Classical Nahuatl)
+
+**Phase 8-9: Surface & Search Intelligence** - ✅ COMPLETE
+- ✅ law_type field + non-legislative badges
+- ✅ Faceted search (ES aggregations), browse by category/state
+- ✅ Related laws (more_like_this), sort on catalog
+- ✅ Spanish URL paths (/leyes, /busqueda, /comparar) with 301 redirects
+- ✅ Hierarchical TOC, citation copy, enhanced accessibility
+
+**Phase 10-11: Professional Polish & User Magnet** - ✅ COMPLETE
+- ✅ SEO hardening (canonical URLs, alternates, expanded sitemap, OG images)
+- ✅ Cross-reference panel, version timeline
+- ✅ 6-format export (TXT/PDF/LaTeX/DOCX/EPUB/JSON) with tier-based rate limits
+- ✅ Word-level compare diff
+- ✅ Cmd+K global search overlay, citation + BibTeX export
+- ✅ Homepage refresh (FeaturedLaws, QuickLinks, trilingual headings)
+
+**Phase 12: Production & Municipal** - 📋 PLANNED (Q2 2026)
+- 📋 Production go-live at tezca.mx
+- 📋 Municipal Tier 1: 10 largest cities
+- 📋 Embeddings / vector search integration
 
 **See**: [ROADMAP.md](ROADMAP.md) for detailed timeline and [Strategic Overview](docs/strategy/STRATEGIC_OVERVIEW.md) for comprehensive vision
 

@@ -165,7 +165,7 @@ When the Django server is running:
 ```
 tezca/
 ├── apps/
-│   ├── web/              # Public Portal (Next.js 15)
+│   ├── web/              # Public Portal (Next.js 16)
 │   ├── admin/            # Admin Console (Next.js 16)
 │   ├── api/              # Django REST API
 │   ├── indigo/           # Django project settings

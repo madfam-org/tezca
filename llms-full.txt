@@ -1,8 +1,8 @@
 # Tezca
 
-> Mexican open law platform providing machine-readable access to 11,904 laws (333 federal + 11,363 state + 208 municipal) covering 93.9% of Mexico's legislative corpus. Monorepo: Next.js 15/16 frontend, Django 5 REST API, Elasticsearch 7.17 search, Akoma Ntoso XML parsing (98.9% accuracy). License: AGPL-3.0.
+> Mexican open law platform providing machine-readable access to 30,343 laws (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal) with 3.48M+ searchable articles. Trilingual UI (ES/EN/NAH). Monorepo: Next.js 16 frontend, Django 5 REST API, Elasticsearch 7.17 search, Akoma Ntoso XML parsing (98.9% accuracy). License: AGPL-3.0.
 
-This is the repository for Tezca (formerly Leyes Como Código México), an open-source legal research platform that digitizes the Mexican legal system. The codebase is a polyglot monorepo managed by NPM Workspaces (frontend) and Poetry (backend). The API exposes OpenAPI documentation at `/api/docs/`.
+This is the repository for Tezca (formerly Leyes Como Codigo Mexico), an open-source legal research platform that digitizes the Mexican legal system. The codebase is a polyglot monorepo managed by NPM Workspaces (frontend) and Poetry (backend). The API exposes OpenAPI documentation at `/api/docs/`.
 
 ## Core Documentation
 
@@ -23,10 +23,13 @@ This is the repository for Tezca (formerly Leyes Como Código México), an open-
 
 - [OpenAPI Schema](/api/schema/): Downloadable OpenAPI 3.0 spec (when server running)
 - [Swagger UI](/api/docs/): Interactive API documentation (when server running)
-- [API Source — Laws](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/law_views.py): Law endpoints
-- [API Source — Search](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/search_views.py): Search endpoint
-- [API Source — Admin](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/views.py): Calculation, ingestion
-- [API Source — Admin Functions](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/admin_views.py): Health, metrics, config
+- [API Source — Laws](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/law_views.py): Law endpoints (list, detail, articles, structure, references, related, categories, suggest)
+- [API Source — Search](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/search_views.py): Full-text search with faceted aggregations
+- [API Source — Export](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/export_views.py): 6-format export (TXT/PDF/LaTeX/DOCX/EPUB/JSON) with tier-based quotas
+- [API Source — Cross-References](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/cross_reference_views.py): Law and article cross-reference endpoints
+- [API Source — Admin](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/views.py): Ingestion management
+- [API Source — Admin Functions](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/admin_views.py): Health, metrics, config, jobs, pipeline, coverage, gaps, roadmap
+- [API Source — Storage](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/storage.py): Dual-backend storage abstraction (local + Cloudflare R2)
 - [URL Routes](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/urls.py): All API route definitions
 - [Shared Types](https://raw.githubusercontent.com/madfam-org/tezca/main/packages/lib/src/types.ts): TypeScript types
 - [Zod Schemas](https://raw.githubusercontent.com/madfam-org/tezca/main/packages/lib/src/schemas.ts): Runtime validation schemas
@@ -44,7 +47,7 @@ This is the repository for Tezca (formerly Leyes Como Código México), an open-
 
 - [DataOps Escalation Playbook](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/dataops/ESCALATION_PLAYBOOK.md): 5-tier gap resolution
 - [System Management](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/SYSTEM_MANAGEMENT.md): Celery workers, Elasticsearch, scheduled tasks
-- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/TESTING_STRATEGY.md): 152 frontend + 201 backend tests + 8 E2E specs
+- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/TESTING_STRATEGY.md): 229 frontend (Vitest) + ~201 backend (Pytest) + 51 admin (Vitest) + 8 E2E (Playwright)
 - [Code Quality](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/code_quality.md): Lint config, file size limits
 - [Environment Config](https://raw.githubusercontent.com/madfam-org/tezca/main/.env.example): All environment variables
 - [Docker Compose](https://raw.githubusercontent.com/madfam-org/tezca/main/docker-compose.yml): 7-service stack
@@ -61,7 +64,7 @@ This is the repository for Tezca (formerly Leyes Como Código México), an open-
 
 # Full Content: README.md
 
-**Coverage**: 93.9% of Legislative Laws (11,904 of 12,456) — [sourced from `data/universe_registry.json`]
+**Coverage**: 93.9% of Legislative Laws (11,696 of 12,456) + 18,439 non-legislative (30,343 total) — [sourced from `data/universe_registry.json`]
 **Status**: Production Ready
 **License**: AGPL-3.0
 
@@ -86,13 +89,15 @@ docker compose up -d     # All services (Docker)
 
 | Level | Laws | Universe | Coverage | Source |
 |-------|------|----------|----------|--------|
-| **Federal** | 333/336 | 336 | 99.1% | Cámara de Diputados |
+| **Federal** | 333/336 | 336 | 99.1% | Camara de Diputados |
+| **Federal Reglamentos** | 150 | ~800 | ~19% | Camara de Diputados |
 | **State (Legislativo)** | 11,363/12,120 | 12,120 | 93.7% | OJN Poder Legislativo |
-| **State (Other Powers)** | 0/23,660 | 23,660 | 0% | OJN Poderes 1/3/4 |
+| **State (Other Powers)** | 18,439/23,660 | 23,660 | 77.9% | OJN Poderes 1/3/4 |
 | **Municipal** | 208 | Unknown | N/A | 5 city portals |
 | **Leyes Vigentes** | **11,696/12,456** | **12,456** | **93.9%** | Federal + State Legislativo |
+| **Total Processed** | **30,343** | | | All tiers combined |
 
-782 OJN links are permanently dead (Michoacán 504, EDOMEX 141, SLP 47).
+782 OJN links are permanently dead (Michoacan 504, EDOMEX 141, SLP 47).
 
 ### Monorepo Structure
 
@@ -103,7 +108,7 @@ docker compose up -d     # All services (Docker)
 │   ├── lib/         # Shared Utilities & Types (@tezca/lib)
 │   └── tsconfig/    # Shared TypeScript configurations
 ├── apps/
-│   ├── web/         # Public Portal (Next.js 15)
+│   ├── web/         # Public Portal (Next.js 16)
 │   ├── admin/       # Management Console (Next.js 16)
 │   └── api/         # Backend API (Django / Python)
 └── package.json     # Workspace Root
@@ -111,27 +116,47 @@ docker compose up -d     # All services (Docker)
 
 ### Features
 
-- 93.9% Legislative Coverage (11,696 of 12,456)
+- 93.9% Legislative Coverage (11,696 of 12,456) + 77.9% non-legislative (18,439 of 23,660)
 - Akoma Ntoso XML structured parsing (98.9% accuracy)
-- Dynamic Dashboard with real-time statistics
-- Advanced Search with date range, state filters, auto-complete
-- Law Detail 2.0 with enhanced typography and citations
+- Trilingual UI (ES/EN/NAH — Classical Nahuatl) across all components (law content remains Spanish)
+- Dynamic Dashboard with real-time statistics and 6-card grid (federal, state, municipal, legislative, non-legislative, articles)
+- Advanced Search with faceted aggregations (by tier, category, status, law_type, state), date range, auto-complete
+- Faceted search filters with live counts from Elasticsearch aggregations
+- Law Detail with enhanced typography, hierarchical TOC (tree/flat toggle), citations, version timeline
+- Cross-Reference Panel showing outgoing + incoming law references with confidence threshold
+- Related Laws panel using Elasticsearch more_like_this
+- 6-Format Export system (TXT/PDF/LaTeX/DOCX/EPUB/JSON) with tier-based rate limits (anon/free/premium)
+- Browse by Category (/categorias/) and by State (/estados/) with API-backed counts
+- Side-by-Side Comparison with word-level diff highlighting (green=added, red=removed, blue=unique)
+- Global Cmd+K Search overlay with debounced suggestions and keyboard navigation
+- Citation Export — legal citation + BibTeX copy from article viewer
+- Dynamic OG Images per law (Next.js ImageResponse)
 - Quality Validation (A-F grading, 5 automated checks)
 - Full-Text Search (3,480,000+ articles in Elasticsearch)
-- Version History tracking
-- REST API with OpenAPI documentation
+- Version History with collapsible timeline, change_summary, valid_to dates
+- REST API with OpenAPI documentation (Swagger + ReDoc)
 - Batch Processing (4-8 parallel workers)
-- Background Processing (Celery + Redis)
-- Cross-References between laws
-- Bilingual legal pages (ES/EN)
-- Site Footer + Disclaimer Banner
+- Background Processing (Celery + Redis, DOF daily at 7 AM via Celery Beat)
+- Cross-References between laws (automatic detection and linking)
+- Bookmarks (heart toggle, localStorage, /favoritos page)
+- Reading UX (progress bar, font size control, back-to-top, breadcrumbs)
+- Share & Export (social sharing, copy link, PDF print)
+- Keyboard Shortcuts (j/k navigation, / search, b bookmark, ? help)
+- SEO (dynamic sitemap, robots.txt, OG metadata, JSON-LD Legislation schema, canonical URLs, alternates)
+- URL-Synced Search (pagination, filters, query in URL — shareable/bookmarkable)
+- Spanish URL paths with 301 redirects from English (/laws→/leyes, /search→/busqueda, /compare→/comparar)
+- Homepage with FeaturedLaws, QuickLinks, recently viewed, jurisdiction cards
+- About page (/acerca-de) with data sources, methodology, contact (admin@madfam.io)
+- Dual-backend storage (local dev / Cloudflare R2 production)
+- Sentry integration (Django API + Next.js web, optional)
+- Loading skeletons for all major views
 
 ---
 
 # Full Content: Strategic Overview
 
 **Current Coverage**: 93.9% of Legislative Laws (11,696 of 12,456)
-**Total Laws in DB**: ~11,904 (333 federal + 11,363 state + 208 municipal)
+**Total Laws in DB**: 30,343 (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal)
 
 ### Architecture Topology
 
@@ -142,20 +167,24 @@ ADMIN USERS → Admin Panel (Port 3001) → Background Workers → Data Lake (4.
 
 ### Platform Health (Feb 2026)
 
-- Backend (Django): Stable
-- Database (PostgreSQL): Production-ready
-- Search (Elasticsearch): Operational
-- Scraping (OJN pipeline): Functional
-- Frontend (Next.js): Phase 3 UI/UX in progress
-- Admin Panel: In development
+- Backend (Django): Stable (production-hardened: HSTS, secure cookies, structured logging)
+- Database (PostgreSQL): Production-ready (shared MADFAM cluster)
+- Search (Elasticsearch): Operational (3.48M+ articles, resilient client: retry/timeout/pooling)
+- Scraping: OJN pipeline functional, DOF daily wired to Celery Beat
+- Frontend (Next.js): Phase 11 complete (all user-facing features built)
+- Admin Panel: Functional (Janua auth, 5 dashboard pages: Ingestion, Metrics, DataOps, Roadmap, Settings)
+- DataOps: Gap tracking, health monitoring, coverage dashboard operational
+- Storage: Dual-backend abstraction (local dev / Cloudflare R2 production)
+- Observability: Sentry integration (Django API + Next.js web, optional)
+- SEO: JSON-LD (Legislation + WebSite + Organization), dynamic sitemap, OG images
 
 ### Strategic Priorities (Next 6 Months)
 
-1. Complete State Law Processing (93.7% → 97%+)
-2. Public UI/UX Overhaul (comparison tool, mobile, dark mode remaining)
-3. Admin Panel Completion (real-time monitoring, triggers)
-4. Data Quality & Stability (automated testing, DOF monitoring)
-5. Municipal Law Pilot - Tier 1 (CDMX, Guadalajara, Monterrey, etc.)
+1. Production Go-Live at tezca.mx (infrastructure code done, manual provisioning remaining)
+2. Complete State Law Processing (93.7% → 97%+)
+3. Municipal Law Pilot - Tier 1 (CDMX, Guadalajara, Monterrey, etc.)
+4. Embeddings / vector search integration
+5. CONAMER CNARTyS integration (113,373 regulations)
 
 ---
 
@@ -183,14 +212,39 @@ Examples:
 
 ## API Layer
 
-- Content: `GET /api/v1/laws/{id}/` — returns law metadata + versions
-- Articles: `GET /api/v1/laws/{id}/articles/` — returns all articles
+### Public Endpoints
+
+- Content: `GET /api/v1/laws/{id}/` — returns law metadata + versions (includes change_summary, valid_to)
+- Articles: `GET /api/v1/laws/{id}/articles/` — returns all articles (naturally sorted)
 - Structure: `GET /api/v1/laws/{id}/structure/` — returns table of contents tree
 - References: `GET /api/v1/laws/{id}/references/` — returns cross-references
-- Search: `GET /api/v1/search/?q=...` — full-text Elasticsearch
-- Stats: `GET /api/v1/stats/` — dashboard statistics + coverage
+- Related: `GET /api/v1/laws/{id}/related/` — returns related laws (ES more_like_this + DB fallback)
+- Search-in-Law: `GET /api/v1/laws/{id}/search/?q=` — article search with ES highlights
+- Export: `GET /api/v1/laws/{id}/export/{format}/` — format: pdf, txt, latex, docx, epub, json
+- Export Quota: `GET /api/v1/laws/{id}/export/quota/` — remaining downloads for current tier
+- List: `GET /api/v1/laws/` — paginated, filterable (tier, state, category, status, law_type, q), sortable (name_asc/desc, date_desc/asc, article_count)
+- Search: `GET /api/v1/search/?q=...` — full-text Elasticsearch with faceted aggregations (by_tier, by_category, by_status, by_law_type, by_state)
+- Suggest: `GET /api/v1/suggest/?q=...` — autocomplete suggestions for law names
+- Stats: `GET /api/v1/stats/` — dashboard statistics + coverage breakdown
 - States: `GET /api/v1/states/` — list all states with law counts
-- Calculate: `POST /api/v1/calculate/` — computation engine (experimental)
+- Categories: `GET /api/v1/categories/` — list all categories with law counts
+- Municipalities: `GET /api/v1/municipalities/` — list municipalities with law counts
+
+### Admin Endpoints (Janua JWT protected)
+
+- Health: `GET /api/v1/admin/health/` — system health check (open, no auth for K8s probes)
+- Metrics: `GET /api/v1/admin/metrics/` — system metrics (law counts, coverage, law_type breakdown)
+- Jobs: `GET /api/v1/admin/jobs/` — list background jobs
+- Job Status: `GET /api/v1/admin/jobs/status/` — specific job status
+- Config: `GET /api/v1/admin/config/` — system configuration (DB, ES, env)
+- Pipeline: `GET /api/v1/admin/pipeline/status/` — pipeline health status
+- Coverage: `GET /api/v1/admin/coverage/` — coverage summary
+- Coverage Dashboard: `GET /api/v1/admin/coverage/dashboard/` — full coverage dashboard data
+- Health Sources: `GET /api/v1/admin/health-sources/` — data source health probes
+- Gaps: `GET /api/v1/admin/gaps/` — gap records for data acquisition
+- DOF: `GET /api/v1/admin/dof/` — DOF daily summary
+- Roadmap: `GET /api/v1/admin/roadmap/` — expansion roadmap data
+- Ingest: `POST /api/v1/ingest/` — trigger ingestion job
 
 ---
 
@@ -203,15 +257,21 @@ Examples:
 - **drf-spectacular**: 0.29+ (OpenAPI 3.0 docs)
 - **Celery**: 5.3+ (task queue)
 - **Redis**: 7+ (message broker)
-- **django-celery-beat**: 2.8+ (scheduled tasks)
+- **django-celery-beat**: 2.8+ (scheduled tasks, DOF daily at 7 AM)
 - **PostgreSQL**: 16 (production), SQLite (local dev)
-- **Elasticsearch**: 7.17.9 (full-text search)
+- **Elasticsearch**: 7.17.9 (full-text search, resilient: retry/timeout/pooling)
 - **Poetry**: Package management
 - **Black**: 24.1+ (formatting)
 - **isort**: 5.13+ (import sorting, profile=black)
+- **WeasyPrint**: PDF export (optional dep)
+- **python-docx**: DOCX export (optional dep)
+- **ebooklib**: EPUB export (optional dep)
+- **Jinja2**: LaTeX template rendering (optional dep)
+- **boto3**: Cloudflare R2 storage (optional dep)
+- **sentry-sdk**: Error monitoring (optional dep)
 
 ## Frontend
-- **Next.js**: 15 (public portal), 16 (admin console)
+- **Next.js**: 16 (public portal + admin console, App Router)
 - **React**: 19
 - **Tailwind CSS**: 4 (CSS-first config, no tailwind.config.ts)
 - **Shadcn/ui**: Component library
@@ -219,6 +279,8 @@ Examples:
 - **TypeScript**: Strict mode
 - **Vitest**: Testing framework
 - **@testing-library/react**: Component testing
+- **Playwright**: E2E testing
+- **diff**: Word-level text comparison (compare tool)
 
 ## Shared Packages
 - `@tezca/ui`: Shared UI components (React 19 + Shadcn)
@@ -227,6 +289,9 @@ Examples:
 ## Infrastructure
 - **Docker Compose**: 7 services (API, Celery, Celery Beat, Web, Admin, PostgreSQL, Redis, Elasticsearch)
 - **Akoma Ntoso**: V3.0 (OASIS LegalDocML standard)
+- **Cloudflare R2**: Production storage backend (optional, local fallback for dev)
+- **Sentry**: Error monitoring for Django + Next.js (optional)
+- **GitHub Actions**: CI/CD (test-backend, test-frontend, test-e2e, 3 deploy pipelines)
 
 ---
 
@@ -236,7 +301,7 @@ Examples:
 
 ### Python (Poetry)
 - Root `pyproject.toml` defines deps for ALL Python apps
-- Packages: `apps` (API, Scrapers, Parsers), `engines` (Catala, OpenFisca, Blawx)
+- Packages: `apps` (API, Scrapers, Parsers), `engines` (Catala — experimental)
 - Run: `poetry run python ...`
 
 ### Node.js (NPM Workspaces)
@@ -247,14 +312,14 @@ Examples:
 ```
 .
 ├── apps/
-│   ├── web/            # Public Portal (Next.js 15)
+│   ├── web/            # Public Portal (Next.js 16)
 │   ├── admin/          # Admin Console (Next.js 16)
 │   ├── api/            # Django REST API
 │   ├── indigo/         # Django project settings
 │   ├── parsers/        # AKN parsing pipeline
 │   ├── scraper/        # DOF/OJN/Municipal scrapers
 │   │   ├── dataops/    # DataOps Django app (models, admin, gap registry)
-│   │   └── scheduling/ # Celery Beat tasks
+│   │   └── scheduling/ # Celery Beat tasks (DOF daily at 7 AM)
 │   └── ingestion/      # Ingestion orchestration
 ├── packages/
 │   ├── ui/             # @tezca/ui — Shared React/Shadcn components
@@ -266,7 +331,7 @@ Examples:
 ├── data/               # Law registries, XMLs, scraped files
 ├── tests/              # Backend test suite (Pytest)
 ├── scripts/            # Ingestion, scraping, DataOps CLI tools
-├── docs/               # Documentation (21 files)
+├── docs/               # Documentation (21+ files)
 ├── pyproject.toml      # Python deps (Poetry, AGPL-3.0)
 ├── package.json        # NPM Workspace root
 ├── docker-compose.yml  # 7-service stack
@@ -317,12 +382,21 @@ docker compose up -d   # API, Celery, Web, Admin, PostgreSQL, Redis, Elasticsear
 ## Running Tests
 
 ```bash
-poetry run pytest tests/ -v           # Backend (203 tests)
-cd apps/web && npx vitest run         # Frontend (89 tests)
+# Backend
+poetry run pytest tests/ -v                     # Backend (~201 tests)
 poetry run black --check apps/ tests/ scripts/  # Python formatting
 poetry run isort --check-only apps/ tests/ scripts/  # Import ordering
-npm run lint --workspace=web          # Frontend lint
-npm run lint --workspace=admin        # Admin lint
+
+# Web frontend
+cd apps/web && npx vitest run                   # Web tests (229 tests, 33 files)
+npm run lint --workspace=web                    # Frontend lint
+
+# Admin frontend
+cd apps/admin && npx vitest run                 # Admin tests (51 tests, 8 files)
+npm run lint --workspace=admin                  # Admin lint
+
+# E2E
+cd apps/web && npx playwright test              # E2E tests (8 specs)
 ```
 
 ## API Documentation
@@ -341,34 +415,51 @@ Base path: `/api/v1/`
 
 | Method | Path | View | Description |
 |--------|------|------|-------------|
-| GET | `/laws/` | `LawListView` | List all laws (paginated, filterable by tier/state/category) |
-| GET | `/laws/{law_id}/` | `LawDetailView` | Get full law metadata + versions |
+| GET | `/laws/` | `LawListView` | List all laws (paginated, filterable by tier/state/category/status/law_type/q, sortable by name_asc/desc/date_desc/asc/article_count) |
+| GET | `/laws/{law_id}/` | `LawDetailView` | Get full law metadata + versions (includes change_summary, valid_to) |
 | GET | `/laws/{law_id}/articles/` | `law_articles` | Get all articles for a law (naturally sorted) |
-| GET | `/laws/{law_id}/articles/{article_id}/references/` | `article_cross_references` | Cross-references for a specific article |
+| GET | `/laws/{law_id}/search/` | `law_search` | Search within a law's articles (ES highlights) |
 | GET | `/laws/{law_id}/structure/` | `law_structure` | Table of contents tree |
 | GET | `/laws/{law_id}/references/` | `law_cross_references` | All cross-references for a law |
+| GET | `/laws/{law_id}/articles/{article_id}/references/` | `article_cross_references` | Cross-references for a specific article |
+| GET | `/laws/{law_id}/related/` | `RelatedLawsView` | Related laws (ES more_like_this + DB fallback) |
+| GET | `/laws/{law_id}/export/pdf/` | `export_pdf` | Export as PDF (WeasyPrint) |
+| GET | `/laws/{law_id}/export/txt/` | `export_txt` | Export as plain text |
+| GET | `/laws/{law_id}/export/latex/` | `export_latex` | Export as LaTeX |
+| GET | `/laws/{law_id}/export/docx/` | `export_docx` | Export as DOCX |
+| GET | `/laws/{law_id}/export/epub/` | `export_epub` | Export as EPUB |
+| GET | `/laws/{law_id}/export/json/` | `export_json` | Export as JSON |
+| GET | `/laws/{law_id}/export/quota/` | `export_quota` | Remaining export quota for current tier |
+| GET | `/categories/` | `categories_list` | List all categories with law counts |
 | GET | `/states/` | `states_list` | List all states with law counts |
+| GET | `/municipalities/` | `municipalities_list` | List municipalities with law counts |
 | GET | `/stats/` | `law_stats` | Dashboard statistics + coverage breakdown |
+| GET | `/suggest/?q=...` | `suggest` | Autocomplete suggestions for law names |
 
 ### Search Endpoints (search_views.py)
 
 | Method | Path | View | Description |
 |--------|------|------|-------------|
-| GET | `/search/?q=...` | `SearchView` | Full-text search with filters (state, category, date_from, date_to) |
+| GET | `/search/?q=...` | `SearchView` | Full-text search with filters (state, category, date_from, date_to, tier, law_type, status) + faceted aggregations (by_tier, by_category, by_status, by_law_type, by_state) |
 
-### Admin/Operations Endpoints (views.py, admin_views.py)
+### Admin/Operations Endpoints (admin_views.py, views.py) — Janua JWT protected
 
 | Method | Path | View | Description |
 |--------|------|------|-------------|
-| POST | `/calculate/` | `CalculationView` | Computation engine (experimental) |
 | POST | `/ingest/` | `IngestionView` | Trigger ingestion job |
 | GET | `/ingest/` | `IngestionView` | Get ingestion status |
-| GET | `/admin/health/` | `health_check` | System health check |
-| GET | `/admin/metrics/` | `system_metrics` | System metrics (law counts, coverage) |
+| GET | `/admin/health/` | `health_check` | System health check (open, no auth) |
+| GET | `/admin/metrics/` | `system_metrics` | System metrics (law counts, coverage, law_type breakdown) |
 | GET | `/admin/jobs/` | `list_jobs` | List background jobs |
 | GET | `/admin/jobs/status/` | `job_status` | Get specific job status |
 | GET | `/admin/config/` | `system_config` | System configuration (DB, ES, env) |
 | GET | `/admin/pipeline/status/` | `pipeline_status` | Pipeline health status |
+| GET | `/admin/coverage/` | `coverage_summary` | Coverage summary |
+| GET | `/admin/coverage/dashboard/` | `coverage_dashboard` | Full coverage dashboard data |
+| GET | `/admin/health-sources/` | `health_sources` | Data source health probes |
+| GET | `/admin/gaps/` | `gap_records` | Gap records for data acquisition |
+| GET | `/admin/dof/` | `dof_summary` | DOF daily summary |
+| GET | `/admin/roadmap/` | `roadmap` | Expansion roadmap data |
 
 ---
 
@@ -378,7 +469,9 @@ Base path: `/api/v1/`
 export interface LawVersion {
     publication_date: string;
     valid_from: string;
+    valid_to?: string | null;
     dof_url: string;
+    change_summary?: string | null;
     xml_file: string | null;
 }
 
@@ -388,7 +481,12 @@ export interface Law {
     short_name?: string;
     fullName?: string;
     category?: string;
-    tier?: number | string;
+    tier?: string;
+    law_type?: 'legislative' | 'non_legislative';
+    state?: string;
+    status?: string;
+    last_verified?: string;
+    source_url?: string;
     versions?: LawVersion[];
     articles?: number;
     transitorios?: number;
@@ -396,6 +494,7 @@ export interface Law {
     score?: number;
     priority?: number;
     file?: string;
+    degraded?: boolean;
 }
 
 export type Article = LawArticle;
@@ -403,6 +502,10 @@ export type Article = LawArticle;
 export interface LawListItem {
     id: string;
     name: string;
+    tier?: string;
+    law_type?: 'legislative' | 'non_legislative';
+    category?: string;
+    status?: string;
     versions: number;
 }
 
@@ -414,7 +517,19 @@ export interface SearchResult {
     snippet: string;
     score: number;
     date?: string;
+    tier?: string | null;
+    law_type?: string | null;
+    state?: string;
     municipality?: string;
+    hierarchy?: string[];
+    book?: string;
+    title?: string;
+    chapter?: string;
+}
+
+export interface FacetBucket {
+    key: string;
+    count: number;
 }
 
 export interface SearchResponse {
@@ -424,6 +539,7 @@ export interface SearchResponse {
     page_size?: number;
     total_pages?: number;
     warning?: string;
+    facets?: Record<string, FacetBucket[]>;
 }
 
 export interface APIError {
@@ -457,6 +573,8 @@ export interface DashboardStats {
     federal_count: number;
     state_count: number;
     municipal_count: number;
+    legislative_count: number;
+    non_legislative_count: number;
     total_articles: number;
     federal_coverage: number;
     state_coverage: number;
@@ -471,6 +589,7 @@ export interface DashboardStats {
         category: string;
     }[];
     coverage?: CoverageBreakdown;
+    degraded?: boolean;
 }
 
 export interface LawArticle {
@@ -483,6 +602,21 @@ export interface LawArticleResponse {
     law_name: string;
     total: number;
     articles: LawArticle[];
+}
+
+export interface RelatedLaw {
+    law_id: string;
+    name: string;
+    tier: string;
+    category?: string;
+    state?: string;
+    score: number;
+}
+
+export interface CategoryItem {
+    category: string;
+    count: number;
+    label?: string;
 }
 
 export interface IngestionResults {
@@ -522,7 +656,12 @@ export const LawSchema = z.object({
     short_name: z.string().optional(),
     fullName: z.string().optional(),
     category: z.string().optional(),
-    tier: z.union([z.number(), z.string()]).optional(),
+    tier: z.string().optional(),
+    law_type: z.enum(["legislative", "non_legislative"]).optional(),
+    state: z.string().optional(),
+    status: z.string().optional(),
+    last_verified: z.string().optional(),
+    source_url: z.string().optional(),
     versions: z.array(LawVersionSchema).optional(),
     articles: z.number().optional(),
     transitorios: z.number().optional(),
@@ -530,6 +669,7 @@ export const LawSchema = z.object({
     score: z.number().optional(),
     priority: z.number().optional(),
     file: z.string().optional(),
+    degraded: z.boolean().optional(),
 });
 
 export const LawListItemSchema = z.object({
@@ -558,7 +698,14 @@ export const SearchResultSchema = z.object({
     snippet: z.string(),
     score: z.number(),
     date: z.string().optional(),
+    tier: z.string().optional().nullable(),
+    law_type: z.string().optional().nullable(),
     municipality: z.string().optional(),
+});
+
+export const FacetBucketSchema = z.object({
+    key: z.string(),
+    count: z.number(),
 });
 
 export const SearchResponseSchema = z.object({
@@ -568,6 +715,15 @@ export const SearchResponseSchema = z.object({
     page_size: z.number().optional(),
     total_pages: z.number().optional(),
     warning: z.string().optional(),
+    facets: z.record(z.string(), z.array(FacetBucketSchema)).optional(),
+});
+
+export const RecentLawSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    date: z.string(),
+    tier: z.string(),
+    category: z.string(),
 });
 
 export const CoverageItemSchema = z.object({
@@ -596,19 +752,15 @@ export const DashboardStatsSchema = z.object({
     federal_count: z.number(),
     state_count: z.number(),
     municipal_count: z.number(),
+    legislative_count: z.number(),
+    non_legislative_count: z.number(),
     total_articles: z.number(),
     federal_coverage: z.number(),
     state_coverage: z.number(),
     municipal_coverage: z.number(),
     total_coverage: z.number(),
     last_update: z.string().nullable(),
-    recent_laws: z.array(z.object({
-        id: z.string(),
-        name: z.string(),
-        date: z.string(),
-        tier: z.string(),
-        category: z.string(),
-    })),
+    recent_laws: z.array(RecentLawSchema),
     coverage: CoverageBreakdownSchema.optional(),
 });
 
@@ -669,6 +821,15 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 
 # Next.js (Web + Admin)
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+
+# Cloudflare R2 (optional, for production storage)
+# R2_BUCKET_NAME=tezca-laws
+# R2_ACCOUNT_ID=your-account-id
+# R2_ACCESS_KEY_ID=your-access-key
+# R2_SECRET_ACCESS_KEY=your-secret-key
+
+# Sentry (optional)
+# SENTRY_DSN=https://your-dsn@sentry.io/project
 ```
 
 ---
@@ -691,6 +852,8 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 Volumes: `pg_data`, `es_data`, `redis_data`
 
 Dependencies: api → postgres, redis, elasticsearch; celery → postgres, redis; web → api, elasticsearch; admin → api
+
+All services include healthchecks.
 
 ---
 
@@ -722,6 +885,11 @@ django-celery-beat = "^2.8.1"
 pdfplumber = "^0.11.9"
 psycopg2-binary = "^2.9.11"
 
+[tool.poetry.extras]
+pdf = ["weasyprint"]
+export = ["python-docx", "ebooklib", "jinja2"]
+production = ["weasyprint", "python-docx", "ebooklib", "jinja2", "boto3", "sentry-sdk"]
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 pytest-cov = "^4.1"
@@ -744,23 +912,31 @@ poetry run python manage.py runserver                  # Start dev server
 poetry run python manage.py createsuperuser            # Create admin user
 
 # Ingestion Pipeline
-poetry run python scripts/ingestion/bulk_ingest.py     # Batch process federal laws
-poetry run python scripts/ingestion/index_laws.py      # Elasticsearch indexing
-poetry run python scripts/ingestion/ingest_state_laws.py  # State law processing
+poetry run python scripts/ingestion/bulk_ingest.py                # Batch process federal laws
+poetry run python scripts/ingestion/bulk_ingest.py --reglamentos  # Batch process federal reglamentos
+poetry run python scripts/ingestion/index_laws.py                 # Elasticsearch indexing
+poetry run python scripts/ingestion/ingest_state_laws.py          # State law processing
+poetry run python scripts/ingestion/ingest_non_legislative.py     # Non-legislative state law processing
 
 # Scraping
-poetry run python scripts/scraping/ojn_scraper.py      # OJN state law scraper
-poetry run python scripts/scraping/bulk_state_scraper.py  # Batch state scraping
+poetry run python scripts/scraping/ojn_scraper.py                 # OJN state law scraper
+poetry run python scripts/scraping/bulk_state_scraper.py          # Batch state scraping
 poetry run python scripts/scraping/bulk_non_legislative_scraper.py  # Non-legislative powers
+poetry run python scripts/scraping/reglamentos_spider.py          # Federal reglamentos spider
 
 # DataOps CLI
 poetry run python scripts/dataops/bootstrap_gaps.py    # Seed gap records from reports
 poetry run python scripts/dataops/health_check.py      # Run source health probes
 poetry run python scripts/dataops/coverage_report.py   # Generate coverage report
 
+# Storage Migration
+poetry run python scripts/migrate_to_r2.py             # Bulk upload data/ to Cloudflare R2
+
 # Testing
-poetry run pytest tests/ -v                            # Backend tests (191 tests)
-cd apps/web && npx vitest run                          # Frontend tests (89 tests)
+poetry run pytest tests/ -v                            # Backend tests (~201 tests)
+cd apps/web && npx vitest run                          # Web frontend tests (229 tests, 33 files)
+cd apps/admin && npx vitest run                        # Admin frontend tests (51 tests, 8 files)
+cd apps/web && npx playwright test                     # E2E tests (8 specs)
 
 # Linting (MUST use poetry run for CI compatibility)
 poetry run black --check apps/ tests/ scripts/
@@ -773,5 +949,25 @@ poetry run celery -A apps.indigo beat --loglevel=info --scheduler django_celery_
 
 ---
 
-*Last verified: 2026-02-06*
+# Key Web Components (apps/web/)
+
+| Component | Path | Purpose |
+|-----------|------|---------|
+| CommandSearch | `components/CommandSearch.tsx` | Cmd+K global search overlay |
+| FeaturedLaws | `components/FeaturedLaws.tsx` | Recently updated laws grid on homepage |
+| QuickLinks | `components/QuickLinks.tsx` | 4 browse paths on homepage |
+| HomeHeadings | `components/HomeHeadings.tsx` | Trilingual heading for homepage |
+| ExportDropdown | `components/laws/ExportDropdown.tsx` | 6-format download with tier badges |
+| CrossReferencePanel | `components/laws/CrossReferencePanel.tsx` | Outgoing + incoming law refs |
+| VersionTimeline | `components/laws/VersionTimeline.tsx` | Collapsible version history |
+| RelatedLaws | `components/laws/RelatedLaws.tsx` | ES more_like_this related laws |
+| ComparisonPane | `components/compare/ComparisonPane.tsx` | Side-by-side with word diff |
+| SearchFilters | `components/search/SearchFilters.tsx` | Faceted search with live counts |
+| ArticleViewer | `components/laws/ArticleViewer.tsx` | Article display with citation/BibTeX copy |
+| AuthContext | `components/providers/AuthContext.tsx` | Lightweight Janua JWT state |
+| LanguageToggle | `components/LanguageToggle.tsx` | ES/EN/NAH 3-button group |
+
+---
+
+*Last verified: 2026-02-07*
 *Generated for LLM consumption following the llmstxt.org specification.*

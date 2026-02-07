@@ -31,10 +31,12 @@ You must adhere to the following file extensions and standards:
 | Layer | Standard | Extension | Usage |
 | --- | --- | --- | --- |
 | **Structure** | **Akoma Ntoso V3** | `.xml` | The authoritative text of the law. |
-| **Tax Logic** | **Catala** | `.catala_en` | Executable specification of tax algorithms. |
-| **Rules Logic** | **Blawx** | `.blawx` | Visual/Prolog-based logic for general rules. |
-| **Ontology** | **OWL/RDF** | `.owl` | Knowledge graph of legal entities. |
-| **Scripts** | **Python 3.9+** | `.py` | Scrapers, parsers, and API glue. |
+| **Backend API** | **Django 5 + DRF** | `.py` | REST API, models, views, serializers. |
+| **Frontend** | **Next.js 16 + React 19** | `.tsx` | Public portal (apps/web) and admin console (apps/admin). |
+| **Shared Types** | **TypeScript + Zod** | `.ts` | Shared types (`@tezca/lib`) and UI components (`@tezca/ui`). |
+| **Styles** | **Tailwind CSS 4** | `.css` | CSS-first config (no tailwind.config.ts). |
+| **Tax Logic** | **Catala** | `.catala_en` | Experimental/blocked — fiscal logic engine. |
+| **Scripts** | **Python 3.11+** | `.py` | Scrapers, parsers, ingestion, DataOps CLI. |
 
 ### 3.1 Akoma Ntoso conventions
 
@@ -45,20 +47,43 @@ You must adhere to the following file extensions and standards:
 
 ## 4. 🧠 Operational Workflows
 
-### Workflow A: Ingesting a New Law
+### Workflow A: Ingesting a New Law (Data Pipeline)
 
-1. **Fetch:** Run the scraper for the specific URL (OJN/DOF).
-2. **Parse:** Use `indigo-player` or custom Python scripts to convert PDF/HTML to Akoma Ntoso XML.
-3. **Verify:** Compare the `text_content` of the XML against the source PDF. They must match character-for-character.
-4. **Commit:** Create a new branch `feat/ingest-[law-acronym]`.
+1. **Fetch:** Run the appropriate scraper (OJN/DOF/municipal).
+   - Federal: `scripts/scraping/ojn_scraper.py`
+   - State: `scripts/scraping/bulk_state_scraper.py`
+   - Non-legislative: `scripts/scraping/bulk_non_legislative_scraper.py`
+   - Reglamentos: `scripts/scraping/reglamentos_spider.py`
+2. **Parse:** Use the V2 parser pipeline to convert PDF/HTML to Akoma Ntoso XML.
+3. **Ingest:** Run `scripts/ingestion/bulk_ingest.py` (or `ingest_state_laws.py`, `ingest_non_legislative.py`).
+4. **Index:** Run `scripts/ingestion/index_laws.py` to index into Elasticsearch.
+5. **Verify:** Check coverage via `scripts/dataops/coverage_report.py` or admin dashboard.
 
-### Workflow B: Encoding Logic (The "Pair Programming" Sim)
+### Workflow B: Adding a Web Feature
+
+1. **Types:** Add/update types in `packages/lib/src/types.ts` + schemas in `schemas.ts`.
+2. **API:** Add endpoint in `apps/api/law_views.py` (or new view file), register in `urls.py`.
+3. **Client:** Add API helper in `apps/web/lib/api.ts`.
+4. **Component:** Build React component in `apps/web/components/`.
+5. **Route:** Wire into Next.js route in `apps/web/app/`.
+6. **i18n:** Add trilingual content object (ES/EN/NAH) using `useLang()` hook.
+7. **Test:** Add Vitest test in `apps/web/__tests__/`.
+
+### Workflow C: Adding an Admin Feature
+
+1. **API:** Add admin endpoint in `apps/api/admin_views.py`, protect with `_protected()`.
+2. **Component:** Build in `apps/admin/components/`.
+3. **Page:** Wire into `apps/admin/app/dashboard/`.
+4. **Test:** Add Vitest test in `apps/admin/__tests__/`.
+
+### Workflow D: Encoding Logic (Experimental — Catala)
 
 1. **Read:** Analyze the Akoma Ntoso XML for the specific article.
-2. **Draft:** Create a `.catala` file.
+2. **Draft:** Create a `.catala` file in `engines/catala/`.
 3. **Link:** Use Literate Programming to copy the legal text into the Catala file comments.
-4. **Test:** Create a unit test in a `tests/` folder using example values (e.g., "Person A earns $10,000").
-5. **Validate:** The test result must match the manual calculation provided in the prompt.
+4. **Test:** Create a unit test using example values.
+5. **Validate:** The test result must match the manual calculation.
+> **Note:** Catala integration is experimental/blocked. Current focus is on data coverage and UI features.
 
 ---
 
@@ -66,9 +91,28 @@ You must adhere to the following file extensions and standards:
 
 "It runs" is not enough. It must be **Legally Valid**.
 
-* **Syntax Check:** `make check-syntax` (Validates XML schema and Catala types).
-* **Logic Check:** `make test-logic` (Runs the battery of fiscal scenarios).
-* **Regression:** Ensure that updates to a 2024 law do not break calculations for the 2023 tax year.
+### Current Test Suite (Feb 2026)
+
+| Suite | Count | Command |
+|-------|-------|---------|
+| **Web (Vitest)** | 229 tests, 33 files | `cd apps/web && npx vitest run` |
+| **Admin (Vitest)** | 51 tests, 8 files | `cd apps/admin && npx vitest run` |
+| **Backend (Pytest)** | ~201 tests | `poetry run pytest tests/ -v` |
+| **E2E (Playwright)** | 8 specs | `cd apps/web && npx playwright test` |
+
+### Linting (MUST use `poetry run` for CI compatibility)
+
+```bash
+poetry run black --check apps/ tests/ scripts/
+poetry run isort --check-only apps/ tests/ scripts/
+npm run lint --workspace=web
+npm run lint --workspace=admin
+```
+
+### Structural Validation
+* **XML:** Akoma Ntoso schema validation (parser tests).
+* **Logic:** Catala proofs (experimental/blocked — aspirational target).
+* **Regression:** Ensure updates don't break existing calculations.
 
 ---
 
