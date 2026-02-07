@@ -1,11 +1,11 @@
 {
   "total_stats": {
-    "states_completed": 28,
+    "states_completed": 32,
     "states_skipped": 0,
     "states_failed": 0,
-    "total_laws_found": 21333,
-    "total_laws_downloaded": 16898,
-    "total_laws_failed": 4435,
+    "total_laws_found": 22877,
+    "total_laws_downloaded": 18439,
+    "total_laws_failed": 4438,
     "start_time": "2026-02-06T04:50:01.385423",
     "state_results": [
       {
@@ -231,7 +231,40 @@
         "downloaded": 241,
         "failed": 62,
         "success_rate": "79.5%"
+      },
+      {
+        "state_id": 29,
+        "state_name": "Tlaxcala",
+        "found": 400,
+        "downloaded": 397,
+        "failed": 3,
+        "success_rate": "99.2%"
+      },
+      {
+        "state_id": 30,
+        "state_name": "Veracruz",
+        "found": 318,
+        "downloaded": 318,
+        "failed": 0,
+        "success_rate": "100.0%"
+      },
+      {
+        "state_id": 31,
+        "state_name": "Yucatán",
+        "found": 826,
+        "downloaded": 826,
+        "failed": 0,
+        "success_rate": "100.0%"
+      },
+      {
+        "state_id": 32,
+        "state_name": "Zacatecas",
+        "found": 0,
+        "downloaded": 0,
+        "failed": 0,
+        "success_rate": "0%"
       }
-    ]
+    ],
+    "end_time": "2026-02-06T18:45:01.447605"
   }
 }

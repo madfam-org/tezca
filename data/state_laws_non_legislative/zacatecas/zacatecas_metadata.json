@@ -1,0 +1,14 @@
+{
+  "state_id": 32,
+  "state_name": "Zacatecas",
+  "power_ids_queried": [
+    1,
+    3,
+    4
+  ],
+  "total_found": 0,
+  "successful": 0,
+  "failed": 0,
+  "laws": [],
+  "failed_laws": []
+}
