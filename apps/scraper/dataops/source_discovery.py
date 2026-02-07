@@ -171,7 +171,7 @@ class SourceDiscoverer:
                 WAYBACK_API_URL,
                 params={"url": url},
                 timeout=DISCOVERY_TIMEOUT,
-                headers={"User-Agent": "LeyesMX-SourceDiscovery/1.0"},
+                headers={"User-Agent": "Tezca-SourceDiscovery/1.0"},
             )
             if response.status_code == 200:
                 data = response.json()
@@ -208,7 +208,7 @@ class SourceDiscoverer:
             response = requests.get(
                 url,
                 timeout=DISCOVERY_TIMEOUT,
-                headers={"User-Agent": "LeyesMX-SourceDiscovery/1.0"},
+                headers={"User-Agent": "Tezca-SourceDiscovery/1.0"},
                 allow_redirects=True,
             )
             result["accessible"] = response.status_code == 200
@@ -266,7 +266,7 @@ class SourceDiscoverer:
             response = requests.head(
                 url,
                 timeout=DISCOVERY_TIMEOUT,
-                headers={"User-Agent": "LeyesMX-SourceDiscovery/1.0"},
+                headers={"User-Agent": "Tezca-SourceDiscovery/1.0"},
                 allow_redirects=True,
             )
             return response.status_code == 200

@@ -9,7 +9,7 @@ The administrative dashboard for operating the Leyes Como Código ingestion pipe
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router)
-- **UI**: React 19, Tailwind CSS, @leyesmx/ui (Shadcn)
+- **UI**: React 19, Tailwind CSS, @tezca/ui (Shadcn)
 - **State**: React Hooks for polling and data fetching
 
 ## Development

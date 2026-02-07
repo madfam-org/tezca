@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Button, Input } from "@leyesmx/ui";
+import { Card, CardContent, CardHeader, CardTitle, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Button, Input } from "@tezca/ui";
 import { X, Filter, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLang, type Lang } from '@/components/providers/LanguageContext';

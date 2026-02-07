@@ -400,6 +400,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ---
 
 **Questions? Issues?**  
-https://github.com/madfam-org/leyes-como-codigo-mx/issues
+https://github.com/madfam-org/tezca/issues
 
 **Let's democratize access to Mexican law.** 🚀

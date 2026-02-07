@@ -1,7 +1,7 @@
 'use client';
 
 import { RefObject } from 'react';
-import { Badge } from "@leyesmx/ui";
+import { Badge } from "@tezca/ui";
 import type { ComparisonLawData, LawStructureNode } from './types';
 
 interface ComparisonPaneProps {

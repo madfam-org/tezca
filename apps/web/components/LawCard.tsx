@@ -1,7 +1,7 @@
 'use client';
 
-import { Law } from "@leyesmx/lib";
-import { Badge, Card } from "@leyesmx/ui";
+import { Law } from "@tezca/lib";
+import { Badge, Card } from "@tezca/ui";
 import Link from 'next/link';
 import { useComparison } from './providers/ComparisonContext';
 import { useLang } from '@/components/providers/LanguageContext';

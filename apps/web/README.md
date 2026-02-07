@@ -27,7 +27,7 @@ The citizen-facing web application for searching and reading Mexican laws.
 
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router)
-- **UI**: React 19, Tailwind CSS 4, @leyesmx/ui (Shadcn)
+- **UI**: React 19, Tailwind CSS 4, @tezca/ui (Shadcn)
 - **Search**: Elasticsearch Integration
 - **Testing**: Vitest + @testing-library/react (13 test files, 82 tests)
 

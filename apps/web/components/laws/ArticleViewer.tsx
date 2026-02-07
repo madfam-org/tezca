@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Article } from "@leyesmx/lib";
+import type { Article } from "@tezca/lib";
 import { Link as LinkIcon, Check } from 'lucide-react';
-import { Card } from "@leyesmx/ui";
-import { cn } from "@leyesmx/lib";
+import { Card } from "@tezca/ui";
+import { cn } from "@tezca/lib";
 import { useInView } from 'react-intersection-observer';
 import { LinkifiedArticle } from './LinkifiedArticle';
 import { useLang } from '@/components/providers/LanguageContext';

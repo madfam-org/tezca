@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import type { IngestionStatus } from '@leyesmx/lib';
+import type { IngestionStatus } from '@tezca/lib';
 import { PlayCircle, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
 export function JobQueue() {

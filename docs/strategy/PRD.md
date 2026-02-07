@@ -1,6 +1,6 @@
 > **Historical Document (Phase 1 — Inception)**: This PRD was written during the project's inception phase. The codebase has since evolved significantly through Phase 2 (State Expansion) and Phase 3 (UI/UX Transformation). For current architecture and status, see [STRATEGIC_OVERVIEW.md](STRATEGIC_OVERVIEW.md).
 
-Based on our research, here is the Product Requirements Document (PRD) for the **`leyes-como-codigo-mx`** repository.
+Based on our research, here is the Product Requirements Document (PRD) for the **`tezca`** repository.
 
 This document outlines the strategy to transform the Mexican legal system from a static collection of PDFs into an isomorphic, executable codebase.
 
@@ -10,7 +10,7 @@ This document outlines the strategy to transform the Mexican legal system from a
 
 ## Project Name: Leyes Como Código México
 
-**Repository Name:** `madfam-org/leyes-como-codigo-mx`
+**Repository Name:** `madfam-org/tezca`
 **License:** GNU Affero General Public License v3.0 (AGPL-3.0)
 **Version:** 0.1.0 (Inception)
 
@@ -98,7 +98,7 @@ The repository will be structured into three distinct layers, mirroring the "MOL
 2. **Indigo Implementation:** Fork and deploy the **Indigo Platform** (by Laws.Africa) to manage Akoma Ntoso conversion.
 
 
-3. **Git Repository:** Initialize `leyes-como-codigo-mx`. Every legislative reform found by the scraper triggers a new Commit.
+3. **Git Repository:** Initialize `tezca`. Every legislative reform found by the scraper triggers a new Commit.
 4. **Viewer:** A static web frontend (GitHub Pages) rendering the XML as human-readable HTML.
 
 

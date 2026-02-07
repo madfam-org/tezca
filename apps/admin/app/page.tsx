@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Database, Settings, BarChart3, Activity, Rocket } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@tezca/ui";
 
 export default function Home() {
     return (

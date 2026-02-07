@@ -1,6 +1,6 @@
 # Data Acquisition Escalation Playbook
 
-This playbook defines the five-tier escalation process for acquiring missing law data in the **leyes-como-codigo-mx** platform. Each tier represents an increase in human effort, institutional involvement, and turnaround time. The goal is to resolve data gaps at the lowest possible tier before escalating.
+This playbook defines the five-tier escalation process for acquiring missing law data in the **Tezca** platform. Each tier represents an increase in human effort, institutional involvement, and turnaround time. The goal is to resolve data gaps at the lowest possible tier before escalating.
 
 **Audience**: Platform maintainers, data operations team, and contributors.
 
@@ -298,7 +298,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > **Contexto y proposito**:
 >
-> Esta solicitud se realiza en el marco del proyecto de datos abiertos "Leyes como Codigo Mexico", cuyo objetivo es facilitar el acceso ciudadano a la legislacion mexicana en formatos abiertos y estructurados. El proyecto busca contribuir al derecho de acceso a la informacion consagrado en el articulo 6o. constitucional.
+> Esta solicitud se realiza en el marco del proyecto de datos abiertos "Tezca" (Leyes como Codigo Mexico), cuyo objetivo es facilitar el acceso ciudadano a la legislacion mexicana en formatos abiertos y estructurados. El proyecto busca contribuir al derecho de acceso a la informacion consagrado en el articulo 6o. constitucional.
 >
 > **Fundamento legal**:
 >
@@ -312,7 +312,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > [NOMBRE COMPLETO]
 > [CORREO ELECTRONICO]
-> Proyecto Leyes como Codigo Mexico
+> Proyecto Tezca (Leyes como Codigo Mexico)
 > [URL DEL PROYECTO]
 
 ---
@@ -356,13 +356,13 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 > 2. Informacion sobre si los documentos referenciados seran restaurados o si han sido dados de baja del acervo digital.
 > 3. En caso de que los documentos se encuentren disponibles en una ubicacion alternativa, se agradecera la referencia correspondiente.
 >
-> Este reporte se realiza en el marco del proyecto de datos abiertos "Leyes como Codigo Mexico", que busca ampliar el acceso ciudadano a la legislacion mexicana. Quedamos a disposicion para colaborar con su equipo en la identificacion y correccion de estos enlaces.
+> Este reporte se realiza en el marco del proyecto de datos abiertos "Tezca" (Leyes como Codigo Mexico), que busca ampliar el acceso ciudadano a la legislacion mexicana. Quedamos a disposicion para colaborar con su equipo en la identificacion y correccion de estos enlaces.
 >
 > Atentamente,
 >
 > [NOMBRE COMPLETO]
 > [CORREO ELECTRONICO]
-> Proyecto Leyes como Codigo Mexico
+> Proyecto Tezca (Leyes como Codigo Mexico)
 > [URL DEL PROYECTO]
 
 ---
@@ -381,7 +381,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > Dear [NAME / TITLE],
 >
-> I am writing on behalf of **Leyes como Codigo Mexico**, an open-source platform dedicated to making Mexican legislation accessible, searchable, and machine-readable. We currently index approximately 11,900 federal, state, and municipal laws (93.9% of known legislative laws) and are working toward comprehensive national coverage.
+> I am writing on behalf of **Tezca** (Leyes como Codigo Mexico), an open-source platform dedicated to making Mexican legislation accessible, searchable, and machine-readable. We currently index approximately 11,900 federal, state, and municipal laws (93.9% of known legislative laws) and are working toward comprehensive national coverage.
 >
 > **Proposal Summary**
 >
@@ -423,7 +423,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > [YOUR NAME]
 > [YOUR TITLE]
-> Leyes como Codigo Mexico
+> Tezca (Leyes como Codigo Mexico)
 > [EMAIL]
 > [PROJECT URL]
 
@@ -458,7 +458,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > **Contexto y proposito**:
 >
-> Esta solicitud se realiza en el marco del proyecto de datos abiertos "Leyes como Codigo Mexico", cuyo objetivo es facilitar el acceso ciudadano a la normatividad mexicana en formatos abiertos y estructurados. El catalogo CNARTyS representa una fuente fundamental para documentar la normatividad secundaria del marco juridico mexicano.
+> Esta solicitud se realiza en el marco del proyecto de datos abiertos "Tezca" (Leyes como Codigo Mexico), cuyo objetivo es facilitar el acceso ciudadano a la normatividad mexicana en formatos abiertos y estructurados. El catalogo CNARTyS representa una fuente fundamental para documentar la normatividad secundaria del marco juridico mexicano.
 >
 > **Fundamento legal**:
 >
@@ -472,7 +472,7 @@ Set `next_action_date` to 30 business days (approximately 42 calendar days) from
 >
 > [NOMBRE COMPLETO]
 > [CORREO ELECTRONICO]
-> Proyecto Leyes como Codigo Mexico
+> Proyecto Tezca (Leyes como Codigo Mexico)
 > [URL DEL PROYECTO]
 
 ---

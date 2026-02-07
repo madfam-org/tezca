@@ -165,7 +165,7 @@ Deployment:        🔄 Infrastructure ready, pending manual provisioning (see b
 ### Module Breakdown (~262k lines)
 
 ```
-leyes-como-codigo-mx/
+tezca/
 ├── apps/                          # Main application modules
 │   ├── api/                       # Django REST API (17 files)
 │   │   ├── models.py              # Law, LawVersion, Article models

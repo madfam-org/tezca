@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from "@leyesmx/ui";
+import { Badge } from "@tezca/ui";
 import type { StateCoverage } from './types';
 
 interface StateCoverageRowProps {

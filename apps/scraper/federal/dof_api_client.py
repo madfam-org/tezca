@@ -29,9 +29,7 @@ class DOFAPIClient:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update(
-            {
-                "User-Agent": "LeyesComoCodigo/1.0 (+https://github.com/madfam-org/leyes-como-codigo-mx)"
-            }
+            {"User-Agent": "Tezca/1.0 (+https://github.com/madfam-org/tezca)"}
         )
 
     def get_daily_pdf(

@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { api } from '@/lib/api';
-import { Card, CardHeader, CardTitle, CardContent, Badge } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardContent, Badge } from "@tezca/ui";
 import { Loader2 } from 'lucide-react';
-import type { IngestionStatus } from '@leyesmx/lib';
+import type { IngestionStatus } from '@tezca/lib';
 
 export default function JobMonitor() {
     const [status, setStatus] = useState<IngestionStatus | null>(null);

@@ -2,7 +2,7 @@
 
 import { SystemMetrics } from '@/components/admin/SystemMetrics';
 import { JobQueue } from '@/components/admin/JobQueue';
-import { Button } from '@leyesmx/ui';
+import { Button } from '@tezca/ui';
 import { Settings, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "leyes-como-codigo-mx"
+name = "tezca"
 version = "0.1.0"
 description = "Mexican Open Law Engine"
 authors = ["madfam-org"]

@@ -1,61 +1,61 @@
-# Leyes Como Código MX
+# Tezca
 
 > Mexican open law platform providing machine-readable access to 11,904 laws (333 federal + 11,363 state + 208 municipal) covering 93.9% of Mexico's legislative corpus. Monorepo: Next.js 15/16 frontend, Django 5 REST API, Elasticsearch 7.17 search, Akoma Ntoso XML parsing (98.9% accuracy). License: AGPL-3.0.
 
-This is the repository for Leyes Como Código México, an open-source legal research platform that digitizes the Mexican legal system. The codebase is a polyglot monorepo managed by NPM Workspaces (frontend) and Poetry (backend). The API exposes OpenAPI documentation at `/api/docs/`.
+This is the repository for Tezca (formerly Leyes Como Código México), an open-source legal research platform that digitizes the Mexican legal system. The codebase is a polyglot monorepo managed by NPM Workspaces (frontend) and Poetry (backend). The API exposes OpenAPI documentation at `/api/docs/`.
 
 ## Core Documentation
 
-- [README](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/README.md): Project overview, quick start, coverage table, features, architecture
-- [Strategic Overview](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/strategy/STRATEGIC_OVERVIEW.md): Vision, current status dashboard, architecture topology, 6-month goals
-- [Product Roadmap](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/ROADMAP.md): Phase-by-phase progress, sprint history, upcoming work
-- [Setup Guide](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/SETUP.md): Prerequisites, installation, environment configuration, development servers
+- [README](https://raw.githubusercontent.com/madfam-org/tezca/main/README.md): Project overview, quick start, coverage table, features, architecture
+- [Strategic Overview](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/strategy/STRATEGIC_OVERVIEW.md): Vision, current status dashboard, architecture topology, 6-month goals
+- [Product Roadmap](https://raw.githubusercontent.com/madfam-org/tezca/main/ROADMAP.md): Phase-by-phase progress, sprint history, upcoming work
+- [Setup Guide](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/SETUP.md): Prerequisites, installation, environment configuration, development servers
 
 ## Architecture
 
-- [System Architecture](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/architecture/ARCHITECTURE.md): Akoma Ntoso layer, FRBR URIs, data model, cross-references
-- [Monorepo Structure](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/architecture/MONOREPO.md): NPM Workspaces + Poetry, workspace layout, dependency management
-- [Tech Stack](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/architecture/TECH_STACK.md): Approved technologies
-- [Legal Ontology](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/architecture/ONTOLOGY.md): Data model for Mexican legal hierarchy
-- [Agent Patterns](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/architecture/AGENTS.md): Agent-based development patterns
+- [System Architecture](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/architecture/ARCHITECTURE.md): Akoma Ntoso layer, FRBR URIs, data model, cross-references
+- [Monorepo Structure](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/architecture/MONOREPO.md): NPM Workspaces + Poetry, workspace layout, dependency management
+- [Tech Stack](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/architecture/TECH_STACK.md): Approved technologies
+- [Legal Ontology](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/architecture/ONTOLOGY.md): Data model for Mexican legal hierarchy
+- [Agent Patterns](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/architecture/AGENTS.md): Agent-based development patterns
 
 ## API Reference
 
 - [OpenAPI Schema](/api/schema/): Downloadable OpenAPI 3.0 spec (when server running)
 - [Swagger UI](/api/docs/): Interactive API documentation (when server running)
-- [API Source — Laws](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/apps/api/law_views.py): Law endpoints
-- [API Source — Search](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/apps/api/search_views.py): Search endpoint
-- [API Source — Admin](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/apps/api/views.py): Calculation, ingestion
-- [API Source — Admin Functions](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/apps/api/admin_views.py): Health, metrics, config
-- [URL Routes](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/apps/api/urls.py): All API route definitions
-- [Shared Types](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/packages/lib/src/types.ts): TypeScript types
-- [Zod Schemas](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/packages/lib/src/schemas.ts): Runtime validation schemas
+- [API Source — Laws](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/law_views.py): Law endpoints
+- [API Source — Search](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/search_views.py): Search endpoint
+- [API Source — Admin](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/views.py): Calculation, ingestion
+- [API Source — Admin Functions](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/admin_views.py): Health, metrics, config
+- [URL Routes](https://raw.githubusercontent.com/madfam-org/tezca/main/apps/api/urls.py): All API route definitions
+- [Shared Types](https://raw.githubusercontent.com/madfam-org/tezca/main/packages/lib/src/types.ts): TypeScript types
+- [Zod Schemas](https://raw.githubusercontent.com/madfam-org/tezca/main/packages/lib/src/schemas.ts): Runtime validation schemas
 
 ## Data Pipeline
 
-- [Mexican Legal Universe](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/data/MEXICAN_LEGAL_UNIVERSE.md): 7-tier taxonomy (~670K+ instruments)
-- [OJN Scraping Strategy](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/research/OJN_SCRAPING_STRATEGY.md): OJN portal structure, URL patterns
-- [State Scraping Report](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/research/STATE_LAW_SCRAPING_REPORT.md): 11,363 laws scraped
-- [Parser Gaps Analysis](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/research/PARSER_GAPS_ANALYSIS.md): Parser accuracy deep-dive
-- [Data Sources](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/resources/SOURCES.md): Registry of all data sources
-- [Partnership Directory](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/data/PARTNERSHIP_DIRECTORY.md): 18+ institutions for data acquisition
+- [Mexican Legal Universe](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/data/MEXICAN_LEGAL_UNIVERSE.md): 7-tier taxonomy (~670K+ instruments)
+- [OJN Scraping Strategy](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/research/OJN_SCRAPING_STRATEGY.md): OJN portal structure, URL patterns
+- [State Scraping Report](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/research/STATE_LAW_SCRAPING_REPORT.md): 11,363 laws scraped
+- [Parser Gaps Analysis](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/research/PARSER_GAPS_ANALYSIS.md): Parser accuracy deep-dive
+- [Data Sources](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/resources/SOURCES.md): Registry of all data sources
+- [Partnership Directory](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/data/PARTNERSHIP_DIRECTORY.md): 18+ institutions for data acquisition
 
 ## Operations
 
-- [DataOps Escalation Playbook](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/dataops/ESCALATION_PLAYBOOK.md): 5-tier gap resolution
-- [System Management](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/SYSTEM_MANAGEMENT.md): Celery workers, Elasticsearch, scheduled tasks
-- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/TESTING_STRATEGY.md): 152 frontend + 201 backend tests + 8 E2E specs
-- [Code Quality](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/guides/code_quality.md): Lint config, file size limits
-- [Environment Config](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/.env.example): All environment variables
-- [Docker Compose](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docker-compose.yml): 7-service stack
+- [DataOps Escalation Playbook](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/dataops/ESCALATION_PLAYBOOK.md): 5-tier gap resolution
+- [System Management](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/SYSTEM_MANAGEMENT.md): Celery workers, Elasticsearch, scheduled tasks
+- [Testing Strategy](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/TESTING_STRATEGY.md): 152 frontend + 201 backend tests + 8 E2E specs
+- [Code Quality](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/guides/code_quality.md): Lint config, file size limits
+- [Environment Config](https://raw.githubusercontent.com/madfam-org/tezca/main/.env.example): All environment variables
+- [Docker Compose](https://raw.githubusercontent.com/madfam-org/tezca/main/docker-compose.yml): 7-service stack
 
 ## Optional
 
-- [PRD](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/strategy/PRD.md): Original product requirements (Phase 1 historical)
-- [Ingestion Fixes](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/research/INGESTION_FIXES.md): Historical pipeline fixes
-- [Catala Status](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/research/CATALA_STATUS.md): Computational law engine (experimental/blocked)
-- [Interactive Legal Map](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/design/interactive_legal_map.md): Future visualization concept
-- [Municipal Sources CSV](https://raw.githubusercontent.com/madfam-org/leyes-como-codigo-mx/main/docs/resources/MUNICIPAL_SOURCES.csv): Raw municipal source data
+- [PRD](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/strategy/PRD.md): Original product requirements (Phase 1 historical)
+- [Ingestion Fixes](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/research/INGESTION_FIXES.md): Historical pipeline fixes
+- [Catala Status](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/research/CATALA_STATUS.md): Computational law engine (experimental/blocked)
+- [Interactive Legal Map](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/design/interactive_legal_map.md): Future visualization concept
+- [Municipal Sources CSV](https://raw.githubusercontent.com/madfam-org/tezca/main/docs/resources/MUNICIPAL_SOURCES.csv): Raw municipal source data
 
 ---
 
@@ -99,8 +99,8 @@ docker compose up -d     # All services (Docker)
 ```
 /
 ├── packages/
-│   ├── ui/          # Shared UI Library (@leyesmx/ui) - React 19 / Shadcn
-│   ├── lib/         # Shared Utilities & Types (@leyesmx/lib)
+│   ├── ui/          # Shared UI Library (@tezca/ui) - React 19 / Shadcn
+│   ├── lib/         # Shared Utilities & Types (@tezca/lib)
 │   └── tsconfig/    # Shared TypeScript configurations
 ├── apps/
 │   ├── web/         # Public Portal (Next.js 15)
@@ -221,8 +221,8 @@ Examples:
 - **@testing-library/react**: Component testing
 
 ## Shared Packages
-- `@leyesmx/ui`: Shared UI components (React 19 + Shadcn)
-- `@leyesmx/lib`: Types + Zod schemas for API validation
+- `@tezca/ui`: Shared UI components (React 19 + Shadcn)
+- `@tezca/lib`: Types + Zod schemas for API validation
 
 ## Infrastructure
 - **Docker Compose**: 7 services (API, Celery, Celery Beat, Web, Admin, PostgreSQL, Redis, Elasticsearch)
@@ -257,8 +257,8 @@ Examples:
 │   │   └── scheduling/ # Celery Beat tasks
 │   └── ingestion/      # Ingestion orchestration
 ├── packages/
-│   ├── ui/             # @leyesmx/ui — Shared React/Shadcn components
-│   ├── lib/            # @leyesmx/lib — Types + Zod schemas
+│   ├── ui/             # @tezca/ui — Shared React/Shadcn components
+│   ├── lib/            # @tezca/lib — Types + Zod schemas
 │   └── tsconfig/       # Shared TypeScript config
 ├── engines/
 │   ├── catala/         # Tax algorithms (experimental)
@@ -290,8 +290,8 @@ Examples:
 ## Installation
 
 ```bash
-git clone https://github.com/madfam-org/leyes-como-codigo-mx.git
-cd leyes-como-codigo-mx
+git clone https://github.com/madfam-org/tezca.git
+cd tezca
 npm install           # Frontend (all workspaces)
 poetry install        # Backend (Python)
 cp .env.example .env  # Configure environment
@@ -698,7 +698,7 @@ Dependencies: api → postgres, redis, elasticsearch; celery → postgres, redis
 
 ```toml
 [tool.poetry]
-name = "leyes-como-codigo-mx"
+name = "tezca"
 version = "0.1.0"
 description = "Mexican Open Law Engine"
 authors = ["madfam-org"]

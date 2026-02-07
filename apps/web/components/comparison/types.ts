@@ -1,4 +1,4 @@
-import type { Law, LawArticleResponse } from "@leyesmx/lib";
+import type { Law, LawArticleResponse } from "@tezca/lib";
 
 export interface LawStructureNode {
     label: string;

@@ -1,5 +1,5 @@
 {
-    "extends": "@leyesmx/tsconfig/base.json",
+    "extends": "@tezca/tsconfig/base.json",
     "compilerOptions": {
         "outDir": "dist",
         "rootDir": "src"

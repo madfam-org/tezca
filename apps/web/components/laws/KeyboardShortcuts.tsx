@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Keyboard } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useBookmarks } from '@/components/providers/BookmarksContext';
-import type { Article } from '@leyesmx/lib';
+import type { Article } from '@tezca/lib';
 
 const content = {
     es: {

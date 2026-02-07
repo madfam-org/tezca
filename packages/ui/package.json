@@ -1,5 +1,5 @@
 {
-    "name": "@leyesmx/ui",
+    "name": "@tezca/ui",
     "version": "0.0.0",
     "private": true,
     "main": "./src/index.ts",
@@ -9,12 +9,12 @@
     },
     "dependencies": {
         "lucide-react": "^0.563.0",
-        "@leyesmx/lib": "*",
+        "@tezca/lib": "*",
         "class-variance-authority": "^0.7.1",
         "@radix-ui/react-slot": "^1.0.0"
     },
     "devDependencies": {
-        "@leyesmx/tsconfig": "*",
+        "@tezca/tsconfig": "*",
         "@types/react": "^19.0.0",
         "typescript": "^5.3.3",
         "tailwindcss": "^3.4.0"

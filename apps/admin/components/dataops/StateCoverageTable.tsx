@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@tezca/ui";
 import { Map, ArrowUpDown } from 'lucide-react';
 import type { StateCoverage } from './types';
 import { StateCoverageRow } from './StateCoverageRow';

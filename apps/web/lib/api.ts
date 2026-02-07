@@ -1,4 +1,4 @@
-import type { Law, LawListItem, SearchResponse, DashboardStats, LawArticleResponse, IngestionStatus } from "@leyesmx/lib";
+import type { Law, LawListItem, SearchResponse, DashboardStats, LawArticleResponse, IngestionStatus } from "@tezca/lib";
 import {
     LawSchema,
     SearchResponseSchema,
@@ -6,7 +6,7 @@ import {
     LawArticleResponseSchema,
     IngestionStatusSchema,
     safeParseResponse,
-} from "@leyesmx/lib";
+} from "@tezca/lib";
 import { z } from "zod";
 
 interface LawStructureNode {

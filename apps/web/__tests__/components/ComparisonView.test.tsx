@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ComparisonView from '@/components/ComparisonView';
 import { LanguageProvider } from '@/components/providers/LanguageContext';
 import { api } from '@/lib/api';
-import type { Law } from '@leyesmx/lib';
+import type { Law } from '@tezca/lib';
 
 // Mock API
 vi.mock('@/lib/api', () => ({

@@ -1,6 +1,6 @@
 # Setup Guide
 
-Complete installation and configuration guide for the Leyes Como Codigo pipeline.
+Complete installation and configuration guide for the Tezca pipeline.
 
 ## Prerequisites
 
@@ -16,8 +16,8 @@ Complete installation and configuration guide for the Leyes Como Codigo pipeline
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/madfam-org/leyes-como-codigo-mx.git
-cd leyes-como-codigo-mx
+git clone https://github.com/madfam-org/tezca.git
+cd tezca
 ```
 
 ### 2. Install Frontend Dependencies
@@ -157,7 +157,7 @@ When the Django server is running:
 ## Directory Structure
 
 ```
-leyes-como-codigo-mx/
+tezca/
 ├── apps/
 │   ├── web/              # Public Portal (Next.js 15)
 │   ├── admin/            # Admin Console (Next.js 16)
@@ -167,8 +167,8 @@ leyes-como-codigo-mx/
 │   ├── scraper/          # DOF/OJN/Municipal scrapers
 │   └── ingestion/        # Ingestion orchestration
 ├── packages/
-│   ├── ui/               # Shared UI components (@leyesmx/ui)
-│   ├── lib/              # Shared types & schemas (@leyesmx/lib)
+│   ├── ui/               # Shared UI components (@tezca/ui)
+│   ├── lib/              # Shared types & schemas (@tezca/lib)
 │   └── tsconfig/         # Shared TS config
 ├── engines/
 │   ├── catala/           # Tax algorithms

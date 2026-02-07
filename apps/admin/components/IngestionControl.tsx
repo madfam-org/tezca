@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@leyesmx/ui";
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@tezca/ui";
 import { Play } from 'lucide-react';
 
 export default function IngestionControl() {

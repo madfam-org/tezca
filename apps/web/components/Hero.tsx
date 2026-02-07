@@ -2,7 +2,7 @@
 
 import { Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Button } from "@leyesmx/ui";
+import { Button } from "@tezca/ui";
 import { api } from '@/lib/api';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { useLang } from '@/components/providers/LanguageContext';

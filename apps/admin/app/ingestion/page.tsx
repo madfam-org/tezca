@@ -1,7 +1,7 @@
 import JobMonitor from '@/components/JobMonitor';
 import IngestionControl from '@/components/IngestionControl';
 import Link from 'next/link';
-import { Button } from "@leyesmx/ui";
+import { Button } from "@tezca/ui";
 import { ArrowLeft } from 'lucide-react';
 
 export default function IngestionPage() {

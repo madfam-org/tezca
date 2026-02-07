@@ -7,7 +7,7 @@ import django
 from django.core.management import call_command
 
 # Setup Django
-sys.path.append("/Users/aldoruizluna/labspace/leyes-como-codigo-mx")
+sys.path.append("/Users/aldoruizluna/labspace/tezca")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.indigo.settings")
 django.setup()
 

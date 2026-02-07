@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Badge } from "@leyesmx/ui";
+import { Button, Badge } from "@tezca/ui";
 import type { CoverageView } from './types';
 
 interface CoverageViewSelectorProps {

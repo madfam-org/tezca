@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, type SystemConfig, type HealthCheck } from '@/lib/api';
-import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@leyesmx/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@tezca/ui";
 import { ArrowLeft, Database, Globe, Server, HardDrive, RefreshCw } from 'lucide-react';
 
 export default function SettingsPage() {

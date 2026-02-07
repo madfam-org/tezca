@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@tezca/ui";
 import { Activity } from 'lucide-react';
 import type { HealthStatus } from './types';
 import { SourceHealthCard } from './SourceHealthCard';

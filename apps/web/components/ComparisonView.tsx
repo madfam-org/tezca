@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { Button } from "@leyesmx/ui";
+import { Button } from "@tezca/ui";
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Map } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

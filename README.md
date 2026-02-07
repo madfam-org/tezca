@@ -90,8 +90,8 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 ```text
 /
 ├── packages/
-│   ├── ui/          # Shared UI Library (@leyesmx/ui) - React 19 / Shadcn
-│   ├── lib/         # Shared Utilities & Types (@leyesmx/lib)
+│   ├── ui/          # Shared UI Library (@tezca/ui) - React 19 / Shadcn
+│   ├── lib/         # Shared Utilities & Types (@tezca/lib)
 │   └── tsconfig/    # Shared TypeScript configurations
 ├── apps/
 │   ├── web/         # Public Portal (Next.js 15)
@@ -162,4 +162,4 @@ AGPL-3.0 — see [pyproject.toml](pyproject.toml) for details.
 
 ## Contact
 
-Issues: https://github.com/madfam-org/leyes-como-codigo-mx/issues
+Issues: https://github.com/madfam-org/tezca/issues

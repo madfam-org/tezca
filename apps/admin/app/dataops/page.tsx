@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Button, Card, CardContent } from "@leyesmx/ui";
+import { Button, Card, CardContent } from "@tezca/ui";
 import { ArrowLeft } from 'lucide-react';
 import type { DashboardData } from '@/components/dataops/types';
 import { CoverageHeader } from '@/components/dataops/CoverageHeader';

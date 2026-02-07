@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@tezca/ui";
 import { Layers } from 'lucide-react';
 import type { TierProgress } from './types';
 import { TierProgressBar } from './TierProgressBar';

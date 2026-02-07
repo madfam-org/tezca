@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from "@leyesmx/ui";
+import { Card, CardContent } from "@tezca/ui";
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

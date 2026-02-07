@@ -6,13 +6,13 @@ import { Search as SearchIcon, Loader2, Filter as FilterIcon, Link2, Check } fro
 import { SearchResultsSkeleton } from '@/components/skeletons/SearchResultsSkeleton';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Card, CardContent, Badge } from "@leyesmx/ui";
+import { Button, Card, CardContent, Badge } from "@tezca/ui";
 import { SearchFilters, type SearchFilterState } from '@/components/SearchFilters';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { Pagination } from '@/components/Pagination';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
-import type { SearchResult } from "@leyesmx/lib";
+import type { SearchResult } from "@tezca/lib";
 
 const content = {
     es: {

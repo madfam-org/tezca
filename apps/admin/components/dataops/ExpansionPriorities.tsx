@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent } from "@leyesmx/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@tezca/ui";
 import { TrendingUp } from 'lucide-react';
 import type { ExpansionPriority } from './types';
 import { PriorityRow } from './PriorityRow';

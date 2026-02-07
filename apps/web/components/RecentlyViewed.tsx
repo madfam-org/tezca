@@ -3,7 +3,7 @@
 import { useSyncExternalStore, useCallback } from 'react';
 import Link from 'next/link';
 import { Clock, ChevronRight } from 'lucide-react';
-import { Badge, Card } from '@leyesmx/ui';
+import { Badge, Card } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 
 const STORAGE_KEY = 'recently-viewed-laws';

@@ -19,8 +19,8 @@
         "react": "19.2.3",
         "react-dom": "19.2.3",
         "tailwind-merge": "^3.4.0",
-        "@leyesmx/ui": "*",
-        "@leyesmx/lib": "*"
+        "@tezca/ui": "*",
+        "@tezca/lib": "*"
     },
     "optionalDependencies": {
         "@janua/nextjs": "^1.0.0"

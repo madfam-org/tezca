@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, type SystemMetrics } from '@/lib/api';
-import { Button, Card, CardHeader, CardTitle, CardContent } from "@leyesmx/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent } from "@tezca/ui";
 import { ArrowLeft, BarChart3, Scale, Building2, Landmark, RefreshCw } from 'lucide-react';
 
 function MetricCard({ label, value, icon: Icon }: { label: string; value: string | number; icon: React.ComponentType<{ className?: string }> }) {

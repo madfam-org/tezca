@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@leyesmx/ui';
-import { Badge } from '@leyesmx/ui';
+import { Input } from '@tezca/ui';
+import { Badge } from '@tezca/ui';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
 import type { Lang } from '@/components/providers/LanguageContext';

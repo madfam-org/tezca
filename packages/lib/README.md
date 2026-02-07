@@ -1,4 +1,4 @@
-# @leyesmx/lib
+# @tezca/lib
 
 Shared utilities and TypeScript types for Leyes Como Código applications.
 
@@ -17,7 +17,7 @@ Core domain types shared between API, Web, and Admin:
 ## Usage
 
 ```tsx
-import { cn, type Law } from "@leyesmx/lib";
+import { cn, type Law } from "@tezca/lib";
 
 const myLaw: Law = { ... };
 

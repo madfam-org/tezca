@@ -2,7 +2,7 @@
 
 import type { Article } from './types';
 import { ScrollText, ChevronRight } from 'lucide-react';
-import { cn } from "@leyesmx/lib";
+import { cn } from "@tezca/lib";
 import { useLang } from '@/components/providers/LanguageContext';
 
 const content = {

@@ -1,4 +1,4 @@
-# @leyesmx/ui
+# @tezca/ui
 
 Shared UI component library for Leyes Como Código applications.
 
@@ -22,7 +22,7 @@ This package exports common UI primitives like:
 Import components directly from the package:
 
 ```tsx
-import { Button, Card } from "@leyesmx/ui";
+import { Button, Card } from "@tezca/ui";
 
 export default function MyComponent() {
   return (

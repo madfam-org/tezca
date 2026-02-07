@@ -1,8 +1,8 @@
 {
-    "name": "leyes-como-codigo-mx-monorepo",
+    "name": "tezca-monorepo",
     "version": "1.0.0",
     "private": true,
-    "description": "Monorepo root for Leyes Como Código México",
+    "description": "Monorepo root for Tezca",
     "workspaces": [
         "apps/*",
         "packages/*"

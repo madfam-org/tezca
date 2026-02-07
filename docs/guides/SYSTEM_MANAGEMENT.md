@@ -1,6 +1,6 @@
 # System Management
 
-This directory contains scripts, tools, and documentation for managing the Leyes Como Código platform.
+This directory contains scripts, tools, and documentation for managing the Tezca platform.
 
 ## Quick Reference
 
@@ -140,7 +140,7 @@ python scripts/xml_to_json.py
 ```bash
 # 1. Clone repository
 git clone <repo-url>
-cd leyes-como-codigo-mx
+cd tezca
 
 # 2. Quick start (installs deps + starts everything)
 make quickstart

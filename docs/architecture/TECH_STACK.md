@@ -73,7 +73,7 @@ Our stack is chosen to support **Isomorphism**: the ability to prove that the co
 
 * **Framework:** **Next.js 15** (public portal), **Next.js 16** (admin console)
 * **UI Library:** React 19 + **Shadcn/ui** + **Tailwind CSS 4** (CSS-first config, no `tailwind.config.ts`)
-* **Shared Packages:** `@leyesmx/ui`, `@leyesmx/lib` (Zod v4 schemas for runtime API validation)
+* **Shared Packages:** `@tezca/ui`, `@tezca/lib` (Zod v4 schemas for runtime API validation)
 * **Monorepo:** NPM Workspaces
 * **Testing:** Vitest + @testing-library/react (frontend), Pytest (backend)
 

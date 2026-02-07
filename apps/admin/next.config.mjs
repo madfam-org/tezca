@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    transpilePackages: ['@leyesmx/ui', '@leyesmx/lib'],
+    transpilePackages: ['@tezca/ui', '@tezca/lib'],
 };
 
 export default nextConfig;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from "@leyesmx/ui";
+import { Button } from "@tezca/ui";
 import { Link2, Unlink2, Copy, Check } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 

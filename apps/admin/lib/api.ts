@@ -1,4 +1,4 @@
-import type { IngestionStatus } from "@leyesmx/lib";
+import type { IngestionStatus } from "@tezca/lib";
 import type { DashboardData, RoadmapData } from "@/components/dataops/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';

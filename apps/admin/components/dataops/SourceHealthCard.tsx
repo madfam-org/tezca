@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from "@leyesmx/ui";
+import { Badge } from "@tezca/ui";
 import type { HealthSource } from './types';
 
 interface SourceHealthCardProps {

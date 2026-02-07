@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@leyesmx/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@tezca/ui";
 import { ArrowLeft, RefreshCw, Rocket, ChevronDown, ChevronRight } from 'lucide-react';
 import type { RoadmapData, RoadmapPhase, RoadmapItemData } from '@/components/dataops/types';
 

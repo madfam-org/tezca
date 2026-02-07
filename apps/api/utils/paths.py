@@ -19,15 +19,15 @@ def _strip_host_prefix(path_str: str) -> str:
     """Strip absolute host project root from paths embedded in metadata JSON.
 
     Metadata files may contain absolute paths like
-    ``/Users/.../leyes-como-codigo-mx/data/state_laws/...``.  Inside Docker the
+    ``/Users/.../tezca/data/state_laws/...``.  Inside Docker the
     project root is ``/app/``, so we extract the relative portion (e.g.
     ``data/state_laws/...``) to allow the normal candidate logic to find them.
     """
-    # Common host-side project root markers
-    marker = "leyes-como-codigo-mx/"
-    idx = path_str.find(marker)
-    if idx != -1:
-        return path_str[idx + len(marker) :]
+    # Common host-side project root markers (support both old and new dir names)
+    for marker in ("tezca/", "leyes-como-codigo-mx/"):
+        idx = path_str.find(marker)
+        if idx != -1:
+            return path_str[idx + len(marker) :]
     return path_str
 
 

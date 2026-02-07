@@ -99,7 +99,7 @@ class HealthMonitor:
             response = requests.get(
                 url,
                 timeout=PROBE_TIMEOUT,
-                headers={"User-Agent": "LeyesMX-HealthMonitor/1.0"},
+                headers={"User-Agent": "Tezca-HealthMonitor/1.0"},
                 allow_redirects=True,
             )
             elapsed_ms = int((time.time() - start) * 1000)

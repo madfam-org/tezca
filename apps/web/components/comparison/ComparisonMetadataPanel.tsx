@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from "@leyesmx/ui";
+import { Badge } from "@tezca/ui";
 import type { ComparisonLawData } from './types';
 import { useLang } from '@/components/providers/LanguageContext';
 import type { Lang } from '@/components/providers/LanguageContext';
