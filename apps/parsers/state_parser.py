@@ -182,8 +182,17 @@ class StateLawParser:
             if text_path.suffix.lower() == ".doc":
                 text_path_str = str(text_path)
                 candidates = [
-                    Path(text_path_str.replace("/state_laws/", "/state_laws_processed/").replace(".doc", ".txt")),
-                    Path(text_path_str.replace("/state_laws_non_legislative/", "/state_laws_non_legislative_processed/").replace(".doc", ".txt")),
+                    Path(
+                        text_path_str.replace(
+                            "/state_laws/", "/state_laws_processed/"
+                        ).replace(".doc", ".txt")
+                    ),
+                    Path(
+                        text_path_str.replace(
+                            "/state_laws_non_legislative/",
+                            "/state_laws_non_legislative_processed/",
+                        ).replace(".doc", ".txt")
+                    ),
                 ]
                 txt_path = None
                 for candidate in candidates:

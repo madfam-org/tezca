@@ -130,7 +130,7 @@ Code cannot merge to `main` unless:
 - **Browser:** Chromium (auto-starts dev server, mocks API via `page.route()`)
 
 ### CI Pipeline (`.github/workflows/ci.yml`)
-- **Jobs:** `test-backend` → `test-frontend` → `test-e2e`
+- **Jobs:** `test-backend` + `test-frontend` (parallel) → `test-e2e` (advisory, needs both)
 - **Coverage artifacts:** pytest XML + vitest JSON uploaded per run
 - **E2E artifacts:** Playwright HTML report uploaded on failure
 

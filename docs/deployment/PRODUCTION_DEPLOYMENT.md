@@ -55,7 +55,7 @@
                  ┌───────▼───┐  ┌───────▼───┐  ┌───────▼───┐
                  │ tezca-web │  │ tezca-api │  │tezca-admin│
                  │ :3000     │  │ :8000     │  │ :3001     │
-                 │ 2-5 pods  │  │ 2-6 pods  │  │ 1 pod     │
+                 │ 2-5 pods  │  │ 2-6 pods  │  │ 2 pods    │
                  └───────────┘  └─────┬─────┘  └───────────┘
                                       │
                      ┌────────────────┼────────────────┐
@@ -76,7 +76,7 @@
 |---------|-------|------|----------|--------|
 | tezca-api | ghcr.io/madfam-org/tezca/api | 8000 | 2-6 (HPA) | api.tezca.mx |
 | tezca-web | ghcr.io/madfam-org/tezca/web | 3000 | 2-5 | tezca.mx, www.tezca.mx |
-| tezca-admin | ghcr.io/madfam-org/tezca/admin | 3001 | 1 | admin.tezca.mx |
+| tezca-admin | ghcr.io/madfam-org/tezca/admin | 3001 | 2 | admin.tezca.mx |
 | tezca-worker | ghcr.io/madfam-org/tezca/api | — | 1 | — |
 | tezca-beat | ghcr.io/madfam-org/tezca/api | — | 1 (singleton) | — |
 | tezca-redis | redis:7-alpine | 6379 | 1 | — |
@@ -154,6 +154,7 @@ enclii secrets set JANUA_SECRET_KEY "sk_live_..." --env production
 |--------|---------|
 | `MADFAM_BOT_PAT` | GHCR image push + kustomization digest commit |
 | `ENCLII_CALLBACK_TOKEN` | CI lifecycle event reporting to enclii API |
+| `NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY` | Admin Docker build arg for Janua client-side auth |
 
 ---
 

@@ -90,8 +90,8 @@ jobs:
   test-e2e:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
-    needs: test-frontend
-    continue-on-error: true  # E2E requires API server — advisory only in CI
+    needs: [test-frontend, test-backend]
+    continue-on-error: true  # E2E uses mocked API routes; advisory-only until full integration setup
 
     steps:
     - uses: actions/checkout@v4
