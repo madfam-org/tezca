@@ -4,8 +4,8 @@ test.describe('Navbar', () => {
     test('navbar shows on homepage with brand link', async ({ page }) => {
         await page.goto('/');
 
-        // The navbar has the brand "Tezca" as a link to home
-        const brandLink = page.getByRole('link', { name: 'Tezca' });
+        // The navbar has the brand "Tezca" as a link to home (use .first() — footer also has brand)
+        const brandLink = page.getByRole('link', { name: 'Tezca' }).first();
         await expect(brandLink).toBeVisible();
         await expect(brandLink).toHaveAttribute('href', '/');
     });

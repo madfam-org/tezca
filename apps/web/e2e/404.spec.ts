@@ -26,8 +26,8 @@ test.describe('404 page', () => {
 
         await expect(page.getByRole('heading', { name: 'Pagina no encontrada' })).toBeVisible();
 
-        // "Buscar leyes" link navigates to /search
-        const searchLink = page.getByRole('link', { name: 'Buscar leyes' });
+        // "Buscar leyes" link navigates to /search (use exact to avoid footer match)
+        const searchLink = page.getByRole('link', { name: 'Buscar leyes', exact: true });
         await expect(searchLink).toBeVisible();
         await expect(searchLink).toHaveAttribute('href', '/search');
     });

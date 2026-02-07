@@ -7,15 +7,15 @@ test.describe('Language toggle', () => {
         // Default language is Spanish
         await expect(page.getByRole('heading', { name: 'Buscar Leyes' })).toBeVisible();
 
-        // Click the EN button in the language toggle
-        const enButton = page.getByRole('button', { name: 'Switch to English' });
+        // Click the EN button in the language toggle (use .first() — navbar + footer both have toggle)
+        const enButton = page.getByRole('button', { name: 'Switch to English' }).first();
         await enButton.click();
 
         // Heading should now be in English
         await expect(page.getByRole('heading', { name: 'Search Laws' })).toBeVisible();
 
         // Toggle back to Spanish
-        const esButton = page.getByRole('button', { name: 'Cambiar a español' });
+        const esButton = page.getByRole('button', { name: 'Cambiar a español' }).first();
         await esButton.click();
 
         await expect(page.getByRole('heading', { name: 'Buscar Leyes' })).toBeVisible();
@@ -26,7 +26,7 @@ test.describe('Language toggle', () => {
         await page.goto('/search?q=ley');
         await expect(page.getByRole('heading', { name: 'Buscar Leyes' })).toBeVisible();
 
-        const enButton = page.getByRole('button', { name: 'Switch to English' });
+        const enButton = page.getByRole('button', { name: 'Switch to English' }).first();
         await enButton.click();
         await expect(page.getByRole('heading', { name: 'Search Laws' })).toBeVisible();
 
