@@ -2,7 +2,7 @@
 
 **The definitive digital platform for Mexican legal research** - comprehensive, machine-readable database of Mexican laws (federal, state, municipal) with intuitive interfaces for professionals and citizens.
 
-**Coverage**: 93.9% of Legislative Laws (11,904 of 12,456) — [sourced from `data/universe_registry.json`]
+**Coverage**: 93.9% of Legislative Laws (11,904 of 12,456) + 18,439 non-legislative (30,343 total) — [sourced from `data/universe_registry.json`]
 **Status**: Production Ready
 
 ## Quick Start
@@ -42,7 +42,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 |-------|------|----------|----------|--------|
 | **Federal** | 333/336 | 336 | 99.1% | [Cámara de Diputados](https://www.diputados.gob.mx/LeyesBiblio/) |
 | **State (Legislativo)** | 11,363/12,120 | 12,120 | 93.7% | [OJN - Poder Legislativo](https://compilacion.ordenjuridico.gob.mx/) |
-| **State (Other Powers)** | 0/23,660 | 23,660 | 0% | OJN - Poderes 1/3/4 (not yet scraped) |
+| **State (Other Powers)** | 18,439/23,660 | 23,660 | 77.9% | OJN - Poderes 1/3/4 |
 | **Municipal** | 208 | Unknown | N/A | 5 city portals (no census exists) |
 | **Leyes Vigentes** | **11,696/12,456** | **12,456** | **93.9%** | Federal + State Legislativo |
 
@@ -56,7 +56,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Advanced Search** - Date range filtering, state filters, and auto-complete
 - ✅ **Law Detail 2.0** - Enhanced typography, improved ease-of-reading, and citations
 - ✅ **Quality Validation** - 5 automated checks, A-F grading
-- ✅ **Full-Text Search** - 860,000+ articles indexed in Elasticsearch
+- ✅ **Full-Text Search** - 3,480,000+ articles indexed in Elasticsearch
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech (paginated, filtered, rate-limited)
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers

@@ -1,6 +1,6 @@
 # Leyes Como Código MX
 
-> Mexican open law platform providing machine-readable access to 11,904 laws (333 federal + 11,363 state + 208 municipal) covering 93.9% of Mexico's legislative corpus. Monorepo: Next.js 15/16 frontend, Django 5 REST API, Elasticsearch 7.17 search, Akoma Ntoso XML parsing (98.9% accuracy). License: AGPL-3.0.
+> Mexican open law platform providing machine-readable access to 30,343 laws (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal) with 3.48M+ searchable articles. Monorepo: Next.js 15/16 frontend, Django 5 REST API, Elasticsearch 7.17 search, Akoma Ntoso XML parsing (98.9% accuracy). License: AGPL-3.0.
 
 This is the repository for Leyes Como Código México, an open-source legal research platform that digitizes the Mexican legal system. The codebase is a polyglot monorepo managed by NPM Workspaces (frontend) and Poetry (backend). The API exposes OpenAPI documentation at `/api/docs/`.
 

@@ -117,7 +117,7 @@ docker compose up -d     # All services (Docker)
 - Advanced Search with date range, state filters, auto-complete
 - Law Detail 2.0 with enhanced typography and citations
 - Quality Validation (A-F grading, 5 automated checks)
-- Full-Text Search (860,000+ articles in Elasticsearch)
+- Full-Text Search (3,480,000+ articles in Elasticsearch)
 - Version History tracking
 - REST API with OpenAPI documentation
 - Batch Processing (4-8 parallel workers)

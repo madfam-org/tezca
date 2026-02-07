@@ -1,7 +1,7 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-02-06
-**Current Status**: 93.9% Legislative Coverage (11,904 laws)
+**Last Updated**: 2026-02-07
+**Current Status**: 93.9% Legislative Coverage + 18,439 non-legislative (30,343 total laws)
 **Data Motor**: Pipeline fix complete (state/municipal AKN parsing + unified indexer)
 **DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
 
@@ -16,10 +16,10 @@
 ## Current Status (Feb 2026)
 
 ### ✅ Achievements
-- **11,904 laws** in database (333 federal + 11,363 state + 208 municipal)
+- **30,343 laws** in database (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal)
 - **93.9% legislative coverage** (11,696 of 12,456 leyes vigentes)
 - **98.9% parser accuracy** (world-class quality)
-- **860,000+ articles** indexed and searchable
+- **3,480,000+ articles** indexed and searchable
 - **Production-ready** backend infrastructure
 - **Full-stack Testing** (101 Vitest + 201 Pytest + 13 E2E)
 
