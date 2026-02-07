@@ -4,11 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .ingestion_manager import IngestionManager
-from .schema import (
-    ErrorSchema,
-    IngestionRequestSchema,
-    IngestionResponseSchema,
-)
+from .schema import ErrorSchema, IngestionRequestSchema, IngestionResponseSchema
 
 
 class IngestionView(APIView):
