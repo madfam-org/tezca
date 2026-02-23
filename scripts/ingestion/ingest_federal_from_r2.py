@@ -46,7 +46,11 @@ def list_r2_keys(prefix="federal/"):
     keys = set()
     token = None
     while True:
-        kwargs = {"Bucket": os.environ["R2_BUCKET_NAME"], "Prefix": prefix, "MaxKeys": 1000}
+        kwargs = {
+            "Bucket": os.environ["R2_BUCKET_NAME"],
+            "Prefix": prefix,
+            "MaxKeys": 1000,
+        }
         if token:
             kwargs["ContinuationToken"] = token
         resp = s3.list_objects_v2(**kwargs)
@@ -81,7 +85,9 @@ def ingest_laws(metadata_list, r2_keys, dry_run=False, label="federal"):
                     break
 
             if dry_run:
-                print(f"  [{i}] {law_id}: {name[:60]} (xml={'YES' if xml_key else 'NONE'})")
+                print(
+                    f"  [{i}] {law_id}: {name[:60]} (xml={'YES' if xml_key else 'NONE'})"
+                )
                 continue
 
             # Get or create Law — always "federal" tier for this script
@@ -138,7 +144,9 @@ def ingest_laws(metadata_list, r2_keys, dry_run=False, label="federal"):
             print(f"  ERROR [{i}] {law_id}: {e}")
 
         if i % 50 == 0:
-            print(f"  [{i}/{len(metadata_list)}] created={created} updated={updated} errors={errors}")
+            print(
+                f"  [{i}/{len(metadata_list)}] created={created} updated={updated} errors={errors}"
+            )
 
     print(f"\n{label} ingestion complete:")
     print(f"  Created: {created}")
@@ -150,10 +158,21 @@ def ingest_laws(metadata_list, r2_keys, dry_run=False, label="federal"):
 def main():
     parser = argparse.ArgumentParser(description="Ingest federal laws from R2")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--laws", action="store_true", default=True, help="Ingest federal laws (default)")
-    group.add_argument("--reglamentos", action="store_true", help="Ingest reglamentos only")
-    group.add_argument("--all", action="store_true", help="Ingest both laws and reglamentos")
-    parser.add_argument("--dry-run", action="store_true", help="List what would be ingested")
+    group.add_argument(
+        "--laws",
+        action="store_true",
+        default=True,
+        help="Ingest federal laws (default)",
+    )
+    group.add_argument(
+        "--reglamentos", action="store_true", help="Ingest reglamentos only"
+    )
+    group.add_argument(
+        "--all", action="store_true", help="Ingest both laws and reglamentos"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="List what would be ingested"
+    )
     args = parser.parse_args()
 
     storage = get_storage_backend()
@@ -197,16 +216,18 @@ def main():
         # Normalize reglamento metadata
         normalized = []
         for r in reglamentos:
-            normalized.append({
-                "id": r.get("id", r.get("official_id", "")),
-                "name": r.get("name", r.get("law_name", "")),
-                "short_name": r.get("short_name", r.get("name", "")),
-                "category": r.get("category", "Reglamento"),
-                "tier": "federal",
-                "law_type": "reglamento",
-                "publication_date": r.get("publication_date", ""),
-                "url": r.get("url", r.get("source_url", "")),
-            })
+            normalized.append(
+                {
+                    "id": r.get("id", r.get("official_id", "")),
+                    "name": r.get("name", r.get("law_name", "")),
+                    "short_name": r.get("short_name", r.get("name", "")),
+                    "category": r.get("category", "Reglamento"),
+                    "tier": "federal",
+                    "law_type": "reglamento",
+                    "publication_date": r.get("publication_date", ""),
+                    "url": r.get("url", r.get("source_url", "")),
+                }
+            )
         total += ingest_laws(normalized, r2_keys, args.dry_run, label="Reglamentos")
 
     print(f"\nTotal laws ingested: {total}")

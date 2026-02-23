@@ -129,19 +129,29 @@ def ingest_batch(laws_meta, law_type="", batch_label=""):
                 print(f"  ERROR [{i}] {official_id[:40]}: {e}")
 
         if i % 500 == 0:
-            print(f"  [{i}/{len(laws_meta)}] created={created} updated={updated} errors={errors}")
+            print(
+                f"  [{i}/{len(laws_meta)}] created={created} updated={updated} errors={errors}"
+            )
 
     print(f"\n{batch_label} ingestion complete:")
-    print(f"  Created: {created}, Updated: {updated}, Errors: {errors}, No AKN: {no_akn}")
+    print(
+        f"  Created: {created}, Updated: {updated}, Errors: {errors}, No AKN: {no_akn}"
+    )
     return created + updated
 
 
 def main():
     parser = argparse.ArgumentParser(description="Lean law ingestion from metadata")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--state", action="store_true", help="Ingest state legislative laws")
-    group.add_argument("--non-legislative", action="store_true", help="Ingest state non-legislative")
-    group.add_argument("--all", action="store_true", help="Ingest both state + non-legislative")
+    group.add_argument(
+        "--state", action="store_true", help="Ingest state legislative laws"
+    )
+    group.add_argument(
+        "--non-legislative", action="store_true", help="Ingest state non-legislative"
+    )
+    group.add_argument(
+        "--all", action="store_true", help="Ingest both state + non-legislative"
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -172,7 +182,9 @@ def main():
         laws = meta.get("laws", [])
         print(f"Found {len(laws)} non-legislative laws")
         if not args.dry_run:
-            total += ingest_batch(laws, law_type="non_legislative", batch_label="Non-legislative")
+            total += ingest_batch(
+                laws, law_type="non_legislative", batch_label="Non-legislative"
+            )
         else:
             print("Dry run — skipping")
 

@@ -76,6 +76,8 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: CELERY_RESULT_BACKEND
               value: "redis://tezca-redis:6379/0"
+            - name: ES_HOST
+              value: "http://tezca-es:9200"
           livenessProbe:
             exec:
               command: ["python", "-c", "import celery; print('ok')"]
