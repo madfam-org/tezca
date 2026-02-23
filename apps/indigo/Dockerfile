@@ -52,6 +52,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxslt1.1 \
     libgmp10 \
     wget \
+    libglib2.0-0 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libcairo2 \
+    libgdk-pixbuf-2.0-0 \
+    libffi-dev \
+    shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
 # Non-root user

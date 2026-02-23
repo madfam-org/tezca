@@ -35,14 +35,14 @@ try:
     from weasyprint import HTML as WeasyHTML
 
     _has_weasyprint = True
-except ImportError:
+except (ImportError, OSError):
     _has_weasyprint = False
 
 try:
     import jinja2
 
     _has_jinja2 = True
-except ImportError:
+except (ImportError, OSError):
     _has_jinja2 = False
 
 try:
@@ -50,14 +50,14 @@ try:
     from docx.shared import Inches, Pt
 
     _has_docx = True
-except ImportError:
+except (ImportError, OSError):
     _has_docx = False
 
 try:
     from ebooklib import epub
 
     _has_ebooklib = True
-except ImportError:
+except (ImportError, OSError):
     _has_ebooklib = False
 
 # ── Format → minimum tier mapping ──────────────────────────────────────
