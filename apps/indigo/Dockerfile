@@ -33,7 +33,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Install Python dependencies into .venv
-RUN poetry install --no-interaction --no-ansi --no-root
+RUN poetry install --no-interaction --no-ansi --no-root -E production
 
 # Download spaCy model
 RUN poetry run python -m spacy download es_core_news_sm

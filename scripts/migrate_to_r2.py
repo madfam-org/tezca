@@ -4,6 +4,7 @@ Bulk upload existing local data/ directory to Cloudflare R2.
 
 Usage:
     STORAGE_BACKEND=r2 python scripts/migrate_to_r2.py [--dry-run]
+    STORAGE_BACKEND=r2 python scripts/migrate_to_r2.py --force --workers 8
 
 Uploads ~30GB of legal documents from local /data/ to the R2 bucket
 configured via R2_* environment variables. Supports resumption —
@@ -14,6 +15,7 @@ import argparse
 import os
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 # Ensure project root is on sys.path
@@ -42,6 +44,17 @@ def main():
         type=str,
         default="",
         help="Only upload files under this subdirectory (e.g., 'federal/')",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Skip exists check — upload all files unconditionally",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of concurrent upload threads (default: 1)",
     )
     args = parser.parse_args()
 
@@ -84,32 +97,71 @@ def main():
     bytes_uploaded = 0
     start_time = time.time()
 
-    for i, filepath in enumerate(files, 1):
-        key = str(filepath.relative_to(data_dir))
-        file_size = filepath.stat().st_size
+    if args.workers > 1:
+        # Concurrent upload
+        print(f"Uploading with {args.workers} workers (force={args.force})...")
 
-        # Skip if already exists in R2
-        if storage.exists(key):
-            skipped += 1
-            continue
+        def upload_one(filepath):
+            key = str(filepath.relative_to(data_dir))
+            file_size = filepath.stat().st_size
+            if not args.force and storage.exists(key):
+                return ("skipped", key, 0)
+            try:
+                storage.put_file(key, filepath)
+                return ("uploaded", key, file_size)
+            except Exception as e:
+                return ("failed", key, 0, str(e))
 
-        try:
-            storage.put_file(key, filepath)
-            uploaded += 1
-            bytes_uploaded += file_size
-        except Exception as e:
-            failed += 1
-            print(f"  FAILED: {key} — {e}")
+        with ThreadPoolExecutor(max_workers=args.workers) as executor:
+            futures = {executor.submit(upload_one, fp): fp for fp in files}
+            for i, future in enumerate(as_completed(futures), 1):
+                result = future.result()
+                if result[0] == "uploaded":
+                    uploaded += 1
+                    bytes_uploaded += result[2]
+                elif result[0] == "skipped":
+                    skipped += 1
+                else:
+                    failed += 1
+                    print(f"  FAILED: {result[1]} — {result[3]}")
 
-        # Progress every 50 files
-        if i % 50 == 0:
-            elapsed = time.time() - start_time
-            rate = bytes_uploaded / elapsed / (1024**2) if elapsed > 0 else 0
-            print(
-                f"  [{i}/{len(files)}] "
-                f"uploaded={uploaded} skipped={skipped} failed={failed} "
-                f"({rate:.1f} MB/s)"
-            )
+                if i % 200 == 0:
+                    elapsed = time.time() - start_time
+                    rate = bytes_uploaded / elapsed / (1024**2) if elapsed > 0 else 0
+                    print(
+                        f"  [{i}/{len(files)}] "
+                        f"uploaded={uploaded} skipped={skipped} failed={failed} "
+                        f"({rate:.1f} MB/s)"
+                    )
+    else:
+        # Sequential upload (original behavior)
+        print(f"Uploading sequentially (force={args.force})...")
+        for i, filepath in enumerate(files, 1):
+            key = str(filepath.relative_to(data_dir))
+            file_size = filepath.stat().st_size
+
+            # Skip if already exists in R2
+            if not args.force and storage.exists(key):
+                skipped += 1
+                continue
+
+            try:
+                storage.put_file(key, filepath)
+                uploaded += 1
+                bytes_uploaded += file_size
+            except Exception as e:
+                failed += 1
+                print(f"  FAILED: {key} — {e}")
+
+            # Progress every 50 files
+            if i % 50 == 0:
+                elapsed = time.time() - start_time
+                rate = bytes_uploaded / elapsed / (1024**2) if elapsed > 0 else 0
+                print(
+                    f"  [{i}/{len(files)}] "
+                    f"uploaded={uploaded} skipped={skipped} failed={failed} "
+                    f"({rate:.1f} MB/s)"
+                )
 
     elapsed = time.time() - start_time
     print(f"\nMigration complete in {elapsed:.0f}s:")

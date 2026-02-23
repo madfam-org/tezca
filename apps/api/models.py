@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Law(models.Model):
-    OFFICIAL_ID_MAX_LENGTH = 50
+    OFFICIAL_ID_MAX_LENGTH = 200
 
     class Status(models.TextChoices):
         VIGENTE = "vigente", "Vigente"

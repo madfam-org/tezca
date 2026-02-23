@@ -143,7 +143,8 @@ def data_exists(relative_path: str) -> bool:
         from apps.api.storage import get_storage_backend
 
         storage = get_storage_backend()
-        key = relative_path.lstrip("/")
+        key = _strip_host_prefix(relative_path)
+        key = key.lstrip("/")
         if key.startswith("data/"):
             key = key[5:]
         return storage.exists(key)
@@ -204,9 +205,10 @@ def read_data_content(relative_path: str, encoding: str = "utf-8") -> str | None
         from apps.api.storage import get_storage_backend
 
         storage = get_storage_backend()
-        # Normalize the key: strip leading data/ prefix if present,
+        # Normalize the key: strip host prefix and leading data/ prefix,
         # since R2 keys mirror the data/ directory structure
-        key = relative_path.lstrip("/")
+        key = _strip_host_prefix(relative_path)
+        key = key.lstrip("/")
         if key.startswith("data/"):
             key = key[5:]
 
