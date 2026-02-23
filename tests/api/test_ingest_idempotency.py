@@ -35,19 +35,21 @@ class TestIngestStateIdempotency:
         return cmd.create_law_and_version(metadata, dry_run=dry_run)
 
     @patch(
-        "apps.api.management.commands.ingest_state_laws.resolve_data_path_or_none",
+        "apps.api.management.commands.ingest_state_laws.read_data_content",
     )
-    def test_double_ingest_no_duplicate_versions(self, mock_resolve):
+    @patch(
+        "apps.api.management.commands.ingest_state_laws.data_exists",
+        return_value=False,
+    )
+    def test_double_ingest_no_duplicate_versions(self, mock_exists, mock_read):
         """Running ingest twice on same data produces exactly 1 LawVersion."""
         from apps.api.management.commands.ingest_state_laws import Command
 
         uid = f"test_state_{uuid.uuid4().hex[:8]}"
         metadata = self._make_metadata(uid)
 
-        # Mock resolve_data_path_or_none to return a fake path with text
-        fake_path = MagicMock()
-        fake_path.read_text.return_value = "Artículo 1.- Test content."
-        mock_resolve.return_value = fake_path
+        # Mock read_data_content to return text content
+        mock_read.return_value = "Artículo 1.- Test content."
 
         cmd = Command()
 
@@ -68,18 +70,20 @@ class TestIngestStateIdempotency:
         assert LawVersion.objects.filter(law=law).count() == 1
 
     @patch(
-        "apps.api.management.commands.ingest_state_laws.resolve_data_path_or_none",
+        "apps.api.management.commands.ingest_state_laws.read_data_content",
     )
-    def test_version_updated_on_rerun(self, mock_resolve):
+    @patch(
+        "apps.api.management.commands.ingest_state_laws.data_exists",
+        return_value=False,
+    )
+    def test_version_updated_on_rerun(self, mock_exists, mock_read):
         """Re-running updates metadata on existing LawVersion."""
         from apps.api.management.commands.ingest_state_laws import Command
 
         uid = f"test_state_{uuid.uuid4().hex[:8]}"
         metadata = self._make_metadata(uid, url="https://old.example.com")
 
-        fake_path = MagicMock()
-        fake_path.read_text.return_value = "Text content."
-        mock_resolve.return_value = fake_path
+        mock_read.return_value = "Text content."
 
         cmd = Command()
         self._invoke_create(cmd, metadata)
@@ -113,17 +117,15 @@ class TestIngestMunicipalIdempotency:
         return defaults
 
     @patch(
-        "apps.api.management.commands.ingest_municipal_laws.resolve_data_path_or_none",
+        "apps.api.management.commands.ingest_municipal_laws.data_exists",
+        return_value=False,
     )
-    def test_double_ingest_no_duplicate_versions(self, mock_resolve):
+    def test_double_ingest_no_duplicate_versions(self, mock_exists):
         """Running municipal ingest twice produces exactly 1 LawVersion."""
         from apps.api.management.commands.ingest_municipal_laws import Command
 
         uid = f"test_muni_{uuid.uuid4().hex[:8]}"
         metadata = self._make_metadata(uid)
-
-        fake_path = MagicMock()
-        mock_resolve.return_value = fake_path
 
         cmd = Command()
 
@@ -141,17 +143,15 @@ class TestIngestMunicipalIdempotency:
         assert LawVersion.objects.filter(law=law).count() == 1
 
     @patch(
-        "apps.api.management.commands.ingest_municipal_laws.resolve_data_path_or_none",
+        "apps.api.management.commands.ingest_municipal_laws.data_exists",
+        return_value=False,
     )
-    def test_version_updated_on_rerun(self, mock_resolve):
+    def test_version_updated_on_rerun(self, mock_exists):
         """Re-running updates metadata on existing municipal LawVersion."""
         from apps.api.management.commands.ingest_municipal_laws import Command
 
         uid = f"test_muni_{uuid.uuid4().hex[:8]}"
         metadata = self._make_metadata(uid, url="https://old.example.com")
-
-        fake_path = MagicMock()
-        mock_resolve.return_value = fake_path
 
         cmd = Command()
         cmd.create_law_and_version(metadata)
@@ -252,12 +252,9 @@ class TestIndexLawsIdempotency:
             "apps.api.management.commands.index_laws.helpers.bulk",
             side_effect=capture_bulk,
         ), patch(
-            "apps.api.management.commands.index_laws.resolve_data_path_or_none",
-        ) as mock_resolve:
-            fake_path = MagicMock()
-            fake_path.read_text.return_value = akn_xml
-            mock_resolve.return_value = fake_path
-
+            "apps.api.management.commands.index_laws.read_data_content",
+            return_value=akn_xml,
+        ):
             cmd.index_law(law, mock_es)
 
         article_docs = [a for a in captured_actions if a["_index"] == "articles"]
