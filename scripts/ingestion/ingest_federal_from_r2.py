@@ -84,8 +84,8 @@ def ingest_laws(metadata_list, r2_keys, dry_run=False, label="federal"):
                 print(f"  [{i}] {law_id}: {name[:60]} (xml={'YES' if xml_key else 'NONE'})")
                 continue
 
-            # Get or create Law
-            tier = meta.get("tier", "federal")
+            # Get or create Law — always "federal" tier for this script
+            tier = "federal"
             category = meta.get("category", "")
             short_name = meta.get("short_name", name)[:200]
             law_type = meta.get("law_type", "")
