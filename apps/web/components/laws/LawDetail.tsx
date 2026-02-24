@@ -17,6 +17,7 @@ import { RelatedLaws } from './RelatedLaws';
 import { CrossReferencePanel } from './CrossReferencePanel';
 import { VersionTimeline } from './VersionTimeline';
 import { recordLawView } from '@/components/RecentlyViewed';
+import { List } from 'lucide-react';
 
 const content = {
     es: {
@@ -26,6 +27,8 @@ const content = {
         errorTitle: 'Error al cargar la ley',
         notFound: 'No se encontró la información solicitada',
         backToSearch: 'Volver al buscador',
+        showToc: 'Índice de contenidos',
+        hideToc: 'Ocultar índice',
     },
     en: {
         loadLawError: 'Could not load the law',
@@ -34,6 +37,8 @@ const content = {
         errorTitle: 'Error loading the law',
         notFound: 'The requested information was not found',
         backToSearch: 'Back to search',
+        showToc: 'Table of contents',
+        hideToc: 'Hide contents',
     },
     nah: {
         loadLawError: 'Ahmo huelītic in tenahuatilli',
@@ -42,6 +47,8 @@ const content = {
         errorTitle: 'Tlahtlacōlli ic tenahuatilli',
         notFound: 'Ahmo monextiā in tlamachiliztli',
         backToSearch: 'Xicmocuepa tlatemoliztli',
+        showToc: 'Tlatecpantli',
+        hideToc: 'Xictlātia tlatecpantli',
     },
 };
 
@@ -58,6 +65,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [fontSize, setFontSize] = useState<FontSize>('text-base');
+    const [showToc, setShowToc] = useState(false);
 
     useEffect(() => {
         async function fetchLaw() {
@@ -123,7 +131,20 @@ export function LawDetail({ lawId }: LawDetailProps) {
             <div className="container mx-auto flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-6 py-6 sm:py-8 flex-1">
                 {/* Left sidebar: TOC */}
                 <aside className="lg:w-80 flex-shrink-0">
-                    <div className="bg-card border rounded-lg p-3 sm:p-4 shadow-sm lg:sticky lg:top-24 lg:h-fit lg:max-h-[calc(100vh-8rem)]">
+                    {/* Mobile TOC toggle */}
+                    <button
+                        onClick={() => setShowToc(!showToc)}
+                        className="lg:hidden flex items-center gap-2 w-full rounded-lg border bg-card px-4 py-3 text-sm font-medium text-foreground shadow-sm mb-3"
+                        aria-expanded={showToc}
+                        aria-controls="toc-panel"
+                    >
+                        <List className="h-4 w-4" />
+                        {showToc ? t.hideToc : t.showToc}
+                    </button>
+                    <div
+                        id="toc-panel"
+                        className={`${showToc ? 'block' : 'hidden'} lg:block bg-card border rounded-lg p-3 sm:p-4 shadow-sm lg:sticky lg:top-24 lg:h-fit lg:max-h-[calc(100vh-8rem)]`}
+                    >
                         <div className="max-h-[40vh] lg:max-h-full lg:h-full overflow-y-auto">
                             <TableOfContents
                                 articles={data.articles}
@@ -133,6 +154,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
                                     window.history.pushState(null, '', `#article-${id}`);
 
                                     if (window.innerWidth < 1024) {
+                                        setShowToc(false);
                                         const articleEl = document.getElementById(`article-${id}`);
                                         if (articleEl) {
                                             articleEl.scrollIntoView({ behavior: 'smooth', block: 'start' });

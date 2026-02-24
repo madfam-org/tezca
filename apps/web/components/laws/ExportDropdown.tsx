@@ -207,7 +207,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full mt-1 w-56 rounded-md border bg-popover shadow-md z-50">
+                <div className="absolute right-0 top-full mt-1 w-56 max-w-[calc(100vw-2rem)] rounded-md border bg-popover shadow-md z-50">
                     <div className="p-1">
                         {FORMAT_LIST.map(({ format, icon, tierBadge }) => {
                             const accessible = canAccess(format);
@@ -230,12 +230,12 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                                         <div className="font-medium flex items-center gap-2">
                                             {fmtContent.label}
                                             {tierBadge === 'account' && (
-                                                <span className="text-[10px] leading-none bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded">
+                                                <span className="text-xs leading-none bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded">
                                                     {t.accountBadge}
                                                 </span>
                                             )}
                                             {tierBadge === 'premium' && (
-                                                <span className="text-[10px] leading-none bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 px-1.5 py-0.5 rounded">
+                                                <span className="text-xs leading-none bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 px-1.5 py-0.5 rounded">
                                                     {t.premiumBadge}
                                                 </span>
                                             )}

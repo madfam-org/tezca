@@ -221,7 +221,7 @@ function SingleArticle({
             }}
             aria-label={articleLabel}
             className={cn(
-                "group relative scroll-mt-24 rounded-lg border bg-card p-6 shadow-sm transition-all",
+                "group relative scroll-mt-24 rounded-lg border bg-card p-4 sm:p-6 shadow-sm transition-all",
                 isActive ? "ring-2 ring-primary border-primary" : "hover:border-primary/50"
             )}
         >
@@ -230,7 +230,7 @@ function SingleArticle({
                     {articleLabel}
                 </h3>
 
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-within:opacity-100 transition-all">
                     {/* Copy legal citation */}
                     <button
                         onClick={copyCitation}

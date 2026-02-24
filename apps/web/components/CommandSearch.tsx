@@ -72,7 +72,7 @@ export function CommandSearchTrigger() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 sm:py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label={t.placeholder}
             >
                 <Search className="h-3.5 w-3.5" />
@@ -183,7 +183,7 @@ function CommandSearchDialog({ onClose }: { onClose: () => void }) {
             />
 
             {/* Dialog */}
-            <div className="relative mx-auto mt-[15vh] w-full max-w-lg px-4">
+            <div className="relative mx-auto mt-[10vh] sm:mt-[15vh] w-full max-w-lg px-4">
                 <div className="overflow-hidden rounded-xl border border-border bg-popover shadow-2xl">
                     {/* Search input */}
                     <div className="flex items-center border-b border-border px-4">

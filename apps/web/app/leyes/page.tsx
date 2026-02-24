@@ -136,9 +136,9 @@ function LawsBrowseContent() {
             {/* Header */}
             <div className="bg-primary text-primary-foreground shadow-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                         <div>
-                            <h1 className="text-4xl font-bold mb-2">
+                            <h1 className="text-2xl sm:text-4xl font-bold mb-2">
                                 Tezca
                             </h1>
                             <p className="text-xl opacity-80">
@@ -161,7 +161,7 @@ function LawsBrowseContent() {
                     <div className="text-center py-16">
                         <div className="animate-pulse space-y-4">
                             <div className="h-8 bg-muted rounded w-48 mx-auto" />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...Array(6)].map((_, i) => (
                                     <div key={i} className="h-48 rounded-xl bg-muted" />
                                 ))}
@@ -195,7 +195,7 @@ function LawsBrowseContent() {
                                         {t.compareHint}
                                     </span>
                                     <Select value={sortParam} onValueChange={handleSortChange}>
-                                        <SelectTrigger className="w-[180px]">
+                                        <SelectTrigger className="w-full sm:w-[180px]">
                                             <SelectValue placeholder={t.sortBy} />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -212,7 +212,7 @@ function LawsBrowseContent() {
                             {laws.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-12">{t.noLaws}</p>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {laws.map((law) => (
                                         <LawCard key={law.id} law={law as never} />
                                     ))}

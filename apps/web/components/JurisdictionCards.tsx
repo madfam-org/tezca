@@ -157,7 +157,7 @@ export function JurisdictionCards() {
     }, []);
 
     return (
-        <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-16">
             <div className="mb-12 text-center">
                 <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
                     {t.heading}
@@ -192,7 +192,7 @@ export function JurisdictionCards() {
                                 {/* Background gradient */}
                                 <div className={`absolute inset-0 bg-gradient-to-br ${jurisdiction.gradient} opacity-5`} />
 
-                                <CardContent className="relative p-8">
+                                <CardContent className="relative p-5 sm:p-8">
                                     {/* Icon */}
                                     <div className={`mb-6 inline-flex rounded-xl bg-gradient-to-br ${jurisdiction.gradient} p-4 shadow-lg`}>
                                         <jurisdiction.Icon className="h-10 w-10 text-white" />

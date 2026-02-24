@@ -141,7 +141,7 @@ export function DashboardStatsGrid() {
 function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
     return (
         <Card>
-            <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+            <CardContent className="flex flex-col items-center justify-center p-3 sm:p-6 text-center">
                 <div className="mb-3 rounded-full bg-secondary/30 p-2.5">
                     {icon}
                 </div>

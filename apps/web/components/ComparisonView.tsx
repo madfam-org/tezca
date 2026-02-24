@@ -174,7 +174,7 @@ export default function ComparisonView({ lawIds }: ComparisonViewProps) {
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)]">
+        <div className="flex flex-col h-[calc(100dvh-80px)]">
             {/* Header */}
             <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4 px-4 sm:px-6 border-b">
                 <Button asChild variant="ghost" size="sm">

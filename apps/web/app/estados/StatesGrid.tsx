@@ -86,9 +86,9 @@ export function StatesGrid() {
             {/* Hero header */}
             <div className="bg-primary text-primary-foreground shadow-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                         <div>
-                            <h1 className="text-4xl font-bold mb-2">
+                            <h1 className="text-2xl sm:text-4xl font-bold mb-2">
                                 {t.heading}
                             </h1>
                             <p className="text-xl opacity-80">
@@ -146,7 +146,7 @@ export function StatesGrid() {
                                 >
                                     <Card className="h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-primary/50 group-hover:-translate-y-0.5">
                                         <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                                            <h2 className="text-base font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                                            <h2 className="text-base font-semibold text-foreground mb-2 truncate group-hover:text-primary transition-colors">
                                                 {state}
                                             </h2>
                                             <span className="text-xs text-muted-foreground">

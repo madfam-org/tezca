@@ -35,7 +35,7 @@ export function PopularLaws() {
     const t = content[lang];
 
     return (
-        <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-16">
             <div className="mb-8 text-center">
                 <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
                     {t.title}

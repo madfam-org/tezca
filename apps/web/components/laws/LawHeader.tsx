@@ -55,7 +55,7 @@ export function LawHeader({ law, version }: LawHeaderProps) {
 
     return (
         <header className="border-b bg-card">
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-6 sm:py-8">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                     <div className="flex-1 space-y-4">
                         <div className="flex flex-wrap items-center gap-2">
@@ -72,7 +72,7 @@ export function LawHeader({ law, version }: LawHeaderProps) {
                             )}
                         </div>
 
-                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                        <h1 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
                             {law.name}
                         </h1>
 
