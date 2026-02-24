@@ -67,7 +67,8 @@ class TestLawApi:
     @patch("apps.api.law_views.es_client")
     def test_law_articles(self, mock_es):
         """Test retrieving law articles."""
-        # Mock Elasticsearch response
+        # Mock Elasticsearch count + search responses
+        mock_es.count.return_value = {"count": 2}
         mock_es.search.return_value = {
             "hits": {
                 "hits": [
@@ -85,7 +86,8 @@ class TestLawApi:
         assert response.data["articles"][0]["article_id"] == "1"
         assert len(response.data["articles"]) == 2
 
-        # Verify ES call
+        # Verify ES calls
+        mock_es.count.assert_called_once()
         mock_es.search.assert_called_once()
 
     def test_states_list(self):
