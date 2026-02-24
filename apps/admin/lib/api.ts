@@ -3,6 +3,13 @@ import type { DashboardData, RoadmapData } from "@/components/dataops/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
+// Module-level token source — set by AdminAuthBridge, avoids changing page components
+let _getToken: (() => Promise<string | null>) | null = null;
+
+export function setTokenSource(getter: (() => Promise<string | null>) | null) {
+    _getToken = getter;
+}
+
 class APIError extends Error {
     constructor(public status: number, message: string) {
         super(message);
@@ -13,14 +20,24 @@ class APIError extends Error {
 async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
-    try {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(options?.headers as Record<string, string>),
+    };
+
+    // Inject auth token if available
+    if (_getToken) {
+        const token = await _getToken();
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+
+    const doFetch = async (hdrs: Record<string, string>) => {
         const response = await fetch(url, {
             ...options,
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
-            },
+            headers: hdrs,
         });
 
         if (!response.ok) {
@@ -30,8 +47,20 @@ async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
             );
         }
 
-        return response.json();
+        return response.json() as Promise<T>;
+    };
+
+    try {
+        return await doFetch(headers);
     } catch (error) {
+        // 401 retry: token may have been auto-refreshed by the SDK
+        if (error instanceof APIError && error.status === 401 && _getToken) {
+            const freshToken = await _getToken();
+            if (freshToken && freshToken !== headers['Authorization']?.replace('Bearer ', '')) {
+                headers['Authorization'] = `Bearer ${freshToken}`;
+                return doFetch(headers);
+            }
+        }
         if (error instanceof APIError) {
             throw error;
         }

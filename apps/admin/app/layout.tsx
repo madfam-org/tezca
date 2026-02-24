@@ -18,13 +18,16 @@ export const metadata: Metadata = {
     description: "Consola administrativa para tezca.mx",
 };
 
-import { JanuaProvider, UserButton } from "@/lib/auth";
+import { JanuaProvider, UserButton, AdminAuthBridge } from "@/lib/auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
+
+const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
 
 const januaConfig = {
     baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io",
     apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "",
+    autoRefreshTokens: true,
 };
 
 export default function RootLayout({
@@ -42,26 +45,30 @@ export default function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <div className="min-h-screen bg-background text-foreground">
-                            <header className="bg-card shadow-sm border-b">
-                                <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                                    <h1 className="text-2xl font-bold">
-                                        Tezca Admin
-                                    </h1>
-                                    <div className="flex items-center gap-4">
-                                        <ModeToggle />
-                                        <UserButton
-                                            showName={true}
-                                        />
+                        <AdminAuthBridge>
+                            <div className="min-h-screen bg-background text-foreground">
+                                <header className="bg-card shadow-sm border-b">
+                                    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                                        <h1 className="text-2xl font-bold">
+                                            Tezca Admin
+                                        </h1>
+                                        <div className="flex items-center gap-4">
+                                            <ModeToggle />
+                                            {januaConfigured && (
+                                                <UserButton
+                                                    showName={true}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </header>
-                            <main>
-                                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                                    {children}
-                                </div>
-                            </main>
-                        </div>
+                                </header>
+                                <main>
+                                    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                                        {children}
+                                    </div>
+                                </main>
+                            </div>
+                        </AdminAuthBridge>
                     </ThemeProvider>
                 </JanuaProvider>
             </body>

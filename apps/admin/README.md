@@ -9,7 +9,7 @@ The administrative dashboard for operating the Tezca platform (law ingestion, mo
 - **Expansion Roadmap**: Phase tracking with status updates, next priorities.
 - **Settings**: System configuration, environment info, Elasticsearch status.
 - **Job History**: Real job history from AcquisitionLog (last 20 runs).
-- **Authentication**: Janua JWT auth for all admin endpoints.
+- **Authentication**: Janua SSO with dev-mode bypass when unconfigured.
 
 ## Pages
 
@@ -21,13 +21,33 @@ The administrative dashboard for operating the Tezca platform (law ingestion, mo
 | `/dashboard/dataops` | Coverage dashboard, state table, gaps, health |
 | `/dashboard/roadmap` | Expansion roadmap with phase tracking |
 | `/dashboard/settings` | System configuration and health |
+| `/sign-in` | Janua sign-in form (or dev bypass when unconfigured) |
+
+## Auth Architecture
+
+Authentication uses `@janua/nextjs` with a module-level token injection pattern:
+
+- **`AdminAuthBridge`** (`lib/auth.tsx`): Wraps the app in `layout.tsx`. Wires the Janua SDK's `client.getAccessToken()` into the API client via `setTokenSource()`.
+- **`setTokenSource()`** (`lib/api.ts`): Module-level setter that injects Bearer tokens into all API requests. Includes 401 retry (re-fetches token in case the SDK auto-refreshed).
+- **Middleware** (`middleware.ts`): When `JANUA_SECRET_KEY` is set, protects all routes except `/sign-in` and `/api/health`. When absent, all routes are open (dev mode).
+- **`useAdminAuth()`** (`lib/auth.tsx`): Convenience hook returning `{ isAuthenticated, isLoading, user, signOut }`.
+
+### Env Vars
+
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_JANUA_BASE_URL` | Janua server URL (e.g. `https://auth.madfam.io`) |
+| `NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY` | OAuth client ID (`jnc_...`) |
+| `JANUA_SECRET_KEY` | OAuth client secret (`jns_...`) for session cookie verification |
+
+When none are set, the admin panel runs in open dev mode with no auth.
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router)
 - **UI**: React 19, Tailwind CSS 4, @tezca/ui (Shadcn)
-- **Auth**: @janua/nextjs (optional, stub fallback for local dev / CI)
+- **Auth**: @janua/nextjs (optional, open dev mode when unconfigured)
 - **State**: React Hooks for polling and data fetching
-- **Testing**: Vitest + @testing-library/react (8 test files, 51 tests)
+- **Testing**: Vitest + @testing-library/react (10 test files, 66 tests)
 
 ## Development
 
