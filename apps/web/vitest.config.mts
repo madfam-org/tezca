@@ -4,6 +4,13 @@ import path from 'path';
 
 export default defineConfig({
     plugins: [react()],
+    resolve: {
+        alias: {
+            '@janua/nextjs/middleware': path.resolve(__dirname, '__mocks__/@janua/nextjs-middleware.ts'),
+            '@janua/nextjs/server': path.resolve(__dirname, '__mocks__/@janua/nextjs-server.ts'),
+            '@janua/nextjs': path.resolve(__dirname, '__mocks__/@janua/nextjs.ts'),
+        },
+    },
     test: {
         environment: 'jsdom',
         globals: true,

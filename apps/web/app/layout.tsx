@@ -48,6 +48,7 @@ export const viewport: Viewport = {
   ],
 };
 
+import { JanuaProvider } from "@janua/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ComparisonProvider } from "@/components/providers/ComparisonContext";
 import { LanguageProvider } from "@/components/providers/LanguageContext";
@@ -59,6 +60,11 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Navbar } from "@/components/Navbar";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { BackToTop } from "@/components/BackToTop";
+
+const januaConfig = {
+  baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || 'https://auth.madfam.io',
+  apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || '',
+};
 
 export default function RootLayout({
   children,
@@ -83,20 +89,22 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ErrorBoundary>
-            <LanguageProvider>
-              <AuthProvider>
-                <BookmarksProvider>
-                  <ComparisonProvider>
-                    <ReadingProgressBar />
-                    <Navbar />
-                    <main id="main-content" className="flex-1">{children}</main>
-                    <Footer />
-                    <ComparisonFloatingBar />
-                    <BackToTop />
-                  </ComparisonProvider>
-                </BookmarksProvider>
-              </AuthProvider>
-            </LanguageProvider>
+            <JanuaProvider config={januaConfig}>
+              <LanguageProvider>
+                <AuthProvider>
+                  <BookmarksProvider>
+                    <ComparisonProvider>
+                      <ReadingProgressBar />
+                      <Navbar />
+                      <main id="main-content" className="flex-1">{children}</main>
+                      <Footer />
+                      <ComparisonFloatingBar />
+                      <BackToTop />
+                    </ComparisonProvider>
+                  </BookmarksProvider>
+                </AuthProvider>
+              </LanguageProvider>
+            </JanuaProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </body>

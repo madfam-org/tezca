@@ -19,12 +19,28 @@ vi.mock('@/components/providers/LanguageContext', () => ({
     LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock AuthContext
+vi.mock('@/components/providers/AuthContext', () => ({
+    useAuth: vi.fn(() => ({
+        isAuthenticated: false,
+        tier: 'anon' as const,
+        loginUrl: '/api/auth/signin',
+    })),
+}));
+
 // Mock CommandSearch
 vi.mock('@/components/CommandSearch', () => ({
     CommandSearchTrigger: () => <button data-testid="command-search-trigger" aria-label="Buscar leyes y artículos...">Search</button>,
 }));
 
+// Mock AuthModal
+vi.mock('@/components/AuthModal', () => ({
+    AuthModal: ({ open }: { open: boolean; onClose: () => void }) =>
+        open ? <div data-testid="auth-modal">Auth Modal</div> : null,
+}));
+
 import { Navbar } from '@/components/Navbar';
+import { useAuth } from '@/components/providers/AuthContext';
 
 describe('Navbar', () => {
     beforeEach(() => {
@@ -68,5 +84,27 @@ describe('Navbar', () => {
     it('renders command search trigger', () => {
         render(<Navbar />);
         expect(screen.getByTestId('command-search-trigger')).toBeDefined();
+    });
+
+    it('shows sign-in button when unauthenticated', () => {
+        render(<Navbar />);
+        expect(screen.getByLabelText('Iniciar sesión')).toBeInTheDocument();
+    });
+
+    it('opens auth modal when sign-in button clicked', () => {
+        render(<Navbar />);
+        fireEvent.click(screen.getByLabelText('Iniciar sesión'));
+        expect(screen.getByTestId('auth-modal')).toBeInTheDocument();
+    });
+
+    it('shows UserButton when authenticated', () => {
+        vi.mocked(useAuth).mockReturnValue({
+            isAuthenticated: true,
+            tier: 'free',
+            loginUrl: '/api/auth/signin',
+        });
+        render(<Navbar />);
+        // Sign-in button should not be present
+        expect(screen.queryByLabelText('Iniciar sesión')).not.toBeInTheDocument();
     });
 });

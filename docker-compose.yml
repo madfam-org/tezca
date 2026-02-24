@@ -111,6 +111,8 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY:-}
+      - JANUA_SECRET_KEY=${JANUA_SECRET_KEY:-}
     depends_on:
       - api
       - elasticsearch
@@ -125,6 +127,8 @@ services:
       - "3001:3001"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY:-}
+      - JANUA_SECRET_KEY=${JANUA_SECRET_KEY:-}
     depends_on:
       - api
 

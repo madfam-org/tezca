@@ -6,7 +6,7 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Copy workspace root package files
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 
 # Copy workspace package.json files for dependency resolution
 COPY apps/web/package.json apps/web/package.json
@@ -33,8 +33,10 @@ COPY packages/tsconfig ./packages/tsconfig
 # Build args injected at build time
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_AUTH_URL
+ARG NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_AUTH_URL=$NEXT_PUBLIC_AUTH_URL
+ENV NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=$NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY
 
 # Enable Next.js standalone output for smaller images
 ENV NEXT_TELEMETRY_DISABLED=1

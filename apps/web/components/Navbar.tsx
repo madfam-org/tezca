@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Menu, X } from 'lucide-react';
+import { BookOpen, Menu, X, LogIn } from 'lucide-react';
+import { UserButton } from '@janua/nextjs';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { CommandSearchTrigger } from '@/components/CommandSearch';
+import { AuthModal } from '@/components/AuthModal';
 import { useLang } from '@/components/providers/LanguageContext';
+import { useAuth } from '@/components/providers/AuthContext';
 
 const content = {
     es: {
@@ -20,6 +23,7 @@ const content = {
         favorites: 'Favoritos',
         openMenu: 'Abrir menú',
         closeMenu: 'Cerrar menú',
+        signIn: 'Iniciar sesión',
     },
     en: {
         home: 'Home',
@@ -31,6 +35,7 @@ const content = {
         favorites: 'Favorites',
         openMenu: 'Open menu',
         closeMenu: 'Close menu',
+        signIn: 'Sign in',
     },
     nah: {
         home: 'Caltenco',
@@ -42,6 +47,7 @@ const content = {
         favorites: 'Tlapepenilistli',
         openMenu: 'Xictlapo tlahcuilōlli',
         closeMenu: 'Xictlatzacua tlahcuilōlli',
+        signIn: 'Xicalaqui',
     },
 };
 
@@ -58,6 +64,7 @@ const NAV_LINKS = [
 export function Navbar() {
     const { lang } = useLang();
     const t = content[lang];
+    const { isAuthenticated } = useAuth();
     const pathname = usePathname();
     const isHome = pathname === '/';
     // Key mobile menu state to pathname — resets to false on navigation
@@ -66,6 +73,7 @@ export function Navbar() {
     const setMobileOpen = (open: boolean) => setMobileState({ path: pathname, open });
 
     const [scrolled, setScrolled] = useState(false);
+    const [authModalOpen, setAuthModalOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -76,91 +84,119 @@ export function Navbar() {
     const isTransparent = isHome && !scrolled && !mobileOpen;
 
     return (
-        <nav
-            className={`sticky top-0 z-40 transition-all duration-200 ${
-                isTransparent
-                    ? 'bg-transparent'
-                    : 'bg-background/80 backdrop-blur-lg border-b border-border'
-            }`}
-        >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                <div className="flex h-14 items-center justify-between">
-                    {/* Brand */}
-                    <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-                        <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
-                        <span>Tezca</span>
-                    </Link>
+        <>
+            <nav
+                className={`sticky top-0 z-40 transition-all duration-200 ${
+                    isTransparent
+                        ? 'bg-transparent'
+                        : 'bg-background/80 backdrop-blur-lg border-b border-border'
+                }`}
+            >
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <div className="flex h-14 items-center justify-between">
+                        {/* Brand */}
+                        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+                            <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
+                            <span>Tezca</span>
+                        </Link>
 
-                    {/* Desktop nav links */}
-                    <div className="hidden md:flex items-center gap-1">
-                        {NAV_LINKS.map((link) => {
-                            const isActive = pathname === link.href;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                        isActive
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                                    }`}
-                                >
-                                    {t[link.key]}
-                                </Link>
-                            );
-                        })}
-                    </div>
-
-                    {/* Right side: search + toggles */}
-                    <div className="flex items-center gap-2">
-                        <CommandSearchTrigger />
-                        <div className="hidden sm:block">
-                            <LanguageToggle />
+                        {/* Desktop nav links */}
+                        <div className="hidden md:flex items-center gap-1">
+                            {NAV_LINKS.map((link) => {
+                                const isActive = pathname === link.href;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            isActive
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                                        }`}
+                                    >
+                                        {t[link.key]}
+                                    </Link>
+                                );
+                            })}
                         </div>
-                        <ModeToggle />
-                        {/* Mobile hamburger */}
-                        <button
-                            className="md:hidden p-2 rounded-md hover:bg-muted/50 transition-colors"
-                            onClick={() => setMobileOpen(!mobileOpen)}
-                            aria-label={mobileOpen ? t.closeMenu : t.openMenu}
-                            aria-expanded={mobileOpen}
-                        >
-                            {mobileOpen ? (
-                                <X className="h-5 w-5" />
+
+                        {/* Right side: search + auth + toggles */}
+                        <div className="flex items-center gap-2">
+                            <CommandSearchTrigger />
+                            <div className="hidden sm:block">
+                                <LanguageToggle />
+                            </div>
+                            {isAuthenticated ? (
+                                <UserButton afterSignOut={() => window.location.assign('/')} />
                             ) : (
-                                <Menu className="h-5 w-5" />
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile slide panel */}
-            {mobileOpen && (
-                <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg animate-slide-down">
-                    <div className="px-4 py-4 space-y-1">
-                        {NAV_LINKS.map((link) => {
-                            const isActive = pathname === link.href;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={`block px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                                        isActive
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                                    }`}
+                                <button
+                                    onClick={() => setAuthModalOpen(true)}
+                                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                    aria-label={t.signIn}
                                 >
-                                    {t[link.key]}
-                                </Link>
-                            );
-                        })}
-                        <div className="pt-3 px-3 sm:hidden">
-                            <LanguageToggle />
+                                    <LogIn className="h-4 w-4" aria-hidden="true" />
+                                    <span>{t.signIn}</span>
+                                </button>
+                            )}
+                            <ModeToggle />
+                            {/* Mobile hamburger */}
+                            <button
+                                className="md:hidden p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                onClick={() => setMobileOpen(!mobileOpen)}
+                                aria-label={mobileOpen ? t.closeMenu : t.openMenu}
+                                aria-expanded={mobileOpen}
+                            >
+                                {mobileOpen ? (
+                                    <X className="h-5 w-5" />
+                                ) : (
+                                    <Menu className="h-5 w-5" />
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
-            )}
-        </nav>
+
+                {/* Mobile slide panel */}
+                {mobileOpen && (
+                    <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg animate-slide-down">
+                        <div className="px-4 py-4 space-y-1">
+                            {NAV_LINKS.map((link) => {
+                                const isActive = pathname === link.href;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`block px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                                            isActive
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                                        }`}
+                                    >
+                                        {t[link.key]}
+                                    </Link>
+                                );
+                            })}
+                            {!isAuthenticated && (
+                                <button
+                                    onClick={() => {
+                                        setMobileOpen(false);
+                                        setAuthModalOpen(true);
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                >
+                                    <LogIn className="h-4 w-4" aria-hidden="true" />
+                                    {t.signIn}
+                                </button>
+                            )}
+                            <div className="pt-3 px-3 sm:hidden">
+                                <LanguageToggle />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </nav>
+
+            <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+        </>
     );
 }

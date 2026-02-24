@@ -6,7 +6,7 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Copy workspace root package files
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 
 # Copy workspace package.json files for dependency resolution
 COPY apps/admin/package.json apps/admin/package.json

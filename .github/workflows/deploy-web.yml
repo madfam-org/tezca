@@ -52,6 +52,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             NEXT_PUBLIC_API_URL=https://api.tezca.mx/api/v1
+            NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false

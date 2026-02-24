@@ -11,6 +11,7 @@
         "test:watch": "vitest"
     },
     "dependencies": {
+        "@janua/nextjs": "^0.1.1",
         "@radix-ui/react-slot": "^1.2.4",
         "@tezca/lib": "*",
         "@tezca/ui": "*",
@@ -23,9 +24,6 @@
         "react": "19.2.3",
         "react-dom": "19.2.3",
         "tailwind-merge": "^3.4.0"
-    },
-    "optionalDependencies": {
-        "@janua/nextjs": "^1.0.0"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4",

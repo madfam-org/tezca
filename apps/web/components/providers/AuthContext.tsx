@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { useAuth as useJanuaAuth } from '@janua/nextjs';
 
 export type UserTier = 'anon' | 'free' | 'premium';
 
@@ -10,7 +11,7 @@ interface AuthState {
     loginUrl: string;
 }
 
-const DEFAULT_LOGIN_URL = process.env.NEXT_PUBLIC_JANUA_LOGIN_URL || '/auth/login';
+const DEFAULT_LOGIN_URL = '/api/auth/signin';
 
 const defaultState: AuthState = {
     isAuthenticated: false,
@@ -20,30 +21,45 @@ const defaultState: AuthState = {
 
 const AuthContext = createContext<AuthState>(defaultState);
 
-function resolveAuthState(): AuthState {
-    const token = getToken();
-    if (!token) return defaultState;
-
-    const claims = decodeJwtPayload(token);
-    if (!claims) return defaultState;
-
-    const tier = (claims.tier || claims.plan || 'free') as UserTier;
-    const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
-
-    return {
-        isAuthenticated: true,
-        tier: validTier as UserTier,
-        loginUrl: DEFAULT_LOGIN_URL,
-    };
-}
-
 /**
- * Lightweight auth provider that checks for a Janua JWT in cookies/localStorage.
- * Does NOT manage the auth flow — Janua handles that.
- * Used by ExportDropdown to conditionally show format access.
+ * Auth provider that bridges Janua SDK auth state into a simple
+ * isAuthenticated/tier interface consumed by ExportDropdown et al.
+ *
+ * Falls back to raw JWT cookie reading if Janua is not configured
+ * or the user isn't signed in via Janua.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [state] = useState<AuthState>(resolveAuthState);
+    const januaAuth = useJanuaAuth();
+
+    const state = useMemo<AuthState>(() => {
+        // If Janua has an authenticated user, use that
+        if (januaAuth?.isAuthenticated && januaAuth.user) {
+            const claims = (januaAuth.user as Record<string, unknown>) ?? {};
+            const tier = (claims.tier || claims.plan || 'free') as UserTier;
+            const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
+            return {
+                isAuthenticated: true,
+                tier: validTier as UserTier,
+                loginUrl: DEFAULT_LOGIN_URL,
+            };
+        }
+
+        // Fallback: check for raw JWT cookie (backward compat)
+        const token = getToken();
+        if (!token) return defaultState;
+
+        const jwtClaims = decodeJwtPayload(token);
+        if (!jwtClaims) return defaultState;
+
+        const tier = (jwtClaims.tier || jwtClaims.plan || 'free') as UserTier;
+        const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
+
+        return {
+            isAuthenticated: true,
+            tier: validTier as UserTier,
+            loginUrl: DEFAULT_LOGIN_URL,
+        };
+    }, [januaAuth?.isAuthenticated, januaAuth?.user]);
 
     return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
