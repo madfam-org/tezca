@@ -1,19 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { JanuaServerClient } from '@janua/nextjs';
+import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
 
-const janua = new JanuaServerClient({
-  appId: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || '',
-  apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || '',
-  jwtSecret: process.env.JANUA_SECRET_KEY || '',
-});
+const JWT_SECRET = process.env.JANUA_SECRET_KEY || '';
 
 export async function GET(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // GET /api/auth/session — return current session
+  // GET /api/auth/session — return current session from cookie
   if (pathname.endsWith('/session')) {
-    const session = await janua.getSession();
-    return NextResponse.json(session ?? { user: null });
+    try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get('janua-session')?.value;
+      if (!token || !JWT_SECRET) {
+        return NextResponse.json({ user: null });
+      }
+      const { payload } = await jwtVerify(
+        token,
+        new TextEncoder().encode(JWT_SECRET),
+      );
+      return NextResponse.json({
+        user: {
+          id: payload.sub,
+          email: payload.email,
+          name: payload.name,
+          tier: payload.tier ?? 'free',
+        },
+      });
+    } catch {
+      return NextResponse.json({ user: null });
+    }
   }
 
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -22,9 +38,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // POST /api/auth/signout — clear session
+  // POST /api/auth/signout — clear session cookie
   if (pathname.endsWith('/signout')) {
-    await janua.signOut();
+    const cookieStore = await cookies();
+    cookieStore.delete('janua-session');
     return NextResponse.json({ success: true });
   }
 

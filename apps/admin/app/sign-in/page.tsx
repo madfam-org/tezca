@@ -14,7 +14,7 @@ export default function SignInPage() {
                         Sign in to access the admin console
                     </p>
                 </div>
-                <SignInForm redirectUrl="/" />
+                <SignInForm redirectTo="/" />
             </div>
         </div>
     );

@@ -48,7 +48,7 @@ export const viewport: Viewport = {
   ],
 };
 
-import { JanuaProvider } from "@janua/nextjs";
+import { JanuaProvider } from "@/lib/janua";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ComparisonProvider } from "@/components/providers/ComparisonContext";
 import { LanguageProvider } from "@/components/providers/LanguageContext";

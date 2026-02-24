@@ -6,10 +6,11 @@ let januaAvailable = false;
 
 try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createJanuaMiddleware } = require("@janua/nextjs/server");
+    const { createJanuaMiddleware } = require("@janua/nextjs/middleware");
     middleware = createJanuaMiddleware({
+        jwtSecret: process.env.JANUA_SECRET_KEY || '',
         publicRoutes: ["/sign-in", "/api/health"],
-        signInUrl: "/sign-in",
+        redirectUrl: "/sign-in",
     });
     januaAvailable = true;
 } catch {

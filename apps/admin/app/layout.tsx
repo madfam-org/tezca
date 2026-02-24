@@ -52,7 +52,6 @@ export default function RootLayout({
                                         <ModeToggle />
                                         <UserButton
                                             showName={true}
-                                            afterSignOutUrl="/sign-in"
                                         />
                                     </div>
                                 </div>
