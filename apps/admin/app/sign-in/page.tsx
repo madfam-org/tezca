@@ -4,8 +4,15 @@ import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import { Shield } from "lucide-react";
 
 const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
+
+interface OAuthProvider {
+    provider?: string;
+    name: string;
+    enabled: boolean;
+}
 
 export default function SignInPage() {
     const router = useRouter();
@@ -19,9 +26,16 @@ export default function SignInPage() {
 
 function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> }) {
     const { auth, isAuthenticated, isLoading: authLoading } = useAuth();
+    const [providers, setProviders] = useState<OAuthProvider[]>([]);
+    const [providersLoading, setProvidersLoading] = useState(true);
+    const [providersError, setProvidersError] = useState(false);
+    const [ssoError, setSsoError] = useState<string | null>(null);
+    const [ssoRedirecting, setSsoRedirecting] = useState(false);
+
+    // Email/password fallback state
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
+    const [formError, setFormError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -30,16 +44,59 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         }
     }, [isAuthenticated, authLoading, router]);
 
+    useEffect(() => {
+        let cancelled = false;
+        async function fetchProviders() {
+            try {
+                const result = await auth.getOAuthProviders();
+                if (!cancelled) {
+                    const enabled = result.filter((p) => p.enabled);
+                    setProviders(enabled);
+                    setProvidersError(false);
+                }
+            } catch {
+                if (!cancelled) {
+                    setProvidersError(true);
+                }
+            } finally {
+                if (!cancelled) {
+                    setProvidersLoading(false);
+                }
+            }
+        }
+        fetchProviders();
+        return () => { cancelled = true; };
+    }, [auth]);
+
+    async function handleSsoClick(provider: OAuthProvider) {
+        setSsoError(null);
+        setSsoRedirecting(true);
+        try {
+            const providerKey = provider.provider || provider.name;
+            const result = await auth.signInWithOAuth({
+                provider: providerKey,
+                redirect_uri: window.location.origin + "/sign-in",
+            });
+            window.location.href = result.authorization_url;
+        } catch (err) {
+            setSsoError(
+                err instanceof Error
+                    ? err.message
+                    : "Error al iniciar SSO. Intenta de nuevo."
+            );
+            setSsoRedirecting(false);
+        }
+    }
+
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        setError(null);
+        setFormError(null);
         setSubmitting(true);
-
         try {
             await auth.signIn({ email, password });
             router.replace("/");
         } catch (err) {
-            setError(
+            setFormError(
                 err instanceof Error
                     ? err.message
                     : "Error al iniciar sesión. Verifica tus credenciales."
@@ -49,7 +106,7 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         }
     }
 
-    if (authLoading) {
+    if (authLoading || providersLoading) {
         return (
             <PageShell subtitle="Cargando...">
                 <div className="flex justify-center py-8">
@@ -59,67 +116,120 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         );
     }
 
+    const showSso = providers.length > 0;
+    const showFallbackForm = !showSso || providersError;
+
     return (
         <PageShell subtitle="Inicia sesión para acceder a la consola">
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                    <div
-                        role="alert"
-                        className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive"
-                    >
-                        {error}
+            {/* SSO Buttons */}
+            {showSso && (
+                <div className="space-y-3">
+                    {ssoError && (
+                        <div
+                            role="alert"
+                            className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                        >
+                            {ssoError}
+                        </div>
+                    )}
+
+                    {providers.map((provider) => (
+                        <button
+                            key={provider.provider || provider.name}
+                            onClick={() => handleSsoClick(provider)}
+                            disabled={ssoRedirecting}
+                            className="w-full flex justify-center items-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        >
+                            <Shield className="h-4 w-4" />
+                            {ssoRedirecting
+                                ? "Redirigiendo..."
+                                : `Iniciar sesión con ${provider.name}`}
+                        </button>
+                    ))}
+
+                    <p className="text-center text-xs text-muted-foreground">
+                        Serás redirigido al proveedor de identidad de tu
+                        organización.
+                    </p>
+                </div>
+            )}
+
+            {/* Divider between SSO and fallback */}
+            {showSso && showFallbackForm && (
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border" />
                     </div>
-                )}
-
-                <div className="space-y-2">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-foreground"
-                    >
-                        Correo electrónico
-                    </label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={submitting}
-                        placeholder="admin@madfam.io"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                    />
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            o usa correo y contraseña
+                        </span>
+                    </div>
                 </div>
+            )}
 
-                <div className="space-y-2">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-foreground"
-                    >
-                        Contraseña
-                    </label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+            {/* Email/password fallback form */}
+            {showFallbackForm && (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {formError && (
+                        <div
+                            role="alert"
+                            className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                        >
+                            {formError}
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-foreground"
+                        >
+                            Correo electrónico
+                        </label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={submitting}
+                            placeholder="admin@madfam.io"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-foreground"
+                        >
+                            Contraseña
+                        </label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={submitting}
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
                         disabled={submitting}
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                    {submitting ? "Iniciando sesión..." : "Iniciar sesión"}
-                </button>
-            </form>
+                        className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                        {submitting ? "Iniciando sesión..." : "Iniciar sesión"}
+                    </button>
+                </form>
+            )}
         </PageShell>
     );
 }
