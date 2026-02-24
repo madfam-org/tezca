@@ -96,9 +96,7 @@ def retry_transient_failures(self):
         now_iso = tz.now().isoformat()
         try:
             if gap.source_url:
-                resp = requests.head(
-                    gap.source_url, timeout=15, allow_redirects=True
-                )
+                resp = requests.head(gap.source_url, timeout=15, allow_redirects=True)
                 if resp.status_code < 400:
                     gap.status = "resolved"
                     gap.attempts.append(
@@ -145,7 +143,12 @@ def retry_transient_failures(self):
         errors,
         count,
     )
-    return {"total": count, "resolved": resolved, "escalated": escalated, "errors": errors}
+    return {
+        "total": count,
+        "resolved": resolved,
+        "escalated": escalated,
+        "errors": errors,
+    }
 
 
 @shared_task(name="dataops.generate_coverage_report")

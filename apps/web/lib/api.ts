@@ -120,9 +120,12 @@ export const api = {
     },
 
     /**
-     * Get full law detail including versions (raw API response shape)
+     * Get full law detail including versions (raw API response shape).
+     *
+     * The API returns a flat object with law fields at the top level plus
+     * a `versions` array. LawDetail.tsx normalises this into LawDetailData.
      */
-    getLawDetail: async (lawId: string): Promise<{ law: Record<string, string>; version: Record<string, string>; versions: Record<string, string>[] }> => {
+    getLawDetail: async (lawId: string): Promise<Record<string, unknown>> => {
         return fetcher(`/laws/${lawId}/`);
     },
 

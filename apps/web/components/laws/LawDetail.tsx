@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LawHeader } from './LawHeader';
 import { TableOfContents } from './TableOfContents';
 import { ArticleViewer } from './ArticleViewer';
-import type { LawDetailData } from './types';
+import type { Law, LawVersion, LawDetailData } from './types';
 import { useLang } from '@/components/providers/LanguageContext';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { FontSizeControl } from '@/components/FontSizeControl';
@@ -77,11 +77,20 @@ export function LawDetail({ lawId }: LawDetailProps) {
                     api.getLawArticles(lawId),
                 ]);
 
-                const law = lawData.law || lawData;
-                const allVersions = lawData.versions || [];
+                const raw = (lawData.law || lawData) as Record<string, unknown>;
+                const law: Law = {
+                    official_id: (raw.official_id ?? raw.id ?? lawId) as string,
+                    name: (raw.name ?? '') as string,
+                    category: (raw.category ?? '') as string,
+                    tier: (raw.tier ?? '') as string,
+                    state: (raw.state as string | null) ?? null,
+                    status: raw.status as string | undefined,
+                    last_verified: raw.last_verified as string | null | undefined,
+                };
+                const allVersions = (lawData.versions ?? []) as LawVersion[];
                 setData({
                     law,
-                    version: lawData.version || (allVersions[0]) || {},
+                    version: (lawData.version as LawVersion | undefined) || allVersions[0] || ({} as LawVersion),
                     versions: allVersions,
                     articles: articlesData.articles ?? [],
                     total: articlesData.total ?? 0,

@@ -22,7 +22,7 @@ function loadSentry(): Promise<any | null> {
     if (!_sentryPromise) {
         _sentryPromise = Function('return import("@sentry/nextjs")')().catch(() => null);
     }
-    return _sentryPromise;
+    return _sentryPromise!;
 }
 
 export function initSentry() {
