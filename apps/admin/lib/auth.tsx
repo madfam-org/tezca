@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { setTokenSource } from "./api";
 
 // Re-export Janua components for use across the app
-export { JanuaProvider, UserButton, SignInForm, useJanua } from "@janua/nextjs";
+export { JanuaProvider, UserButton, SignInForm, useJanua, useAuth } from "@janua/nextjs";
 
 // Import for internal use
 import { useJanua } from "@janua/nextjs";
