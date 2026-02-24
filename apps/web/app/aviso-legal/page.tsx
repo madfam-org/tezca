@@ -1,9 +1,12 @@
-'use client';
-
 import Link from 'next/link';
 import { ArrowLeft, Shield, ExternalLink, AlertTriangle } from 'lucide-react';
-import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Aviso Legal — Tezca',
+  description: 'Aviso legal de Tezca. Este sitio no es fuente oficial del gobierno mexicano.',
+};
 
 const content = {
   es: {
@@ -97,8 +100,13 @@ const content = {
   },
 };
 
-export default function AvisoLegalPage() {
-  const { lang } = useLang();
+export default async function AvisoLegalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = (['es', 'en', 'nah'].includes(params.lang ?? '') ? params.lang : 'es') as 'es' | 'en' | 'nah';
   const t = content[lang];
 
   return (

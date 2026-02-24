@@ -8,6 +8,23 @@ import { BookOpen, Scale, Building2, Calendar, FileText, ArrowRight, Landmark, B
 import Link from 'next/link';
 import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
 
+// Shared stats promise — deduplicates /stats/ calls across Hero, DashboardStatsGrid, RecentLawsList
+let _statsPromise: Promise<DashboardStats> | null = null;
+
+export function getSharedStats(): Promise<DashboardStats> {
+    if (!_statsPromise) {
+        _statsPromise = api.getStats();
+        // Allow refetch after 5 minutes
+        setTimeout(() => { _statsPromise = null; }, 5 * 60 * 1000);
+    }
+    return _statsPromise;
+}
+
+/** Reset the cached promise. Exported for tests only. */
+export function _resetStatsCache() {
+    _statsPromise = null;
+}
+
 const content = {
     es: {
         loadError: 'No se pudieron cargar las estadísticas.',
@@ -64,7 +81,7 @@ export function DashboardStatsGrid() {
     const locale = LOCALE_MAP[lang];
 
     useEffect(() => {
-        api.getStats()
+        getSharedStats()
             .then(setStats)
             .catch(console.error)
             .finally(() => setLoading(false));
@@ -143,7 +160,7 @@ export function RecentLawsList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.getStats()
+        getSharedStats()
             .then(setStats)
             .catch(console.error)
             .finally(() => setLoading(false));

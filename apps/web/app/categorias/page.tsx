@@ -213,8 +213,13 @@ async function fetchCategories(): Promise<APICategory[]> {
  * Fetches real category counts from the API. Falls back to hardcoded
  * category list if the API is unavailable.
  */
-export default async function CategoriesIndexPage() {
-  const lang = 'es' as const;
+export default async function CategoriesIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = (['es', 'en', 'nah'].includes(params.lang ?? '') ? params.lang : 'es') as 'es' | 'en' | 'nah';
   const t = content[lang];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 

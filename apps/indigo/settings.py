@@ -208,6 +208,16 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/
 CELERY_RESULT_BACKEND = os.environ.get(
     "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
 )
+# ── Cache ──────────────────────────────────────────────────────────────
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": CELERY_BROKER_URL,
+        "TIMEOUT": 300,  # 5 minutes default
+        "KEY_PREFIX": "tezca",
+    }
+}
+
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

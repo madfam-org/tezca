@@ -1,9 +1,12 @@
-'use client';
-
 import Link from 'next/link';
 import { ArrowLeft, Globe } from 'lucide-react';
-import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Política de Privacidad — Tezca',
+  description: 'Política de privacidad de Tezca, plataforma de legislación mexicana digitalizada.',
+};
 
 const content = {
   es: {
@@ -80,8 +83,13 @@ const content = {
   },
 };
 
-export default function PrivacidadPage() {
-  const { lang } = useLang();
+export default async function PrivacidadPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = (['es', 'en', 'nah'].includes(params.lang ?? '') ? params.lang : 'es') as 'es' | 'en' | 'nah';
   const t = content[lang];
 
   return (

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DashboardStatsGrid, RecentLawsList } from '@/components/DashboardStats';
+import { DashboardStatsGrid, RecentLawsList, _resetStatsCache } from '@/components/DashboardStats';
 import { LanguageProvider } from '@/components/providers/LanguageContext';
 import { api } from '@/lib/api';
 
@@ -72,6 +72,7 @@ const mockStats = {
 
 describe('DashboardStatsGrid', () => {
     beforeEach(() => {
+        _resetStatsCache();
         vi.mocked(api.getStats).mockReset();
     });
 
@@ -122,6 +123,7 @@ describe('DashboardStatsGrid', () => {
 
 describe('RecentLawsList', () => {
     beforeEach(() => {
+        _resetStatsCache();
         vi.mocked(api.getStats).mockReset();
     });
 

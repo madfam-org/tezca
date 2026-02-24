@@ -14,6 +14,25 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "apps"))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
+@pytest.fixture(autouse=True)
+def _use_dummy_cache(request):
+    """Override Redis cache with in-memory dummy cache for Django tests."""
+    try:
+        from django.conf import settings as django_settings
+        from django.test.utils import override_settings
+
+        with override_settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+                }
+            }
+        ):
+            yield
+    except Exception:
+        yield
+
+
 @pytest.fixture
 def sample_law_text():
     """Sample law text with basic structure."""

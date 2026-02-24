@@ -21,7 +21,7 @@ class Law(models.Model):
     )
     name = models.CharField(max_length=500, help_text="Full name of the law")
     short_name = models.CharField(max_length=200, blank=True, null=True)
-    category = models.CharField(max_length=100, blank=True, null=True)
+    category = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     tier = models.CharField(max_length=50, blank=True, null=True, db_index=True)
     municipality = models.CharField(
         max_length=100,
@@ -33,6 +33,7 @@ class Law(models.Model):
         max_length=100,
         blank=True,
         null=True,
+        db_index=True,
         help_text="State name (e.g., 'Jalisco', 'Ciudad de México')",
     )
     source_url = models.URLField(
@@ -90,6 +91,7 @@ class LawVersion(models.Model):
     change_summary = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-publication_date"]
@@ -166,7 +168,7 @@ class ExportLog(models.Model):
 
     user_id = models.CharField(max_length=255, blank=True, default="")
     ip_address = models.GenericIPAddressField()
-    law_id = models.CharField(max_length=50)
+    law_id = models.CharField(max_length=200)
     format = models.CharField(max_length=10)
     tier = models.CharField(max_length=20, default="anon")
     created_at = models.DateTimeField(auto_now_add=True)

@@ -8,7 +8,7 @@ import type { LawDetailData } from './types';
 import { useLang } from '@/components/providers/LanguageContext';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { FontSizeControl } from '@/components/FontSizeControl';
-import { API_BASE_URL } from '@/lib/config';
+import { api } from '@/lib/api';
 import type { FontSize } from '@/components/FontSizeControl';
 import { LawDetailSkeleton } from '@/components/skeletons/LawDetailSkeleton';
 import { ArticleSearch } from './ArticleSearch';
@@ -63,15 +63,11 @@ export function LawDetail({ lawId }: LawDetailProps) {
         async function fetchLaw() {
             try {
                 setLoading(true);
-                const apiUrl = API_BASE_URL;
 
-                const lawRes = await fetch(`${apiUrl}/laws/${lawId}/`);
-                if (!lawRes.ok) throw new Error(t.loadLawError);
-                const lawData = await lawRes.json();
-
-                const articlesRes = await fetch(`${apiUrl}/laws/${lawId}/articles/`);
-                if (!articlesRes.ok) throw new Error(t.loadArticlesError);
-                const articlesData = await articlesRes.json();
+                const [lawData, articlesData] = await Promise.all([
+                    api.getLawDetail(lawId),
+                    api.getLawArticles(lawId),
+                ]);
 
                 const law = lawData.law || lawData;
                 const allVersions = lawData.versions || [];
@@ -79,8 +75,8 @@ export function LawDetail({ lawId }: LawDetailProps) {
                     law,
                     version: lawData.version || (allVersions[0]) || {},
                     versions: allVersions,
-                    articles: articlesData.articles || [],
-                    total: articlesData.total || 0,
+                    articles: articlesData.articles ?? [],
+                    total: articlesData.total ?? 0,
                 });
 
                 recordLawView({ id: law.official_id || lawId, name: law.name, tier: law.tier });

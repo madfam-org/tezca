@@ -2,9 +2,9 @@
 
 export interface LawVersion {
     publication_date: string;
-    valid_from: string;
+    valid_from: string | null;
     valid_to?: string | null;
-    dof_url: string;
+    dof_url: string | null;
     change_summary?: string | null;
     xml_file: string | null;
 }

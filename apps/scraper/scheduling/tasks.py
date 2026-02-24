@@ -54,33 +54,98 @@ def detect_staleness(max_age_days=90):
     return {"stale_count": count, "max_age_days": max_age_days}
 
 
-@shared_task(name="dataops.retry_transient_failures")
-def retry_transient_failures():
-    """Retry gaps that are still at Tier 0 (transient failures)."""
+@shared_task(
+    name="dataops.retry_transient_failures",
+    bind=True,
+    max_retries=3,
+    default_retry_delay=300,
+)
+def retry_transient_failures(self):
+    """Retry gaps that are still at Tier 0 (transient failures).
+
+    Attempts to re-verify source URLs. If the URL responds, marks the gap
+    as resolved. If it fails again, escalates the tier.
+
+    Uses Celery's built-in retry on infrastructure-level errors (DB down,
+    Redis lost). Per-gap errors are handled inline without task-level retry.
+    """
+    import requests
+    from django.utils import timezone as tz
+
     from apps.scraper.dataops.models import GapRecord
 
-    transient_gaps = GapRecord.objects.filter(
-        status="open",
-        current_tier=0,
-        gap_type="dead_link",
-    )
+    try:
+        transient_gaps = list(
+            GapRecord.objects.filter(
+                status="open",
+                current_tier=0,
+                gap_type="dead_link",
+            )
+        )
+    except Exception as exc:
+        raise self.retry(exc=exc)
 
-    count = transient_gaps.count()
+    count = len(transient_gaps)
     logger.info("Found %d transient failures to retry", count)
 
-    # Mark them for re-processing (actual retry requires scraper integration)
-    for gap in transient_gaps:
-        gap.attempts.append(
-            {
-                "tier": 0,
-                "action": "Scheduled retry of transient failure",
-                "date": __import__("django").utils.timezone.now().isoformat(),
-                "result": "pending",
-            }
-        )
-        gap.save(update_fields=["attempts", "updated_at"])
+    resolved = 0
+    escalated = 0
+    errors = 0
 
-    return {"retried": count}
+    for gap in transient_gaps:
+        now_iso = tz.now().isoformat()
+        try:
+            if gap.source_url:
+                resp = requests.head(
+                    gap.source_url, timeout=15, allow_redirects=True
+                )
+                if resp.status_code < 400:
+                    gap.status = "resolved"
+                    gap.attempts.append(
+                        {
+                            "tier": 0,
+                            "action": "URL verified accessible",
+                            "date": now_iso,
+                            "result": "resolved",
+                        }
+                    )
+                    gap.save(update_fields=["status", "attempts", "updated_at"])
+                    resolved += 1
+                    continue
+
+            # URL still dead — escalate to tier 1
+            gap.current_tier = 1
+            gap.attempts.append(
+                {
+                    "tier": 1,
+                    "action": "Escalated after retry failure",
+                    "date": now_iso,
+                    "result": "escalated",
+                }
+            )
+            gap.save(update_fields=["current_tier", "attempts", "updated_at"])
+            escalated += 1
+
+        except Exception as exc:
+            errors += 1
+            gap.attempts.append(
+                {
+                    "tier": 0,
+                    "action": f"Retry error: {str(exc)[:200]}",
+                    "date": now_iso,
+                    "result": "error",
+                }
+            )
+            gap.save(update_fields=["attempts", "updated_at"])
+
+    logger.info(
+        "Retry complete: %d resolved, %d escalated, %d errors (of %d)",
+        resolved,
+        escalated,
+        errors,
+        count,
+    )
+    return {"total": count, "resolved": resolved, "escalated": escalated, "errors": errors}
 
 
 @shared_task(name="dataops.generate_coverage_report")

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 import { Search as SearchIcon, Loader2, Filter as FilterIcon, Link2, Check } from 'lucide-react';
 import { SearchResultsSkeleton } from '@/components/skeletons/SearchResultsSkeleton';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -39,6 +39,8 @@ const content = {
         shareSearch: 'Compartir búsqueda',
         copied: '¡Copiado!',
         removeFilter: 'Quitar filtro:',
+        nonLegislative: 'No Legislativa',
+        suggestionTerms: ['constitucion', 'codigo penal', 'trabajo', 'amparo'],
     },
     en: {
         searchError: 'Search error',
@@ -64,6 +66,8 @@ const content = {
         shareSearch: 'Share search',
         copied: 'Copied!',
         removeFilter: 'Remove filter:',
+        nonLegislative: 'Non-Legislative',
+        suggestionTerms: ['constitution', 'penal code', 'labor', 'amparo'],
     },
     nah: {
         searchError: 'Tlatemoliztli tlahtlac\u014Dlli',
@@ -89,6 +93,8 @@ const content = {
         shareSearch: 'Xict\u0113maca tlatemoliztli',
         copied: '\u014Cmot\u0113cac!',
         removeFilter: 'Xicpohua:',
+        nonLegislative: 'Ahmo Tenahuatilmachiyōtl',
+        suggestionTerms: ['constitucion', 'codigo penal', 'trabajo', 'amparo'],
     },
 };
 
@@ -360,7 +366,7 @@ function SearchContent() {
                                 <div className="mt-6">
                                     <p className="text-xs text-muted-foreground mb-3">{t.suggestions}</p>
                                     <div className="flex flex-wrap justify-center gap-2">
-                                        {['constitucion', 'codigo penal', 'trabajo', 'amparo'].map((term) => (
+                                        {t.suggestionTerms.map((term) => (
                                             <button
                                                 key={term}
                                                 onClick={() => handleSubmitQuery(term)}
@@ -435,7 +441,7 @@ function SearchContent() {
                                                                 )}
                                                                 {result.law_type === 'non_legislative' && (
                                                                     <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                                                                        No Legislativa
+                                                                        {t.nonLegislative}
                                                                     </Badge>
                                                                 )}
                                                                 {result.municipality && (

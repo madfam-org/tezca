@@ -11,6 +11,7 @@ Backend selection via STORAGE_BACKEND env var:
 
 import logging
 import os
+import threading
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Optional
@@ -65,7 +66,10 @@ class LocalStorageBackend(StorageBackend):
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     def _resolve(self, key: str) -> Path:
-        return self.base_dir / key
+        resolved = (self.base_dir / key).resolve()
+        if not str(resolved).startswith(str(self.base_dir.resolve())):
+            raise ValueError(f"Path traversal detected: {key}")
+        return resolved
 
     def put(self, key: str, data: bytes) -> str:
         path = self._resolve(key)
@@ -105,8 +109,9 @@ class LocalStorageBackend(StorageBackend):
             return []
         if search_dir.is_file():
             return [prefix]
+        resolved_base = self.base_dir.resolve()
         return [
-            str(p.relative_to(self.base_dir))
+            str(p.resolve().relative_to(resolved_base))
             for p in search_dir.rglob("*")
             if p.is_file()
         ]
@@ -206,11 +211,12 @@ class R2StorageBackend(StorageBackend):
 # ---------------------------------------------------------------------------
 
 _storage_backend: Optional[StorageBackend] = None
+_storage_lock = threading.Lock()
 
 
 def get_storage_backend() -> StorageBackend:
     """
-    Get the configured storage backend (singleton).
+    Get the configured storage backend (thread-safe singleton).
 
     Returns LocalStorageBackend by default (zero config for dev).
     Set STORAGE_BACKEND=r2 for Cloudflare R2 in production.
@@ -219,19 +225,25 @@ def get_storage_backend() -> StorageBackend:
     if _storage_backend is not None:
         return _storage_backend
 
-    backend_type = os.getenv("STORAGE_BACKEND", "local")
+    with _storage_lock:
+        # Double-check after acquiring lock
+        if _storage_backend is not None:
+            return _storage_backend
 
-    if backend_type == "r2":
-        _storage_backend = R2StorageBackend()
-        logger.info("Storage backend: Cloudflare R2")
-    else:
-        _storage_backend = LocalStorageBackend()
-        logger.info("Storage backend: local filesystem")
+        backend_type = os.getenv("STORAGE_BACKEND", "local")
 
-    return _storage_backend
+        if backend_type == "r2":
+            _storage_backend = R2StorageBackend()
+            logger.info("Storage backend: Cloudflare R2")
+        else:
+            _storage_backend = LocalStorageBackend()
+            logger.info("Storage backend: local filesystem")
+
+        return _storage_backend
 
 
 def reset_storage_backend() -> None:
     """Reset the singleton (for testing)."""
     global _storage_backend
-    _storage_backend = None
+    with _storage_lock:
+        _storage_backend = None

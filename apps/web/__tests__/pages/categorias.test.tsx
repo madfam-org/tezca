@@ -43,7 +43,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
             json: () => Promise.resolve(mockCategories),
         });
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         // Page title
@@ -69,7 +69,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
             json: () => Promise.resolve([]),
         });
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         // All seven hardcoded categories should appear
@@ -88,7 +88,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
             json: () => Promise.resolve(mockCategories),
         });
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         const civilLink = screen.getByText('Civil').closest('a');
@@ -101,7 +101,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
     it('falls back gracefully when fetch fails', async () => {
         mockFetch.mockRejectedValue(new Error('Network error'));
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         // Should still render the page with hardcoded categories, just no counts
@@ -117,7 +117,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
             json: () => Promise.resolve([]),
         });
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         // Page renders with categories but without counts
@@ -131,7 +131,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
             json: () => Promise.resolve(mockCategories),
         });
 
-        const Page = await CategoriesIndexPage();
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
         render(Page);
 
         const breadcrumbNav = screen.getByRole('navigation', { name: 'Breadcrumb' });

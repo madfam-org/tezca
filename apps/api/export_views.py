@@ -175,13 +175,13 @@ def _get_articles(law_id: str, max_articles: int = 10000) -> list[dict]:
             body={
                 "query": {"match_phrase": {"law_id": law_id}},
                 "size": max_articles,
-                "sort": [{"article_id.keyword": {"order": "asc"}}],
-                "_source": ["article_id", "text"],
+                "sort": [{"article": {"order": "asc"}}],
+                "_source": ["article", "text"],
             },
         )
         return [
             {
-                "article_id": hit["_source"].get("article_id", ""),
+                "article_id": hit["_source"].get("article", ""),
                 "text": hit["_source"].get("text", ""),
             }
             for hit in result["hits"]["hits"]

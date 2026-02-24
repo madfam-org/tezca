@@ -50,7 +50,7 @@ export default function SettingsPage() {
             </div>
 
             {error && (
-                <div className="p-4 bg-error-50 text-error-700 rounded-lg border border-error-500/20">
+                <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
                     {error}
                 </div>
             )}

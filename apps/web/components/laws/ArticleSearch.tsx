@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
 

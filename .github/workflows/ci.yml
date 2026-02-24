@@ -41,6 +41,12 @@ jobs:
       env:
         PYTHONPATH: apps:.
 
+    - name: Security audit (pip-audit)
+      run: |
+        pip install pip-audit
+        pip-audit --ignore-vuln PYSEC-2024-* || true
+      continue-on-error: true
+
     - name: Upload backend coverage
       uses: actions/upload-artifact@v4
       if: always()
@@ -76,9 +82,17 @@ jobs:
     - name: Build admin
       run: npm run build --workspace=admin
 
-    - name: Run Vitest with coverage
+    - name: Run Web Vitest with coverage
       run: npx vitest run --coverage
       working-directory: apps/web
+
+    - name: Run Admin Vitest
+      run: npx vitest run
+      working-directory: apps/admin
+
+    - name: Security audit (npm)
+      run: npm audit --production || true
+      continue-on-error: true
 
     - name: Upload frontend coverage
       uses: actions/upload-artifact@v4

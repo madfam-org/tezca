@@ -10,9 +10,11 @@ import { z } from "zod";
 
 export const LawVersionSchema = z.object({
     publication_date: z.string(),
-    valid_from: z.string(),
-    dof_url: z.string(),
+    valid_from: z.string().nullable(),
+    valid_to: z.string().nullable().optional(),
+    dof_url: z.string().nullable(),
     xml_file: z.string().nullable(),
+    change_summary: z.string().nullable().optional(),
 });
 
 export const LawSchema = z.object({

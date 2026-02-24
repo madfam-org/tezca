@@ -59,6 +59,10 @@ pytest-django = "^4.7"
 black = "^24.1"
 isort = "^5.13"
 
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "apps.indigo.settings"
+pythonpath = ["."]
+
 [tool.isort]
 profile = "black"
 

@@ -34,26 +34,52 @@ from .tasks import PIPELINE_STATUS_FILE
 @api_view(["GET"])
 def health_check(request):
     """
-    Simple health check endpoint.
-    Checks database connectivity.
+    Health check endpoint.
+    Checks database, Elasticsearch, and Redis connectivity.
     """
+    services = {}
+
+    # Database check
     try:
-        # Simple DB check
         Law.objects.first()
-        db_status = "connected"
+        services["database"] = "connected"
     except Exception:
-        db_status = "error"
-        return Response(
-            {"status": "unhealthy", "database": db_status},
-            status=status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
+        services["database"] = "error"
+
+    # Elasticsearch check
+    try:
+        es = es_client
+        if es.ping():
+            services["elasticsearch"] = "connected"
+        else:
+            services["elasticsearch"] = "unreachable"
+    except Exception:
+        services["elasticsearch"] = "error"
+
+    # Redis check (via Django cache or Celery broker)
+    try:
+        from django.core.cache import cache
+
+        cache.set("_health", "ok", 5)
+        if cache.get("_health") == "ok":
+            services["redis"] = "connected"
+        else:
+            services["redis"] = "error"
+    except Exception:
+        services["redis"] = "error"
+
+    is_healthy = services["database"] == "connected"
+    http_status = (
+        status.HTTP_200_OK if is_healthy else status.HTTP_503_SERVICE_UNAVAILABLE
+    )
 
     return Response(
         {
-            "status": "healthy",
-            "database": db_status,
+            "status": "healthy" if is_healthy else "unhealthy",
+            "services": services,
             "timestamp": timezone.now().isoformat(),
-        }
+        },
+        status=http_status,
     )
 
 

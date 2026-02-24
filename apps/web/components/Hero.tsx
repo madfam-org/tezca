@@ -3,9 +3,9 @@
 import { Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from "@tezca/ui";
-import { api } from '@/lib/api';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
+import { getSharedStats } from '@/components/DashboardStats';
 
 const content = {
     es: {
@@ -37,7 +37,7 @@ export function Hero() {
     const [totalLaws, setTotalLaws] = useState<number | null>(null);
 
     useEffect(() => {
-        api.getStats()
+        getSharedStats()
             .then(stats => setTotalLaws(stats.total_laws))
             .catch(() => {});
     }, []);

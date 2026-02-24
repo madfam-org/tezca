@@ -11,6 +11,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.views.decorators.cache import cache_page
+
 from .models import Law, LawVersion
 from .schema import (
     ErrorSchema,
@@ -305,6 +307,7 @@ class RelatedLawsView(APIView):
         return response
 
 
+@cache_page(3600)  # Cache 1 hour
 @api_view(["GET"])
 def categories_list(request):
     """Get all categories with law counts."""
@@ -428,6 +431,18 @@ def law_articles(request, law_id):
         # Query Elasticsearch
         es = es_client
 
+        # Get accurate total via count query (unaffected by dedup)
+        count_body = {
+            "query": {
+                "bool": {
+                    "must": [{"match_phrase": {"law_id": law.official_id}}],
+                    "must_not": [{"term": {"article": "full_text"}}],
+                }
+            }
+        }
+        count_res = es.count(index=INDEX_NAME, body=count_body)
+        total_count = count_res.get("count", 0)
+
         body = {
             "query": {"match_phrase": {"law_id": law.official_id}},
             "sort": [{"article": {"order": "asc"}}],
@@ -458,7 +473,9 @@ def law_articles(request, law_id):
             {
                 "law_id": law_id,
                 "law_name": law.name,
-                "total": len(articles),
+                "total": total_count,
+                "page": page,
+                "page_size": page_size,
                 "articles": articles,
             }
         )
@@ -499,12 +516,12 @@ def law_structure(request, law_id):
         # We will use 'article' sort as a fallback, but it is alphanumeric (1, 10, 2).
         # Fix: We will rely on simple aggregation? No, aggregation buckets keys are sorted alphanumeric.
 
-        # Strategy: Fetch *all* hits (up to 10k), and build tree.
+        # Fetch all hierarchy data — only need hierarchy field, not full text
         body = {
             "query": {"match_phrase": {"law_id": law.official_id}},
-            "sort": [{"article": "asc"}],  # Imperfect but needed for consistency
-            "_source": ["hierarchy", "text", "article"],
-            "size": 10000,
+            "sort": [{"article": "asc"}],
+            "_source": ["hierarchy", "article"],
+            "size": 5000,
         }
 
         res = es.search(index=INDEX_NAME, body=body)
@@ -595,11 +612,51 @@ def municipalities_list(request):
 
 @api_view(["GET"])
 def suggest(request):
-    """Lightweight law-name autocomplete. Returns top 8 matches."""
+    """Lightweight law-name autocomplete using ES completion suggester with DB fallback."""
     q = request.query_params.get("q", "").strip()
     if len(q) < 2:
         return Response({"suggestions": []})
 
+    # Try ES completion suggester first
+    try:
+        es = es_client
+        if es.ping():
+            body = {
+                "suggest": {
+                    "law-suggest": {
+                        "prefix": q,
+                        "completion": {
+                            "field": "suggest",
+                            "size": 8,
+                            "skip_duplicates": True,
+                        },
+                    }
+                }
+            }
+            res = es.search(index="laws", body=body)
+            options = (
+                res.get("suggest", {}).get("law-suggest", [{}])[0].get("options", [])
+            )
+            if options:
+                suggestions = [
+                    {
+                        "id": opt["_source"]["id"],
+                        "name": opt["_source"]["name"],
+                        "tier": opt["_source"].get("tier", ""),
+                    }
+                    for opt in options
+                ]
+                response = Response({"suggestions": suggestions})
+                response["Cache-Control"] = "public, max-age=300"
+                return response
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "ES suggest failed, falling back to DB", exc_info=True
+        )
+
+    # Fallback to DB
     laws = (
         Law.objects.filter(name__icontains=q)
         .values("official_id", "name", "tier")
@@ -655,6 +712,7 @@ def _load_universe_registry():
     description="Get global statistics for the homepage dashboard including recent laws.",
     responses={200: LawStatsSchema},
 )
+@cache_page(300)  # Cache 5 minutes
 @api_view(["GET"])
 def law_stats(request):
     """Get global statistics for the dashboard."""

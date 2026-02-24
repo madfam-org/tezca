@@ -1,0 +1,25 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tezca-api-pdb
+  labels:
+    app.kubernetes.io/name: tezca-api
+    app.kubernetes.io/part-of: tezca
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tezca-web-pdb
+  labels:
+    app.kubernetes.io/name: tezca-web
+    app.kubernetes.io/part-of: tezca
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-web

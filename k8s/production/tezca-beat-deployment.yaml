@@ -78,19 +78,32 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: ES_HOST
               value: "http://tezca-es:9200"
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: SENTRY_DSN
+            - name: SENTRY_ENVIRONMENT
+              value: "production"
           livenessProbe:
             exec:
-              command: ["python", "-c", "import celery; print('ok')"]
-            initialDelaySeconds: 30
+              command:
+                - python
+                - -c
+                - "from apps.indigo.celery import app; app.connection().ensure_connection(max_retries=1)"
+            initialDelaySeconds: 60
             periodSeconds: 60
-            timeoutSeconds: 10
+            timeoutSeconds: 15
             failureThreshold: 3
           readinessProbe:
             exec:
-              command: ["python", "-c", "import celery; print('ok')"]
-            initialDelaySeconds: 15
+              command:
+                - python
+                - -c
+                - "from apps.indigo.celery import app; app.connection().ensure_connection(max_retries=1)"
+            initialDelaySeconds: 30
             periodSeconds: 30
-            timeoutSeconds: 10
+            timeoutSeconds: 15
             failureThreshold: 3
           resources:
             requests:

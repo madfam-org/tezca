@@ -59,6 +59,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgdk-pixbuf-2.0-0 \
     libffi-dev \
     shared-mime-info \
+    libharfbuzz0b \
+    libfontconfig1 \
+    fonts-dejavu-core \
+    gobject-introspection \
+    libgirepository-1.0-1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Non-root user

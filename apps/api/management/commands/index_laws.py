@@ -36,7 +36,9 @@ class Command(BaseCommand):
         )
 
         parser.add_argument("--dry-run", action="store_true", help="No ES writes")
-        parser.add_argument("--batch-size", type=int, default=500, help="Batch size")
+        parser.add_argument(
+            "--batch-size", type=int, default=50, help="Batch size for ES indexing"
+        )
         parser.add_argument("--limit", type=int, help="Limit number of laws to process")
         parser.add_argument(
             "--create-indices",
@@ -82,22 +84,85 @@ class Command(BaseCommand):
                 body={
                     "settings": {
                         "analysis": {
+                            "filter": {
+                                "spanish_legal_synonyms": {
+                                    "type": "synonym",
+                                    "synonyms": [
+                                        "ley, legislación, ordenamiento",
+                                        "amparo, protección, tutela",
+                                        "constitución, carta magna, ley fundamental",
+                                        "código, codificación",
+                                        "reglamento, regulación, normativa",
+                                        "decreto, disposición",
+                                        "artículo, numeral, precepto",
+                                        "tribunal, juzgado, corte",
+                                        "juicio, proceso, litigio, procedimiento",
+                                        "demanda, acción, pretensión",
+                                        "sentencia, resolución, fallo",
+                                        "recurso, impugnación, medio de defensa",
+                                        "NOM, norma oficial mexicana",
+                                        "DOF, diario oficial de la federación",
+                                        "CPEUM, constitución política de los estados unidos mexicanos",
+                                        "LISR, ley del impuesto sobre la renta",
+                                        "LIVA, ley del impuesto al valor agregado",
+                                        "CFF, código fiscal de la federación",
+                                        "LFTR, ley federal de telecomunicaciones y radiodifusión",
+                                        "obligación, deber",
+                                        "derecho, facultad, potestad",
+                                        "sanción, multa, penalidad",
+                                        "contrato, convenio, acuerdo",
+                                        "propiedad, dominio, posesión",
+                                    ],
+                                },
+                                "spanish_stop": {
+                                    "type": "stop",
+                                    "stopwords": "_spanish_",
+                                },
+                                "spanish_stemmer": {
+                                    "type": "stemmer",
+                                    "language": "light_spanish",
+                                },
+                                "icu_folding": {
+                                    "type": "icu_folding",
+                                },
+                            },
                             "analyzer": {
                                 "spanish_legal": {
-                                    "type": "spanish",
-                                    "stopwords": "_spanish_",
-                                }
-                            }
-                        }
+                                    "type": "custom",
+                                    "tokenizer": "standard",
+                                    "filter": [
+                                        "lowercase",
+                                        "spanish_legal_synonyms",
+                                        "spanish_stop",
+                                        "spanish_stemmer",
+                                        "icu_folding",
+                                    ],
+                                },
+                            },
+                        },
+                        "index": {
+                            "number_of_replicas": 0,
+                        },
                     },
                     "mappings": {
                         "properties": {
                             "law_id": {"type": "keyword"},
-                            "law_name": {"type": "text", "analyzer": "spanish"},
+                            "law_name": {
+                                "type": "text",
+                                "analyzer": "spanish_legal",
+                                "fields": {
+                                    "keyword": {"type": "keyword"},
+                                },
+                            },
                             "article": {"type": "keyword"},
-                            "text": {"type": "text", "analyzer": "spanish"},
+                            "text": {
+                                "type": "text",
+                                "analyzer": "spanish_legal",
+                            },
                             "category": {"type": "keyword"},
                             "tier": {"type": "keyword"},
+                            "law_type": {"type": "keyword"},
+                            "status": {"type": "keyword"},
                             "state": {"type": "keyword"},
                             "municipality": {"type": "keyword"},
                             "book": {"type": "text"},
@@ -106,6 +171,10 @@ class Command(BaseCommand):
                             "hierarchy": {"type": "keyword"},
                             "publication_date": {"type": "date"},
                             "tags": {"type": "keyword"},
+                            "suggest": {
+                                "type": "completion",
+                                "analyzer": "simple",
+                            },
                         }
                     },
                 },
@@ -232,6 +301,9 @@ class Command(BaseCommand):
                 ),
                 "status": "active",
                 "total_articles": article_count,
+                "suggest": {
+                    "input": [law.name] + ([law.short_name] if law.short_name else []),
+                },
             },
         }
         helpers.bulk(es, [doc])
@@ -271,6 +343,8 @@ class Command(BaseCommand):
                     (law.category or "unknown").lower(),
                     "raw_text",
                 ],
+                "law_type": law.law_type or "legislative",
+                "status": law.status or "unknown",
             },
         }
         helpers.bulk(es, [doc])
@@ -350,6 +424,8 @@ class Command(BaseCommand):
                         law.tier or "federal",
                         (law.category or "unknown").lower(),
                     ],
+                    "law_type": law.law_type or "legislative",
+                    "status": law.status or "unknown",
                 },
             }
             actions.append(doc)

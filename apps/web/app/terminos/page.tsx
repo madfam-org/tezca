@@ -1,9 +1,12 @@
-'use client';
-
 import Link from 'next/link';
 import { ArrowLeft, Scale } from 'lucide-react';
-import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Términos y Condiciones — Tezca',
+  description: 'Términos y condiciones de uso de Tezca, plataforma de legislación mexicana digitalizada.',
+};
 
 const content = {
   es: {
@@ -158,8 +161,13 @@ function LegalSection({ title, body }: { title: string; body: string }) {
   );
 }
 
-export default function TerminosPage() {
-  const { lang } = useLang();
+export default async function TerminosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = (['es', 'en', 'nah'].includes(params.lang ?? '') ? params.lang : 'es') as 'es' | 'en' | 'nah';
   const t = content[lang];
 
   return (

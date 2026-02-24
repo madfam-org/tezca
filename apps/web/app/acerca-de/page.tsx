@@ -1,10 +1,13 @@
-'use client';
-
 import Link from 'next/link';
 import { ArrowLeft, Database, Cog, Mail } from 'lucide-react';
 import { Card, CardContent } from '@tezca/ui';
-import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Acerca de — Tezca',
+  description: 'Tezca: El Espejo de la Ley. Plataforma de legislación mexicana digitalizada y accesible.',
+};
 
 const content = {
   es: {
@@ -171,8 +174,13 @@ const content = {
   },
 };
 
-export default function AcercaDePage() {
-  const { lang } = useLang();
+export default async function AcercaDePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = (['es', 'en', 'nah'].includes(params.lang ?? '') ? params.lang : 'es') as 'es' | 'en' | 'nah';
   const t = content[lang];
 
   return (

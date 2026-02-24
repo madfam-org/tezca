@@ -113,10 +113,17 @@ export const api = {
     },
 
     /**
-     * Get a single law by ID
+     * Get a single law by ID (flat Law object)
      */
     getLaw: async (lawId: string): Promise<Law> => {
         return fetcher<Law>(`/laws/${lawId}/`, undefined, LawSchema);
+    },
+
+    /**
+     * Get full law detail including versions (raw API response shape)
+     */
+    getLawDetail: async (lawId: string): Promise<{ law: Record<string, string>; version: Record<string, string>; versions: Record<string, string>[] }> => {
+        return fetcher(`/laws/${lawId}/`);
     },
 
     /**
