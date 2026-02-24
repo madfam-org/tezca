@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: process.env.NEXT_BUILD_STANDALONE === 'false' ? undefined : "standalone",
   transpilePackages: ['@tezca/ui', '@tezca/lib'],
   async redirects() {
     return [

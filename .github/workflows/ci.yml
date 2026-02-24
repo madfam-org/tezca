@@ -126,6 +126,8 @@ jobs:
     - name: Build web for E2E
       run: npx next build
       working-directory: apps/web
+      env:
+        NEXT_BUILD_STANDALONE: 'false'
 
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
