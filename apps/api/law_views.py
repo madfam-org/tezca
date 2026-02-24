@@ -1,8 +1,9 @@
 import json
+import logging
 import os
 import re
 
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -35,6 +36,8 @@ def _natural_sort_key(text: str):
 
 
 from .config import ES_HOST, INDEX_NAME, es_client
+
+logger = logging.getLogger(__name__)
 
 
 class LawDetailView(APIView):
@@ -70,11 +73,7 @@ class LawDetailView(APIView):
             else:
                 es_degraded = True
         except Exception:
-            import logging
-
-            logging.getLogger(__name__).warning(
-                "ES unavailable for law detail %s", law_id, exc_info=True
-            )
+            logger.warning("ES unavailable for law detail %s", law_id, exc_info=True)
             es_degraded = True
 
         # 5. Format Response
@@ -277,11 +276,7 @@ class RelatedLawsView(APIView):
                         }
                     )
         except Exception:
-            import logging
-
-            logging.getLogger(__name__).warning(
-                "ES unavailable for related laws %s", law_id, exc_info=True
-            )
+            logger.warning("ES unavailable for related laws %s", law_id, exc_info=True)
 
         # Fallback: if ES returned nothing, use DB same-category same-tier laws
         if not related:
@@ -401,9 +396,7 @@ def law_search(request, law_id):
             }
         )
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("law_search failed for %s", law_id)
+        logger.exception("law_search failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while searching."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -483,9 +476,7 @@ def law_articles(request, law_id):
         return response
 
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("law_articles failed for %s", law_id)
+        logger.exception("law_articles failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while retrieving articles."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -557,9 +548,7 @@ def law_structure(request, law_id):
         return response
 
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("law_structure failed for %s", law_id)
+        logger.exception("law_structure failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while retrieving structure."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -650,11 +639,7 @@ def suggest(request):
                 response["Cache-Control"] = "public, max-age=300"
                 return response
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).warning(
-            "ES suggest failed, falling back to DB", exc_info=True
-        )
+        logger.warning("ES suggest failed, falling back to DB", exc_info=True)
 
     # Fallback to DB
     laws = (
@@ -716,12 +701,20 @@ def _load_universe_registry():
 @api_view(["GET"])
 def law_stats(request):
     """Get global statistics for the dashboard."""
-    total_laws = Law.objects.count()
-    federal_count = Law.objects.filter(tier="federal").count()
-    state_count = Law.objects.filter(tier="state").count()
-    municipal_count = Law.objects.filter(tier="municipal").count()
-    legislative_count = Law.objects.filter(law_type="legislative").count()
-    non_legislative_count = Law.objects.filter(law_type="non_legislative").count()
+    _counts = Law.objects.aggregate(
+        total=Count("id"),
+        federal=Count("id", filter=Q(tier="federal")),
+        state=Count("id", filter=Q(tier="state")),
+        municipal=Count("id", filter=Q(tier="municipal")),
+        legislative=Count("id", filter=Q(law_type="legislative")),
+        non_legislative=Count("id", filter=Q(law_type="non_legislative")),
+    )
+    total_laws = _counts["total"]
+    federal_count = _counts["federal"]
+    state_count = _counts["state"]
+    municipal_count = _counts["municipal"]
+    legislative_count = _counts["legislative"]
+    non_legislative_count = _counts["non_legislative"]
 
     # Article count from Elasticsearch
     total_articles = 0
@@ -734,11 +727,7 @@ def law_stats(request):
         else:
             es_degraded = True
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).warning(
-            "ES unavailable for law_stats", exc_info=True
-        )
+        logger.warning("ES unavailable for law_stats", exc_info=True)
         es_degraded = True
 
     # Load universe registry for honest coverage numbers

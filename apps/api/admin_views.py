@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from django.conf import settings as django_settings
@@ -23,6 +24,8 @@ from .schema import (
     SystemMetricsSchema,
 )
 from .tasks import PIPELINE_STATUS_FILE
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(
@@ -146,9 +149,7 @@ def system_metrics(request):
             }
         )
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("system_metrics failed")
+        logger.exception("system_metrics failed")
         return Response(
             {"error": "An internal error occurred while fetching metrics."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -171,9 +172,7 @@ def job_status(request):
         status_data = IngestionManager.get_status()
         return Response(status_data)
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("job_status failed")
+        logger.exception("job_status failed")
         return Response(
             {
                 "status": "error",
@@ -239,9 +238,7 @@ def list_jobs(request):
 
         return Response({"jobs": jobs})
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("list_jobs failed")
+        logger.exception("list_jobs failed")
         return Response(
             {"error": "An internal error occurred while listing jobs."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -338,9 +335,7 @@ def pipeline_status(request):
 
         return Response(data)
     except Exception:
-        import logging
-
-        logging.getLogger(__name__).exception("pipeline_status failed")
+        logger.exception("pipeline_status failed")
         return Response(
             {"error": "An internal error occurred while fetching pipeline status."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

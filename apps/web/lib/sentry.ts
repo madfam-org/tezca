@@ -9,19 +9,20 @@
 
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
 const SENTRY_ENVIRONMENT = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'development';
+const SENTRY_RELEASE = process.env.NEXT_PUBLIC_SENTRY_RELEASE || '';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * Dynamically load the Sentry module. Returns null if not installed.
+ * Cached Sentry module promise — avoids re-importing on every call.
  */
-async function loadSentry(): Promise<any | null> {
-    try {
-        // Dynamic require avoids TS module resolution errors when not installed
-        return await Function('return import("@sentry/nextjs")')();
-    } catch {
-        return null;
+let _sentryPromise: Promise<any | null> | null = null;
+
+function loadSentry(): Promise<any | null> {
+    if (!_sentryPromise) {
+        _sentryPromise = Function('return import("@sentry/nextjs")')().catch(() => null);
     }
+    return _sentryPromise;
 }
 
 export function initSentry() {
@@ -32,6 +33,7 @@ export function initSentry() {
         Sentry.init({
             dsn: SENTRY_DSN,
             environment: SENTRY_ENVIRONMENT,
+            release: SENTRY_RELEASE || undefined,
             tracesSampleRate: 0.1,
         });
     });

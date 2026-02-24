@@ -1,3 +1,4 @@
+import logging
 import math
 
 from drf_spectacular.utils import extend_schema
@@ -8,6 +9,8 @@ from rest_framework.views import APIView
 from .config import INDEX_NAME, es_client
 from .schema import SEARCH_PARAMETERS, ErrorSchema, SearchResponseSchema
 from .throttles import SearchRateThrottle
+
+logger = logging.getLogger(__name__)
 
 
 class SearchView(APIView):
@@ -262,9 +265,7 @@ class SearchView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception:
-            import logging
-
-            logging.getLogger(__name__).exception("SearchView failed")
+            logger.exception("SearchView failed")
             return Response(
                 {"error": "An internal error occurred while searching."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,

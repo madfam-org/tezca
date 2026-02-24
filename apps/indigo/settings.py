@@ -187,18 +187,18 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
 if SENTRY_DSN:
     try:
         import sentry_sdk
+        from sentry_sdk.integrations.celery import CeleryIntegration
+        from sentry_sdk.integrations.django import DjangoIntegration
 
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             environment=os.environ.get("SENTRY_ENVIRONMENT", "development"),
+            release=os.environ.get("SENTRY_RELEASE", ""),
             traces_sample_rate=float(
                 os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1")
             ),
             send_default_pii=False,
-            # Integrate with Django + Celery if available
-            integrations=[],
-            # Only send errors, not warnings
-            before_send=lambda event, hint: event,
+            integrations=[DjangoIntegration(), CeleryIntegration()],
         )
     except ImportError:
         pass  # sentry-sdk not installed (optional dependency)
