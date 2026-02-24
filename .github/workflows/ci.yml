@@ -123,6 +123,10 @@ jobs:
       run: npx playwright install chromium --with-deps
       working-directory: apps/web
 
+    - name: Build web for E2E
+      run: npx next build
+      working-directory: apps/web
+
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
       working-directory: apps/web

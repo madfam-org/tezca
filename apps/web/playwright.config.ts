@@ -20,7 +20,7 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: process.env.CI ? 'npx next build && node .next/standalone/apps/web/server.js' : 'npm run dev',
+        command: process.env.CI ? 'node .next/standalone/apps/web/server.js' : 'npm run dev',
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: process.env.CI ? 300_000 : 120_000,
