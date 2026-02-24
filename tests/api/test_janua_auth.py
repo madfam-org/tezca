@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 import jwt as pyjwt
 import pytest
 import requests
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from jwt.algorithms import RSAAlgorithm
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.test import APIRequestFactory

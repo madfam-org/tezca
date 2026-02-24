@@ -5,14 +5,13 @@ import re
 
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from django.views.decorators.cache import cache_page
 
 from .models import Law, LawVersion
 from .schema import (
