@@ -21,7 +21,7 @@ resources:
 - tezca-es-pvc.yaml
 - tezca-pdbs.yaml
 images:
-- digest: sha256:04a470b9433eabc494321d11c818b399077355f8283bda2ef77fe1a225a46744
+- digest: sha256:2fc1306e320a32da2094242529d82a2fd47f04d8e104ca7d6f3401a40037abb1
   name: ghcr.io/madfam-org/tezca/admin
   newName: ghcr.io/madfam-org/tezca/admin
 - digest: sha256:5470ec6ed72762fc15f57946e96bd5c59498009d20752077b5094f3a2c009440
