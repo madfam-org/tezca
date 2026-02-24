@@ -563,24 +563,16 @@ def law_structure(request, law_id):
 @api_view(["GET"])
 def states_list(request):
     """Get list of all states with law counts."""
-    from .constants import KNOWN_STATES
-
-    # Get all state law IDs
-    state_law_ids = Law.objects.filter(tier="state").values_list(
-        "official_id", flat=True
+    states = (
+        Law.objects.filter(tier="state")
+        .exclude(state__isnull=True)
+        .exclude(state="")
+        .values_list("state", flat=True)
+        .distinct()
+        .order_by("state")
     )
 
-    found_states = set()
-
-    for official_id in state_law_ids:
-        # Check for multi-word states first (longer matches)
-        # We sort keys by length descending to match 'baja_california_sur' before 'baja_california'
-        for slug in sorted(KNOWN_STATES.keys(), key=len, reverse=True):
-            if official_id.startswith(f"{slug}_"):
-                found_states.add(KNOWN_STATES[slug])
-                break
-
-    return Response({"states": sorted(list(found_states))})
+    return Response({"states": list(states)})
 
 
 @api_view(["GET"])

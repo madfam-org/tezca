@@ -36,6 +36,7 @@ class TestLawApi:
             name="Codigo Civil de Colima",
             tier="state",
             category="codigo",
+            state="Colima",
         )
 
     def test_law_detail(self):
