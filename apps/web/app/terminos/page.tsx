@@ -52,7 +52,7 @@ const content = {
       },
       {
         title: '10. Modificaciones y Contacto',
-        body: 'Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor desde su publicación en este sitio. El uso continuado del servicio después de cualquier modificación constituye la aceptación de los nuevos términos. Para consultas relacionadas con estos términos, puede contactarnos en: contacto@tezca.mx',
+        body: 'Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor desde su publicación en este sitio. El uso continuado del servicio después de cualquier modificación constituye la aceptación de los nuevos términos. Para consultas relacionadas con estos términos, puede contactarnos en: admin@madfam.io',
       },
     ],
   },
@@ -99,7 +99,7 @@ const content = {
       },
       {
         title: '10. Modifications and Contact',
-        body: 'We reserve the right to modify these terms at any time. Modifications take effect upon publication on this site. Continued use of the service after any modification constitutes acceptance of the new terms. For inquiries related to these terms, you may contact us at: contacto@tezca.mx',
+        body: 'We reserve the right to modify these terms at any time. Modifications take effect upon publication on this site. Continued use of the service after any modification constitutes acceptance of the new terms. For inquiries related to these terms, you may contact us at: admin@madfam.io',
       },
     ],
   },
@@ -146,7 +146,7 @@ const content = {
       },
       {
         title: '10. Tlapatiliztli ihuan Tlanōnōtzaliztli',
-        body: 'Huelīz ticpātia inīn tlanahuatilli. In tlapatiliztli mochihua ihcuāc monextia. Ic tlatlanīliztli: contacto@tezca.mx',
+        body: 'Huelīz ticpātia inīn tlanahuatilli. In tlapatiliztli mochihua ihcuāc monextia. Ic tlatlanīliztli: admin@madfam.io',
       },
     ],
   },

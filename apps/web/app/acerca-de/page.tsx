@@ -62,7 +62,8 @@ const content = {
       body: 'Para consultas, sugerencias o reportes de errores:',
       email: 'admin@madfam.io',
     },
-    copyright: '© 2026 Innovaciones MADFAM SAS de CV. Todos los derechos reservados.',
+    copyrightPre: '© 2026 Innovaciones ',
+    copyrightPost: ' SAS de CV. Todos los derechos reservados.',
   },
   en: {
     back: 'Back to home',
@@ -116,7 +117,8 @@ const content = {
       body: 'For inquiries, suggestions, or error reports:',
       email: 'admin@madfam.io',
     },
-    copyright: '© 2026 Innovaciones MADFAM SAS de CV. All rights reserved.',
+    copyrightPre: '© 2026 Innovaciones ',
+    copyrightPost: ' SAS de CV. All rights reserved.',
   },
   nah: {
     back: 'Xicmocuepa caltenco',
@@ -170,7 +172,8 @@ const content = {
       body: 'Ic tlatlaniliztli, tlanēmilīlli, ahnōzo tlahtlacōlli:',
       email: 'admin@madfam.io',
     },
-    copyright: '© 2026 Innovaciones MADFAM SAS de CV. Mochi tlanahuatilli motlapiā.',
+    copyrightPre: '© 2026 Innovaciones ',
+    copyrightPost: ' SAS de CV. Mochi tlanahuatilli motlapiā.',
   },
 };
 
@@ -296,7 +299,9 @@ export default async function AcercaDePage({
             {t.ctaSub}
           </p>
           <p className="mt-8 text-xs text-muted-foreground">
-            {t.copyright}
+            {t.copyrightPre}
+            <a href="https://madfam.io" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">MADFAM</a>
+            {t.copyrightPost}
           </p>
         </div>
       </div>

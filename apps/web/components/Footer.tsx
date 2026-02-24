@@ -21,7 +21,8 @@ const content = {
     sources: 'Fuentes Oficiales',
     about: 'Acerca de',
     tagline: 'El Espejo de la Ley',
-    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. Todos los derechos reservados.`,
+    copyrightPre: `© ${new Date().getFullYear()} Innovaciones `,
+    copyrightPost: ' SAS de CV. Todos los derechos reservados.',
     ip: 'Las leyes son de dominio público. La presentación y código de esta plataforma son propiedad de sus autores.',
   },
   en: {
@@ -39,7 +40,8 @@ const content = {
     sources: 'Official Sources',
     about: 'About',
     tagline: 'The Mirror of the Law',
-    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. All rights reserved.`,
+    copyrightPre: `© ${new Date().getFullYear()} Innovaciones `,
+    copyrightPost: ' SAS de CV. All rights reserved.',
     ip: 'The laws are in the public domain. The presentation and code of this platform are the property of their authors.',
   },
   nah: {
@@ -57,7 +59,8 @@ const content = {
     sources: 'Tlahtōlpialōyan',
     about: 'Tlen Tezca',
     tagline: 'In Tezcatl in Tenahuatilli',
-    copyright: `© ${new Date().getFullYear()} Innovaciones MADFAM SAS de CV. Mochi tlanahuatilli motlapiā.`,
+    copyrightPre: `© ${new Date().getFullYear()} Innovaciones `,
+    copyrightPost: ' SAS de CV. Mochi tlanahuatilli motlapiā.',
     ip: 'In tenahuatilli mochi tlācameh impan. In tlaixiptlaliztli ihuan tlahcuilōlli intēch in tlachihuanih.',
   },
 };
@@ -188,7 +191,11 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="text-center sm:text-left">
-            <p>{t.copyright}</p>
+            <p>
+              {t.copyrightPre}
+              <a href="https://madfam.io" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">MADFAM</a>
+              {t.copyrightPost}
+            </p>
             <p className="mt-1">{t.ip}</p>
           </div>
           <LanguageToggle />

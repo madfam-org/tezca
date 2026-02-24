@@ -28,7 +28,7 @@ const content = {
       },
       {
         title: 'Contacto',
-        body: 'Para cualquier consulta relacionada con la privacidad de sus datos, puede contactarnos en: contacto@tezca.mx',
+        body: 'Para cualquier consulta relacionada con la privacidad de sus datos, puede contactarnos en: admin@madfam.io',
       },
     ],
     termsLink: 'Consultar Términos y Condiciones',
@@ -52,7 +52,7 @@ const content = {
       },
       {
         title: 'Contact',
-        body: 'For any inquiries related to the privacy of your data, you may contact us at: contacto@tezca.mx',
+        body: 'For any inquiries related to the privacy of your data, you may contact us at: admin@madfam.io',
       },
     ],
     termsLink: 'View Terms and Conditions',
@@ -76,7 +76,7 @@ const content = {
       },
       {
         title: 'Tlanōnōtzaliztli',
-        body: 'Ic mochi tlatlanīliztli ichtacayōtl: contacto@tezca.mx',
+        body: 'Ic mochi tlatlanīliztli ichtacayōtl: admin@madfam.io',
       },
     ],
     termsLink: 'Xiquitta Tlanahuatilli ihuan Tlahtōltzin',
