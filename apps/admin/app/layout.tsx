@@ -22,6 +22,11 @@ import { JanuaProvider, UserButton } from "@/lib/auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 
+const januaConfig = {
+    baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io",
+    apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "",
+};
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -30,7 +35,7 @@ export default function RootLayout({
     return (
         <html lang="es" suppressHydrationWarning>
             <body className={inter.className}>
-                <JanuaProvider>
+                <JanuaProvider config={januaConfig}>
                     <ThemeProvider
                         attribute="class"
                         defaultTheme="system"

@@ -36,5 +36,5 @@ export class JanuaServerClient {
     async signOut() {}
 }
 
-export function SignedIn({ children }: { children: React.ReactNode }) { return null; }
+export function SignedIn({ children: _children }: { children: React.ReactNode }) { return null; }
 export function SignedOut({ children }: { children: React.ReactNode }) { return children as React.ReactElement; }

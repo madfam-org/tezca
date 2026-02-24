@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const state = useMemo<AuthState>(() => {
         // If Janua has an authenticated user, use that
         if (januaAuth?.isAuthenticated && januaAuth.user) {
-            const claims = (januaAuth.user as Record<string, unknown>) ?? {};
+            const claims = (januaAuth.user as unknown as Record<string, unknown>) ?? {};
             const tier = (claims.tier || claims.plan || 'free') as UserTier;
             const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
             return {
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             tier: validTier as UserTier,
             loginUrl: DEFAULT_LOGIN_URL,
         };
-    }, [januaAuth?.isAuthenticated, januaAuth?.user]);
+    }, [januaAuth]);
 
     return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
