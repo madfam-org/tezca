@@ -67,49 +67,56 @@ STATE_PORTAL_INVESTIGATION = {
 
 # Known missing source categories
 MISSING_SOURCES = [
+    # RESOLVED: Federal Reglamentos — 150/150 scraped and ingested (2026-02-07)
+    # RESOLVED: DOF daily — wired into Celery Beat at 7 AM (2026-02-07)
     {
         "level": "federal",
         "gap_type": "missing_source",
-        "description": "Federal Reglamentos from diputados.gob.mx (separate page)",
+        "description": "CONAMER CNARTyS - 113,373 regulatory instruments (scraper in progress)",
         "priority": 2,
-        "status_note": "Spider built (reglamentos_spider.py), pipeline integrated. Pending first run.",
-    },
-    {
-        "level": "federal",
-        "gap_type": "not_scraped",
-        "description": "DOF daily monitoring (dof_daily.py complete, wired into Celery Beat at 7 AM)",
-        "priority": 3,
-        "status_note": "Implemented in apps/scraper/federal/dof_daily.py. Scheduled via dataops.check_dof_daily task.",
+        "status_note": "Scraper: apps/scraper/federal/conamer_scraper.py. Dedup needed against existing corpus.",
     },
     {
         "level": "federal",
         "gap_type": "missing_source",
-        "description": "NOMs (Normas Oficiales Mexicanas) - no scraper exists",
+        "description": "NOMs (Normas Oficiales Mexicanas) - ~4,000 instruments",
         "priority": 3,
+        "status_note": "Scraper: apps/scraper/federal/nom_scraper.py. May overlap with CONAMER catalog.",
     },
     {
         "level": "federal",
         "gap_type": "missing_source",
-        "description": "SCJN Jurisprudencia - no scraper exists",
+        "description": "SCJN Jurisprudencia + Tesis Aisladas - ~500,000 instruments (partnership outreach started)",
+        "priority": 3,
+        "status_note": "Partnership outreach to SCJN Coordinación de Compilación. Fallback: scraper at sjf.scjn.gob.mx.",
+    },
+    {
+        "level": "federal",
+        "gap_type": "missing_source",
+        "description": "International Treaties from SRE - ~1,500 instruments",
         "priority": 4,
+        "status_note": "Scraper: apps/scraper/federal/treaty_scraper.py. Portal: tratados.sre.gob.mx.",
     },
     {
         "level": "state",
         "gap_type": "missing_source",
-        "description": "State Periodicos Oficiales (individual state gazettes)",
+        "description": "State Periódicos Oficiales (individual state gazettes)",
         "priority": 4,
+        "status_note": "5 pilot states planned: Jalisco, Nuevo León, CDMX, Querétaro, Yucatán.",
     },
     {
         "level": "federal",
         "gap_type": "missing_source",
         "description": "SIL legislative tracking - reform history system",
         "priority": 5,
+        "status_note": "Senado's Sistema de Información Legislativa. API access needed.",
     },
     {
-        "level": "federal",
-        "gap_type": "missing_source",
-        "description": "International Treaties (Senado)",
-        "priority": 5,
+        "level": "state",
+        "gap_type": "not_scraped",
+        "description": "4,438 non-legislative OCR parse failures (OCR pipeline in progress)",
+        "priority": 2,
+        "status_note": "OCR fallback stage added to pipeline.py. Expected 80-90% recovery (~3,500 laws).",
     },
 ]
 

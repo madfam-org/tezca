@@ -531,7 +531,10 @@ class TestCoverageDashboard:
         dashboard = CoverageDashboard()
         result = dashboard.federal_coverage()
         assert result["laws_in_db"] == 1
-        assert "reglamentos" in result["gaps"]
+        assert "reglamentos" in result
+        assert "gaps" in result
+        # Gaps now track remaining sources, not reglamentos
+        assert "noms" in result["gaps"] or "conamer" in result["gaps"]
 
     def test_state_coverage(self):
         from apps.api.models import Law

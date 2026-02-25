@@ -11,7 +11,13 @@ from .base import MunicipalScraper
 
 # Import all scraper implementations
 from .cdmx import CDMXScraper
-from .config import MUNICIPALITY_CONFIGS, get_config, list_municipalities
+from .config import (
+    MUNICIPALITY_CONFIGS,
+    get_config,
+    get_tier2_municipalities,
+    list_municipalities,
+)
+from .generic import GenericMunicipalScraper
 from .guadalajara import GuadalajaraScraper
 from .leon import LeonScraper
 from .monterrey import MonterreyScraper
@@ -33,25 +39,33 @@ def get_scraper(municipality: str) -> MunicipalScraper:
     """
     Factory function to get a scraper instance for a municipality.
 
+    Falls back to GenericMunicipalScraper for configured municipalities
+    that do not have a dedicated scraper class.
+
     Args:
-        municipality: Municipality identifier (e.g., 'guadalajara', 'monterrey')
+        municipality: Municipality identifier (e.g., 'guadalajara', 'merida')
 
     Returns:
         Instantiated scraper object
 
     Raises:
-        ValueError: If municipality is not registered
+        ValueError: If municipality is not in MUNICIPALITY_CONFIGS
     """
     municipality = municipality.lower()
 
+    # Use dedicated scraper if available
     scraper_class = SCRAPERS.get(municipality)
-    if not scraper_class:
-        raise ValueError(
-            f"No scraper registered for municipality '{municipality}'. "
-            f"Available scrapers: {', '.join(SCRAPERS.keys())}"
-        )
+    if scraper_class:
+        return scraper_class()
 
-    return scraper_class()
+    # Fall back to generic scraper for configured municipalities
+    if municipality in MUNICIPALITY_CONFIGS:
+        return GenericMunicipalScraper(city_key=municipality)
+
+    raise ValueError(
+        f"No configuration found for municipality '{municipality}'. "
+        f"Available: {', '.join(MUNICIPALITY_CONFIGS.keys())}"
+    )
 
 
 def list_available_scrapers() -> Dict[str, str]:

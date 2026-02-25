@@ -44,13 +44,20 @@ weasyprint = {version = "^62.0", optional = true}
 python-docx = {version = "^1.1", optional = true}
 ebooklib = {version = "^0.18", optional = true}
 jinja2 = {version = "^3.1", optional = true}
+# OCR pipeline (requires system tesseract-ocr + tesseract-ocr-spa)
+pytesseract = {version = "^0.3.10", optional = true}
+pdf2image = {version = "^1.16", optional = true}
+# Excel parsing for QR state scraper
+openpyxl = {version = "^3.1", optional = true}
 
 [tool.poetry.extras]
 r2 = ["boto3"]
 sentry = ["sentry-sdk"]
 pdf = ["weasyprint"]
 export = ["weasyprint", "python-docx", "ebooklib", "jinja2"]
-production = ["boto3", "sentry-sdk", "weasyprint", "python-docx", "ebooklib", "jinja2"]
+ocr = ["pytesseract", "pdf2image"]
+scraping = ["openpyxl"]
+production = ["boto3", "sentry-sdk", "weasyprint", "python-docx", "ebooklib", "jinja2", "pytesseract", "pdf2image", "openpyxl"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"

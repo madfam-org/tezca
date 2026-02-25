@@ -1,7 +1,8 @@
 """
 Tests for municipal scraper framework
 
-Tests the base scraper class, configuration system, and registry.
+Tests the base scraper class, configuration system, registry,
+generic scraper, and tier 2 expansion.
 """
 
 import pytest
@@ -11,8 +12,10 @@ from apps.scraper.municipal.base import MunicipalScraper
 from apps.scraper.municipal.config import (
     get_config,
     get_tier1_municipalities,
+    get_tier2_municipalities,
     list_municipalities,
 )
+from apps.scraper.municipal.generic import GenericMunicipalScraper
 
 
 class TestConfiguration:
@@ -174,7 +177,7 @@ class TestScraperRegistry:
 
     def test_get_scraper_invalid(self):
         """Test that invalid scraper raises error."""
-        with pytest.raises(ValueError, match="No scraper registered"):
+        with pytest.raises(ValueError, match="No configuration found"):
             get_scraper("invalid_city")
 
     def test_get_scraper_case_insensitive(self):
@@ -192,6 +195,8 @@ class TestScraperRegistry:
         assert isinstance(scrapers, dict)
         assert "guadalajara" in scrapers
         assert "monterrey" in scrapers
+        # Tier 2 cities show up too
+        assert "merida" in scrapers
 
         # Check status values are valid
         valid_statuses = [
@@ -239,3 +244,86 @@ class TestTier1Scrapers:
         }
 
         assert scraper.state == state_mapping[city]
+
+
+class TestTier2Configuration:
+    """Test tier 2 city expansion."""
+
+    def test_tier2_municipalities_exist(self):
+        """Test that tier 2 cities are configured."""
+        tier2 = get_tier2_municipalities()
+        assert len(tier2) == 15
+        assert "merida" in tier2
+        assert "queretaro" in tier2
+        assert "acapulco" in tier2
+
+    def test_tier2_configs_have_required_fields(self):
+        """Test that all tier 2 configs have required fields."""
+        tier2 = get_tier2_municipalities()
+        for city in tier2:
+            config = get_config(city)
+            assert "name" in config
+            assert "state" in config
+            assert "base_url" in config
+            assert config["tier"] == 2
+            assert "selectors" in config
+
+    def test_total_municipalities(self):
+        """Test total configured municipalities (tier 0 + 1 + 2)."""
+        all_munis = list_municipalities()
+        assert len(all_munis) == 21  # 1 tier0 + 5 tier1 + 15 tier2
+
+
+class TestGenericMunicipalScraper:
+    """Test the configuration-driven generic scraper."""
+
+    def test_initialization_with_valid_city(self):
+        """Test generic scraper initializes for a configured city."""
+        scraper = GenericMunicipalScraper(city_key="merida")
+        assert scraper.municipality == "Mérida"
+        assert scraper.state == "Yucatán"
+        assert scraper.base_url is not None
+
+    def test_initialization_with_invalid_city(self):
+        """Test generic scraper raises on unknown city."""
+        with pytest.raises(ValueError):
+            GenericMunicipalScraper(city_key="atlantis")
+
+    def test_factory_returns_generic_for_tier2(self):
+        """Test get_scraper returns GenericMunicipalScraper for tier 2 cities."""
+        scraper = get_scraper("merida")
+        assert isinstance(scraper, GenericMunicipalScraper)
+        assert scraper.municipality == "Mérida"
+
+    def test_factory_returns_dedicated_for_tier1(self):
+        """Test get_scraper returns dedicated class for tier 1 cities."""
+        scraper = get_scraper("guadalajara")
+        assert not isinstance(scraper, GenericMunicipalScraper)
+
+    @pytest.mark.parametrize(
+        "city",
+        [
+            "juarez",
+            "zapopan",
+            "merida",
+            "cancun",
+            "aguascalientes",
+            "san_luis_potosi",
+            "hermosillo",
+            "chihuahua",
+            "queretaro",
+            "morelia",
+            "saltillo",
+            "toluca",
+            "culiacan",
+            "villahermosa",
+            "acapulco",
+        ],
+    )
+    def test_tier2_scraper_initialization(self, city):
+        """Test all tier 2 cities can be instantiated via factory."""
+        scraper = get_scraper(city)
+        assert scraper is not None
+        assert scraper.municipality is not None
+        assert scraper.state is not None
+        assert hasattr(scraper, "scrape_catalog")

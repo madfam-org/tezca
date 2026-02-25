@@ -227,3 +227,189 @@ def check_dof_daily():
         "law_changes": len(changes),
         "changes": changes[:20],
     }
+
+
+@shared_task(name="dataops.run_state_scraper")
+def run_state_scraper(state_key):
+    """Run a state congress scraper by key (baja_california, durango, quintana_roo).
+
+    Args:
+        state_key: One of 'baja_california', 'durango', 'quintana_roo'
+    """
+    from pathlib import Path
+
+    scrapers = {
+        "baja_california": "apps.scraper.state.baja_california.BajaCaliforniaScraper",
+        "durango": "apps.scraper.state.durango.DurangoScraper",
+        "quintana_roo": "apps.scraper.state.quintana_roo.QuintanaRooScraper",
+    }
+
+    if state_key not in scrapers:
+        logger.error("Unknown state scraper: %s", state_key)
+        return {"error": f"Unknown state: {state_key}"}
+
+    module_path, class_name = scrapers[state_key].rsplit(".", 1)
+    import importlib
+
+    module = importlib.import_module(module_path)
+    scraper_cls = getattr(module, class_name)
+    scraper = scraper_cls()
+
+    catalog = scraper.scrape_catalog()
+    logger.info("State scraper %s: found %d laws", state_key, len(catalog))
+
+    # Save catalog
+    import json
+
+    output_dir = Path("data") / "state_laws" / state_key
+    output_dir.mkdir(parents=True, exist_ok=True)
+    catalog_path = output_dir / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog, indent=2, ensure_ascii=False))
+
+    # Log to AcquisitionLog
+    try:
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        AcquisitionLog.objects.create(
+            operation=f"state_scraper_{state_key}",
+            parameters={"state": state_key},
+            found=len(catalog),
+            downloaded=0,
+            failed=0,
+            ingested=0,
+        )
+    except Exception:
+        pass
+
+    return {"state": state_key, "laws_found": len(catalog)}
+
+
+@shared_task(name="dataops.run_conamer_scraper")
+def run_conamer_scraper(max_pages=None, resume_from_page=0):
+    """Run CONAMER CNARTyS scraper in batch mode.
+
+    Args:
+        max_pages: Max pages to scrape (None for all)
+        resume_from_page: Page to resume from
+    """
+    from apps.scraper.federal.conamer_scraper import ConamerScraper
+
+    scraper = ConamerScraper()
+    result = scraper.run(
+        output_dir="data/conamer",
+        max_pages=max_pages,
+        resume_from_page=resume_from_page,
+    )
+
+    logger.info(
+        "CONAMER scraper: %d total, %d unique",
+        result.get("total_scraped", 0),
+        result.get("unique_after_dedup", result.get("total_scraped", 0)),
+    )
+
+    try:
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        AcquisitionLog.objects.create(
+            operation="conamer_cnartys_scrape",
+            parameters={"max_pages": max_pages, "resume_from": resume_from_page},
+            found=result.get("total_scraped", 0),
+            downloaded=result.get("total_scraped", 0),
+            failed=0,
+            ingested=0,
+        )
+    except Exception:
+        pass
+
+    return result
+
+
+@shared_task(name="dataops.run_nom_scraper")
+def run_nom_scraper(priority_only=True, max_results=500):
+    """Run NOM scraper.
+
+    Args:
+        priority_only: Only scrape priority health/safety NOMs
+        max_results: Max results per search query
+    """
+    from apps.scraper.federal.nom_scraper import NomScraper
+
+    scraper = NomScraper()
+    result = scraper.run(
+        output_dir="data/noms",
+        priority_only=priority_only,
+        max_results=max_results,
+    )
+
+    logger.info("NOM scraper: %d NOMs found", result.get("total", 0))
+    return result
+
+
+@shared_task(name="dataops.run_treaty_scraper")
+def run_treaty_scraper(fetch_details=False, max_details=50):
+    """Run international treaties scraper.
+
+    Args:
+        fetch_details: Whether to fetch individual treaty pages
+        max_details: Max treaty details to fetch
+    """
+    from apps.scraper.federal.treaty_scraper import TreatyScraper
+
+    scraper = TreatyScraper()
+    result = scraper.run(
+        output_dir="data/treaties",
+        fetch_details=fetch_details,
+        max_details=max_details,
+    )
+
+    logger.info("Treaty scraper: %d treaties found", result.get("total", 0))
+    return result
+
+
+@shared_task(name="dataops.replicate_batch")
+def replicate_batch(prefix, ingest_command=None):
+    """Replicate a scraped batch to R2 and trigger prod ingestion.
+
+    Wraps the replication protocol:
+    1. migrate_to_r2.py --prefix <batch>
+    2. Optionally trigger ingest command
+
+    Args:
+        prefix: R2 prefix path (e.g. 'state_laws/baja_california/')
+        ingest_command: Optional management command to run after R2 sync
+    """
+    import subprocess
+
+    # Step 1: Sync to R2
+    r2_result = subprocess.run(
+        ["python", "scripts/migrate_to_r2.py", "--prefix", prefix],
+        capture_output=True,
+        text=True,
+        timeout=600,
+    )
+
+    if r2_result.returncode != 0:
+        logger.error("R2 sync failed for %s: %s", prefix, r2_result.stderr[:500])
+        return {"success": False, "stage": "r2_sync", "error": r2_result.stderr[:500]}
+
+    logger.info("R2 sync complete for %s", prefix)
+
+    # Step 2: Trigger ingestion if specified
+    if ingest_command:
+        ingest_result = subprocess.run(
+            ["python", "manage.py"] + ingest_command.split(),
+            capture_output=True,
+            text=True,
+            timeout=1800,
+        )
+        if ingest_result.returncode != 0:
+            logger.error(
+                "Ingestion failed for %s: %s", prefix, ingest_result.stderr[:500]
+            )
+            return {
+                "success": False,
+                "stage": "ingestion",
+                "error": ingest_result.stderr[:500],
+            }
+
+    return {"success": True, "prefix": prefix, "ingest_command": ingest_command}

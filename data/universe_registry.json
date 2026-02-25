@@ -54,13 +54,13 @@
       "notes": "No authoritative census of municipal legislation exists. INEGI reports 2,468 municipalities. Only 5 tier-1 city portals have been scraped so far."
     },
     "federal_reglamentos": {
-      "known_count": 137,
-      "scraped_count": 0,
+      "known_count": 150,
+      "scraped_count": 150,
       "source_url": "https://www.diputados.gob.mx/LeyesBiblio/regla.htm",
       "source_name": "Cámara de Diputados - Reglamentos",
-      "last_verified": "2026-02-06",
+      "last_verified": "2026-02-24",
       "confidence": "high",
-      "notes": "Federal regulations implementing specific laws. Published on the same Cámara de Diputados portal as Tier 1 laws. Page lists 137 reglamentos (previously estimated at 800)."
+      "notes": "Federal regulations implementing specific laws. Spider discovered 150 reglamentos (page lists 137; extras from alternate PDF path conventions). All 150 scraped and ingested."
     },
     "federal_noms": {
       "known_count": null,

@@ -52,17 +52,28 @@ class CoverageDashboard:
             if federal_dir.exists():
                 scraped_federal = len(list(federal_dir.glob("**/*.xml")))
 
+        # Live reglamentos count from DB
+        from apps.api.models import Law
+
+        reglamentos_in_db = Law.objects.filter(
+            tier="federal", law_type="reglamento"
+        ).count()
+        if reglamentos_in_db == 0:
+            # Fallback: check discovered_reglamentos.json
+            reg_meta = _load_json(DATA_DIR / "discovered_reglamentos.json")
+            reglamentos_in_db = len(reg_meta) if isinstance(reg_meta, list) else 0
+
         return {
             "laws_in_db": federal_in_db,
             "laws_scraped": scraped_federal,
-            "reglamentos": 0,  # Not yet scraped
-            "noms": 0,  # Not yet scraped
-            "treaties": 0,  # Not yet scraped
+            "reglamentos": reglamentos_in_db,
+            "noms": 0,  # Scraper in progress
+            "treaties": 0,  # Scraper in progress
             "gaps": {
-                "reglamentos": "~200 estimated, no scraper",
-                "dof_daily": "Stub scraper only",
-                "noms": "No scraper exists",
-                "scjn": "No scraper exists",
+                "noms": "~4,000 estimated, scraper in progress",
+                "scjn": "~500,000 judicial instruments, partnership outreach started",
+                "conamer": "113,373 listed on CNARTyS, scraper in progress",
+                "treaties": "~1,500 on SRE portal, scraper in progress",
             },
         }
 
@@ -381,38 +392,59 @@ class CoverageDashboard:
         expansion_priorities = [
             {
                 "rank": 1,
-                "action": "Fix 4,438 non-legislative parse failures (retry + OCR)",
-                "estimated_gain": 4438,
+                "action": "OCR pipeline for 4,438 non-legislative parse failures",
+                "estimated_gain": 3500,
                 "effort": "medium",
                 "roi_score": 9.5,
+                "status": "in_progress",
             },
             {
                 "rank": 2,
-                "action": "Build Camara reglamentos scraper (~800 instruments)",
-                "estimated_gain": 800,
+                "action": "State congress scrapers: BC (~340), Durango (~160), QR (~356)",
+                "estimated_gain": 856,
                 "effort": "medium",
-                "roi_score": 8.0,
+                "roi_score": 8.5,
+                "status": "in_progress",
             },
             {
                 "rank": 3,
-                "action": "Investigate low-count states (BC, Durango, QR, Hidalgo)",
-                "estimated_gain": 1150,
-                "effort": "low",
-                "roi_score": 7.5,
+                "action": "CONAMER CNARTyS scraper (113K+ regulations, ~50-80K unique after dedup)",
+                "estimated_gain": 65000,
+                "effort": "high",
+                "roi_score": 8.0,
+                "status": "in_progress",
             },
             {
                 "rank": 4,
-                "action": "CONAMER CNARTyS API scraper (113K+ regulations)",
-                "estimated_gain": 113373,
-                "effort": "high",
+                "action": "Federal NOMs scraper (~4,000 instruments)",
+                "estimated_gain": 4000,
+                "effort": "medium",
                 "roi_score": 7.0,
+                "status": "planned",
             },
             {
                 "rank": 5,
-                "action": "Municipal tier-2 expansion (15 cities)",
-                "estimated_gain": 2000,
+                "action": "SRE International Treaties scraper (~1,500)",
+                "estimated_gain": 1500,
+                "effort": "low",
+                "roi_score": 6.5,
+                "status": "planned",
+            },
+            {
+                "rank": 6,
+                "action": "SCJN judicial corpus (500K+ via partnership)",
+                "estimated_gain": 500000,
+                "effort": "high",
+                "roi_score": 6.0,
+                "status": "outreach_started",
+            },
+            {
+                "rank": 7,
+                "action": "Municipal tier-2 expansion (15 more cities)",
+                "estimated_gain": 1500,
                 "effort": "high",
                 "roi_score": 5.0,
+                "status": "planned",
             },
         ]
 

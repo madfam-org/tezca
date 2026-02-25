@@ -16,6 +16,10 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Minimum characters expected from a valid PDF text extraction.
+# Below this threshold, the PDF is likely scanned/image-based and needs OCR.
+MIN_TEXT_LENGTH = 100
+
 from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
 from apps.parsers.quality import QualityCalculator, QualityMetrics
 
@@ -273,7 +277,7 @@ class IngestionPipeline:
         return pdf_path
 
     def _extract_text(self, law_metadata: Dict, pdf_path: Path) -> tuple[Path, str]:
-        """Extract text from PDF."""
+        """Extract text from PDF, with OCR fallback for scanned documents."""
         law_id = law_metadata["id"]
         text_path = self.text_dir / f"{law_id}_extracted.txt"
 
@@ -294,10 +298,68 @@ class IngestionPipeline:
 
         full_text = "\n".join(text_parts)
 
+        # Check if pdfplumber got meaningful text
+        if len(full_text.strip()) >= MIN_TEXT_LENGTH:
+            print(f"   📄 Extracted via pdfplumber ({len(full_text):,} chars)")
+        else:
+            print(
+                f"   ⚠️  pdfplumber got only {len(full_text.strip())} chars "
+                f"(< {MIN_TEXT_LENGTH}), attempting OCR fallback..."
+            )
+            ocr_text = self._ocr_extract(pdf_path)
+            if ocr_text and len(ocr_text.strip()) > len(full_text.strip()):
+                full_text = ocr_text
+                print(f"   📷 Extracted via OCR ({len(full_text):,} chars)")
+            else:
+                print(
+                    "   ⚠️  OCR did not improve extraction, " "keeping pdfplumber result"
+                )
+
         # Save extracted text
         text_path.write_text(full_text, encoding="utf-8")
 
         return text_path, full_text
+
+    def _ocr_extract(self, pdf_path: Path) -> str:
+        """
+        Extract text from a PDF using OCR (pdf2image + pytesseract).
+
+        Requires system packages: tesseract-ocr, tesseract-ocr-spa, poppler-utils.
+        Python deps (optional): pytesseract, pdf2image.
+
+        Returns:
+            Extracted text string, or empty string if OCR deps are unavailable.
+        """
+        try:
+            import pytesseract
+        except ImportError:
+            print(
+                "   ⚠️  pytesseract not installed — "
+                "install with: pip install pytesseract"
+            )
+            return ""
+
+        try:
+            from pdf2image import convert_from_path
+        except ImportError:
+            print(
+                "   ⚠️  pdf2image not installed — " "install with: pip install pdf2image"
+            )
+            return ""
+
+        try:
+            images = convert_from_path(pdf_path, dpi=300)
+            text_parts = []
+            for i, image in enumerate(images, 1):
+                page_text = pytesseract.image_to_string(image, lang="spa")
+                if page_text and page_text.strip():
+                    text_parts.append(page_text)
+                if i % 10 == 0:
+                    print(f"   📷 OCR processed {i}/{len(images)} pages...")
+            return "\n".join(text_parts)
+        except Exception as e:
+            print(f"   ⚠️  OCR extraction failed: {e}")
+            return ""
 
     def _parse_to_xml(self, law_metadata: Dict, text: str) -> Path:
         """Parse text to Akoma Ntoso XML."""
