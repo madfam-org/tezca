@@ -84,6 +84,7 @@ spec:
                 secretKeyRef:
                   name: tezca-secrets
                   key: SENTRY_DSN
+                  optional: true
             - name: SENTRY_ENVIRONMENT
               value: "production"
             - name: STORAGE_BACKEND
