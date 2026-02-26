@@ -2,6 +2,10 @@ from django.urls import path
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
+from .bulk_views import bulk_articles
+from .changelog_views import changelog
+from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -77,6 +81,19 @@ urlpatterns = [
     ),
     path("admin/dof/", _protected(dof_summary), name="admin-dof-summary"),
     path("admin/roadmap/", _protected(roadmap), name="admin-roadmap"),
+    # API Key management (Janua-protected)
+    path("admin/apikeys/", _protected(create_api_key), name="admin-apikey-create"),
+    path("admin/apikeys/list/", _protected(list_api_keys), name="admin-apikey-list"),
+    path(
+        "admin/apikeys/<str:prefix>/",
+        _protected(update_api_key),
+        name="admin-apikey-update",
+    ),
+    path(
+        "admin/apikeys/<str:prefix>/revoke/",
+        _protected(revoke_api_key),
+        name="admin-apikey-revoke",
+    ),
     path("ingest/", _protected(IngestionView.as_view()), name="ingest"),
     # ── Public endpoints (no auth) ────────────────────────────────────
     path("search/", SearchView.as_view(), name="search"),
@@ -104,4 +121,12 @@ urlpatterns = [
     path("states/", states_list, name="states-list"),
     path("municipalities/", municipalities_list, name="municipalities-list"),
     path("suggest/", suggest, name="law-suggest"),
+    # ── Bulk data access (API key required) ──────────────────────────────
+    path("bulk/articles/", bulk_articles, name="bulk-articles"),
+    path("changelog/", changelog, name="changelog"),
+    # ── Webhooks (API key required) ──────────────────────────────────────
+    path("webhooks/", create_webhook, name="webhook-create"),
+    path("webhooks/list/", list_webhooks, name="webhook-list"),
+    path("webhooks/<int:webhook_id>/", delete_webhook, name="webhook-delete"),
+    path("webhooks/<int:webhook_id>/test/", test_webhook, name="webhook-test"),
 ]

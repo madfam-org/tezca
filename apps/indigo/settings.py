@@ -35,6 +35,9 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "apps.api.middleware.combined_auth.CombinedAuthentication",
+    ],
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
     ],
@@ -46,8 +49,12 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Tezca API",
-    "DESCRIPTION": "API for tezca.mx — Mexico's open law platform. Search, browse, and analyze 11,900+ federal and state laws in machine-readable format.",
-    "VERSION": "1.0.0",
+    "DESCRIPTION": (
+        "API for tezca.mx — Mexico's open law platform. "
+        "Search, browse, and analyze 30,000+ federal and state laws in machine-readable format. "
+        "Authenticate with API key (X-API-Key header) or Janua JWT (Bearer token)."
+    ),
+    "VERSION": "1.1.0",
     "CONTACT": {"name": "Tezca", "url": "https://tezca.mx"},
     "LICENSE": {"name": "AGPL-3.0"},
     "TAGS": [
@@ -65,19 +72,40 @@ SPECTACULAR_SETTINGS = {
         },
         {
             "name": "Admin",
-            "description": "System health, metrics, and ingestion management",
+            "description": "System health, metrics, API key management, and ingestion",
         },
         {
             "name": "Export",
             "description": "Download laws in multiple formats (TXT, PDF, LaTeX, DOCX, EPUB, JSON) with tiered access",
         },
+        {
+            "name": "Bulk",
+            "description": "Bulk data access and changelog feeds for data consumers",
+        },
     ],
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key",
+                "description": "Tezca API key (tzk_...)",
+            },
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Janua-issued JWT",
+            },
+        }
+    },
 }
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "apps.api.middleware.cors_apikey.APIKeyCORSMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

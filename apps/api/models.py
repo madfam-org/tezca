@@ -181,3 +181,104 @@ class ExportLog(models.Model):
 
     def __str__(self):
         return f"{self.tier}:{self.format} {self.law_id} ({self.created_at})"
+
+
+class APIKey(models.Model):
+    """API key for programmatic access to Tezca data."""
+
+    class Tier(models.TextChoices):
+        INTERNAL = "internal", "Internal (MADFAM)"
+        FREE = "free", "Free"
+        PRO = "pro", "Pro"
+        ENTERPRISE = "enterprise", "Enterprise"
+
+    prefix = models.CharField(max_length=8, unique=True, db_index=True)
+    hashed_key = models.CharField(max_length=128)
+    name = models.CharField(max_length=200)
+    owner_email = models.EmailField()
+    organization = models.CharField(max_length=200, blank=True, default="")
+    janua_user_id = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text="Links key to Janua account for tier sync",
+    )
+    tier = models.CharField(
+        max_length=20, choices=Tier.choices, default=Tier.FREE, db_index=True
+    )
+    scopes = models.JSONField(
+        default=list, help_text='e.g. ["read", "search", "export", "bulk"]'
+    )
+    allowed_domains = models.JSONField(
+        default=list,
+        help_text='e.g. ["fiscal", "mercantil"] — empty list means all domains',
+    )
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    rate_limit_per_hour = models.IntegerField(
+        null=True, blank=True, help_text="Override tier default rate limit"
+    )
+
+    class Meta:
+        indexes = [models.Index(fields=["prefix", "is_active"])]
+        verbose_name = "API Key"
+        verbose_name_plural = "API Keys"
+
+    def __str__(self):
+        return f"{self.name} ({self.prefix}...) [{self.tier}]"
+
+
+class APIUsageLog(models.Model):
+    """Tracks API usage for analytics and rate limiting."""
+
+    api_key_prefix = models.CharField(max_length=8, blank=True, default="", db_index=True)
+    ip_address = models.GenericIPAddressField()
+    endpoint = models.CharField(max_length=200)
+    method = models.CharField(max_length=10, default="GET")
+    status_code = models.IntegerField(default=200)
+    response_time_ms = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["api_key_prefix", "created_at"]),
+            models.Index(fields=["ip_address", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.method} {self.endpoint} [{self.status_code}] ({self.api_key_prefix or 'anon'})"
+
+
+class WebhookSubscription(models.Model):
+    """Webhook subscription for push notifications on law changes."""
+
+    api_key = models.ForeignKey(
+        APIKey, on_delete=models.CASCADE, related_name="webhooks"
+    )
+    url = models.URLField(max_length=500)
+    events = models.JSONField(
+        default=list,
+        help_text='e.g. ["law.updated", "law.created", "version.created"]',
+    )
+    domain_filter = models.JSONField(
+        default=list,
+        help_text='e.g. ["fiscal"] — empty list means all domains',
+    )
+    secret = models.CharField(max_length=64, help_text="HMAC-SHA256 signing secret")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_triggered_at = models.DateTimeField(null=True, blank=True)
+    failure_count = models.IntegerField(
+        default=0, help_text="Auto-disable after 10 consecutive failures"
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["api_key", "is_active"]),
+        ]
+
+    def __str__(self):
+        return f"Webhook {self.url} [{','.join(self.events)}] (key={self.api_key.prefix})"

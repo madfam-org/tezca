@@ -21,6 +21,27 @@ from rest_framework.test import APIClient
 
 from apps.api.models import ExportLog, Law, LawVersion
 
+# All tests patch CombinedAuthentication.authenticate to control the user tier.
+# - anonymous: authenticate returns None → DRF assigns AnonymousUser (is_authenticated=False → tier="anon")
+# - free/premium: authenticate returns (JanuaUser_with_tier, "fake-token")
+AUTH_PATCH_TARGET = (
+    "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
+)
+
+
+def _make_anon_auth(mock_auth):
+    """Configure mock so CombinedAuthentication returns None (anonymous)."""
+    mock_auth.return_value = None
+
+
+def _make_tier_auth(mock_auth, tier, user_id="user-123"):
+    """Configure mock so CombinedAuthentication returns an authenticated user with the given tier."""
+    from apps.api.middleware.janua_auth import JanuaUser
+
+    user = JanuaUser({"sub": user_id, "tier": tier})
+    user.tier = tier  # CombinedAuthentication normally sets this; replicate here
+    mock_auth.return_value = (user, "fake-token")
+
 
 @pytest.mark.django_db
 class TestExportTxtAnonymous:
@@ -43,12 +64,10 @@ class TestExportTxtAnonymous:
         )
 
     @patch("apps.api.export_views.es_client")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_txt_export_anonymous_success(self, mock_auth_cls, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_txt_export_anonymous_success(self, mock_auth, mock_es):
         """Anonymous user can download TXT export."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_es.ping.return_value = True
         mock_es.search.return_value = {
@@ -85,12 +104,10 @@ class TestExportTxtAnonymous:
         assert "Tezca" in content
 
     @patch("apps.api.export_views.es_client")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_txt_export_logs_export(self, mock_auth_cls, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_txt_export_logs_export(self, mock_auth, mock_es):
         """TXT export creates an ExportLog record."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_es.ping.return_value = True
         mock_es.search.return_value = {
@@ -119,12 +136,10 @@ class TestExportPdfAnonymous:
             category="ley",
         )
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_pdf_export_anonymous_returns_403(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_pdf_export_anonymous_returns_403(self, mock_auth):
         """Anonymous user cannot access PDF export."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-pdf", args=[self.law_id])
         response = self.client.get(url)
@@ -148,67 +163,50 @@ class TestExportTierAccess:
             category="ley",
         )
 
-    def _mock_auth_with_tier(self, mock_auth_cls, tier, user_id="user-123"):
-        """Helper to configure auth mock for a specific tier."""
-        from apps.api.middleware.janua_auth import JanuaUser
-
-        mock_user = JanuaUser({"sub": user_id, "tier": tier})
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = (mock_user, "fake-token")
-        mock_auth_cls.return_value = mock_auth
-
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_anon_cannot_access_latex(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_anon_cannot_access_latex(self, mock_auth):
         """Anonymous user cannot access LaTeX (premium format)."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-latex", args=[self.law_id])
         response = self.client.get(url)
 
         assert response.status_code == 403
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_anon_cannot_access_docx(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_anon_cannot_access_docx(self, mock_auth):
         """Anonymous user cannot access DOCX (premium format)."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-docx", args=[self.law_id])
         response = self.client.get(url)
 
         assert response.status_code == 403
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_anon_cannot_access_epub(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_anon_cannot_access_epub(self, mock_auth):
         """Anonymous user cannot access EPUB (premium format)."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-epub", args=[self.law_id])
         response = self.client.get(url)
 
         assert response.status_code == 403
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_anon_cannot_access_json(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_anon_cannot_access_json(self, mock_auth):
         """Anonymous user cannot access JSON (premium format)."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-json", args=[self.law_id])
         response = self.client.get(url)
 
         assert response.status_code == 403
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_free_cannot_access_premium_format(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_free_cannot_access_premium_format(self, mock_auth):
         """Free-tier user cannot access premium-only formats (latex, docx, epub, json)."""
-        self._mock_auth_with_tier(mock_auth_cls, "free")
+        _make_tier_auth(mock_auth, "free")
 
         url = reverse("law-export-latex", args=[self.law_id])
         response = self.client.get(url)
@@ -218,10 +216,10 @@ class TestExportTierAccess:
         assert response.data["required_tier"] == "premium"
 
     @patch("apps.api.export_views.es_client")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_free_can_access_txt(self, mock_auth_cls, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_free_can_access_txt(self, mock_auth, mock_es):
         """Free-tier user can access TXT."""
-        self._mock_auth_with_tier(mock_auth_cls, "free")
+        _make_tier_auth(mock_auth, "free")
 
         mock_es.ping.return_value = True
         mock_es.search.return_value = {
@@ -249,12 +247,10 @@ class TestExportQuotaEnforcement:
         )
 
     @patch("apps.api.export_views.check_export_quota")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_rate_limit_exceeded_returns_429(self, mock_auth_cls, mock_check):
+    @patch(AUTH_PATCH_TARGET)
+    def test_rate_limit_exceeded_returns_429(self, mock_auth, mock_check):
         """When quota is exhausted, export returns 429 with Retry-After."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_check.return_value = (False, 1800)
 
@@ -268,12 +264,10 @@ class TestExportQuotaEnforcement:
 
     @patch("apps.api.export_views.es_client")
     @patch("apps.api.export_views.check_export_quota")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_within_quota_succeeds(self, mock_auth_cls, mock_check, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_within_quota_succeeds(self, mock_auth, mock_check, mock_es):
         """When within quota, export proceeds normally."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_check.return_value = (True, 0)
 
@@ -295,12 +289,10 @@ class TestExportNotFound:
     def setup_method(self):
         self.client = APIClient()
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_nonexistent_law_returns_404(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_nonexistent_law_returns_404(self, mock_auth):
         """Requesting export for a law that does not exist returns 404."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-txt", args=["nonexistent_law_id"])
         response = self.client.get(url)
@@ -308,8 +300,8 @@ class TestExportNotFound:
         assert response.status_code == 404
 
     @patch("apps.api.export_views.es_client")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_empty_articles_returns_404(self, mock_auth_cls, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_empty_articles_returns_404(self, mock_auth, mock_es):
         """Law exists but has no articles in ES returns 404."""
         law_id = f"fed_empty_{uuid.uuid4().hex[:8]}"
         Law.objects.create(
@@ -319,9 +311,7 @@ class TestExportNotFound:
             category="ley",
         )
 
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_es.ping.return_value = True
         mock_es.search.return_value = {"hits": {"hits": []}}
@@ -333,8 +323,8 @@ class TestExportNotFound:
         assert "No articles found" in response.data["error"]
 
     @patch("apps.api.export_views.es_client")
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_es_unavailable_returns_404(self, mock_auth_cls, mock_es):
+    @patch(AUTH_PATCH_TARGET)
+    def test_es_unavailable_returns_404(self, mock_auth, mock_es):
         """When ES is unavailable (ping fails), _get_articles returns [] -> 404."""
         law_id = f"fed_esdown_{uuid.uuid4().hex[:8]}"
         Law.objects.create(
@@ -344,9 +334,7 @@ class TestExportNotFound:
             category="ley",
         )
 
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         mock_es.ping.return_value = False
 
@@ -370,12 +358,10 @@ class TestExportQuotaEndpoint:
             category="ley",
         )
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_quota_endpoint_anonymous(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_quota_endpoint_anonymous(self, mock_auth):
         """Anonymous user sees anon tier and TXT-only format."""
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = None
-        mock_auth_cls.return_value = mock_auth
+        _make_anon_auth(mock_auth)
 
         url = reverse("law-export-quota", args=[self.law_id])
         response = self.client.get(url)
@@ -386,15 +372,10 @@ class TestExportQuotaEndpoint:
         assert "txt" in response.data["formats_available"]
         assert "pdf" not in response.data["formats_available"]
 
-    @patch("apps.api.export_views.JanuaJWTAuthentication")
-    def test_quota_endpoint_premium(self, mock_auth_cls):
+    @patch(AUTH_PATCH_TARGET)
+    def test_quota_endpoint_premium(self, mock_auth):
         """Premium user sees all formats available."""
-        from apps.api.middleware.janua_auth import JanuaUser
-
-        mock_user = JanuaUser({"sub": "premium-user", "tier": "premium"})
-        mock_auth = MagicMock()
-        mock_auth.authenticate.return_value = (mock_user, "fake-token")
-        mock_auth_cls.return_value = mock_auth
+        _make_tier_auth(mock_auth, "premium", user_id="premium-user")
 
         url = reverse("law-export-quota", args=[self.law_id])
         response = self.client.get(url)

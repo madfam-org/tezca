@@ -1,5 +1,15 @@
 """Shared constants for the API app."""
 
+# Domain-to-category mapping for data consumers (e.g., Dhanam finance feed)
+DOMAIN_MAP = {
+    "finance": ["fiscal", "mercantil"],
+    "criminal": ["penal"],
+    "labor": ["laboral"],
+    "civil": ["civil"],
+    "administrative": ["administrativo"],
+    "constitutional": ["constitucional"],
+}
+
 KNOWN_STATES = {
     "aguascalientes": "Aguascalientes",
     "baja_california_sur": "Baja California Sur",

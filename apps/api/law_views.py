@@ -13,6 +13,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .constants import DOMAIN_MAP
 from .models import Law, LawVersion
 from .schema import (
     ErrorSchema,
@@ -152,9 +153,19 @@ class LawListView(APIView):
         if state:
             qs = qs.filter(state__iexact=state)
 
+        # Domain filter (maps to multiple categories)
+        domain = request.query_params.get("domain")
+        if domain and domain in DOMAIN_MAP:
+            qs = qs.filter(category__in=DOMAIN_MAP[domain])
+
         category = request.query_params.get("category")
         if category:
-            qs = qs.filter(category__iexact=category)
+            # Support comma-separated categories: ?category=fiscal,mercantil
+            cats = [c.strip() for c in category.split(",") if c.strip()]
+            if len(cats) > 1:
+                qs = qs.filter(category__in=cats)
+            else:
+                qs = qs.filter(category__iexact=cats[0])
 
         law_status = request.query_params.get("status")
         if law_status:

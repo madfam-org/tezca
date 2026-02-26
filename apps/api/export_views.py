@@ -20,12 +20,10 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 
 from .config import INDEX_NAME, es_client
 from .export_throttles import TIER_LIMITS, check_export_quota, log_export
-from .middleware.janua_auth import JanuaJWTAuthentication
 from .models import Law
 
 logger = logging.getLogger(__name__)
@@ -79,21 +77,19 @@ TIER_RANK = {"anon": 0, "free": 1, "premium": 2}
 
 def _get_user_tier(request) -> tuple[str, str]:
     """
-    Determine user tier and user_id from Janua JWT.
+    Determine user tier and user_id from request.user (set by CombinedAuthentication).
 
     Returns (tier, user_id). Falls back to ("anon", "").
     """
-    auth = JanuaJWTAuthentication()
-    try:
-        result = auth.authenticate(request)
-        if result:
-            user, _ = result
-            tier = user.claims.get("tier", user.claims.get("plan", "free"))
-            if tier not in TIER_RANK:
-                tier = "free"
-            return (tier, user.id)
-    except (AuthenticationFailed, Exception):
-        pass
+    user = getattr(request, "user", None)
+    if user and getattr(user, "is_authenticated", False):
+        tier = getattr(user, "tier", "free")
+        # Map API key tiers to export tiers
+        tier_map = {"internal": "premium", "pro": "premium", "enterprise": "premium"}
+        tier = tier_map.get(tier, tier)
+        if tier not in TIER_RANK:
+            tier = "free"
+        return (tier, getattr(user, "id", ""))
     return ("anon", "")
 
 

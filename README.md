@@ -60,7 +60,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech (paginated, filtered, rate-limited)
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
-- ✅ **Production Ready** - Full-stack testing (229 web Vitest + 51 admin Vitest + ~201 Pytest + 8 E2E specs)
+- ✅ **Production Ready** - Full-stack testing (223 web Vitest + 76 admin Vitest + 493 Pytest)
 - ✅ **OpenAPI Documentation** - Swagger UI, ReDoc at `/api/docs/`
 - ✅ **Background Processing** - Celery + Redis for ingestion jobs
 - ✅ **Cross-References** - Automatic detection and linking between laws
@@ -97,6 +97,16 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Spanish URL Paths** - /leyes, /busqueda, /comparar with 301 redirects from English
 - ✅ **Dual Storage** - Local dev / Cloudflare R2 production backend
 - ✅ **Sentry Integration** - Django API + Next.js web (optional)
+- ✅ **API Key Authentication** - `tzk_` prefixed keys with SHA-256 hashing, tier-based access (free/pro/enterprise/internal)
+- ✅ **Combined Auth** - API key + Janua JWT fallback chain with uniform tier/scope propagation
+- ✅ **Tiered Rate Limiting** - Per-tier sliding window throttle (anon 10/min → internal 200/min)
+- ✅ **Bulk Data Feed** - Cursor-paginated `/bulk/articles/` endpoint with domain filtering (requires `bulk` scope)
+- ✅ **Changelog API** - `/changelog/?since=` endpoint for incremental sync of law updates
+- ✅ **Webhook Subscriptions** - HMAC-SHA256 signed push notifications with auto-disable after failures
+- ✅ **Domain Filtering** - `?domain=finance` maps to category groups on all endpoints; API key domain restrictions
+- ✅ **TypeScript SDK** - `@tezca/api-client` package with auto-pagination, typed endpoints, error handling
+- ✅ **API Key Admin** - CRUD endpoints for key management (`/admin/apikeys/`)
+- ✅ **Usage Logging** - Batched request logging middleware for analytics
 
 ## Architecture
 
@@ -108,6 +118,7 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 ├── packages/
 │   ├── ui/          # Shared UI Library (@tezca/ui) - React 19 / Shadcn
 │   ├── lib/         # Shared Utilities & Types (@tezca/lib)
+│   ├── api-client/  # TypeScript SDK (@tezca/api-client)
 │   └── tsconfig/    # Shared TypeScript configurations
 ├── apps/
 │   ├── web/         # Public Portal (Next.js 16)
@@ -186,10 +197,25 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 - ✅ Cmd+K global search overlay, citation + BibTeX export
 - ✅ Homepage refresh (FeaturedLaws, QuickLinks, trilingual headings)
 
-**Phase 12: Production & Municipal** - 📋 PLANNED (Q2 2026)
+**Phase 12: Full Legal Framework Data Gathering** - ✅ COMPLETE
+- ✅ State scrapers (BC, Durango, QR) — 1,102 additional laws
+- ✅ Municipal scrapers (GDL, MTY, León, Zapopan) — 2,195 files
+- ✅ NOM catalog (80 DOF NOMs), OCR pipeline fallback
+
+**Phase 13: API Platform — Ecosystem & External Customers** - ✅ COMPLETE
+- ✅ API key infrastructure (generation, hashing, auth backend, combined auth chain)
+- ✅ Tiered rate limiting + usage logging middleware
+- ✅ Bulk data feed (`/bulk/articles/`) + changelog (`/changelog/`) endpoints
+- ✅ Webhook subscriptions with HMAC-SHA256 signing + auto-disable
+- ✅ Domain filtering (`?domain=finance`) on all endpoints
+- ✅ TypeScript SDK (`@tezca/api-client`) with auto-pagination
+- ✅ API key admin CRUD + CORS for API key consumers
+- ✅ OpenAPI security schemes (ApiKey + Bearer)
+
+**Phase 14: Production & Growth** - 📋 PLANNED (Q2 2026)
 - 📋 Production go-live at tezca.mx
-- 📋 Municipal Tier 1: 10 largest cities
 - 📋 Embeddings / vector search integration
+- 📋 External customer onboarding (legaltech, compliance SaaS)
 
 **See**: [ROADMAP.md](ROADMAP.md) for detailed timeline and [Strategic Overview](docs/strategy/STRATEGIC_OVERVIEW.md) for comprehensive vision
 

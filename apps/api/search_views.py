@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .config import INDEX_NAME, es_client
+from .constants import DOMAIN_MAP
 from .schema import SEARCH_PARAMETERS, ErrorSchema, SearchResponseSchema
 from .throttles import SearchRateThrottle
 
@@ -59,9 +60,18 @@ class SearchView(APIView):
             # Add filter clauses
             filter_clauses = []
 
-            # Category filter
+            # Domain filter (maps to multiple categories)
+            domain = request.query_params.get("domain")
+            if domain and domain in DOMAIN_MAP:
+                filter_clauses.append({"terms": {"category": DOMAIN_MAP[domain]}})
+
+            # Category filter (supports comma-separated)
             if category and category != "all":
-                filter_clauses.append({"term": {"category": category}})
+                cats = [c.strip() for c in category.split(",") if c.strip()]
+                if len(cats) > 1:
+                    filter_clauses.append({"terms": {"category": cats}})
+                else:
+                    filter_clauses.append({"term": {"category": cats[0]}})
 
             # Municipality filter
             municipality = request.query_params.get("municipality", None)
