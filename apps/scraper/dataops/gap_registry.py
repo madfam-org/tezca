@@ -114,9 +114,13 @@ MISSING_SOURCES = [
     {
         "level": "state",
         "gap_type": "not_scraped",
-        "description": "4,438 non-legislative OCR parse failures (OCR pipeline in progress)",
-        "priority": 2,
-        "status_note": "OCR fallback stage added to pipeline.py. Expected 80-90% recovery (~3,500 laws).",
+        "description": "~200 non-legislative PDFs unrecoverable (corrupt/malformed, no valid PDF structure)",
+        "priority": 4,
+        "status_note": (
+            "OCR recovery ran 2026-02-25: 1,847/3,018 succeeded on first pass. "
+            "Second pass recovered ~1,006 tessdata failures (spa.traineddata fix). "
+            "Remaining ~165 are corrupt PDFs ('Unable to get page count'). Unrecoverable."
+        ),
     },
 ]
 

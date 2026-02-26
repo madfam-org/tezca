@@ -64,6 +64,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu-core \
     gobject-introspection \
     libgirepository-1.0-1 \
+    tesseract-ocr \
+    tesseract-ocr-spa \
+    poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Non-root user

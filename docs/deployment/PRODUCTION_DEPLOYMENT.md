@@ -97,7 +97,7 @@ PostgreSQL uses the shared MADFAM cluster (database: `tezca`).
 |------|---------|
 | `apps/web/Dockerfile` | Next.js portal — 3-stage (deps→build→runtime), standalone, non-root |
 | `apps/admin/Dockerfile` | Admin console — same pattern, port 3001 |
-| `apps/indigo/Dockerfile` | Django API — 2-stage (builder→runtime), venv copy, gunicorn 4w/2t |
+| `apps/indigo/Dockerfile` | Django API — 2-stage (builder→runtime), venv copy, gunicorn 4w/2t. Runtime includes tesseract-ocr (+ spa lang data) and poppler-utils for OCR pipeline. |
 | `.dockerignore` | Excludes data/, node_modules/, .git/, engines/, tests/, docs/ |
 
 ### Auth
