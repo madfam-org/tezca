@@ -2,7 +2,7 @@ import { createJanuaMiddleware } from '@janua/nextjs/middleware';
 
 export default createJanuaMiddleware({
   jwtSecret: process.env.JANUA_SECRET_KEY || '',
-  publicRoutes: ['(.*)'], // Everything is public — Tezca is an open-access site
+  publicRoutes: ['/*'], // Everything is public — Tezca is an open-access site
 });
 
 export const config = {
