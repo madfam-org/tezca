@@ -7,7 +7,6 @@ Key format: tzk_<36-char-urlsafe-random> (40 chars total)
 import hashlib
 import secrets
 
-
 KEY_PREFIX_TAG = "tzk_"
 KEY_RANDOM_LENGTH = 36
 

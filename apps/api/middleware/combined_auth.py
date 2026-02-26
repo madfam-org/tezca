@@ -51,10 +51,9 @@ class CombinedAuthentication(BaseAuthentication):
         except Exception:
             # If API key was provided but invalid, let it raise
             # Check if there was actually an API key header
-            has_api_key = (
-                request.META.get("HTTP_X_API_KEY")
-                or request.META.get("HTTP_AUTHORIZATION", "").startswith("ApiKey ")
-            )
+            has_api_key = request.META.get("HTTP_X_API_KEY") or request.META.get(
+                "HTTP_AUTHORIZATION", ""
+            ).startswith("ApiKey ")
             if has_api_key:
                 raise
             # No API key header — fall through to JWT
@@ -66,9 +65,7 @@ class CombinedAuthentication(BaseAuthentication):
                 user, token = result
                 # Enrich JanuaUser with tier/scopes for uniform access
                 if not hasattr(user, "tier"):
-                    user.tier = user.claims.get(
-                        "tier", user.claims.get("plan", "free")
-                    )
+                    user.tier = user.claims.get("tier", user.claims.get("plan", "free"))
                 if not hasattr(user, "scopes"):
                     user.scopes = user.claims.get("scopes", ["read", "search"])
                 if not hasattr(user, "allowed_domains"):

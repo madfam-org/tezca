@@ -23,7 +23,6 @@ from apps.api.middleware.apikey_auth import APIKeyAuthentication, APIKeyUser
 from apps.api.middleware.combined_auth import CombinedAuthentication
 from apps.api.models import APIKey
 
-
 # ── Key generation ─────────────────────────────────────────────────────
 
 
@@ -130,9 +129,7 @@ class TestAPIKeyAuthentication:
 
     def test_authenticate_via_authorization_header(self):
         """Authorization: ApiKey header authenticates correctly."""
-        request = self.factory.get(
-            "/", HTTP_AUTHORIZATION=f"ApiKey {self.full_key}"
-        )
+        request = self.factory.get("/", HTTP_AUTHORIZATION=f"ApiKey {self.full_key}")
         user, token = self.auth.authenticate(request)
         assert user.tier == "pro"
 
@@ -144,7 +141,9 @@ class TestAPIKeyAuthentication:
 
     def test_invalid_key_raises(self):
         """Invalid API key raises AuthenticationFailed."""
-        request = self.factory.get("/", HTTP_X_API_KEY="tzk_invalid_key_12345678901234567890")
+        request = self.factory.get(
+            "/", HTTP_X_API_KEY="tzk_invalid_key_12345678901234567890"
+        )
         with pytest.raises(AuthenticationFailed):
             self.auth.authenticate(request)
 
@@ -204,6 +203,8 @@ class TestCombinedAuthentication:
 
     def test_invalid_api_key_raises_even_with_no_jwt(self):
         """If X-API-Key is present but invalid, raises (doesn't fall through to JWT)."""
-        request = self.factory.get("/", HTTP_X_API_KEY="tzk_bad_key_1234567890123456789012")
+        request = self.factory.get(
+            "/", HTTP_X_API_KEY="tzk_bad_key_1234567890123456789012"
+        )
         with pytest.raises(AuthenticationFailed):
             self.auth.authenticate(request)

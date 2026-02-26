@@ -2,10 +2,6 @@ from django.urls import path
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
-from .bulk_views import bulk_articles
-from .changelog_views import changelog
-from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -20,6 +16,9 @@ from .admin_views import (
     system_config,
     system_metrics,
 )
+from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
+from .bulk_views import bulk_articles
+from .changelog_views import changelog
 from .cross_reference_views import article_cross_references, law_cross_references
 from .export_views import (
     export_docx,
@@ -46,6 +45,7 @@ from .law_views import (
 from .middleware.janua_auth import JanuaJWTAuthentication
 from .search_views import SearchView
 from .views import IngestionView
+from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 
 
 def _protected(view_func):

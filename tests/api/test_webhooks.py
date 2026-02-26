@@ -88,9 +88,7 @@ class TestWebhookCRUD:
         mock_auth.return_value = (self.user, "fake-key")
 
         url = reverse("webhook-create")
-        response = self.client.post(
-            url, {"events": ["version.created"]}, format="json"
-        )
+        response = self.client.post(url, {"events": ["version.created"]}, format="json")
 
         assert response.status_code == 400
 
@@ -180,14 +178,21 @@ class TestWebhookDispatch:
 
         from apps.api.webhooks import dispatch_webhook_event
 
-        dispatch_webhook_event("version.created", {
-            "law_id": "cff",
-            "category": "fiscal",
-        })
+        dispatch_webhook_event(
+            "version.created",
+            {
+                "law_id": "cff",
+                "category": "fiscal",
+            },
+        )
 
         assert mock_post.called
         call_kwargs = mock_post.call_args
-        headers = call_kwargs[1]["headers"] if "headers" in call_kwargs[1] else call_kwargs.kwargs["headers"]
+        headers = (
+            call_kwargs[1]["headers"]
+            if "headers" in call_kwargs[1]
+            else call_kwargs.kwargs["headers"]
+        )
 
         assert headers["X-Tezca-Event"] == "version.created"
         assert headers["X-Tezca-Signature"].startswith("sha256=")
@@ -204,10 +209,13 @@ class TestWebhookDispatch:
         """Webhook with domain_filter=['fiscal'] ignores penal events."""
         from apps.api.webhooks import dispatch_webhook_event
 
-        dispatch_webhook_event("version.created", {
-            "law_id": "cpf",
-            "category": "penal",
-        })
+        dispatch_webhook_event(
+            "version.created",
+            {
+                "law_id": "cpf",
+                "category": "penal",
+            },
+        )
 
         assert not mock_post.called
 
@@ -216,16 +224,20 @@ class TestWebhookDispatch:
     def test_auto_disable_after_failures(self, mock_post, mock_sleep):
         """Webhook is auto-disabled after MAX_FAILURES consecutive failures."""
         import requests as req_lib
+
         mock_post.side_effect = req_lib.ConnectionError("Connection refused")
         self.sub.failure_count = 9
         self.sub.save()
 
         from apps.api.webhooks import dispatch_webhook_event
 
-        dispatch_webhook_event("version.created", {
-            "law_id": "cff",
-            "category": "fiscal",
-        })
+        dispatch_webhook_event(
+            "version.created",
+            {
+                "law_id": "cff",
+                "category": "fiscal",
+            },
+        )
 
         self.sub.refresh_from_db()
         assert self.sub.failure_count >= 10

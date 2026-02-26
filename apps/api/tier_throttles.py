@@ -63,8 +63,16 @@ class TieredRateThrottle(BaseThrottle):
         pipe_hour = f"tezca:throttle:{identity}:hr"
 
         # Use a simple counter approach with expiry
-        cache.incr(f"{pipe_minute}:count", 1) if cache.get(f"{pipe_minute}:count") else cache.set(f"{pipe_minute}:count", 1, 60)
-        cache.incr(f"{pipe_hour}:count", 1) if cache.get(f"{pipe_hour}:count") else cache.set(f"{pipe_hour}:count", 1, 3600)
+        (
+            cache.incr(f"{pipe_minute}:count", 1)
+            if cache.get(f"{pipe_minute}:count")
+            else cache.set(f"{pipe_minute}:count", 1, 60)
+        )
+        (
+            cache.incr(f"{pipe_hour}:count", 1)
+            if cache.get(f"{pipe_hour}:count")
+            else cache.set(f"{pipe_hour}:count", 1, 3600)
+        )
 
         return True
 

@@ -31,7 +31,9 @@ def verify_system():
         print(f"   found {len(laws)} laws registered in DB.")
         print(f"   sample: {laws[0]['id']} ({laws[0]['versions']} versions)")
     else:
-        print("   ⚠️ No laws found in DB list (might be expected if ingestion is fresh)")
+        print(
+            "   ⚠️ No laws found in DB list (might be expected if ingestion is fresh)"
+        )
 
     # 2. Test Law Detail (Amparo)
     law_id = "amparo"

@@ -19,8 +19,9 @@ import os
 import subprocess
 import sys
 import time
-import urllib3
 from pathlib import Path
+
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -44,6 +45,7 @@ logger = logging.getLogger("overnight")
 # ---------------------------------------------------------------------------
 # Job definitions
 # ---------------------------------------------------------------------------
+
 
 def launch_subprocess(script_name, log_name, extra_args=None):
     """Launch a Python script as a subprocess with output to log file."""
@@ -73,13 +75,15 @@ def run_cdmx_retry():
 
         scraper = GenericMunicipalScraper("cdmx")
         scraper.session.verify = False
-        scraper.session.headers.update({
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            )
-        })
+        scraper.session.headers.update(
+            {
+                "User-Agent": (
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/120.0.0.0 Safari/537.36"
+                )
+            }
+        )
 
         catalog = scraper.scrape_catalog()
         logger.info("[Job 3] CDMX catalog: %d items", len(catalog))
@@ -128,7 +132,9 @@ def run_municipal_retry():
     from apps.scraper.municipal.config import MUNICIPALITY_CONFIGS
     from apps.scraper.municipal.generic import GenericMunicipalScraper
 
-    retry_cities = [k for k in MUNICIPALITY_CONFIGS if k not in already_done and k not in blocked]
+    retry_cities = [
+        k for k in MUNICIPALITY_CONFIGS if k not in already_done and k not in blocked
+    ]
     logger.info("[Job 4] Retrying %d cities: %s", len(retry_cities), retry_cities)
 
     total_items = 0
@@ -136,13 +142,15 @@ def run_municipal_retry():
         try:
             scraper = GenericMunicipalScraper(city_key)
             scraper.session.verify = False
-            scraper.session.headers.update({
-                "User-Agent": (
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                )
-            })
+            scraper.session.headers.update(
+                {
+                    "User-Agent": (
+                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/120.0.0.0 Safari/537.36"
+                    )
+                }
+            )
 
             catalog = scraper.scrape_catalog()
             if not catalog:
@@ -173,7 +181,9 @@ def run_municipal_retry():
                 json.dump(catalog, f, indent=2, ensure_ascii=False)
 
             total_items += downloaded
-            logger.info("[Job 4] %s: %d/%d downloaded", city_key, downloaded, len(catalog))
+            logger.info(
+                "[Job 4] %s: %d/%d downloaded", city_key, downloaded, len(catalog)
+            )
 
         except Exception as e:
             logger.error("[Job 4] %s failed: %s", city_key, e)
@@ -204,10 +214,12 @@ def run_nom_pdf_download():
 
     session = requests.Session()
     session.verify = False
-    session.headers.update({
-        "User-Agent": "Tezca/1.0 (+https://github.com/madfam-org/tezca)",
-        "Accept": "text/html, application/xhtml+xml, */*",
-    })
+    session.headers.update(
+        {
+            "User-Agent": "Tezca/1.0 (+https://github.com/madfam-org/tezca)",
+            "Accept": "text/html, application/xhtml+xml, */*",
+        }
+    )
 
     downloaded = 0
     skipped = 0
@@ -228,7 +240,13 @@ def run_nom_pdf_download():
             continue
 
         if i % 20 == 0:
-            logger.info("[Job 6] Progress: %d/%d (%d downloaded, %d skipped)", i, len(noms), downloaded, skipped)
+            logger.info(
+                "[Job 6] Progress: %d/%d (%d downloaded, %d skipped)",
+                i,
+                len(noms),
+                downloaded,
+                skipped,
+            )
 
         try:
             # Fetch detail page
@@ -251,6 +269,7 @@ def run_nom_pdf_download():
             if not pdf_url:
                 # Try nota_to_doc.php with the same codigo
                 import re
+
                 code_match = re.search(r"codigo=(\d+)", detail_url)
                 if code_match:
                     pdf_url = f"https://dof.gob.mx/nota_to_doc.php?codnota={code_match.group(1)}"
@@ -261,7 +280,11 @@ def run_nom_pdf_download():
                 if pdf_resp.status_code == 200 and len(pdf_resp.content) > 1024:
                     # Verify it looks like a PDF or DOC
                     content_type = pdf_resp.headers.get("Content-Type", "")
-                    if "pdf" in content_type or "octet" in content_type or pdf_resp.content[:4] == b"%PDF":
+                    if (
+                        "pdf" in content_type
+                        or "octet" in content_type
+                        or pdf_resp.content[:4] == b"%PDF"
+                    ):
                         pdf_path.write_bytes(pdf_resp.content)
                         downloaded += 1
                     else:
@@ -278,13 +301,19 @@ def run_nom_pdf_download():
             logger.warning("[Job 6] Failed %s: %s", nom_number, e)
             failed += 1
 
-    logger.info("[Job 6] NOM PDF download complete: %d downloaded, %d skipped, %d failed", downloaded, skipped, failed)
+    logger.info(
+        "[Job 6] NOM PDF download complete: %d downloaded, %d skipped, %d failed",
+        downloaded,
+        skipped,
+        failed,
+    )
     return downloaded
 
 
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
+
 
 def main():
     start = time.time()
@@ -300,18 +329,39 @@ def main():
 
     # Job 1: Exhaustive NOM search (subprocess)
     logger.info("Launching Job 1: Exhaustive NOM search")
-    proc1, log1, logpath1 = launch_subprocess("run_overnight_noms.py", "overnight_noms.log")
-    jobs["nom_search"] = {"proc": proc1, "log": log1, "logpath": logpath1, "start": time.time()}
+    proc1, log1, logpath1 = launch_subprocess(
+        "run_overnight_noms.py", "overnight_noms.log"
+    )
+    jobs["nom_search"] = {
+        "proc": proc1,
+        "log": log1,
+        "logpath": logpath1,
+        "start": time.time(),
+    }
 
     # Job 2: SCJN probe + scrape (subprocess)
     logger.info("Launching Job 2: SCJN probe + scrape")
-    proc2, log2, logpath2 = launch_subprocess("run_overnight_scjn.py", "overnight_scjn.log")
-    jobs["scjn"] = {"proc": proc2, "log": log2, "logpath": logpath2, "start": time.time()}
+    proc2, log2, logpath2 = launch_subprocess(
+        "run_overnight_scjn.py", "overnight_scjn.log"
+    )
+    jobs["scjn"] = {
+        "proc": proc2,
+        "log": log2,
+        "logpath": logpath2,
+        "start": time.time(),
+    }
 
     # Job 5: OCR recovery (subprocess — CPU-bound)
     logger.info("Launching Job 5: OCR recovery")
-    proc5, log5, logpath5 = launch_subprocess("run_overnight_ocr.py", "overnight_ocr.log")
-    jobs["ocr"] = {"proc": proc5, "log": log5, "logpath": logpath5, "start": time.time()}
+    proc5, log5, logpath5 = launch_subprocess(
+        "run_overnight_ocr.py", "overnight_ocr.log"
+    )
+    jobs["ocr"] = {
+        "proc": proc5,
+        "log": log5,
+        "logpath": logpath5,
+        "start": time.time(),
+    }
 
     # Jobs 3 & 4 run in-process (lightweight, share imports)
     logger.info("Running Job 3: CDMX retry (in-process)")
@@ -331,7 +381,11 @@ def main():
     proc1.wait()
     jobs["nom_search"]["log"].close()
     nom_elapsed = time.time() - jobs["nom_search"]["start"]
-    logger.info("Job 1 (NOM search) completed in %.1f min (exit code: %d)", nom_elapsed / 60, proc1.returncode)
+    logger.info(
+        "Job 1 (NOM search) completed in %.1f min (exit code: %d)",
+        nom_elapsed / 60,
+        proc1.returncode,
+    )
 
     # Job 6: NOM PDF download (depends on Job 1)
     logger.info("Launching Job 6: NOM PDF download (in-process)")
@@ -350,7 +404,9 @@ def main():
         elapsed = time.time() - job["start"]
         logger.info(
             "%s completed in %.1f min (exit code: %d)",
-            name, elapsed / 60, job["proc"].returncode,
+            name,
+            elapsed / 60,
+            job["proc"].returncode,
         )
 
     # ---------------------------------------------------------------------------
@@ -363,11 +419,23 @@ def main():
     logger.info("=" * 70)
     logger.info("Total duration: %.1f hours", total_elapsed / 3600)
     logger.info("")
-    logger.info("Job 1 (NOM search):        exit=%d  log=%s", proc1.returncode, jobs["nom_search"]["logpath"])
-    logger.info("Job 2 (SCJN):              exit=%d  log=%s", jobs["scjn"]["proc"].returncode, jobs["scjn"]["logpath"])
+    logger.info(
+        "Job 1 (NOM search):        exit=%d  log=%s",
+        proc1.returncode,
+        jobs["nom_search"]["logpath"],
+    )
+    logger.info(
+        "Job 2 (SCJN):              exit=%d  log=%s",
+        jobs["scjn"]["proc"].returncode,
+        jobs["scjn"]["logpath"],
+    )
     logger.info("Job 3 (CDMX):              %d items", cdmx_count)
     logger.info("Job 4 (Municipal retry):    %d items", muni_count)
-    logger.info("Job 5 (OCR recovery):       exit=%d  log=%s", jobs["ocr"]["proc"].returncode, jobs["ocr"]["logpath"])
+    logger.info(
+        "Job 5 (OCR recovery):       exit=%d  log=%s",
+        jobs["ocr"]["proc"].returncode,
+        jobs["ocr"]["logpath"],
+    )
     logger.info("Job 6 (NOM PDFs):           %d PDFs", pdf_count)
     logger.info("")
 
@@ -378,13 +446,25 @@ def main():
             noms = json.load(open(noms_path))
             logger.info("NOMs cataloged: %d", len(noms))
 
-        nom_pdfs = list((DATA_DIR / "federal" / "noms" / "pdfs").glob("*")) if (DATA_DIR / "federal" / "noms" / "pdfs").exists() else []
+        nom_pdfs = (
+            list((DATA_DIR / "federal" / "noms" / "pdfs").glob("*"))
+            if (DATA_DIR / "federal" / "noms" / "pdfs").exists()
+            else []
+        )
         logger.info("NOM PDFs: %d", len(nom_pdfs))
 
-        scjn_batches = list((DATA_DIR / "judicial").glob("batch_*.json")) if (DATA_DIR / "judicial").exists() else []
+        scjn_batches = (
+            list((DATA_DIR / "judicial").glob("batch_*.json"))
+            if (DATA_DIR / "judicial").exists()
+            else []
+        )
         logger.info("SCJN batches: %d", len(scjn_batches))
 
-        cdmx_files = list((DATA_DIR / "municipal" / "cdmx").glob("*")) if (DATA_DIR / "municipal" / "cdmx").exists() else []
+        cdmx_files = (
+            list((DATA_DIR / "municipal" / "cdmx").glob("*"))
+            if (DATA_DIR / "municipal" / "cdmx").exists()
+            else []
+        )
         logger.info("CDMX files: %d", len(cdmx_files))
     except Exception as e:
         logger.warning("Summary data count failed: %s", e)

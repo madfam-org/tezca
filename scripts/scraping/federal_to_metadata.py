@@ -97,7 +97,14 @@ def load_batches(input_dir: Path) -> List[Dict[str, Any]]:
                     items.extend(data)
                 elif isinstance(data, dict):
                     # Look for items under known keys
-                    for key in ("items", "regulations", "noms", "treaties", "results", "data"):
+                    for key in (
+                        "items",
+                        "regulations",
+                        "noms",
+                        "treaties",
+                        "results",
+                        "data",
+                    ):
                         if key in data and isinstance(data[key], list):
                             items.extend(data[key])
                             break
@@ -115,7 +122,12 @@ def load_batches(input_dir: Path) -> List[Dict[str, Any]]:
         except (json.JSONDecodeError, OSError) as e:
             logger.warning("Could not read %s: %s", batch_file, e)
 
-    logger.info("Loaded %d items from %d batch files in %s", len(items), len(batch_files), input_dir)
+    logger.info(
+        "Loaded %d items from %d batch files in %s",
+        len(items),
+        len(batch_files),
+        input_dir,
+    )
     return items
 
 
@@ -155,31 +167,31 @@ def convert_to_metadata(
         if not name:
             continue
 
-        url = (
-            item.get("url", "")
-            or item.get("enlace", "")
-            or ""
-        ).strip()
+        url = (item.get("url", "") or item.get("enlace", "") or "").strip()
 
         official_id = _make_official_id(prefix, name, i)
         pub_date = _extract_date(item)
 
         # Determine category from name if possible
-        category = item.get("regulation_type") or item.get("category") or default_category
+        category = (
+            item.get("regulation_type") or item.get("category") or default_category
+        )
 
-        laws.append({
-            "official_id": official_id,
-            "law_name": name[:500],
-            "category": category[:100],
-            "tier": tier,
-            "state": "",
-            "publication_date": pub_date,
-            "text_file": "",
-            "url": url[:500],
-            "file_id": official_id,
-            "format": "",
-            "law_type": default_law_type,
-        })
+        laws.append(
+            {
+                "official_id": official_id,
+                "law_name": name[:500],
+                "category": category[:100],
+                "tier": tier,
+                "state": "",
+                "publication_date": pub_date,
+                "text_file": "",
+                "url": url[:500],
+                "file_id": official_id,
+                "format": "",
+                "law_type": default_law_type,
+            }
+        )
 
     metadata = {
         "source": prefix,
@@ -263,7 +275,9 @@ def main():
     print("FEDERAL METADATA CONVERSION SUMMARY")
     print("=" * 60)
     for r in results:
-        print(f"  {r['source']}: {r['raw_items']} raw → {r['unique_items']} unique → {r['output']}")
+        print(
+            f"  {r['source']}: {r['raw_items']} raw → {r['unique_items']} unique → {r['output']}"
+        )
     print("=" * 60)
 
 

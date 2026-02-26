@@ -23,7 +23,9 @@ AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authentic
 
 def _admin_user():
     """Create a mock admin JanuaUser."""
-    user = JanuaUser({"sub": "admin-user-1", "email": "admin@madfam.io", "tier": "premium"})
+    user = JanuaUser(
+        {"sub": "admin-user-1", "email": "admin@madfam.io", "tier": "premium"}
+    )
     user.tier = "premium"
     user.scopes = ["read", "search"]
     user.allowed_domains = []
@@ -111,7 +113,9 @@ class TestListAPIKeys:
         assert response.data["count"] == 3
         # Full key should never be returned
         for key_data in response.data["keys"]:
-            assert "key" not in key_data or not key_data.get("key", "").startswith("tzk_")
+            assert "key" not in key_data or not key_data.get("key", "").startswith(
+                "tzk_"
+            )
 
 
 @pytest.mark.django_db
@@ -134,9 +138,7 @@ class TestUpdateAPIKey:
         mock_auth.return_value = (_admin_user(), "fake-token")
 
         url = reverse("admin-apikey-update", args=[self.prefix])
-        response = self.client.patch(
-            url, {"tier": "pro"}, format="json"
-        )
+        response = self.client.patch(url, {"tier": "pro"}, format="json")
 
         assert response.status_code == 200
         assert response.data["tier"] == "pro"

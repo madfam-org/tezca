@@ -261,9 +261,7 @@ class NomScraper:
         for item in soup.select("td.txt_azul"):
             try:
                 # Find the nota_detalle link (the main result link)
-                link = item.find(
-                    "a", href=lambda h: h and "nota_detalle" in h
-                )
+                link = item.find("a", href=lambda h: h and "nota_detalle" in h)
                 if not link:
                     # Fallback: any link with text
                     link = item.find("a", href=True)

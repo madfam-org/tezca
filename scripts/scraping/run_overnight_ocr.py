@@ -123,7 +123,9 @@ def ocr_extract(pdf_path):
                 text_parts.append(page_text)
         return "\n".join(text_parts)
     except OCRTimeout:
-        logger.warning("OCR timed out after %ds for %s", OCR_TIMEOUT_SECONDS, pdf_path.name)
+        logger.warning(
+            "OCR timed out after %ds for %s", OCR_TIMEOUT_SECONDS, pdf_path.name
+        )
         return _TIMEOUT_SENTINEL
     except Exception as e:
         logger.error("OCR failed for %s: %s", pdf_path.name, e)
@@ -137,6 +139,7 @@ def try_pdfplumber_first(pdf_path):
     """Try pdfplumber extraction before OCR (faster)."""
     try:
         import pdfplumber
+
         text_parts = []
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
@@ -150,7 +153,9 @@ def try_pdfplumber_first(pdf_path):
 
 def main():
     parser = argparse.ArgumentParser(description="OCR recovery for empty PDFs")
-    parser.add_argument("--limit", type=int, default=0, help="Max PDFs to process (0=all)")
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Max PDFs to process (0=all)"
+    )
     parser.add_argument(
         "--retry-failures",
         action="store_true",
@@ -163,8 +168,9 @@ def main():
 
     # Check dependencies
     try:
-        import pytesseract  # noqa: F401
         import pdf2image  # noqa: F401
+        import pytesseract  # noqa: F401
+
         logger.info("OCR dependencies available")
     except ImportError as e:
         logger.error("Missing OCR dependency: %s — aborting", e)
@@ -172,14 +178,16 @@ def main():
 
     # Tessdata sanity check — fail fast before processing thousands of PDFs
     if not check_tessdata():
-        logger.error("Aborting: tessdata check failed. Fix tesseract installation first.")
+        logger.error(
+            "Aborting: tessdata check failed. Fix tesseract installation first."
+        )
         sys.exit(1)
 
     candidates = find_pdfs_needing_ocr()
     logger.info("Found %d PDFs needing text extraction", len(candidates))
 
     if args.limit > 0:
-        candidates = candidates[:args.limit]
+        candidates = candidates[: args.limit]
         logger.info("Limited to %d PDFs", len(candidates))
 
     success_count = 0
@@ -194,7 +202,13 @@ def main():
             rate = i / elapsed * 60 if elapsed > 0 else 0
             logger.info(
                 "Progress: %d/%d (%.0f/min) — %d success, %d fail, %d skip, %d timeout",
-                i, len(candidates), rate, success_count, fail_count, skip_count, timeout_count,
+                i,
+                len(candidates),
+                rate,
+                success_count,
+                fail_count,
+                skip_count,
+                timeout_count,
             )
 
         txt_path = pdf_path.with_suffix(".txt")

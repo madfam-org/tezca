@@ -99,7 +99,12 @@ def scrape_state(scraper_key: str, catalog_only: bool = False, resume: bool = Fa
             print(f"  [{i+1}] {item['name'][:80]} ({ext}) - {item['url'][:80]}")
         if len(catalog) > 10:
             print(f"  ... and {len(catalog) - 10} more")
-        return {"state": state_name, "catalog_size": len(catalog), "downloaded": 0, "failed": 0}
+        return {
+            "state": state_name,
+            "catalog_size": len(catalog),
+            "downloaded": 0,
+            "failed": 0,
+        }
 
     # Step 2: Download files and build OJN-format metadata
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -117,15 +122,17 @@ def scrape_state(scraper_key: str, catalog_only: bool = False, resume: bool = Fa
         # Resume: skip already-downloaded files
         if resume and local_path.exists() and local_path.stat().st_size > 0:
             skipped += 1
-            laws.append({
-                "file_id": file_id,
-                "law_name": item["name"],
-                "url": item["url"],
-                "local_path": str(local_path),
-                "format": ext,
-                "category": item.get("category", ""),
-                "law_type": item.get("law_type", ""),
-            })
+            laws.append(
+                {
+                    "file_id": file_id,
+                    "law_name": item["name"],
+                    "url": item["url"],
+                    "local_path": str(local_path),
+                    "format": ext,
+                    "category": item.get("category", ""),
+                    "law_type": item.get("law_type", ""),
+                }
+            )
             continue
 
         # Download via scraper's built-in download (has rate limiting)
@@ -138,28 +145,36 @@ def scrape_state(scraper_key: str, catalog_only: bool = False, resume: bool = Fa
             if downloaded_path.exists() and downloaded_path != local_path:
                 downloaded_path.rename(local_path)
 
-            laws.append({
-                "file_id": file_id,
-                "law_name": item["name"],
-                "url": item["url"],
-                "local_path": str(local_path),
-                "format": ext,
-                "category": item.get("category", ""),
-                "law_type": item.get("law_type", ""),
-            })
+            laws.append(
+                {
+                    "file_id": file_id,
+                    "law_name": item["name"],
+                    "url": item["url"],
+                    "local_path": str(local_path),
+                    "format": ext,
+                    "category": item.get("category", ""),
+                    "law_type": item.get("law_type", ""),
+                }
+            )
             downloaded += 1
         else:
-            failed_laws.append({
-                "law_name": item["name"],
-                "url": item["url"],
-                "error": "Download failed",
-                "retry_result": "pending",
-            })
+            failed_laws.append(
+                {
+                    "law_name": item["name"],
+                    "url": item["url"],
+                    "error": "Download failed",
+                    "retry_result": "pending",
+                }
+            )
 
         if (i + 1) % 50 == 0:
             logger.info(
                 "Progress: %d/%d (downloaded=%d, skipped=%d, failed=%d)",
-                i + 1, len(catalog), downloaded, skipped, len(failed_laws),
+                i + 1,
+                len(catalog),
+                downloaded,
+                skipped,
+                len(failed_laws),
             )
 
     # Step 3: Write OJN-format metadata
@@ -180,7 +195,11 @@ def scrape_state(scraper_key: str, catalog_only: bool = False, resume: bool = Fa
 
     logger.info(
         "%s complete: %d downloaded, %d skipped, %d failed → %s",
-        state_name, downloaded, skipped, len(failed_laws), metadata_path,
+        state_name,
+        downloaded,
+        skipped,
+        len(failed_laws),
+        metadata_path,
     )
 
     return {

@@ -24,7 +24,9 @@ def _check_scope(request, required_scope: str):
     user = getattr(request, "user", None)
     if not user or not getattr(user, "is_authenticated", False):
         return Response(
-            {"error": "Authentication required. Provide an API key with X-API-Key header."},
+            {
+                "error": "Authentication required. Provide an API key with X-API-Key header."
+            },
             status=status.HTTP_401_UNAUTHORIZED,
         )
     scopes = getattr(user, "scopes", [])
@@ -140,6 +142,7 @@ def bulk_articles(request):
     if cursor:
         try:
             import json
+
             search_after = json.loads(base64.urlsafe_b64decode(cursor).decode())
         except Exception:
             return Response(
@@ -153,8 +156,16 @@ def bulk_articles(request):
             "sort": [{"law_id": "asc"}, {"article": "asc"}],
             "size": page_size,
             "_source": [
-                "law_id", "law_name", "category", "tier", "status",
-                "law_type", "state", "article", "text", "publication_date",
+                "law_id",
+                "law_name",
+                "category",
+                "tier",
+                "status",
+                "law_type",
+                "state",
+                "article",
+                "text",
+                "publication_date",
             ],
         }
 
@@ -169,34 +180,39 @@ def bulk_articles(request):
         last_sort = None
         for hit in hits:
             src = hit["_source"]
-            results.append({
-                "law_id": src.get("law_id"),
-                "law_name": src.get("law_name"),
-                "category": src.get("category"),
-                "tier": src.get("tier"),
-                "status": src.get("status"),
-                "law_type": src.get("law_type"),
-                "state": src.get("state"),
-                "article_id": src.get("article"),
-                "text": src.get("text"),
-                "last_updated": src.get("publication_date"),
-            })
+            results.append(
+                {
+                    "law_id": src.get("law_id"),
+                    "law_name": src.get("law_name"),
+                    "category": src.get("category"),
+                    "tier": src.get("tier"),
+                    "status": src.get("status"),
+                    "law_type": src.get("law_type"),
+                    "state": src.get("state"),
+                    "article_id": src.get("article"),
+                    "text": src.get("text"),
+                    "last_updated": src.get("publication_date"),
+                }
+            )
             last_sort = hit.get("sort")
 
         # Build next cursor
         next_cursor = None
         if last_sort and len(results) == page_size:
             import json
+
             next_cursor = base64.urlsafe_b64encode(
                 json.dumps(last_sort).encode()
             ).decode()
 
-        return Response({
-            "count": total,
-            "next_cursor": next_cursor,
-            "page_size": page_size,
-            "results": results,
-        })
+        return Response(
+            {
+                "count": total,
+                "next_cursor": next_cursor,
+                "page_size": page_size,
+                "results": results,
+            }
+        )
 
     except Exception:
         logger.exception("bulk_articles failed")

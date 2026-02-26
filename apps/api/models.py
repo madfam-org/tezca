@@ -234,7 +234,9 @@ class APIKey(models.Model):
 class APIUsageLog(models.Model):
     """Tracks API usage for analytics and rate limiting."""
 
-    api_key_prefix = models.CharField(max_length=8, blank=True, default="", db_index=True)
+    api_key_prefix = models.CharField(
+        max_length=8, blank=True, default="", db_index=True
+    )
     ip_address = models.GenericIPAddressField()
     endpoint = models.CharField(max_length=200)
     method = models.CharField(max_length=10, default="GET")
@@ -281,4 +283,6 @@ class WebhookSubscription(models.Model):
         ]
 
     def __str__(self):
-        return f"Webhook {self.url} [{','.join(self.events)}] (key={self.api_key.prefix})"
+        return (
+            f"Webhook {self.url} [{','.join(self.events)}] (key={self.api_key.prefix})"
+        )

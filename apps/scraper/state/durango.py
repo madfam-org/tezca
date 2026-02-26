@@ -141,7 +141,10 @@ class DurangoScraper(StateCongressScraper):
         # Many links have empty text but law names encoded in filenames.
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
-            if "/Archivos/legislacion/" not in href and "/archivos/legislacion/" not in href.lower():
+            if (
+                "/Archivos/legislacion/" not in href
+                and "/archivos/legislacion/" not in href.lower()
+            ):
                 continue
             if not self.is_downloadable(self.normalize_url(href)):
                 continue

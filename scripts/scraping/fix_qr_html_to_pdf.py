@@ -33,16 +33,19 @@ logger = logging.getLogger(__name__)
 def setup_session() -> requests.Session:
     session = requests.Session()
     retry_strategy = Retry(
-        total=3, backoff_factor=1,
+        total=3,
+        backoff_factor=1,
         status_forcelist=[429, 500, 502, 503, 504],
         allowed_methods=["HEAD", "GET"],
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("http://", adapter)
     session.mount("https://", adapter)
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (compatible; TezcaBot/1.0; +https://leyes.mx)",
-    })
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0 (compatible; TezcaBot/1.0; +https://leyes.mx)",
+        }
+    )
     return session
 
 
@@ -82,6 +85,7 @@ def extract_pdf_url(html_path: Path) -> str | None:
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="Fix QR HTML files to actual PDFs")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -147,14 +151,27 @@ def main():
             local_path.write_bytes(resp.content)
             law["url"] = pdf_url  # Update URL to direct PDF
             fixed += 1
-            logger.info("[%d/%d] Fixed: %s (%dKB)", i + 1, len(laws), law["law_name"][:50], len(resp.content) // 1024)
+            logger.info(
+                "[%d/%d] Fixed: %s (%dKB)",
+                i + 1,
+                len(laws),
+                law["law_name"][:50],
+                len(resp.content) // 1024,
+            )
 
         except Exception as e:
             logger.error("[%d] Download failed: %s - %s", i, pdf_url[:60], e)
             failed += 1
 
         if (i + 1) % 50 == 0:
-            logger.info("Progress: %d/%d (fixed=%d, skipped=%d, failed=%d)", i + 1, len(laws), fixed, skipped, failed)
+            logger.info(
+                "Progress: %d/%d (fixed=%d, skipped=%d, failed=%d)",
+                i + 1,
+                len(laws),
+                fixed,
+                skipped,
+                failed,
+            )
 
     # Update metadata
     if not args.dry_run and fixed > 0:

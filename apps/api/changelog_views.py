@@ -60,9 +60,11 @@ def changelog(request):
         )
 
     # Filter versions created since the date
-    versions_qs = LawVersion.objects.filter(
-        created_at__date__gte=since_date
-    ).select_related("law").order_by("-created_at")
+    versions_qs = (
+        LawVersion.objects.filter(created_at__date__gte=since_date)
+        .select_related("law")
+        .order_by("-created_at")
+    )
 
     # Optional filters
     domain = request.query_params.get("domain")
@@ -109,23 +111,31 @@ def changelog(request):
             .first()
         )
 
-        changes.append({
-            "law_id": v.law.official_id,
-            "law_name": v.law.name,
-            "category": v.law.category,
-            "tier": v.law.tier,
-            "status": v.law.status,
-            "change_type": "new_version",
-            "publication_date": str(v.publication_date) if v.publication_date else None,
-            "change_summary": v.change_summary,
-            "previous_version_date": (
-                str(prev.publication_date) if prev and prev.publication_date else None
-            ),
-            "updated_at": v.created_at.isoformat(),
-        })
+        changes.append(
+            {
+                "law_id": v.law.official_id,
+                "law_name": v.law.name,
+                "category": v.law.category,
+                "tier": v.law.tier,
+                "status": v.law.status,
+                "change_type": "new_version",
+                "publication_date": (
+                    str(v.publication_date) if v.publication_date else None
+                ),
+                "change_summary": v.change_summary,
+                "previous_version_date": (
+                    str(prev.publication_date)
+                    if prev and prev.publication_date
+                    else None
+                ),
+                "updated_at": v.created_at.isoformat(),
+            }
+        )
 
-    return Response({
-        "since": since_str,
-        "total": len(changes),
-        "changes": changes,
-    })
+    return Response(
+        {
+            "since": since_str,
+            "total": len(changes),
+            "changes": changes,
+        }
+    )

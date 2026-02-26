@@ -252,6 +252,8 @@ class TestDomainFilter:
         body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
         filters = body["query"]["bool"].get("filter", [])
 
-        domain_filter = [f for f in filters if "terms" in f and "category" in f["terms"]]
+        domain_filter = [
+            f for f in filters if "terms" in f and "category" in f["terms"]
+        ]
         assert len(domain_filter) == 1
         assert set(domain_filter[0]["terms"]["category"]) == {"fiscal", "mercantil"}

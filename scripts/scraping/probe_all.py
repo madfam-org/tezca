@@ -14,8 +14,9 @@ import json
 import logging
 import sys
 import time
-import urllib3
 from pathlib import Path
+
+import urllib3
 
 # Suppress SSL warnings for federal scrapers that need verify=False
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -108,7 +109,10 @@ def probe_federal():
         if probe_result.get("found"):
             logger.info("[CONAMER] API found: %s", probe_result["endpoint"])
         else:
-            logger.warning("[CONAMER] No API discovered, probed %d paths", len(probe_result.get("probed", [])))
+            logger.warning(
+                "[CONAMER] No API discovered, probed %d paths",
+                len(probe_result.get("probed", [])),
+            )
     except Exception as e:
         results["conamer"] = {"count": 0, "status": f"error: {e}"}
         logger.error("[CONAMER] Error: %s", e)
@@ -124,6 +128,7 @@ def probe_federal():
         resp = scraper._get(f"{scraper.__class__.__module__}")
         # Try the base URL directly
         import requests as req
+
         s = req.Session()
         s.verify = False
         s.headers.update({"User-Agent": "Tezca/1.0"})

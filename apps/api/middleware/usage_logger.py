@@ -37,7 +37,9 @@ def _flush_buffer():
             ignore_conflicts=True,
         )
     except Exception:
-        logger.warning("Failed to flush usage log buffer (%d entries)", len(entries), exc_info=True)
+        logger.warning(
+            "Failed to flush usage log buffer (%d entries)", len(entries), exc_info=True
+        )
 
 
 def log_api_usage(
@@ -64,8 +66,7 @@ def log_api_usage(
     with _buffer_lock:
         _buffer.append(entry)
         should_flush = (
-            len(_buffer) >= BUFFER_SIZE
-            or (time.time() - _last_flush) >= FLUSH_INTERVAL
+            len(_buffer) >= BUFFER_SIZE or (time.time() - _last_flush) >= FLUSH_INTERVAL
         )
 
     if should_flush:
@@ -98,7 +99,11 @@ class UsageLoggingMiddleware:
             api_key_prefix = getattr(user, "api_key_prefix", "")
 
         xff = request.META.get("HTTP_X_FORWARDED_FOR")
-        ip = xff.split(",")[0].strip() if xff else request.META.get("REMOTE_ADDR", "127.0.0.1")
+        ip = (
+            xff.split(",")[0].strip()
+            if xff
+            else request.META.get("REMOTE_ADDR", "127.0.0.1")
+        )
 
         log_api_usage(
             api_key_prefix=api_key_prefix,

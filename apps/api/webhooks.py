@@ -101,7 +101,7 @@ def _send_webhook(subscription, event: str, payload: dict):
 
         # Exponential backoff
         if attempt < MAX_RETRIES - 1:
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
 
     # All retries failed
     from .models import WebhookSubscription as WSModel

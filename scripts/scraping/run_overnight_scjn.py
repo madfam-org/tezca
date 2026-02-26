@@ -14,8 +14,9 @@ import json
 import logging
 import sys
 import time
-import urllib3
 from pathlib import Path
+
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -66,7 +67,9 @@ def phase_a_probe(scraper):
             logger.info("  Datasets: %d", len(open_data.get("datasets", [])))
             logger.info("  Downloads: %d", len(open_data.get("download_urls", [])))
         else:
-            logger.info("No open data found (probed %d paths)", len(open_data.get("probed", [])))
+            logger.info(
+                "No open data found (probed %d paths)", len(open_data.get("probed", []))
+            )
     except Exception as e:
         logger.error("Open data probe failed: %s", e)
         probe_results["open_data"] = {"found": False, "error": str(e)}
@@ -79,9 +82,14 @@ def phase_a_probe(scraper):
         if search_api["found"]:
             logger.info("Search API FOUND: %s", search_api["endpoint"])
         elif search_api.get("search_form"):
-            logger.info("HTML search form found: %s", search_api["search_form"].get("action"))
+            logger.info(
+                "HTML search form found: %s", search_api["search_form"].get("action")
+            )
         else:
-            logger.info("No search API found (probed %d paths)", len(search_api.get("probed", [])))
+            logger.info(
+                "No search API found (probed %d paths)",
+                len(search_api.get("probed", [])),
+            )
     except Exception as e:
         logger.error("Search API probe failed: %s", e)
         probe_results["search_api"] = {"found": False, "error": str(e)}
@@ -99,7 +107,11 @@ def phase_b_scrape(scraper):
     existing_batches = sorted(OUTPUT_DIR.glob("batch_*.json"))
     resume_from = len(existing_batches) * BATCH_SIZE
     if resume_from > 0:
-        logger.info("Resuming from item %d (%d batches exist)", resume_from, len(existing_batches))
+        logger.info(
+            "Resuming from item %d (%d batches exist)",
+            resume_from,
+            len(existing_batches),
+        )
 
     total_items = 0
     batch_num = len(existing_batches)
@@ -121,18 +133,25 @@ def phase_b_scrape(scraper):
                     logger.info("Batch %d already exists, skipping", batch_num)
                     continue
 
-                save_json(batch_path, {
-                    "tipo": tipo,
-                    "batch_num": batch_num,
-                    "count": len(batch),
-                    "items": batch,
-                })
+                save_json(
+                    batch_path,
+                    {
+                        "tipo": tipo,
+                        "batch_num": batch_num,
+                        "count": len(batch),
+                        "items": batch,
+                    },
+                )
 
                 tipo_items += len(batch)
                 total_items += len(batch)
                 logger.info(
                     "Batch %d: %d items (%s total: %d, overall: %d)",
-                    batch_num, len(batch), tipo, tipo_items, total_items,
+                    batch_num,
+                    len(batch),
+                    tipo,
+                    tipo_items,
+                    total_items,
                 )
 
         except Exception as e:
@@ -140,7 +159,9 @@ def phase_b_scrape(scraper):
 
         logger.info("%s complete: %d items", tipo, tipo_items)
 
-    logger.info("Phase B complete: %d total items in %d batches", total_items, batch_num)
+    logger.info(
+        "Phase B complete: %d total items in %d batches", total_items, batch_num
+    )
     return total_items
 
 
@@ -179,7 +200,9 @@ def phase_c_bulk_download(scraper, probe_results):
         except Exception as e:
             logger.error("Download error for %s: %s", url, e)
 
-    logger.info("Phase C complete: %d/%d files downloaded", downloaded, len(download_urls))
+    logger.info(
+        "Phase C complete: %d/%d files downloaded", downloaded, len(download_urls)
+    )
     return downloaded
 
 

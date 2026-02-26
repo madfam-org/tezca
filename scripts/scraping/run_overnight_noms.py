@@ -14,8 +14,9 @@ import json
 import logging
 import sys
 import time
-import urllib3
 from pathlib import Path
+
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -39,6 +40,7 @@ OUTPUT_PATH = PROJECT_ROOT / "data" / "federal" / "noms" / "discovered_noms.json
 # Search matrix
 # ---------------------------------------------------------------------------
 
+
 def build_search_queries():
     """Build the full search matrix (~290 queries)."""
     queries = []
@@ -49,8 +51,16 @@ def build_search_queries():
 
     # Per-secretaria
     secretarias = [
-        "NOM SSA", "NOM SEMARNAT", "NOM STPS", "NOM SCT", "NOM SE",
-        "NOM SAGARPA", "NOM SENER", "NOM CONAGUA", "NOM SCFI", "NOM SEDATU",
+        "NOM SSA",
+        "NOM SEMARNAT",
+        "NOM STPS",
+        "NOM SCT",
+        "NOM SE",
+        "NOM SAGARPA",
+        "NOM SENER",
+        "NOM CONAGUA",
+        "NOM SCFI",
+        "NOM SEDATU",
     ]
     queries.extend(secretarias)
 
@@ -136,7 +146,11 @@ def main():
 
             if new_in_query > 0:
                 queries_with_results += 1
-                logger.info("  -> %d new NOMs (running total new: %d)", new_in_query, len(all_new))
+                logger.info(
+                    "  -> %d new NOMs (running total new: %d)",
+                    new_in_query,
+                    len(all_new),
+                )
 
         except Exception as e:
             logger.error("  -> Error on query '%s': %s", query, e)
@@ -155,8 +169,12 @@ def main():
 
     elapsed = time.time() - start
     logger.info("=== Exhaustive NOM Search Complete ===")
-    logger.info("Queries: %d total, %d with new results", len(queries), queries_with_results)
-    logger.info("NOMs: %d existing + %d new = %d total", len(existing), added, len(merged))
+    logger.info(
+        "Queries: %d total, %d with new results", len(queries), queries_with_results
+    )
+    logger.info(
+        "NOMs: %d existing + %d new = %d total", len(existing), added, len(merged)
+    )
     logger.info("Duration: %.1f minutes", elapsed / 60)
 
 

@@ -5,22 +5,21 @@ Covers: tessdata sanity check, per-PDF timeout, timeout sentinel, CLI flags.
 """
 
 import signal
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-import sys
 
 # Ensure project root is importable
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.scraping.run_overnight_ocr import (
+    _TIMEOUT_SENTINEL,
     MIN_TEXT_LENGTH,
     OCR_TIMEOUT_SECONDS,
     OCRTimeout,
-    _TIMEOUT_SENTINEL,
     _timeout_handler,
     check_tessdata,
     find_pdfs_needing_ocr,
@@ -65,10 +64,13 @@ class TestTimeoutMechanism:
 
         mock_pytesseract = MagicMock()
 
-        with patch.dict("sys.modules", {
-            "pytesseract": mock_pytesseract,
-            "pdf2image": mock_pdf2image,
-        }):
+        with patch.dict(
+            "sys.modules",
+            {
+                "pytesseract": mock_pytesseract,
+                "pdf2image": mock_pdf2image,
+            },
+        ):
             result = ocr_extract(pdf_path)
 
         assert result == _TIMEOUT_SENTINEL
@@ -84,13 +86,24 @@ class TestTessdataCheck:
         mock_tess_module.image_to_string.return_value = ""
         mock_pil = MagicMock()
 
-        with patch.dict("sys.modules", {
-            "pytesseract": mock_tess_module,
-            "PIL": mock_pil,
-            "PIL.Image": mock_pil.Image,
-        }):
-            with patch("scripts.scraping.run_overnight_ocr.pytesseract", mock_tess_module, create=True):
-                with patch("scripts.scraping.run_overnight_ocr.Image", mock_pil.Image, create=True):
+        with patch.dict(
+            "sys.modules",
+            {
+                "pytesseract": mock_tess_module,
+                "PIL": mock_pil,
+                "PIL.Image": mock_pil.Image,
+            },
+        ):
+            with patch(
+                "scripts.scraping.run_overnight_ocr.pytesseract",
+                mock_tess_module,
+                create=True,
+            ):
+                with patch(
+                    "scripts.scraping.run_overnight_ocr.Image",
+                    mock_pil.Image,
+                    create=True,
+                ):
                     # check_tessdata imports locally, so just verify the function exists
                     assert callable(check_tessdata)
 

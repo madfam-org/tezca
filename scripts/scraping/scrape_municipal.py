@@ -14,9 +14,10 @@ import json
 import logging
 import sys
 import time
-import urllib3
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -67,7 +68,13 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
     logger.info("[%s] Catalog: %d items", city_key, len(catalog))
 
     if not catalog:
-        return {"city": city_key, "found": 0, "downloaded": 0, "failed": 0, "skipped": 0}
+        return {
+            "city": city_key,
+            "found": 0,
+            "downloaded": 0,
+            "failed": 0,
+            "skipped": 0,
+        }
 
     out_dir = PROJECT_ROOT / "data" / "municipal" / city_key
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -77,7 +84,13 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
         with open(cat_path, "w", encoding="utf-8") as f:
             json.dump(catalog, f, indent=2, ensure_ascii=False)
         logger.info("[%s] Catalog saved to %s", city_key, cat_path)
-        return {"city": city_key, "found": len(catalog), "downloaded": 0, "failed": 0, "skipped": 0}
+        return {
+            "city": city_key,
+            "found": len(catalog),
+            "downloaded": 0,
+            "failed": 0,
+            "skipped": 0,
+        }
 
     laws = []
     failed_laws = []
@@ -105,18 +118,20 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
         # Resume: skip if already downloaded
         if resume and local_path.exists() and local_path.stat().st_size > 100:
             skipped += 1
-            laws.append({
-                "file_id": fid,
-                "law_name": name,
-                "url": url,
-                "local_path": str(local_path),
-                "format": ext,
-                "category": item.get("category", "Otro"),
-                "municipality": item.get("municipality", config["name"]),
-                "state": item.get("state", config["state"]),
-                "law_type": "non-legislative",
-                "tier": "municipal",
-            })
+            laws.append(
+                {
+                    "file_id": fid,
+                    "law_name": name,
+                    "url": url,
+                    "local_path": str(local_path),
+                    "format": ext,
+                    "category": item.get("category", "Otro"),
+                    "municipality": item.get("municipality", config["name"]),
+                    "state": item.get("state", config["state"]),
+                    "law_type": "non-legislative",
+                    "tier": "municipal",
+                }
+            )
             continue
 
         # Rate limit
@@ -132,36 +147,47 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
             ct = resp.headers.get("Content-Type", "")
             if ct.startswith("text/html") and ext == "pdf":
                 if len(resp.content) < 500:
-                    failed_laws.append({"law_name": name, "url": url, "error": "HTML response"})
+                    failed_laws.append(
+                        {"law_name": name, "url": url, "error": "HTML response"}
+                    )
                     continue
 
             local_path.write_bytes(resp.content)
             size_kb = len(resp.content) // 1024
 
-            laws.append({
-                "file_id": fid,
-                "law_name": name,
-                "url": url,
-                "local_path": str(local_path),
-                "format": ext,
-                "category": item.get("category", "Otro"),
-                "municipality": item.get("municipality", config["name"]),
-                "state": item.get("state", config["state"]),
-                "law_type": "non-legislative",
-                "tier": "municipal",
-            })
+            laws.append(
+                {
+                    "file_id": fid,
+                    "law_name": name,
+                    "url": url,
+                    "local_path": str(local_path),
+                    "format": ext,
+                    "category": item.get("category", "Otro"),
+                    "municipality": item.get("municipality", config["name"]),
+                    "state": item.get("state", config["state"]),
+                    "law_type": "non-legislative",
+                    "tier": "municipal",
+                }
+            )
 
             if (i + 1) % 50 == 0 or i == len(catalog) - 1:
                 logger.info(
                     "[%d/%d] %s (%dKB) | ok=%d skip=%d fail=%d",
-                    i + 1, len(catalog), name[:40], size_kb,
-                    len(laws), skipped, len(failed_laws),
+                    i + 1,
+                    len(catalog),
+                    name[:40],
+                    size_kb,
+                    len(laws),
+                    skipped,
+                    len(failed_laws),
                 )
 
         except Exception as e:
             failed_laws.append({"law_name": name, "url": url, "error": str(e)})
             if (i + 1) % 50 == 0:
-                logger.warning("[%d/%d] Failed: %s - %s", i + 1, len(catalog), name[:40], e)
+                logger.warning(
+                    "[%d/%d] Failed: %s - %s", i + 1, len(catalog), name[:40], e
+                )
 
     # Write metadata
     metadata = {
@@ -182,7 +208,11 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
 
     logger.info(
         "[%s] Complete: %d downloaded, %d skipped, %d failed (of %d)",
-        city_key, len(laws) - skipped, skipped, len(failed_laws), len(catalog),
+        city_key,
+        len(laws) - skipped,
+        skipped,
+        len(failed_laws),
+        len(catalog),
     )
     return {
         "city": city_key,
@@ -195,7 +225,9 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
 
 def main():
     parser = argparse.ArgumentParser(description="Download municipal regulations")
-    parser.add_argument("--city", default="all", help="City key or 'all' for responsive cities")
+    parser.add_argument(
+        "--city", default="all", help="City key or 'all' for responsive cities"
+    )
     parser.add_argument("--catalog-only", action="store_true")
     parser.add_argument("--no-resume", action="store_true")
     args = parser.parse_args()
@@ -205,23 +237,37 @@ def main():
 
     for city in cities:
         try:
-            result = download_city(city, catalog_only=args.catalog_only, resume=not args.no_resume)
+            result = download_city(
+                city, catalog_only=args.catalog_only, resume=not args.no_resume
+            )
             results.append(result)
         except Exception as e:
             logger.error("[%s] Fatal error: %s", city, e)
-            results.append({"city": city, "found": 0, "downloaded": 0, "failed": 0, "error": str(e)})
+            results.append(
+                {
+                    "city": city,
+                    "found": 0,
+                    "downloaded": 0,
+                    "failed": 0,
+                    "error": str(e),
+                }
+            )
 
     print("\n" + "=" * 60)
     print("MUNICIPAL DOWNLOAD SUMMARY")
     print("=" * 60)
     total_found = total_dl = total_skip = total_fail = 0
     for r in results:
-        print(f"  {r['city']:20s} | found={r['found']:4d} dl={r['downloaded']:4d} skip={r.get('skipped',0):4d} fail={r['failed']:4d}")
+        print(
+            f"  {r['city']:20s} | found={r['found']:4d} dl={r['downloaded']:4d} skip={r.get('skipped',0):4d} fail={r['failed']:4d}"
+        )
         total_found += r["found"]
         total_dl += r["downloaded"]
         total_skip += r.get("skipped", 0)
         total_fail += r["failed"]
-    print(f"  {'TOTAL':20s} | found={total_found:4d} dl={total_dl:4d} skip={total_skip:4d} fail={total_fail:4d}")
+    print(
+        f"  {'TOTAL':20s} | found={total_found:4d} dl={total_dl:4d} skip={total_skip:4d} fail={total_fail:4d}"
+    )
 
 
 if __name__ == "__main__":

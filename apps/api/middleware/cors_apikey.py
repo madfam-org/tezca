@@ -52,7 +52,11 @@ class APIKeyCORSMiddleware:
             return None
         if not request.path.startswith("/api/"):
             return None
-        if not request.META.get("HTTP_ACCESS_CONTROL_REQUEST_HEADERS", "").lower().count("x-api-key"):
+        if (
+            not request.META.get("HTTP_ACCESS_CONTROL_REQUEST_HEADERS", "")
+            .lower()
+            .count("x-api-key")
+        ):
             return None
 
         from django.http import HttpResponse
