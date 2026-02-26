@@ -43,12 +43,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: tezca-secrets
-                  key: WEB_JANUA_PUBLISHABLE_KEY
+                  key: NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY
             - name: JANUA_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: tezca-secrets
-                  key: WEB_JANUA_SECRET_KEY
+                  key: JANUA_SECRET_KEY
           livenessProbe:
             httpGet:
               path: /api/health
