@@ -249,8 +249,10 @@ class TestDomainFilter:
 
         # Verify ES was called with terms filter for fiscal+mercantil
         call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
-        filters = body["query"]["bool"].get("filter", [])
+        # ES 8 uses keyword args (query=, not body=)
+        kwargs = call_args[1]
+        query = kwargs.get("query", kwargs.get("body", {}).get("query", {}))
+        filters = query.get("bool", {}).get("filter", [])
 
         domain_filter = [
             f for f in filters if "terms" in f and "category" in f["terms"]

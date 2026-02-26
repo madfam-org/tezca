@@ -76,11 +76,16 @@ def main():
             sources_skipped += 1
             continue
 
-        # Determine source name and type
-        source_name = (
-            data.get("state_name") or data.get("city") or metadata_file.parent.name
-        )
-        laws = data.get("laws", [])
+        # Handle both dict and list formats
+        if isinstance(data, list):
+            # List format: each item is a law entry directly
+            laws = data
+            source_name = metadata_file.parent.name
+        else:
+            source_name = (
+                data.get("state_name") or data.get("city") or metadata_file.parent.name
+            )
+            laws = data.get("laws", [])
 
         if not laws:
             print(f"  SKIP: {source_name} (no laws)")
@@ -93,9 +98,13 @@ def main():
             # Handle both OJN-format (file_id, law_name) and catalog-format (name, url)
             file_id = law.get("file_id", "")
             law_name = law.get("law_name") or law.get("name", "")
-            state = data.get("state_name", "")
+            state = law.get("state", "") or (
+                data.get("state_name", "") if isinstance(data, dict) else ""
+            )
             municipality = (
-                law.get("municipality") or law.get("locality") or data.get("city", "")
+                law.get("municipality")
+                or law.get("locality")
+                or (data.get("city", "") if isinstance(data, dict) else source_name)
             )
 
             # Generate official_id

@@ -45,13 +45,16 @@ class DatabaseSaver:
         from apps.api.models import Law, LawVersion
 
         # 1. Get or Create Law
+        # Note: tier is hardcoded to "federal" because law_registry.json uses
+        # "tier" for thematic categories (fiscal, constitutional, etc.), not
+        # jurisdictional level. The Law model expects jurisdictional tier.
         law, created = Law.objects.get_or_create(
             official_id=law_metadata["id"],
             defaults={
                 "name": law_metadata["name"],
                 "short_name": law_metadata.get("short_name", law_metadata["name"]),
                 "category": law_metadata.get("category"),
-                "tier": law_metadata.get("tier"),
+                "tier": "federal",
             },
         )
 

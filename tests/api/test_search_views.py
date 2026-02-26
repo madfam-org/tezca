@@ -18,6 +18,28 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 
+def _extract_es_kwargs(mock_search):
+    """Extract ES search kwargs, handling both body-based (ES 7) and keyword-based (ES 8) calls."""
+    kwargs = mock_search.call_args[1]
+    if "body" in kwargs:
+        return kwargs["body"]
+    # ES 8 keyword args: reconstruct a body-like dict
+    body = {}
+    if "query" in kwargs:
+        body["query"] = kwargs["query"]
+    if "from_" in kwargs:
+        body["from"] = kwargs["from_"]
+    elif "from" in kwargs:
+        body["from"] = kwargs["from"]
+    if "size" in kwargs:
+        body["size"] = kwargs["size"]
+    if "aggs" in kwargs:
+        body["aggs"] = kwargs["aggs"]
+    if "sort" in kwargs:
+        body["sort"] = kwargs["sort"]
+    return body
+
+
 def _build_es_response(hits, total=None, aggregations=None):
     """Helper to build a realistic ES search response."""
     if total is None:
@@ -182,8 +204,7 @@ class TestSearchViewFilters:
         url = reverse("search")
         self.client.get(url, {"q": "test", "jurisdiction": "federal"})
 
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         query_str = str(body)
         assert "federal" in query_str
 
@@ -206,8 +227,7 @@ class TestSearchViewFilters:
         url = reverse("search")
         self.client.get(url, {"q": "civil", "state": "Colima"})
 
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         query_str = str(body)
         assert "colima_" in query_str
 
@@ -230,8 +250,7 @@ class TestSearchViewFilters:
         url = reverse("search")
         self.client.get(url, {"q": "prueba", "category": "ley"})
 
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         filters = body["query"]["bool"].get("filter", [])
         assert any(f.get("term", {}).get("category") == "ley" for f in filters)
 
@@ -254,8 +273,7 @@ class TestSearchViewFilters:
         url = reverse("search")
         self.client.get(url, {"q": "prueba", "law_type": "legislative"})
 
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         filters = body["query"]["bool"].get("filter", [])
         assert any(f.get("term", {}).get("law_type") == "legislative" for f in filters)
 
@@ -278,8 +296,7 @@ class TestSearchViewFilters:
         url = reverse("search")
         self.client.get(url, {"q": "prueba", "status": "vigente"})
 
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         filters = body["query"]["bool"].get("filter", [])
         assert any(f.get("term", {}).get("status") == "vigente" for f in filters)
 
@@ -423,8 +440,7 @@ class TestSearchViewPagination:
         assert data["total_pages"] == 3  # ceil(50/20)
 
         # Verify ES was called with correct offset
-        call_args = mock_es.search.call_args
-        body = call_args[1]["body"] if "body" in call_args[1] else call_args[0][0]
+        body = _extract_es_kwargs(mock_es.search)
         assert body["from"] == 40  # (3-1) * 20
         assert body["size"] == 20
 

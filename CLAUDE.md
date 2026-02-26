@@ -66,6 +66,7 @@ npm run dev:all                     # both concurrently
 | `NPM_MADFAM_TOKEN` | -- | Needed in `.npmrc` for `@janua/*` and `@tezca/*` private packages |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8000/api/v1` | API base for frontend apps |
 | `DB_ENGINE` | sqlite3 | Set to `django.db.backends.postgresql` for Postgres |
+| `INTERNAL_API_URL` | falls back to `NEXT_PUBLIC_API_URL` | Server-side API URL for SSR inside Docker (e.g. `http://api:8000/api/v1`) |
 | `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Redis for Celery tasks |
 
 ---
@@ -231,7 +232,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
-| `apps/web/lib/config.ts` | API_BASE_URL |
+| `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
 
@@ -262,6 +263,10 @@ type Lang = 'es' | 'en' | 'nah';
 9. **Admin `'use client'`:** Only add the directive to admin components that actually use hooks or event handlers. Presentational components should be server components.
 
 10. **Test mocks:** Admin tests mock `@tezca/ui` and `next/link` inline via `vi.mock()`. When adding fields to shared types, update these mocks.
+
+11. **`@janua/*` transpiling:** `@janua/ui` and `@janua/nextjs` must be listed in `transpilePackages` in `next.config.ts`. Without this, Turbopack fails with "Unknown module type" on their TypeScript source.
+
+12. **ES ICU plugin:** The default ES Docker image does not include `analysis-icu`. Use `asciifolding` (built-in) instead of `icu_folding` for accent normalization.
 
 ---
 

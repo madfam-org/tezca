@@ -119,8 +119,9 @@ class Command(BaseCommand):
                                 "type": "stemmer",
                                 "language": "light_spanish",
                             },
-                            "icu_folding": {
-                                "type": "icu_folding",
+                            "accent_folding": {
+                                "type": "asciifolding",
+                                "preserve_original": True,
                             },
                         },
                         "analyzer": {
@@ -132,7 +133,7 @@ class Command(BaseCommand):
                                     "spanish_legal_synonyms",
                                     "spanish_stop",
                                     "spanish_stemmer",
-                                    "icu_folding",
+                                    "accent_folding",
                                 ],
                             },
                         },

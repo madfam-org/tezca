@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: process.env.NEXT_BUILD_STANDALONE === 'false' ? undefined : "standalone",
-  transpilePackages: ['@tezca/ui', '@tezca/lib'],
+  transpilePackages: ['@tezca/ui', '@tezca/lib', '@janua/ui', '@janua/nextjs'],
   async redirects() {
     return [
       { source: '/laws/:path*', destination: '/leyes/:path*', permanent: true },

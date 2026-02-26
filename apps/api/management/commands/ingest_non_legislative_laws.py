@@ -88,6 +88,7 @@ class Command(BaseCommand):
                 existing_law.tier = tier
                 existing_law.category = category
                 existing_law.state = state
+                existing_law.law_type = "non_legislative"
                 existing_law.source_url = metadata.get("url", "") or ""
                 existing_law.save()
                 law = existing_law
@@ -99,6 +100,7 @@ class Command(BaseCommand):
                     tier=tier,
                     category=category,
                     state=state,
+                    law_type="non_legislative",
                     source_url=metadata.get("url", "") or "",
                 )
                 action = "created"
