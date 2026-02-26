@@ -21,5 +21,8 @@
         "test:pytest": "python -m pytest tests/ -v",
         "test:e2e": "npx playwright test",
         "test:all": "npm run test:vitest && npm run test:pytest && npm run test:e2e"
+    },
+    "devDependencies": {
+        "@janua/typescript-sdk": "^0.1.1"
     }
 }
