@@ -14,6 +14,7 @@ COPY packages/ui/package.json packages/ui/package.json
 COPY packages/lib/package.json packages/lib/package.json
 
 # Install dependencies
+ARG NPM_MADFAM_TOKEN
 RUN npm ci --workspace=apps/admin --workspace=packages/ui --workspace=packages/lib
 
 # ── Stage 2: Build ───────────────────────────────────────────────────

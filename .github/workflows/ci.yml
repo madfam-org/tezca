@@ -69,6 +69,8 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -120,6 +122,8 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps

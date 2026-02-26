@@ -53,6 +53,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://api.tezca.mx/api/v1
             NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY }}
+            NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false

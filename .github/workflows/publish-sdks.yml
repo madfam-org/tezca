@@ -1,0 +1,65 @@
+name: Publish SDKs
+
+on:
+  push:
+    tags:
+      - "api-client-v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configure npm auth
+        run: |
+          echo "//npm.madfam.io/:_authToken=${{ secrets.NPM_MADFAM_TOKEN }}" >> .npmrc
+
+      - name: Determine package from tag
+        id: meta
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ "$TAG" == api-client-v* ]]; then
+            echo "package=api-client" >> "$GITHUB_OUTPUT"
+            echo "version=${TAG#api-client-v}" >> "$GITHUB_OUTPUT"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        working-directory: packages/${{ steps.meta.outputs.package }}
+        run: npm install
+
+      - name: Build
+        working-directory: packages/${{ steps.meta.outputs.package }}
+        run: npm run build
+
+      - name: Verify no external @tezca/lib dependency
+        working-directory: packages/${{ steps.meta.outputs.package }}
+        run: |
+          if grep -r "require.*@tezca/lib" dist/ 2>/dev/null || grep -r "from.*@tezca/lib" dist/ 2>/dev/null; then
+            echo "ERROR: @tezca/lib was not bundled — it appears as an external import in dist/"
+            exit 1
+          fi
+          echo "OK: @tezca/lib is fully bundled"
+
+      - name: Publish
+        working-directory: packages/${{ steps.meta.outputs.package }}
+        run: npm publish
+        env:
+          NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.meta.outputs.tag }}" \
+            --title "@tezca/${{ steps.meta.outputs.package }}@${{ steps.meta.outputs.version }}" \
+            --notes "Published @tezca/${{ steps.meta.outputs.package }}@${{ steps.meta.outputs.version }} to npm.madfam.io" \
+            --latest
