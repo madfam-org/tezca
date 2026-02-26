@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { SignInForm } from '@janua/nextjs';
+import { useJanua } from '@janua/nextjs';
+import { SignIn } from '@janua/ui';
 import { X } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 
@@ -19,6 +20,7 @@ interface AuthModalProps {
 export function AuthModal({ open, onClose }: AuthModalProps) {
     const { lang } = useLang();
     const t = content[lang];
+    const { client } = useJanua();
 
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
@@ -65,7 +67,16 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                         <X className="h-4 w-4" />
                     </button>
                 </div>
-                <SignInForm redirectTo="/" />
+                <SignIn
+                    januaClient={client}
+                    afterSignIn={() => {
+                        onClose();
+                        window.location.assign('/');
+                    }}
+                    redirectUrl="/"
+                    socialProviders={{ google: true, github: true, microsoft: true, apple: true }}
+                    showRememberMe={false}
+                />
             </div>
         </div>
     );

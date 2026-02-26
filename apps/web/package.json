@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@janua/nextjs": "^0.1.1",
+    "@janua/ui": "^0.1.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tezca/lib": "*",
     "@tezca/ui": "*",
