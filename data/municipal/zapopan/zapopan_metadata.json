@@ -1,0 +1,121 @@
+{
+  "municipality": "Zapopan",
+  "state": "Jalisco",
+  "city_key": "zapopan",
+  "tier": 2,
+  "total_found": 9,
+  "successful": 9,
+  "failed": 0,
+  "skipped": 0,
+  "laws": [
+    {
+      "file_id": "muni_873c1be5e2",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2025/03/Ley_General_de_Transparencia_y_Acceso_a_la_Informacion_Publica_20032025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_873c1be5e2.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_98e4448db7",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2025/12/Ley_General_Proteccion_de_Datos_Personales_en_Posesion_de_Sujetos_Obligados_14112025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_98e4448db7.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_d83688aab3",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2025/12/Ley_Federal_de_Proteccion_de_Datos_Personales_en_Posesion_de_los_Particulares_14112025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_d83688aab3.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_5187dcd981",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2023/09/Ley_Transparencia_y_Acceso_a_la_Informacion_Publica_del_Estado_de_Jalisco_y_sus_Municipios_18082023.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_5187dcd981.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_b042c598a1",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2022/03/Reglamento_Ley_Transparencia_y_Aceeso_a_la_Informacion_Publica_Estado_Jalisco_19032022.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_b042c598a1.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_dd2a2e1716",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://servicios.zapopan.gob.mx:8000/wwwportal/publicfiles/descargasEnlaces/03-2025/Reglamento%20de%20Transparencia%20e%20Informaci%C3%B3n%20P%C3%BAblica%20de%20Zapopan%2C%20Jalisco..pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_dd2a2e1716.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_446ca277dd",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2021/06/LPDPEJM_Proteccion_170521_Estatal.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_446ca277dd.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_fe623b069d",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2025/12/Ley_General_Archivos_14112025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_fe623b069d.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    },
+    {
+      "file_id": "muni_0302975fae",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Jalisco y sus Municipios",
+      "url": "https://www.zapopan.gob.mx/wp-content/uploads/2024/03/Ley_de_Archivos_del_Estado_de_Jalisco_y_sus_Municipios_230224.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/municipal/zapopan/muni_0302975fae.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "municipality": "Zapopan",
+      "state": "Jalisco",
+      "law_type": "non-legislative",
+      "tier": "municipal"
+    }
+  ],
+  "failed_laws": []
+}

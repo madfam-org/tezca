@@ -1,18 +1,2755 @@
 {
-  "state_id": 10,
   "state_name": "Durango",
-  "total_found": 1,
-  "successful": 1,
+  "state_id": "DGO",
+  "total_found": 305,
+  "successful": 305,
   "failed": 0,
   "laws": [
     {
-      "file_id": 11644,
-      "ambito": "ESTATAL",
-      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=11644&ambito=ESTATAL",
-      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/DURANGO/o411644.doc&nombreclave=o411644.doc",
+      "file_id": "sc_77e5a425_0000",
+      "law_name": "Ley de Transparencia vigente",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20TRANSPARENCIA%20Y%20ACCESO%20A%20LA%20INFORMACION%20(NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_77e5a425_0000.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0f7b3b70_0001",
+      "law_name": "CONSTITUCION POLITICA DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CONSTITUCION POLITICA DEL ESTADO (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0f7b3b70_0001.docx",
+      "format": "docx",
+      "category": "Constitucion",
+      "law_type": "constitucion_estatal"
+    },
+    {
+      "file_id": "sc_f57893d4_0002",
+      "law_name": "CONSTITUCION POLITICA DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CONSTITUCION POLITICA DEL ESTADO (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f57893d4_0002.pdf",
+      "format": "pdf",
+      "category": "Constitucion",
+      "law_type": "constitucion_estatal"
+    },
+    {
+      "file_id": "sc_421e403b_0003",
+      "law_name": "CODIGO CIVIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO CIVIL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_421e403b_0003.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_8deaa742_0004",
+      "law_name": "CODIGO CIVIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO CIVIL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8deaa742_0004.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_0656b701_0005",
+      "law_name": "CODIGO DE PROC. CIVILES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO DE PROC. CIVILES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0656b701_0005.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_126a57ba_0006",
+      "law_name": "CODIGO DE PROC. CIVILES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO DE PROC. CIVILES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_126a57ba_0006.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_c1d06514_0007",
+      "law_name": "CODIGO FISCAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO FISCAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c1d06514_0007.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_614539bd_0008",
+      "law_name": "CODIGO FISCAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO FISCAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_614539bd_0008.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_99c9f8dc_0009",
+      "law_name": "CODIGO FISCAL MUNICIPAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO FISCAL MUNICIPAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_99c9f8dc_0009.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_dc2a96f5_0010",
+      "law_name": "CODIGO FISCAL MUNICIPAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO FISCAL MUNICIPAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_dc2a96f5_0010.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_4ea91b09_0011",
+      "law_name": "CODIGO PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO PENAL (NUEVO).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4ea91b09_0011.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_cff1143d_0012",
+      "law_name": "CODIGO PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO PENAL (NUEVO).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_cff1143d_0012.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_b5edfd03_0013",
+      "law_name": "CODIGO PROCESAL PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO PROCESAL PENAL (NUEVO).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b5edfd03_0013.docx",
+      "format": "docx",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_d9329467_0014",
+      "law_name": "CODIGO PROCESAL PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/CODIGO PROCESAL PENAL (NUEVO).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d9329467_0014.pdf",
+      "format": "pdf",
+      "category": "Codigo",
+      "law_type": "codigo"
+    },
+    {
+      "file_id": "sc_2cc25412_0015",
+      "law_name": "LEY CONTRA EL LUCRO INMODERADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY CONTRA EL LUCRO INMODERADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2cc25412_0015.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4ca256cf_0016",
+      "law_name": "LEY CONTRA EL LUCRO INMODERADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY CONTRA EL LUCRO INMODERADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4ca256cf_0016.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c495c7eb_0017",
+      "law_name": "LEY DE ACCESIBILIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ACCESIBILIDAD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c495c7eb_0017.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5c0f1a27_0018",
+      "law_name": "LEY DE ACCESIBILIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ACCESIBILIDAD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5c0f1a27_0018.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_63fbd8c7_0019",
+      "law_name": "LEY DE ADOPCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ADOPCIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_63fbd8c7_0019.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a976a9a8_0020",
+      "law_name": "LEY DE ADOPCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ADOPCIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a976a9a8_0020.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_579cff3f_0021",
+      "law_name": "LEY DE ADQUISICIONES, ARRENDAMIENTOS Y SERVICIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ADQUISICIONES, ARRENDAMIENTOS Y SERVICIOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_579cff3f_0021.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_790cb077_0022",
+      "law_name": "LEY DE ADQUISICIONES, ARRENDAMIENTOS Y SERVICIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ADQUISICIONES, ARRENDAMIENTOS Y SERVICIOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_790cb077_0022.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d236d80c_0023",
+      "law_name": "LEY DE AGUA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE AGUA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d236d80c_0023.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4933049d_0024",
+      "law_name": "LEY DE AGUA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE AGUA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4933049d_0024.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7a1abdd1_0025",
+      "law_name": "LEY DE AMNISTIA PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE AMNISTIA PARA EL ESTADO DE DURANGO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7a1abdd1_0025.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_45855bfb_0026",
+      "law_name": "LEY DE AMNISTIA PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE AMNISTIA PARA EL ESTADO DE DURANGO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_45855bfb_0026.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_22176be6_0027",
+      "law_name": "LEY DE ARANCEL DE LOS NOTARIOS PUB.",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCEL DE LOS NOTARIOS PUB..docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_22176be6_0027.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4edc53c7_0028",
+      "law_name": "LEY DE ARANCEL DE LOS NOTARIOS PUB.",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCEL DE LOS NOTARIOS PUB..pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4edc53c7_0028.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_820d1a74_0029",
+      "law_name": "LEY DE ARANCELES DE LOS ARQUITECTOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCELES DE LOS ARQUITECTOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_820d1a74_0029.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4c57d5de_0030",
+      "law_name": "LEY DE ARANCELES DE LOS ARQUITECTOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCELES DE LOS ARQUITECTOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4c57d5de_0030.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7473ed1d_0031",
+      "law_name": "LEY DE ARANCELES DE LOS LICENCIADOS EN DERECHO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCELES DE LOS LICENCIADOS EN DERECHO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7473ed1d_0031.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5b580a9e_0032",
+      "law_name": "LEY DE ARANCELES DE LOS LICENCIADOS EN DERECHO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARANCELES DE LOS LICENCIADOS EN DERECHO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5b580a9e_0032.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e8dea5f_0033",
+      "law_name": "LEY DE ARCHIVOS (N)",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARCHIVOS (N).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4e8dea5f_0033.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_88edb5a6_0034",
+      "law_name": "LEY DE ARCHIVOS (N)",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ARCHIVOS (N).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_88edb5a6_0034.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f5c55062_0035",
+      "law_name": "LEY DE ASENTAMIENTOS HUMANOS, ORDENAMIENTO TERRITORIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASENTAMIENTOS HUMANOS, ORDENAMIENTO TERRITORIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f5c55062_0035.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cac3305b_0036",
+      "law_name": "LEY DE ASENTAMIENTOS HUMANOS, ORDENAMIENTO TERRITORIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASENTAMIENTOS HUMANOS, ORDENAMIENTO TERRITORIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_cac3305b_0036.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_69594bdf_0037",
+      "law_name": "LEY DE ASISTENCIA SOCIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASISTENCIA SOCIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_69594bdf_0037.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_755782f3_0038",
+      "law_name": "LEY DE ASISTENCIA SOCIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASISTENCIA SOCIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_755782f3_0038.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e4defae_0039",
+      "law_name": "LEY DE ASOCIACIONES PUBLICO PRIVADAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASOCIACIONES PUBLICO PRIVADAS.doc",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4e4defae_0039.doc",
       "format": "doc",
-      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/ley_de_las_y_los_jóvenes_del_estado_de_durango_11644.doc",
-      "law_name": "Ley de las y los Jóvenes del Estado de Durango"
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d2b9d6f7_0040",
+      "law_name": "LEY DE ASOCIACIONES PUBLICO PRIVADAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ASOCIACIONES PUBLICO PRIVADAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d2b9d6f7_0040.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_55f438fb_0041",
+      "law_name": "LEY DE BIENES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE BIENES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_55f438fb_0041.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_67407cde_0042",
+      "law_name": "LEY DE BIENES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE BIENES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_67407cde_0042.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_11d36b14_0043",
+      "law_name": "LEY DE CAMBIO CLIMATICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CAMBIO CLIMATICO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_11d36b14_0043.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_086f2dc9_0044",
+      "law_name": "LEY DE CAMBIO CLIMATICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CAMBIO CLIMATICO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_086f2dc9_0044.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c48de818_0045",
+      "law_name": "LEY DE CAMINOS Y PUENTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CAMINOS Y PUENTES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c48de818_0045.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3e9f5c67_0046",
+      "law_name": "LEY DE CAMINOS Y PUENTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CAMINOS Y PUENTES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3e9f5c67_0046.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9e9cf117_0047",
+      "law_name": "LEY DE CIENCIA Y TECNOLOGIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CIENCIA Y TECNOLOGIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9e9cf117_0047.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3b6b7966_0048",
+      "law_name": "LEY DE CIENCIA Y TECNOLOGIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CIENCIA Y TECNOLOGIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3b6b7966_0048.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4b5333df_0049",
+      "law_name": "LEY DE CONDOMINIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CONDOMINIOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4b5333df_0049.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_de7f1374_0050",
+      "law_name": "LEY DE CONDOMINIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CONDOMINIOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_de7f1374_0050.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_722b14f4_0051",
+      "law_name": "LEY DE CONSULTA INDIGENA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CONSULTA INDIGENA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_722b14f4_0051.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2481d4bd_0052",
+      "law_name": "LEY DE CONSULTA INDIGENA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CONSULTA INDIGENA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2481d4bd_0052.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_30888059_0053",
+      "law_name": "LEY DE COORDINACIÓN FISCAL DEL ESTADO DE DURANGO Y SUS MPIOS. EN MATERIA DE PARTICIPACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE COORDINACIÓN FISCAL DEL ESTADO DE DURANGO Y SUS MPIOS. EN MATERIA DE PARTICIPACIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_30888059_0053.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ebe47c37_0054",
+      "law_name": "LEY DE COORDINACIÓN FISCAL DEL ESTADO DE DURANGO Y SUS MPIOS. EN MATERIA DE PARTICIPACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE COORDINACIÓN FISCAL DEL ESTADO DE DURANGO Y SUS MPIOS. EN MATERIA DE PARTICIPACIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ebe47c37_0054.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3b75f782_0055",
+      "law_name": "LEY DE CULTURA FISICA Y DEPORTE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CULTURA FISICA Y DEPORTE (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3b75f782_0055.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7dc8cd40_0056",
+      "law_name": "LEY DE CULTURA FISICA Y DEPORTE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CULTURA FISICA Y DEPORTE (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7dc8cd40_0056.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f40d88d3_0057",
+      "law_name": "LEY DE CULTURA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CULTURA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f40d88d3_0057.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f21e134e_0058",
+      "law_name": "LEY DE CULTURA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE CULTURA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f21e134e_0058.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_999e8366_0059",
+      "law_name": "LEY DE DESARROLLO FORESTAL SUSTENTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DESARROLLO FORESTAL SUSTENTABLE.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_999e8366_0059.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1fcaed45_0060",
+      "law_name": "LEY DE DESARROLLO FORESTAL SUSTENTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DESARROLLO FORESTAL SUSTENTABLE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1fcaed45_0060.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_51824c74_0061",
+      "law_name": "LEY DE DESARROLLO RURAL SUSTENTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20DESARROLLO%20RURAL%20SUSTENTABLE.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_51824c74_0061.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8408a33e_0062",
+      "law_name": "LEY DE DESARROLLO RURAL SUSTENTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20DESARROLLO%20RURAL%20SUSTENTABLE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8408a33e_0062.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2e719c3d_0063",
+      "law_name": "LEY DE DESARROLLO SOCIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DESARROLLO SOCIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2e719c3d_0063.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7fa94251_0064",
+      "law_name": "LEY DE DESARROLLO SOCIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DESARROLLO SOCIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7fa94251_0064.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bfeab825_0065",
+      "law_name": "LEY DE DEUDA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DEUDA PUBLICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bfeab825_0065.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_011ec19d_0066",
+      "law_name": "LEY DE DEUDA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DEUDA PUBLICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_011ec19d_0066.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d7492bd6_0067",
+      "law_name": "LEY DE DISCIPLINA FINANCIERA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DISCIPLINA FINANCIERA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d7492bd6_0067.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9c005160_0068",
+      "law_name": "LEY DE DISCIPLINA FINANCIERA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE DISCIPLINA FINANCIERA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9c005160_0068.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8c45066d_0069",
+      "law_name": "LEY DE EDUCACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EDUCACION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8c45066d_0069.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d1e682b0_0070",
+      "law_name": "LEY DE EDUCACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EDUCACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d1e682b0_0070.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c52b0b8c_0071",
+      "law_name": "LEY DE EJECUCION DE PENAS Y MEDIDAS DE SEGURIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EJECUCION DE PENAS Y MEDIDAS DE SEGURIDAD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c52b0b8c_0071.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6ee2ca52_0072",
+      "law_name": "LEY DE EJECUCION DE PENAS Y MEDIDAS DE SEGURIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EJECUCION DE PENAS Y MEDIDAS DE SEGURIDAD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6ee2ca52_0072.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_66074213_0073",
+      "law_name": "LEY DE ENTIDADES PARAESTATALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ENTIDADES PARAESTATALES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_66074213_0073.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bbd4c319_0074",
+      "law_name": "LEY DE ENTIDADES PARAESTATALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE ENTIDADES PARAESTATALES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bbd4c319_0074.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9d9f0af2_0075",
+      "law_name": "LEY DE EXPROPIACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EXPROPIACION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9d9f0af2_0075.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_86c4f684_0076",
+      "law_name": "LEY DE EXPROPIACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE EXPROPIACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_86c4f684_0076.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_27650ef7_0077",
+      "law_name": "LEY DE FIRMA ELECTRONICA AVANZADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FIRMA ELECTRONICA AVANZADA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_27650ef7_0077.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a2236044_0078",
+      "law_name": "LEY DE FIRMA ELECTRONICA AVANZADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FIRMA ELECTRONICA AVANZADA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a2236044_0078.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_89343545_0079",
+      "law_name": "LEY DE FISCALIZACION SUPERIOR Y RENDICION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20FISCALIZACION%20SUPERIOR%20Y%20RENDICION%20%28NUEVA%29.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_89343545_0079.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fd8a72af_0080",
+      "law_name": "LEY DE FISCALIZACION SUPERIOR Y RENDICION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20FISCALIZACION%20SUPERIOR%20Y%20RENDICION%20%28NUEVA%29.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fd8a72af_0080.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6892d6a1_0081",
+      "law_name": "LEY DE FOMENTO A LA ACTIVIDAD ARTESANAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO A LA ACTIVIDAD ARTESANAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6892d6a1_0081.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9a540deb_0082",
+      "law_name": "LEY DE FOMENTO A LA ACTIVIDAD ARTESANAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO A LA ACTIVIDAD ARTESANAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9a540deb_0082.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_889da4c5_0083",
+      "law_name": "LEY DE FOMENTO A LAS ACTIVIDADES DE LAS ORGANIZACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO A LAS ACTIVIDADES DE LAS ORGANIZACIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_889da4c5_0083.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b41366c6_0084",
+      "law_name": "LEY DE FOMENTO A LAS ACTIVIDADES DE LAS ORGANIZACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO A LAS ACTIVIDADES DE LAS ORGANIZACIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b41366c6_0084.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0cf6c9f2_0085",
+      "law_name": "LEY DE FOMENTO ECONOMICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO ECONOMICO (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0cf6c9f2_0085.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e1580795_0086",
+      "law_name": "LEY DE FOMENTO ECONOMICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO ECONOMICO (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e1580795_0086.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4d473dfb_0087",
+      "law_name": "LEY DE FOMENTO Y CULTURA DE LA PAZ DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO Y CULTURA DE LA PAZ DEL ESTADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4d473dfb_0087.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7c45f5fa_0088",
+      "law_name": "LEY DE FOMENTO Y CULTURA DE LA PAZ DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE FOMENTO Y CULTURA DE LA PAZ DEL ESTADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7c45f5fa_0088.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c1460d2b_0089",
+      "law_name": "LEY DE GESTION AMBIENTAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE GESTION AMBIENTAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c1460d2b_0089.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_185a7531_0090",
+      "law_name": "LEY DE GESTION AMBIENTAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE GESTION AMBIENTAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_185a7531_0090.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a689c957_0091",
+      "law_name": "LEY DE HACIENDA DEL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE HACIENDA DEL ESTADO DE DURANGO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a689c957_0091.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b9f344fa_0092",
+      "law_name": "LEY DE HACIENDA DEL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE HACIENDA DEL ESTADO DE DURANGO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b9f344fa_0092.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2a078ddf_0093",
+      "law_name": "LEY DE HACIENDA PARA LOS MUNICIPIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE HACIENDA PARA LOS MUNICIPIOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2a078ddf_0093.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_36c548b2_0094",
+      "law_name": "LEY DE HACIENDA PARA LOS MUNICIPIOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE HACIENDA PARA LOS MUNICIPIOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_36c548b2_0094.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5b375bb0_0095",
+      "law_name": "LEY DE IGUALDAD ENTRE MUJERES Y HOMBRES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE IGUALDAD ENTRE MUJERES Y HOMBRES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5b375bb0_0095.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f83c664b_0096",
+      "law_name": "LEY DE IGUALDAD ENTRE MUJERES Y HOMBRES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE IGUALDAD ENTRE MUJERES Y HOMBRES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f83c664b_0096.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b1b87d3c_0097",
+      "law_name": "LEY DE IMAGEN INSTITUCIONAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE IMAGEN INSTITUCIONAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b1b87d3c_0097.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_dcb2a698_0098",
+      "law_name": "LEY DE IMAGEN INSTITUCIONAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE IMAGEN INSTITUCIONAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_dcb2a698_0098.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e758b05d_0099",
+      "law_name": "LEY DE INDULTO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INDULTO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e758b05d_0099.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_020db57a_0100",
+      "law_name": "LEY DE INDULTO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INDULTO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_020db57a_0100.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2d0d4a35_0101",
+      "law_name": "LEY DE INSTITUCIONES Y PROCEDIMIENTOS ELECTORALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INSTITUCIONES Y PROCEDIMIENTOS ELECTORALES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2d0d4a35_0101.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_34b61525_0102",
+      "law_name": "LEY DE INSTITUCIONES Y PROCEDIMIENTOS ELECTORALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INSTITUCIONES Y PROCEDIMIENTOS ELECTORALES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_34b61525_0102.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_29ef9bb1_0103",
+      "law_name": "LEY DE INTEGRACION TERRITORIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INTEGRACION TERRITORIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_29ef9bb1_0103.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f55a6dda_0104",
+      "law_name": "LEY DE INTEGRACION TERRITORIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE INTEGRACION TERRITORIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f55a6dda_0104.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_332b1ac6_0105",
+      "law_name": "LEY DE JUSTICIA ADMINISTRATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA ADMINISTRATIVA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_332b1ac6_0105.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8c1a1a63_0106",
+      "law_name": "LEY DE JUSTICIA ADMINISTRATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA ADMINISTRATIVA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8c1a1a63_0106.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1961c135_0107",
+      "law_name": "LEY DE JUSTICIA ALTERNATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA ALTERNATIVA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1961c135_0107.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_57293730_0108",
+      "law_name": "LEY DE JUSTICIA ALTERNATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA ALTERNATIVA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_57293730_0108.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9f3d7f6b_0109",
+      "law_name": "LEY DE JUSTICIA PENAL RESTAURATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA PENAL RESTAURATIVA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9f3d7f6b_0109.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1eda022e_0110",
+      "law_name": "LEY DE JUSTICIA PENAL RESTAURATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE JUSTICIA PENAL RESTAURATIVA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1eda022e_0110.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b0d1f10d_0111",
+      "law_name": "LEY DE LA COMISION ESTATAL DE DERECHOS HUMANOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LA COMISION ESTATAL DE DERECHOS HUMANOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b0d1f10d_0111.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_75aeb6f3_0112",
+      "law_name": "LEY DE LA COMISION ESTATAL DE DERECHOS HUMANOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LA COMISION ESTATAL DE DERECHOS HUMANOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_75aeb6f3_0112.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f0614fbd_0113",
+      "law_name": "LEY DE LA PROCURADURIA DE PROTECCION DE NINAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20LA%20PROCURADURIA%20DE%20PROTECCION%20DE%20NINAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f0614fbd_0113.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_de90852b_0114",
+      "law_name": "LEY DE LA PROCURADURIA DE PROTECCION DE NINAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20DE%20LA%20PROCURADURIA%20DE%20PROTECCION%20DE%20NINAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_de90852b_0114.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5eae2f72_0115",
+      "law_name": "LEY DE LAS MUJERES PARA UNA VIDA SIN VIOLENCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LAS MUJERES PARA UNA VIDA SIN VIOLENCIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5eae2f72_0115.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7932b8b9_0116",
+      "law_name": "LEY DE LAS MUJERES PARA UNA VIDA SIN VIOLENCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LAS MUJERES PARA UNA VIDA SIN VIOLENCIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7932b8b9_0116.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0a107907_0117",
+      "law_name": "LEY DE LOS DERECHOS DE LAS JEFAS DE FAMILIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS DERECHOS DE LAS JEFAS DE FAMILIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0a107907_0117.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_eeabf414_0118",
+      "law_name": "LEY DE LOS DERECHOS DE LAS JEFAS DE FAMILIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS DERECHOS DE LAS JEFAS DE FAMILIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_eeabf414_0118.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d3ffb996_0119",
+      "law_name": "LEY DE LAS Y LOS JOVENES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LAS Y LOS JOVENES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d3ffb996_0119.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_155789dd_0120",
+      "law_name": "LEY DE LAS Y LOS JOVENES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LAS Y LOS JOVENES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_155789dd_0120.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_93ac4d93_0121",
+      "law_name": "LEY DE LOS DERECHOS DE NINAS, NINOS Y ADOLESCENTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS DERECHOS DE NINAS, NINOS Y ADOLESCENTES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_93ac4d93_0121.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0f0a58cc_0122",
+      "law_name": "LEY DE LOS DERECHOS DE NINAS, NINOS Y ADOLESCENTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS DERECHOS DE NINAS, NINOS Y ADOLESCENTES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0f0a58cc_0122.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_813c3637_0123",
+      "law_name": "LEY DE LOS TRABAJADORES AL SERVICIO DE LOS TRES PODERES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS TRABAJADORES AL SERVICIO DE LOS TRES PODERES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_813c3637_0123.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_dd227306_0124",
+      "law_name": "LEY DE LOS TRABAJADORES AL SERVICIO DE LOS TRES PODERES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE LOS TRABAJADORES AL SERVICIO DE LOS TRES PODERES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_dd227306_0124.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8452100f_0125",
+      "law_name": "LEY DE MEDIOS DE IMPUGNACION EN MATERIA ELECTORAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MEDIOS DE IMPUGNACION EN MATERIA ELECTORAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8452100f_0125.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3cfb836a_0126",
+      "law_name": "LEY DE MEDIOS DE IMPUGNACION EN MATERIA ELECTORAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MEDIOS DE IMPUGNACION EN MATERIA ELECTORAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3cfb836a_0126.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e371932_0127",
+      "law_name": "LEY DE MEJORA REGULATORIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MEJORA REGULATORIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4e371932_0127.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5cad504c_0128",
+      "law_name": "LEY DE MEJORA REGULATORIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MEJORA REGULATORIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5cad504c_0128.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f4db7338_0129",
+      "law_name": "LEY DE MOVILIDAD Y SEGURIDAD VIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MOVILIDAD Y SEGURIDAD VIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f4db7338_0129.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4c721688_0130",
+      "law_name": "LEY DE MOVILIDAD Y SEGURIDAD VIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE MOVILIDAD Y SEGURIDAD VIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4c721688_0130.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fe09adf4_0131",
+      "law_name": "LEY DE OBRA PUBLICA Y SERVICIOS RELACIONADOS  CON LA MISMA PARA EL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE OBRA PUBLICA Y SERVICIOS RELACIONADOS  CON LA MISMA PARA EL ESTADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fe09adf4_0131.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5111c64e_0132",
+      "law_name": "LEY DE OBRA PUBLICA Y SERVICIOS RELACIONADOS  CON LA MISMA PARA EL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE OBRA PUBLICA Y SERVICIOS RELACIONADOS  CON LA MISMA PARA EL ESTADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5111c64e_0132.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_76ab5f57_0133",
+      "law_name": "LEY DE PARTICIPACION CIUDADANA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PARTICIPACION CIUDADANA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_76ab5f57_0133.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4cf09cc5_0134",
+      "law_name": "LEY DE PARTICIPACION CIUDADANA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PARTICIPACION CIUDADANA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4cf09cc5_0134.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f631a3f6_0135",
+      "law_name": "LEY DE PENSIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PENSIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f631a3f6_0135.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_37d46bd6_0136",
+      "law_name": "LEY DE PENSIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PENSIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_37d46bd6_0136.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bff7125d_0137",
+      "law_name": "LEY DE PLANEACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PLANEACION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bff7125d_0137.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6ba02910_0138",
+      "law_name": "LEY DE PLANEACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PLANEACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6ba02910_0138.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_11bafbfe_0139",
+      "law_name": "LEY DE PRESUPUESTO, CONTABILIDAD Y GASTO PUBLICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PRESUPUESTO, CONTABILIDAD Y GASTO PUBLICO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_11bafbfe_0139.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c50aee90_0140",
+      "law_name": "LEY DE PRESUPUESTO, CONTABILIDAD Y GASTO PUBLICO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PRESUPUESTO, CONTABILIDAD Y GASTO PUBLICO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c50aee90_0140.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_13ea68bb_0141",
+      "law_name": "LEY DE PREVENCION Y ASISTENCIA PARA LA ATENCION DE LAS ADICCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PREVENCION Y ASISTENCIA PARA LA ATENCION DE LAS ADICCIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_13ea68bb_0141.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_926bfbba_0142",
+      "law_name": "LEY DE PREVENCION Y ASISTENCIA PARA LA ATENCION DE LAS ADICCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PREVENCION Y ASISTENCIA PARA LA ATENCION DE LAS ADICCIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_926bfbba_0142.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fd297baa_0143",
+      "law_name": "LEY DE PROTECCION A LA MATERNIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION A LA MATERNIDAD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fd297baa_0143.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cd3b5f87_0144",
+      "law_name": "LEY DE PROTECCION A LA MATERNIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION A LA MATERNIDAD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_cd3b5f87_0144.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a9812101_0145",
+      "law_name": "LEY DE PROTECCION A LOS NO FUMADORES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION A LOS NO FUMADORES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a9812101_0145.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fee1c2f1_0146",
+      "law_name": "LEY DE PROTECCION A LOS NO FUMADORES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION A LOS NO FUMADORES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fee1c2f1_0146.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_501ee684_0147",
+      "law_name": "LEY DE PROTECCION DE PERIODISTAS Y PERSONAS DEFENSORAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION DE PERIODISTAS Y PERSONAS DEFENSORAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_501ee684_0147.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_13d33e2e_0148",
+      "law_name": "LEY DE PROTECCION DE PERIODISTAS Y PERSONAS DEFENSORAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION DE PERIODISTAS Y PERSONAS DEFENSORAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_13d33e2e_0148.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_18e11a32_0149",
+      "law_name": "LEY DE PROTECCION CIVIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION CIVIL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_18e11a32_0149.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_355d8254_0150",
+      "law_name": "LEY DE PROTECCION CIVIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION CIVIL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_355d8254_0150.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_520d5d00_0151",
+      "law_name": "LEY DE PROTECCIÓN DE DATOS PERSONALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCIÓN DE DATOS PERSONALES (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_520d5d00_0151.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f810e282_0152",
+      "law_name": "LEY DE PROTECCIÓN DE DATOS PERSONALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCIÓN DE DATOS PERSONALES (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f810e282_0152.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_124db29c_0153",
+      "law_name": "LEY DE PROTECCION Y BIENESTAR ANIMAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION Y BIENESTAR ANIMAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_124db29c_0153.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_faf70405_0154",
+      "law_name": "LEY DE PROTECCION Y BIENESTAR ANIMAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PROTECCION Y BIENESTAR ANIMAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_faf70405_0154.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5fbd8441_0155",
+      "law_name": "LEY DE RESPONSABILIDAD PATRIMONIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE RESPONSABILIDAD PATRIMONIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5fbd8441_0155.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1e1bed4b_0156",
+      "law_name": "LEY DE RESPONSABILIDAD PATRIMONIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE RESPONSABILIDAD PATRIMONIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1e1bed4b_0156.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bd77e68a_0157",
+      "law_name": "LEY DE RESPONSABILIDADES DE LOS SERVIDORES PUBLICOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE RESPONSABILIDADES DE LOS SERVIDORES PUBLICOS (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bd77e68a_0157.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_25b3e2be_0158",
+      "law_name": "LEY DE RESPONSABILIDADES DE LOS SERVIDORES PUBLICOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE RESPONSABILIDADES DE LOS SERVIDORES PUBLICOS (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_25b3e2be_0158.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4571117c_0159",
+      "law_name": "LEY DE SALUD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SALUD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4571117c_0159.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_37877102_0160",
+      "law_name": "LEY DE SALUD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SALUD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_37877102_0160.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c2b32240_0161",
+      "law_name": "LEY DE SALUD MENTAL PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SALUD MENTAL PARA EL ESTADO DE DURANGO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c2b32240_0161.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_97d87e8e_0162",
+      "law_name": "LEY DE SALUD MENTAL PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SALUD MENTAL PARA EL ESTADO DE DURANGO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_97d87e8e_0162.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_238de816_0163",
+      "law_name": "LEY DE SEGURIDAD PRIVADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SEGURIDAD PRIVADA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_238de816_0163.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b2d90969_0164",
+      "law_name": "LEY DE SEGURIDAD PRIVADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SEGURIDAD PRIVADA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b2d90969_0164.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bfc8b7ba_0165",
+      "law_name": "LEY DE SEGURIDAD PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SEGURIDAD PUBLICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bfc8b7ba_0165.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d08cecc8_0166",
+      "law_name": "LEY DE SEGURIDAD PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SEGURIDAD PUBLICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d08cecc8_0166.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b5e953fc_0167",
+      "law_name": "LEY DE SERVICIOS PARA EL DESARROLLO INTEGRAL INFANTIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SERVICIOS PARA EL DESARROLLO INTEGRAL INFANTIL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b5e953fc_0167.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_07be4e47_0168",
+      "law_name": "LEY DE SERVICIOS PARA EL DESARROLLO INTEGRAL INFANTIL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE SERVICIOS PARA EL DESARROLLO INTEGRAL INFANTIL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_07be4e47_0168.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_26a5adf1_0169",
+      "law_name": "LEY DE TRANSITO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSITO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_26a5adf1_0169.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6ed09418_0170",
+      "law_name": "LEY DE TRANSITO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSITO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6ed09418_0170.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6f1ca6d2_0171",
+      "law_name": "LEY DE TRANSPARENCIA  NUEVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSPARENCIA  NUEVA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6f1ca6d2_0171.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1f19efc2_0172",
+      "law_name": "LEY DE TRANSPARENCIA  NUEVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSPARENCIA  NUEVA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1f19efc2_0172.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c32da7b6_0173",
+      "law_name": "LEY DE TRANSPORTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSPORTES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c32da7b6_0173.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b7b8c2e8_0174",
+      "law_name": "LEY DE TRANSPORTES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TRANSPORTES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b7b8c2e8_0174.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d41765c2_0175",
+      "law_name": "LEY DE TURISMO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TURISMO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d41765c2_0175.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e0d4682b_0176",
+      "law_name": "LEY DE TURISMO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE TURISMO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e0d4682b_0176.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e7d19632_0177",
+      "law_name": "LEY DE VALUACION PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VALUACION PARA EL ESTADO DE DURANGO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e7d19632_0177.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_363d7a39_0178",
+      "law_name": "LEY DE VALUACION PARA EL ESTADO DE DURANGO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VALUACION PARA EL ESTADO DE DURANGO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_363d7a39_0178.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e56e4e3c_0179",
+      "law_name": "LEY DE VICTIMAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VICTIMAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e56e4e3c_0179.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3b7cf9e5_0180",
+      "law_name": "LEY DE VICTIMAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VICTIMAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3b7cf9e5_0180.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e78d108_0181",
+      "law_name": "LEY DE VIVlENDA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VIVlENDA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4e78d108_0181.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8ee2bea1_0182",
+      "law_name": "LEY DE VIVlENDA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE VIVlENDA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8ee2bea1_0182.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_245986b9_0183",
+      "law_name": "LEY DEL CONSEJO ESTATAL DE ARMONIZACION CONTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL CONSEJO ESTATAL DE ARMONIZACION CONTABLE.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_245986b9_0183.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f886a49e_0184",
+      "law_name": "LEY DEL CONSEJO ESTATAL DE ARMONIZACION CONTABLE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL CONSEJO ESTATAL DE ARMONIZACION CONTABLE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f886a49e_0184.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1fdbc565_0185",
+      "law_name": "LEY DEL GOBIERNO DIGITAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL GOBIERNO DIGITAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1fdbc565_0185.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a3981484_0186",
+      "law_name": "LEY DEL GOBIERNO DIGITAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL GOBIERNO DIGITAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a3981484_0186.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5ed43b09_0187",
+      "law_name": "LEY DEL INSTITUTO DE DEFENSORIA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL INSTITUTO DE DEFENSORIA PUBLICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5ed43b09_0187.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3dc934d1_0188",
+      "law_name": "LEY DEL INSTITUTO DE DEFENSORIA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL INSTITUTO DE DEFENSORIA PUBLICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3dc934d1_0188.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_398fd027_0189",
+      "law_name": "LEY DEL INSTITUTO ESTATAL DE LAS MUJERES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL INSTITUTO ESTATAL DE LAS MUJERES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_398fd027_0189.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_82e152ca_0190",
+      "law_name": "LEY DEL INSTITUTO ESTATAL DE LAS MUJERES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL INSTITUTO ESTATAL DE LAS MUJERES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_82e152ca_0190.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_382b0d6c_0191",
+      "law_name": "LEY DEL LIBRO Y BIBLIOTECAS PUBLICAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL LIBRO Y BIBLIOTECAS PUBLICAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_382b0d6c_0191.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ac420506_0192",
+      "law_name": "LEY DEL LIBRO Y BIBLIOTECAS PUBLICAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL LIBRO Y BIBLIOTECAS PUBLICAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ac420506_0192.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7ad501a4_0193",
+      "law_name": "LEY DEL NOTARIADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL NOTARIADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7ad501a4_0193.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_771043ad_0194",
+      "law_name": "LEY DEL NOTARIADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL NOTARIADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_771043ad_0194.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_936e3142_0195",
+      "law_name": "LEY DEL PATRIMONIO CULTURAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL PATRIMONIO CULTURAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_936e3142_0195.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_af2fd423_0196",
+      "law_name": "LEY DEL PATRIMONIO CULTURAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL PATRIMONIO CULTURAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_af2fd423_0196.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ad2909fc_0197",
+      "law_name": "LEY DEL PERIODICO OFICIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL PERIODICO OFICIAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ad2909fc_0197.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_46524931_0198",
+      "law_name": "LEY DEL PERIODICO OFICIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL PERIODICO OFICIAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_46524931_0198.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f17a689b_0199",
+      "law_name": "LEY DEL SISTEMA LOCAL ANTICORRUPCION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL SISTEMA LOCAL ANTICORRUPCION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f17a689b_0199.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_27e890c2_0200",
+      "law_name": "LEY DEL SISTEMA LOCAL ANTICORRUPCION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DEL SISTEMA LOCAL ANTICORRUPCION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_27e890c2_0200.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_dd5dcaa3_0201",
+      "law_name": "LEY ESTATAL DE DESARROLLO Y FOMENTO MINERO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL DE DESARROLLO Y FOMENTO MINERO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_dd5dcaa3_0201.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d2f4d295_0202",
+      "law_name": "LEY ESTATAL DE DESARROLLO Y FOMENTO MINERO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL DE DESARROLLO Y FOMENTO MINERO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d2f4d295_0202.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ba6036e6_0203",
+      "law_name": "LEY ESTATAL DE PREVENCION Y ELIMINACION DE LA DISCRIMINACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL DE PREVENCION Y ELIMINACION DE LA DISCRIMINACION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ba6036e6_0203.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f426baf8_0204",
+      "law_name": "LEY ESTATAL DE PREVENCION Y ELIMINACION DE LA DISCRIMINACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL DE PREVENCION Y ELIMINACION DE LA DISCRIMINACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f426baf8_0204.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2b031f4f_0205",
+      "law_name": "LEY ESTATAL PARA LA PROTECCION DE PERSONAS EN EL PROCEDIMIENTO PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL PARA LA PROTECCION DE PERSONAS EN EL PROCEDIMIENTO PENAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2b031f4f_0205.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b32310dd_0206",
+      "law_name": "LEY ESTATAL PARA LA PROTECCION DE PERSONAS EN EL PROCEDIMIENTO PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ESTATAL PARA LA PROTECCION DE PERSONAS EN EL PROCEDIMIENTO PENAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_b32310dd_0206.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7f0e1000_0207",
+      "law_name": "LEY GANADERA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GANADERA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7f0e1000_0207.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8836127c_0208",
+      "law_name": "LEY GANADERA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GANADERA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8836127c_0208.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_95702b3d_0209",
+      "law_name": "LEY GENERAL DE CATASTRO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GENERAL DE CATASTRO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_95702b3d_0209.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_16174ffb_0210",
+      "law_name": "LEY GENERAL DE CATASTRO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GENERAL DE CATASTRO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_16174ffb_0210.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f7502cb8_0211",
+      "law_name": "LEY GENERAL DE LOS PUEBLOS Y COMUNIDADES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GENERAL DE LOS PUEBLOS Y COMUNIDADES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f7502cb8_0211.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c58bb8c7_0212",
+      "law_name": "LEY GENERAL DE LOS PUEBLOS Y COMUNIDADES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY GENERAL DE LOS PUEBLOS Y COMUNIDADES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c58bb8c7_0212.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1a1b0548_0213",
+      "law_name": "LEY ORGANICA DE LA ADMINISTRACION PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ADMINISTRACION PUBLICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1a1b0548_0213.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_813d8dba_0214",
+      "law_name": "LEY ORGANICA DE LA ADMINISTRACION PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ADMINISTRACION PUBLICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_813d8dba_0214.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_03b3beb8_0215",
+      "law_name": "LEY ORGANICA DE LA BENEMERITA Y CENTENARIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA BENEMERITA Y CENTENARIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_03b3beb8_0215.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_055e50a7_0216",
+      "law_name": "LEY ORGANICA DE LA BENEMERITA Y CENTENARIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA BENEMERITA Y CENTENARIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_055e50a7_0216.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_14035286_0217",
+      "law_name": "LEY ORGANICA DE LA ESCUELA 18 DE MARZO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ESCUELA 18 DE MARZO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_14035286_0217.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_adba344e_0218",
+      "law_name": "LEY ORGANICA DE LA ESCUELA 18 DE MARZO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ESCUELA 18 DE MARZO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_adba344e_0218.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_d344aaf8_0219",
+      "law_name": "LEY ORGANICA DE LA ESCUELA SECUNDARIA DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ESCUELA SECUNDARIA DEL ESTADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d344aaf8_0219.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_ea1ad921_0220",
+      "law_name": "LEY ORGANICA DE LA ESCUELA SECUNDARIA DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA ESCUELA SECUNDARIA DEL ESTADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ea1ad921_0220.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_e546ff34_0221",
+      "law_name": "LEY ORGANICA DE LA FISCALIA ESPECIALIZADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA FISCALIA ESPECIALIZADA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e546ff34_0221.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_d54172f2_0222",
+      "law_name": "LEY ORGANICA DE LA FISCALIA ESPECIALIZADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA FISCALIA ESPECIALIZADA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d54172f2_0222.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_0c8beace_0223",
+      "law_name": "LEY ORGANICA DE LA FISCALIA GENERAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA FISCALIA GENERAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0c8beace_0223.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_cf6b97ef_0224",
+      "law_name": "LEY ORGANICA DE LA FISCALIA GENERAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA FISCALIA GENERAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_cf6b97ef_0224.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_2470c3a4_0225",
+      "law_name": "LEY ORGANICA DE LA UJED",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA UJED.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2470c3a4_0225.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_d7e64883_0226",
+      "law_name": "LEY ORGANICA DE LA UJED",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DE LA UJED.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d7e64883_0226.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_431c5189_0227",
+      "law_name": "LEY ORGANICA DEL CENTRO DE CONCILIACION LABORAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL CENTRO DE CONCILIACION LABORAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_431c5189_0227.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_9b5e2b15_0228",
+      "law_name": "LEY ORGANICA DEL CENTRO DE CONCILIACION LABORAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL CENTRO DE CONCILIACION LABORAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9b5e2b15_0228.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_fd224429_0229",
+      "law_name": "LEY ORGANICA DEL CONGRESO DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL CONGRESO DEL ESTADO.doc",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fd224429_0229.doc",
+      "format": "doc",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_2a1e7639_0230",
+      "law_name": "LEY ORGANICA DEL CONGRESO DEL ESTADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL CONGRESO DEL ESTADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2a1e7639_0230.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_4f2c7f3d_0231",
+      "law_name": "LEY ORGANICA DEL MUNICIPIO LIBRE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL MUNICIPIO LIBRE.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4f2c7f3d_0231.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_e7f62503_0232",
+      "law_name": "LEY ORGANICA DEL MUNICIPIO LIBRE",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL MUNICIPIO LIBRE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e7f62503_0232.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_66672ce3_0233",
+      "law_name": "LEY ORGANICA DEL PODER JUDICIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL PODER JUDICIAL (NUEVA).docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_66672ce3_0233.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_f02d10d7_0234",
+      "law_name": "LEY ORGANICA DEL PODER JUDICIAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL PODER JUDICIAL (NUEVA).pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f02d10d7_0234.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_8ac56e0e_0235",
+      "law_name": "LEY ORGANICA DEL TRIBUNAL DE JUSTICIA ADMINISTRATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL TRIBUNAL DE JUSTICIA ADMINISTRATIVA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8ac56e0e_0235.docx",
+      "format": "docx",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_c7d22cf2_0236",
+      "law_name": "LEY ORGANICA DEL TRIBUNAL DE JUSTICIA ADMINISTRATIVA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY ORGANICA DEL TRIBUNAL DE JUSTICIA ADMINISTRATIVA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c7d22cf2_0236.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_8a940faa_0237",
+      "law_name": "LEY PARA EL CONTROL DE BEBIDAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL CONTROL DE BEBIDAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8a940faa_0237.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c0cc2af2_0238",
+      "law_name": "LEY PARA EL CONTROL DE BEBIDAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL CONTROL DE BEBIDAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c0cc2af2_0238.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7f3c8d24_0239",
+      "law_name": "LEY PARA EL DESARROLLO LA INCLUSION DE LAS PERSONAS CON DISCAPACIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL DESARROLLO LA INCLUSION DE LAS PERSONAS CON DISCAPACIDAD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_7f3c8d24_0239.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2c70a035_0240",
+      "law_name": "LEY PARA EL DESARROLLO LA INCLUSION DE LAS PERSONAS CON DISCAPACIDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL DESARROLLO LA INCLUSION DE LAS PERSONAS CON DISCAPACIDAD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2c70a035_0240.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a8e1f3ef_0241",
+      "law_name": "LEY PARA EL EJERCICIO DE LAS PROFESIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL EJERCICIO DE LAS PROFESIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a8e1f3ef_0241.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8b8de6bb_0242",
+      "law_name": "LEY PARA EL EJERCICIO DE LAS PROFESIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL EJERCICIO DE LAS PROFESIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8b8de6bb_0242.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1ea55858_0243",
+      "law_name": "LEY PARA EL FOMENTO Y DESARROLLO DE LA FRUTICULTURA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL FOMENTO Y DESARROLLO DE LA FRUTICULTURA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_1ea55858_0243.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5ce1ddab_0244",
+      "law_name": "LEY PARA EL FOMENTO Y DESARROLLO DE LA FRUTICULTURA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL FOMENTO Y DESARROLLO DE LA FRUTICULTURA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5ce1ddab_0244.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bef3bb21_0245",
+      "law_name": "LEY PARA EL FOMENTO, USO Y APROVECHAMIENTO DE LAS FUENTES RENOVABLES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL FOMENTO, USO Y APROVECHAMIENTO DE LAS FUENTES RENOVABLES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bef3bb21_0245.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_527325e1_0246",
+      "law_name": "LEY PARA EL FOMENTO, USO Y APROVECHAMIENTO DE LAS FUENTES RENOVABLES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA EL FOMENTO, USO Y APROVECHAMIENTO DE LAS FUENTES RENOVABLES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_527325e1_0246.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9c9e01f1_0247",
+      "law_name": "LEY PARA LA ADMINISTRACION DE BIENES ASEGURADOS, DECOMISADOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ADMINISTRACION DE BIENES ASEGURADOS, DECOMISADOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9c9e01f1_0247.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a0490559_0248",
+      "law_name": "LEY PARA LA ADMINISTRACION DE BIENES ASEGURADOS, DECOMISADOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ADMINISTRACION DE BIENES ASEGURADOS, DECOMISADOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a0490559_0248.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c9736f64_0249",
+      "law_name": "LEY PARA LA ADMINISTRACION DE LAS APORTACIONES FEDERALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ADMINISTRACION DE LAS APORTACIONES FEDERALES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c9736f64_0249.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_495b60b9_0250",
+      "law_name": "LEY PARA LA ADMINISTRACION DE LAS APORTACIONES FEDERALES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ADMINISTRACION DE LAS APORTACIONES FEDERALES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_495b60b9_0250.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8f4c44f6_0251",
+      "law_name": "LEY PARA LA ATENCION Y PROTECCION A PERSONAS  CON ESPECTRO AUTISTA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20PARA%20LA%20ATENCION%20Y%20PROTECCION%20A%20PERSONAS%20%20CON%20ESPECTRO%20AUTISTA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8f4c44f6_0251.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_31f2779a_0252",
+      "law_name": "LEY PARA LA ATENCION Y PROTECCION A PERSONAS  CON ESPECTRO AUTISTA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY%20PARA%20LA%20ATENCION%20Y%20PROTECCION%20A%20PERSONAS%20%20CON%20ESPECTRO%20AUTISTA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_31f2779a_0252.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d4f4b393_0253",
+      "law_name": "LEY PARA LA CONSERVACION Y PROTECCION DEL ARBOLADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA CONSERVACION Y PROTECCION DEL ARBOLADO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d4f4b393_0253.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e406d09_0254",
+      "law_name": "LEY PARA LA CONSERVACION Y PROTECCION DEL ARBOLADO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA CONSERVACION Y PROTECCION DEL ARBOLADO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_4e406d09_0254.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_df767c6f_0255",
+      "law_name": "LEY PARA LA ENTREGA-RECEPCION DE LAS ADMINISTRACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ENTREGA-RECEPCION DE LAS ADMINISTRACIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_df767c6f_0255.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c0da1579_0256",
+      "law_name": "LEY PARA LA ENTREGA-RECEPCION DE LAS ADMINISTRACIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA ENTREGA-RECEPCION DE LAS ADMINISTRACIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c0da1579_0256.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_83c18718_0257",
+      "law_name": "LEY DE PREVENCION DE LA VIOLENCIA Y LA DELINCUENCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PREVENCION DE LA VIOLENCIA Y LA DELINCUENCIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_83c18718_0257.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8f945048_0258",
+      "law_name": "LEY DE PREVENCION DE LA VIOLENCIA Y LA DELINCUENCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY DE PREVENCION DE LA VIOLENCIA Y LA DELINCUENCIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8f945048_0258.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_58b39524_0259",
+      "law_name": "LEY PARA LA PREVENCION Y GESTION DE RESIDUOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PREVENCION Y GESTION DE RESIDUOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_58b39524_0259.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d6e0b92c_0260",
+      "law_name": "LEY PARA LA PREVENCION Y GESTION DE RESIDUOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PREVENCION Y GESTION DE RESIDUOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d6e0b92c_0260.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_96f295a3_0261",
+      "law_name": "LEY PARA LA PREVENCION, ATENCION Y ERRADICACION DE LA TRATA DE PERSONAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PREVENCION, ATENCION Y ERRADICACION DE LA TRATA DE PERSONAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_96f295a3_0261.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_545e278e_0262",
+      "law_name": "LEY PARA LA PREVENCION, ATENCION Y ERRADICACION DE LA TRATA DE PERSONAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PREVENCION, ATENCION Y ERRADICACION DE LA TRATA DE PERSONAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_545e278e_0262.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8e7c6f9b_0263",
+      "law_name": "LEY PARA LA PROMOCION Y FOMENTO DE LA INDUSTRIA CINEMATOGRAFICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PROMOCION Y FOMENTO DE LA INDUSTRIA CINEMATOGRAFICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8e7c6f9b_0263.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2f4adcf5_0264",
+      "law_name": "LEY PARA LA PROMOCION Y FOMENTO DE LA INDUSTRIA CINEMATOGRAFICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PROMOCION Y FOMENTO DE LA INDUSTRIA CINEMATOGRAFICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_2f4adcf5_0264.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f6774e21_0265",
+      "law_name": "LEY LACTANCIA MATERNA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY LACTANCIA MATERNA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_f6774e21_0265.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0ff8ff9e_0266",
+      "law_name": "LEY LACTANCIA MATERNA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY LACTANCIA MATERNA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0ff8ff9e_0266.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_733bb49d_0267",
+      "law_name": "LEY PARA LA PROTECCION DE LAS PERSONAS CON DEFICIENCIA MENTAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PROTECCION DE LAS PERSONAS CON DEFICIENCIA MENTAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_733bb49d_0267.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0f554fb1_0268",
+      "law_name": "LEY PARA LA PROTECCION DE LAS PERSONAS CON DEFICIENCIA MENTAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA PROTECCION DE LAS PERSONAS CON DEFICIENCIA MENTAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_0f554fb1_0268.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_172f4b76_0269",
+      "law_name": "LEY PARA LA REFORMA PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA REFORMA PENAL.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_172f4b76_0269.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ccd7052c_0270",
+      "law_name": "LEY PARA LA REFORMA PENAL",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA LA REFORMA PENAL.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ccd7052c_0270.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d0c0260b_0271",
+      "law_name": "LEY PARA REGULAR Y PROMOVER LA DONACION ALTRUISTA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA REGULAR Y PROMOVER LA DONACION ALTRUISTA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d0c0260b_0271.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8edf9ce8_0272",
+      "law_name": "LEY PARA REGULAR Y PROMOVER LA DONACION ALTRUISTA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY PARA REGULAR Y PROMOVER LA DONACION ALTRUISTA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8edf9ce8_0272.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_53f559e6_0273",
+      "law_name": "LEY QUE CREA EL CENTRO CULTURAL Y DE CONVENCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL CENTRO CULTURAL Y DE CONVENCIONES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_53f559e6_0273.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a46356c3_0274",
+      "law_name": "LEY QUE CREA EL CENTRO CULTURAL Y DE CONVENCIONES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL CENTRO CULTURAL Y DE CONVENCIONES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_a46356c3_0274.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_65acaaed_0275",
+      "law_name": "LEY QUE CREA EL FEST CULT REVUELTAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL FEST CULT REVUELTAS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_65acaaed_0275.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6dad0d98_0276",
+      "law_name": "LEY QUE CREA EL FEST CULT REVUELTAS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL FEST CULT REVUELTAS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_6dad0d98_0276.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_25c8204d_0277",
+      "law_name": "LEY QUE CREA EL ORGANISMO DESCENTRALIZADO DE LA BENEFICENCIA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL ORGANISMO DESCENTRALIZADO DE LA BENEFICENCIA PUBLICA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_25c8204d_0277.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_03bb209b_0278",
+      "law_name": "LEY QUE CREA EL ORGANISMO DESCENTRALIZADO DE LA BENEFICENCIA PUBLICA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE CREA EL ORGANISMO DESCENTRALIZADO DE LA BENEFICENCIA PUBLICA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_03bb209b_0278.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_654cef61_0279",
+      "law_name": "LEY QUE REGULA EL ASEGURAMIENTO DE VEHICULOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA EL ASEGURAMIENTO DE VEHICULOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_654cef61_0279.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d2a59ef9_0280",
+      "law_name": "LEY QUE REGULA EL ASEGURAMIENTO DE VEHICULOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA EL ASEGURAMIENTO DE VEHICULOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_d2a59ef9_0280.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_be0a9544_0281",
+      "law_name": "LEY QUE REGULA COVID-19",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA COVID-19.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_be0a9544_0281.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fc1d0f6e_0282",
+      "law_name": "LEY QUE REGULA COVID-19",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA COVID-19.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_fc1d0f6e_0282.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9a61f7c7_0283",
+      "law_name": "LEY QUE ESTABLECE EL CATALOGO DE LOS PUEBLOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE EL CATALOGO DE LOS PUEBLOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9a61f7c7_0283.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5b478e80_0284",
+      "law_name": "LEY QUE ESTABLECE EL CATALOGO DE LOS PUEBLOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE EL CATALOGO DE LOS PUEBLOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5b478e80_0284.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_08fd55db_0285",
+      "law_name": "LEY QUE ESTABLECE LA CAMPANA PARA LA ERRADICACION DE LA GARRAPATA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE LA CAMPANA PARA LA ERRADICACION DE LA GARRAPATA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_08fd55db_0285.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_46dbe437_0286",
+      "law_name": "LEY QUE ESTABLECE LA CAMPANA PARA LA ERRADICACION DE LA GARRAPATA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE LA CAMPANA PARA LA ERRADICACION DE LA GARRAPATA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_46dbe437_0286.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_df7bf13b_0287",
+      "law_name": "LEY QUE ESTABLECE LAS BASES PARA LA VIDEO VIGILANCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE LAS BASES PARA LA VIDEO VIGILANCIA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_df7bf13b_0287.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3da6144f_0288",
+      "law_name": "LEY QUE ESTABLECE LAS BASES PARA LA VIDEO VIGILANCIA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE ESTABLECE LAS BASES PARA LA VIDEO VIGILANCIA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3da6144f_0288.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9e7d7928_0289",
+      "law_name": "LEY QUE REGULA LAS CASAS DE EMPENO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA LAS CASAS DE EMPENO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9e7d7928_0289.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9791647e_0290",
+      "law_name": "LEY QUE REGULA LAS CASAS DE EMPENO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY QUE REGULA LAS CASAS DE EMPENO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_9791647e_0290.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_82b1b542_0291",
+      "law_name": "LEY REGLAMENTARIA DE LOS ARTICULOS 72 Y 73 DE LA LEY DE PENSIONES.",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY REGLAMENTARIA DE LOS ARTICULOS 72 Y 73 DE LA LEY DE PENSIONES..docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_82b1b542_0291.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e466d712_0292",
+      "law_name": "LEY REGLAMENTARIA DE LOS ARTICULOS 72 Y 73 DE LA LEY DE PENSIONES.",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY REGLAMENTARIA DE LOS ARTICULOS 72 Y 73 DE LA LEY DE PENSIONES..pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_e466d712_0292.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3edff095_0293",
+      "law_name": "LEY REGLAMENTARIA DEL REGISTRO PUBLICO DE LA PROPIEDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY REGLAMENTARIA DEL REGISTRO PUBLICO DE LA PROPIEDAD.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_3edff095_0293.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ff999fc0_0294",
+      "law_name": "LEY REGLAMENTARIA DEL REGISTRO PUBLICO DE LA PROPIEDAD",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY REGLAMENTARIA DEL REGISTRO PUBLICO DE LA PROPIEDAD.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ff999fc0_0294.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_998457ea_0295",
+      "law_name": "LEY SOBRE EL ESCUDO, LA BANDERA Y EL HIMNO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY SOBRE EL ESCUDO, LA BANDERA Y EL HIMNO.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_998457ea_0295.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_68a88033_0296",
+      "law_name": "LEY SOBRE EL ESCUDO, LA BANDERA Y EL HIMNO",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY SOBRE EL ESCUDO, LA BANDERA Y EL HIMNO.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_68a88033_0296.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8a5d0d18_0297",
+      "law_name": "LEY SOBRE FUNDACIONES Y ASOCIACIONES DE BENEFICENCIA PRIVADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY SOBRE FUNDACIONES Y ASOCIACIONES DE BENEFICENCIA PRIVADA.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8a5d0d18_0297.docx",
+      "format": "docx",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5471c112_0298",
+      "law_name": "LEY SOBRE FUNDACIONES Y ASOCIACIONES DE BENEFICENCIA PRIVADA",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/LEY SOBRE FUNDACIONES Y ASOCIACIONES DE BENEFICENCIA PRIVADA.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_5471c112_0298.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_53ac269e_0299",
+      "law_name": "REGLAMENTO PARA LA PROTECCION DE LOS NO FUMADORES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO PARA LA PROTECCION DE LOS NO FUMADORES.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_53ac269e_0299.docx",
+      "format": "docx",
+      "category": "Reglamento",
+      "law_type": "reglamento"
+    },
+    {
+      "file_id": "sc_be63a5f2_0300",
+      "law_name": "REGLAMENTO PARA LA PROTECCION DE LOS NO FUMADORES",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO PARA LA PROTECCION DE LOS NO FUMADORES.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_be63a5f2_0300.pdf",
+      "format": "pdf",
+      "category": "Reglamento",
+      "law_type": "reglamento"
+    },
+    {
+      "file_id": "sc_bc6f9bef_0301",
+      "law_name": "REGLAMENTO PARA LA TRANSPARENCIA Y EL ACCESO A LA INFORMACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO PARA LA TRANSPARENCIA Y EL ACCESO A LA INFORMACION.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_bc6f9bef_0301.docx",
+      "format": "docx",
+      "category": "Reglamento",
+      "law_type": "reglamento"
+    },
+    {
+      "file_id": "sc_c24c986b_0302",
+      "law_name": "REGLAMENTO PARA LA TRANSPARENCIA Y EL ACCESO A LA INFORMACION",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO PARA LA TRANSPARENCIA Y EL ACCESO A LA INFORMACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_c24c986b_0302.pdf",
+      "format": "pdf",
+      "category": "Reglamento",
+      "law_type": "reglamento"
+    },
+    {
+      "file_id": "sc_ad8dbca2_0303",
+      "law_name": "REGLAMENTO DE RECONOCIMIENTOS Y ESTIMULOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO DE RECONOCIMIENTOS Y ESTIMULOS.docx",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_ad8dbca2_0303.docx",
+      "format": "docx",
+      "category": "Reglamento",
+      "law_type": "reglamento"
+    },
+    {
+      "file_id": "sc_8e91c8d8_0304",
+      "law_name": "REGLAMENTO DE RECONOCIMIENTOS Y ESTIMULOS",
+      "url": "https://congresodurango.gob.mx/Archivos/legislacion/REGLAMENTO DE RECONOCIMIENTOS Y ESTIMULOS.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/durango/sc_8e91c8d8_0304.pdf",
+      "format": "pdf",
+      "category": "Reglamento",
+      "law_type": "reglamento"
     }
-  ]
+  ],
+  "failed_laws": []
 }

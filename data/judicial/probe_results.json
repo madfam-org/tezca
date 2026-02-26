@@ -1,0 +1,37 @@
+{
+  "open_data": {
+    "found": false,
+    "endpoint": null,
+    "datasets": [],
+    "download_urls": [],
+    "probed": [
+      "https://datos.scjn.gob.mx/datasets",
+      "https://datos.scjn.gob.mx/data",
+      "https://datos.scjn.gob.mx/api",
+      "https://datos.scjn.gob.mx/api/v1",
+      "https://datos.scjn.gob.mx/api/v1/datasets",
+      "https://datos.scjn.gob.mx/api/3/action/package_list",
+      "https://datos.scjn.gob.mx/api/3/action/package_search?q=tesis",
+      "https://datos.scjn.gob.mx/catalogo",
+      "https://datos.scjn.gob.mx/descargas"
+    ]
+  },
+  "search_api": {
+    "found": false,
+    "endpoint": null,
+    "sample": null,
+    "pagination": null,
+    "search_form": null,
+    "probed": [
+      "https://sjf.scjn.gob.mx/api/",
+      "https://sjf.scjn.gob.mx/api/v1/",
+      "https://sjf.scjn.gob.mx/api/tesis/",
+      "https://sjf.scjn.gob.mx/api/busqueda/",
+      "https://sjf.scjn.gob.mx/busqueda/",
+      "https://sjf.scjn.gob.mx/Busqueda",
+      "https://sjf.scjn.gob.mx/IUSQuery/",
+      "https://sjf.scjn.gob.mx/iusfnav/"
+    ]
+  },
+  "timestamp": "2026-02-25T13:23:29"
+}

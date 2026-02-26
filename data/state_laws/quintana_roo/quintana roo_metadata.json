@@ -1,18 +1,2863 @@
 {
-  "state_id": 23,
   "state_name": "Quintana Roo",
-  "total_found": 1,
-  "successful": 1,
+  "state_id": "QR",
+  "total_found": 317,
+  "successful": 317,
   "failed": 0,
   "laws": [
     {
-      "file_id": 2468,
-      "ambito": "ESTATAL",
-      "url": "http://compilacion.ordenjuridico.gob.mx/fichaOrdenamiento2.php?idArchivo=2468&ambito=ESTATAL",
-      "download_url": "http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=/Documentos/ESTADO/QUINTANA ROO/o62468.doc&nombreclave=o62468.doc",
-      "format": "doc",
-      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/reglamento_para_el_gobierno_interior_del_poder_legislativo_del_estado_de_quintana_roo_2468.doc",
-      "law_name": "Reglamento para el Gobierno Interior del Poder Legislativo del Estado de Quintana Roo"
+      "file_id": "sc_13ec1fc7_0000",
+      "law_name": "gavelLeyes",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L176-XVIII-20251124-CN1820251124153-Constitución.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_13ec1fc7_0000.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_64e55490_0001",
+      "law_name": "Constitución Política del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fundamental/L1420160607405.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_64e55490_0001.pdf",
+      "format": "pdf",
+      "category": "Constitucion",
+      "law_type": "constitucion_estatal"
+    },
+    {
+      "file_id": "sc_a84e964f_0002",
+      "law_name": "Ley de Acceso de las Mujeres a una Vida Libre de Violencia del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L122-XVI-20071127-L1120071127226.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a84e964f_0002.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7e3c5e06_0003",
+      "law_name": "Ley de Acciones Urbanísticas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L190-XV-16082018-741.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7e3c5e06_0003.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e0de6252_0004",
+      "law_name": "Ley de Acción de Cambio Climático en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley120/L1320130430269.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e0de6252_0004.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b9494ab9_0005",
+      "law_name": "Ley de Adopción del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/civil/ley097/L1320130515273.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b9494ab9_0005.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f5a0ebbf_0006",
+      "law_name": "Ley de Adquisiciones, Arrendamientos y Prestación de Servicios Relacionados con Bienes Muebles del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley013/L0819981218.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f5a0ebbf_0006.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_00398eec_0007",
+      "law_name": "Ley de Agua Potable y Alcantarillado del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley014/L1220080930001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_00398eec_0007.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a01a0eeb_0008",
+      "law_name": "Ley de Amnistía para el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L248-XVI-20211222-L1620211222181.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a01a0eeb_0008.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4a90c4bb_0009",
+      "law_name": "Ley de Archivos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L285-XVII-20230713-L1720230713088.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4a90c4bb_0009.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_46f76eca_0010",
+      "law_name": "Ley de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L191-XV-16082018-741.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_46f76eca_0010.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d7165dbb_0011",
+      "law_name": "Ley de Asistencia Social para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley016/L1220110210001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d7165dbb_0011.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f2ef018f_0012",
+      "law_name": "Ley de Asistencia y Prevención de la Violencia Familiar del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/civil/ley009/L1320130930311.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f2ef018f_0012.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_33a66f64_0013",
+      "law_name": "Ley de Asociaciones Público-Privadas para el Estado y los Municipios de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1520170629081.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_33a66f64_0013.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cdbdb87d_0014",
+      "law_name": "Ley de Bibliotecas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220101213377.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cdbdb87d_0014.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3e6dbef8_0015",
+      "law_name": "Ley de Catastro del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1120080311276.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3e6dbef8_0015.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_48287f2d_0016",
+      "law_name": "Ley de Conservación, Mantenimiento, Protección y Desarrollo del Arbolado Urbano del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L186-XV-20171227-146.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_48287f2d_0016.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6d0bdef9_0017",
+      "law_name": "Ley de Consulta a los Pueblos y Comunidades Indígenas y Afromexicanas del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L268-XVIII-20220824-Ley-de-consulta-a-los-pueblos-mod.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6d0bdef9_0017.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0288de04_0018",
+      "law_name": "Ley de Coordinación Fiscal del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L226-XVI-20201221-L1620201221071.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0288de04_0018.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_eac28b9a_0019",
+      "law_name": "Ley de Cultura de la Legalidad del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130115FE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_eac28b9a_0019.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ba34b47b_0020",
+      "law_name": "Ley de Cultura y las Artes del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/cultural/ley083/L1320130906319.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ba34b47b_0020.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9eaace3f_0021",
+      "law_name": "Ley de Cuotas y Tarifas para los Servicios Públicos de Agua Potable y Alcantarillado, Tratamiento y Disposición de Aguas Residuales del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L16-XV-20131210-L1220131210-F.E..pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9eaace3f_0021.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5debf7f9_0022",
+      "law_name": "Ley de Derechos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L195-XV-31122018-780.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5debf7f9_0022.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_00c3fff8_0023",
+      "law_name": "Ley de Derechos, Cultura y Organización Indígena del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/cultural/ley019/L1320130819306.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_00c3fff8_0023.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2dd439bb_0024",
+      "law_name": "Ley de Desarrollo Económico y  Competitividad para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141223248.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2dd439bb_0024.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8096d35f_0025",
+      "law_name": "Ley de Desarrollo Forestal Sustentable para el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L287-XVIII-20231127-L1720231127124.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8096d35f_0025.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8d54a216_0026",
+      "law_name": "Ley de Desarrollo Rural Sustentable del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L202-XV-20190812-L1520190812342.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8d54a216_0026.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6b16b84e_0027",
+      "law_name": "Ley de Deuda Pública del Estado de Quintana Roo y sus Municipios.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L173-XV-20161103-8.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6b16b84e_0027.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7e37164f_0028",
+      "law_name": "Ley de Educación del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L261-XVI-20220427-L1620220427234.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7e37164f_0028.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e2932169_0029",
+      "law_name": "Ley de Entrega y Recepción de los Poderes Públicos, Ayuntamientos, Órganos Públicos Autónomos y de las Entidades de la Administración Pública Paraestatal del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L245-XVI-20211216-LEY-ENTREGA-Y-RECEPCIÓN.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e2932169_0029.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2a7941b2_0030",
+      "law_name": "Ley de Expropiación, Ocupación Temporal y Limitación de Dominio del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L331-XVIII-20250116-Ley-de-EXPROPIACION.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2a7941b2_0030.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9baed6b3_0031",
+      "law_name": "Ley de Extinción de Dominio del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141219238.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9baed6b3_0031.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8fa53425_0032",
+      "law_name": "Ley de Filmaciones y Producción Audiovisual del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L307-XVII-20240409-L1720240410210.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8fa53425_0032.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_010aeb07_0033",
+      "law_name": "Ley de Fiscalización y Rendición de Cuentas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L180-XV-20170719-90.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_010aeb07_0033.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8b1b70f5_0034",
+      "law_name": "Ley de Fomento a la Lectura y el Libro del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/educacion/ley128/L1320121231014.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8b1b70f5_0034.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8578d076_0035",
+      "law_name": "Ley de Fomento a las Actividades Realizadas por las Organizaciones Civiles para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley114/L1220110322004.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8578d076_0035.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_64a89a2a_0036",
+      "law_name": "Ley de Fomento al Primer Empleo para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141008138.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_64a89a2a_0036.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ecf3b04b_0037",
+      "law_name": "Ley de Fomento para la Nutrición y el Combate del Sobrepeso, Obesidad, Diabetes Mellitus y Trastornos de la Conducta Alimentaria para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141114149.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ecf3b04b_0037.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2df04b8a_0038",
+      "law_name": "Ley de Fomento y Desarrollo Pecuario para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220100702297.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2df04b8a_0038.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3d285832_0039",
+      "law_name": "Ley de Hacienda de los Municipios del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley011/L1420141008142.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3d285832_0039.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_09414ecc_0040",
+      "law_name": "Ley de Hacienda del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L218-XVI-20191218-L1620191218012.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_09414ecc_0040.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_02d64188_0041",
+      "law_name": "Ley de Hacienda del Municipio de Bacalar, del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L260-XVI-20211227-L1620211227201.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_02d64188_0041.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f57962fe_0042",
+      "law_name": "Ley de Hacienda del Municipio de Benito Juárez del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley122/L1420141209156.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f57962fe_0042.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_55242117_0043",
+      "law_name": "Ley de Hacienda del Municipio de Cozumel, del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley148/L1420141209162.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_55242117_0043.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f12b7b6a_0044",
+      "law_name": "Ley de Hacienda del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L291-XVII-20231221-L1720231221153.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f12b7b6a_0044.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5d8ee23f_0045",
+      "law_name": "Ley de Hacienda del Municipio de Isla Mujeres del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L193-XV-29112018-755.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5d8ee23f_0045.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_805e2c18_0046",
+      "law_name": "Ley de Hacienda del Municipio de José María Morelos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L239-XVI-20201223-L1620201223080.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_805e2c18_0046.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fe2aff74_0047",
+      "law_name": "Ley de Hacienda del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley156/L1420151215362.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fe2aff74_0047.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7f6ea59f_0048",
+      "law_name": "Ley de Hacienda del Municipio de Othón P. Blanco del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L196-XV-31122018-777.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7f6ea59f_0048.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_46582b5b_0049",
+      "law_name": "Ley de Hacienda del Municipio de Puerto Morelos, del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley154/L1420160114380.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_46582b5b_0049.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fe11f3d1_0050",
+      "law_name": "Ley de Hacienda del Municipio de Solidaridad, del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley130/L1320121130181.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fe11f3d1_0050.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fdd9f780_0051",
+      "law_name": "Ley de Hacienda del Municipio de Tulum del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L276-XVII-20221219-L20221219020.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fdd9f780_0051.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f0f12caf_0052",
+      "law_name": "Ley de Humanidades, Ciencias, Tecnologías e Innovación del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L306-XVII-20240305-L1720240305205.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f0f12caf_0052.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8c1dffd6_0053",
+      "law_name": "Ley de Impuesto a las Erogaciones en Juegos y Concursos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L174-XV-20161215-32.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8c1dffd6_0053.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3f657dcc_0054",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L219-XVI-20191227-L1620191227015-ingresos.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3f657dcc_0054.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5d5d80d1_0055",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el ejercicio fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L228-XVI-20201221-L1620201221077-Estado.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5d5d80d1_0055.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_833528b8_0056",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L246-XVI-20211221-L1620211221189.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_833528b8_0056.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7731c8da_0057",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L281-XVII-20221223-LI20221223037.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7731c8da_0057.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_332e1618_0058",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L302-XVII-20231221-LI2023~1.PDF.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_332e1618_0058.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_394ef425_0059",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L326-XVIII-20241223-L1820250123080.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_394ef425_0059.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_16a9dbe9_0060",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el Ejercicio Fiscal 2026.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L355-XVIII-20251216-L1820251218197-Ley-de-Ingresos-del-Estado.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_16a9dbe9_0060.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_48e2d362_0061",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L280-XVII-20221217-LI20221712025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_48e2d362_0061.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0b2731b1_0062",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley117/L1420141223226.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0b2731b1_0062.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2a6b792e_0063",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L211-XVI-20191226-L1620191226027.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2a6b792e_0063.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_63f17330_0064",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L235-XVI-20201224-L1620201224087-Bacalar.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_63f17330_0064.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_aac5c406_0065",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L256-XVI-20211224-LI1620211224202.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_aac5c406_0065.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3233e9e5_0066",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L295-XVII-20231221-LI20231221160.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3233e9e5_0066.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_af77ce4d_0067",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L317-XVIII-20241209-L1820241209057.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_af77ce4d_0067.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9314539a_0068",
+      "law_name": "Ley de Ingresos del Municipio de Bacalar, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L350-XVIII-20251210-L1820251210175-Ley-de-Ingresos-Bacalar-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9314539a_0068.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_466b9c77_0069",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley075/L1420141219227.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_466b9c77_0069.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e2e33910_0070",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L209-XVI-20191226-L1620191226025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e2e33910_0070.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bd893f28_0071",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L230-XVI-20201223-l1620201223082-BJ.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_bd893f28_0071.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_66fe91bc_0072",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L252-XVI-20211228-LI1620211228196.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_66fe91bc_0072.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_51900991_0073",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L275-XVII-20221219-LI202212192019.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_51900991_0073.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_17a241a5_0074",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el ejercicio fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L288-XVII-20231215-LI20231215139.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_17a241a5_0074.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cbe3ae3e_0075",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L320-XVIII-20241216-L1820241216069.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cbe3ae3e_0075.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_884bb518_0076",
+      "law_name": "Ley de Ingresos del Municipio de Benito Juárez, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L347-XVIII-20251210-L1820251210171-Ley-de-Ingresos-de-Benito-Juarez-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_884bb518_0076.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_48045346_0077",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley074/L1420141219232.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_48045346_0077.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b62d5bab_0078",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L208-XVI-20191226-L1620191226024.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b62d5bab_0078.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c0132e3a_0079",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L224-XVI-20201222-L1620201222067-Cozumel.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c0132e3a_0079.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8a56faa5_0080",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L253-XVI-20211227-LI1620211227197.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8a56faa5_0080.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_65810eb9_0081",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L270-XVII-20221217-LI20221712011.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_65810eb9_0081.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_097cef60_0082",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L301-XVII-20231221-LI20231221166.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_097cef60_0082.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4b9d2d51_0083",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L319-XVIII-20241217-L1820241217073.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4b9d2d51_0083.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ed0ffe18_0084",
+      "law_name": "Ley de Ingresos del Municipio de Cozumel, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L351-XVIII-20251210-L1820251211180-Ley-de-Ingresos-de-Cozumel-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ed0ffe18_0084.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2c3bffc3_0085",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley072/L1420141219231.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2c3bffc3_0085.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_77fd69bc_0086",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L279-XVII-20221219-LI20221219026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_77fd69bc_0086.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1f0d7cf0_0087",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L214-XVI-20191226-L1620191226030.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1f0d7cf0_0087.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_38ddb08a_0088",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L236-XVI-20201225-l1620201225088-FCP.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_38ddb08a_0088.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1e9f85da_0089",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L249-XVI-20211227-LI1620211227182.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1e9f85da_0089.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_39127e9a_0090",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L292-XVII-20231221-LI20231221154.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_39127e9a_0090.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8b8a22e5_0091",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L324-XVIII-20241216-L1820241216065.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8b8a22e5_0091.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_53b322b1_0092",
+      "law_name": "Ley de Ingresos del Municipio de Felipe Carrillo Puerto, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L346-XVIII-20251210-L1820251210169-Ley-de-Ingresos-de-FCP-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_53b322b1_0092.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f712cf6c_0093",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley070/L1420141219225.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f712cf6c_0093.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0d881694_0094",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L216-XVI-20191226-L1620191226032.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0d881694_0094.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f01a21ff_0095",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L232-XVI-20201224-l1620201224084-IM.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f01a21ff_0095.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b748f7b9_0096",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L259-XVI-20211227-LI1620211227207.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b748f7b9_0096.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_79eeb7ea_0097",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L274-XVII-20221219-LI202212192017.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_79eeb7ea_0097.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6655e2ab_0098",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L293-XVII-20231221-LI20231221156.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6655e2ab_0098.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_65c38767_0099",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L322-XVIII-20241216-L1820241216067.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_65c38767_0099.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_86d635af_0100",
+      "law_name": "Ley de Ingresos del Municipio de Isla Mujeres, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L349-XVIII-20251210-L1820251210174-Ley-de-Ingresos-de-IM-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_86d635af_0100.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_194b88b4_0101",
+      "law_name": "Ley de Ingresos del Municipio de José Maria Morelos, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L212-XVI-20191226-L1620191226028.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_194b88b4_0101.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e8d405a5_0102",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley076/L1420141219228.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e8d405a5_0102.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f0593e6a_0103",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L231-XVI-20201223-l1620201223083-JMM.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f0593e6a_0103.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_61659b69_0104",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L255-XVI-20211224-LI1620211224200.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_61659b69_0104.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cb198e44_0105",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L269-XVII-20221219-LI20221912010.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cb198e44_0105.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_28be318e_0106",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L297-XVII-20231221-LI20231221162.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_28be318e_0106.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f315fbf7_0107",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L316-XVIII-20241209-L1820241209055.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f315fbf7_0107.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1119c7ee_0108",
+      "law_name": "Ley de Ingresos del Municipio de José María Morelos, Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L352-XVIII-20251211-L1820251211179-Ley-de-Ingresos-de-JMM-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1119c7ee_0108.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_90a27a1c_0109",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L278-XVII-20221219-LI20221219023.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_90a27a1c_0109.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_83f07fbf_0110",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley073/L1420141219229.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_83f07fbf_0110.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_62e76549_0111",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L213-XVI-20191226-L1620191226029.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_62e76549_0111.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7bc8a13d_0112",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L233-XVI-20201224-l1620201224085-LC.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7bc8a13d_0112.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_87915d01_0113",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L251-XVI-20211224-LI1620211224194.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_87915d01_0113.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ae72ff74_0114",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L299-XVII-20231221-LI20231221164.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ae72ff74_0114.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_aa47ff71_0115",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L321-XVIII-20241213-L1820241213061.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_aa47ff71_0115.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c77bda6e_0116",
+      "law_name": "Ley de Ingresos del Municipio de Lázaro Cárdenas, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L343-XVIII-20251210-L1820251210165-Ley-de-Ingresos-de-Lázaro-Cárdenas-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c77bda6e_0116.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e769c4cb_0117",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley071/L1420141223223.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e769c4cb_0117.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bb9efff4_0118",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L215-XVI-20191226-L1620191226031.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_bb9efff4_0118.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_68e0ddb9_0119",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L223-XVIII-20201222-L1620201222066-OPB.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_68e0ddb9_0119.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_40a239a9_0120",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L257-XVI-20211224-LI1620211224204.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_40a239a9_0120.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_deea4568_0121",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L273-XVIII-20221219-LI20221219016.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_deea4568_0121.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_58121104_0122",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L296-XVII-20231221-LI20231221161.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_58121104_0122.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8eae06e2_0123",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L325-XVIII-20241217-Ley-de-Ingresos-opb-2025.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8eae06e2_0123.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a2ed9c3d_0124",
+      "law_name": "Ley de Ingresos del Municipio de Othón P. Blanco, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L353-XVIII-20251211-L1820251211177-Ley-de-Ingresos-de-OPB-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a2ed9c3d_0124.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2afda2d1_0125",
+      "law_name": "Ley de Ingresos del Municipio de Playa del Carmen, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L345-XVIII-20251210-L1820251210168-Ley-de-Ingresos-de-Playa-del-Cármen-2026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2afda2d1_0125.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f0e11fee_0126",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley155/L1420160114379.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f0e11fee_0126.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9c864f58_0127",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L207-XVI-20191226-L1620191226008.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9c864f58_0127.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_06c3d6b3_0128",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L234-XVIII-20201224-L1620201224086-PM.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_06c3d6b3_0128.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_24439c58_0129",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L254-XVI-20211227-LI1620211227198.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_24439c58_0129.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b9a4e084_0130",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L272-XVII-20221219-LI20221912014.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b9a4e084_0130.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0bc1afac_0131",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L300-XVII-20231221-LI20231221165.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0bc1afac_0131.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a075bdaf_0132",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L318-XVIII-20241209-L1820241209059.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a075bdaf_0132.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e41cff14_0133",
+      "law_name": "Ley de Ingresos del Municipio de Puerto Morelos, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L340-XVIII-20251210-L1820251210160-Ley-de-Ingresos-de-PM.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e41cff14_0133.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8144654f_0134",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L217-XVI-20191226-L1620191226035.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8144654f_0134.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8fed93e9_0135",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L225-XVIII-20201222-L1620201222068.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8fed93e9_0135.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_eeb01d4f_0136",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L258-XVI-20211224-LI1620211224205.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_eeb01d4f_0136.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6d51a9fb_0137",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L271-XVII-20221219-LI20221912013.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6d51a9fb_0137.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_39018c5a_0138",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L298-XVII-20231221-LI20231221163.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_39018c5a_0138.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0017bd65_0139",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L323-XVIII-20241213-L1820241213063.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0017bd65_0139.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fb24f056_0140",
+      "law_name": "Ley de Ingresos del Municipio de Solidaridad, Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley077/L1420141219230.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fb24f056_0140.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_23fc5265_0141",
+      "law_name": "Ley de Ingresos del Municipio de Tulum del Estado de Quintana Roo, para el Ejercicio Fiscal 2023",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L277-XVII-20221217-Li20221217021.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_23fc5265_0141.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_92224b9c_0142",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el Ejercicio Fiscal 2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley096/L1420141219224.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_92224b9c_0142.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_195a750e_0143",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el ejercicio fiscal 2020.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L210-XVI-20191226-L1620191226026.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_195a750e_0143.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2a6bf0c9_0144",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el Ejercicio Fiscal 2021.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L237-XVIII-20201225-L1620201225089-Tulum.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2a6bf0c9_0144.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fc415bc8_0145",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el ejercicio fiscal 2022",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L250-XVI-20211224-LI1620211224192.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fc415bc8_0145.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_24c375cb_0146",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el Ejercicio Fiscal 2024.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L294-XVII-20231221-LI20231221158.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_24c375cb_0146.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e98b6b75_0147",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el Ejercicio Fiscal 2025",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L315-XVIII-20241209-L1820241209049.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e98b6b75_0147.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a4fd02cc_0148",
+      "law_name": "Ley de Ingresos del Municipio de Tulum, del Estado de Quintana Roo, para el Ejercicio Fiscal 2026.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L341-XVIII-20251210-L1820251210162-Ley-de-Ingresos-de-Tulum-2026-5-enero.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a4fd02cc_0148.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c0b75857_0149",
+      "law_name": "Ley de Ingresos para el Estado de Quintana Roo, para el Ejercicio Fiscal 2025.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L314-XVIII-20241223-Ley-de-Ingresos-Estado-2025-final.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c0b75857_0149.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_028a3a32_0150",
+      "law_name": "Ley de Instituciones y Procedimientos Electorales para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1520170921097.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_028a3a32_0150.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9e2d351d_0151",
+      "law_name": "Ley de Justicia Alternativa del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L244-XVIII-20210813-L1620210813130-Ley-de-Justicia-Alternativa-del-Estado.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9e2d351d_0151.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_35573f08_0152",
+      "law_name": "Ley de Justicia Indígena del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320121231234.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_35573f08_0152.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5dd9658b_0153",
+      "law_name": "Ley de la Comisión de los Derechos Humanos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley006/L1420140227089.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5dd9658b_0153.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a7189d55_0154",
+      "law_name": "Ley de la Infraestructura Física Educativa del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220100628288.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a7189d55_0154.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e351d69a_0155",
+      "law_name": "Ley de la Juventud del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley135/L1420140704127.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e351d69a_0155.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_12a2b14a_0156",
+      "law_name": "Ley de las Entidades de la Administración Pública Paraestatal del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley093/L1320130819306.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_12a2b14a_0156.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7da88383_0157",
+      "law_name": "Ley de los Derechos de las Personas Adultas Mayores del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1120070807192.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7da88383_0157.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ee14fd44_0158",
+      "law_name": "Ley de los Derechos de Niñas, Niños y Adolescentes del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley107/L1420150430261.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ee14fd44_0158.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f51db3dc_0159",
+      "law_name": "Ley de los Municipios del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley062/L1420141201158.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f51db3dc_0159.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_60ad0078_0160",
+      "law_name": "Ley de los Trabajadores al Servicio de los Poderes Legislativo, Ejecutivo y Judicial de los Ayuntamientos y Organismos Descentralizados del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141209159.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_60ad0078_0160.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a358689e_0161",
+      "law_name": "Ley de Movilidad del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L189-XV-14062018-675.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a358689e_0161.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_af13f9ce_0162",
+      "law_name": "Ley de Obras Públicas y Servicios Relacionados con las mismas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley033/L1220101210003.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_af13f9ce_0162.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_19783842_0163",
+      "law_name": "Ley de Ordenamiento Cívico del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420140704126.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_19783842_0163.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_faad2fe0_0164",
+      "law_name": "Ley de Participación Ciudadana del Estado de Quintana Roo.",
+      "url": "https://www.congresoqroo.gob.mx/leyes/90/",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_faad2fe0_0164.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8eee14f7_0165",
+      "law_name": "Ley de Pesca Responsable y Acuacultura para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/agropecuario/ley132/L1320130409256.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8eee14f7_0165.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a3185dcd_0166",
+      "law_name": "Ley de Planeación para el Desarrollo del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L267-XVI-20220815-L1620220815248.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a3185dcd_0166.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9a63d6d7_0167",
+      "law_name": "Ley de Prestación de Servicios Inmobiliarios del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L308-XVIII-20240906-L1720240906229.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9a63d6d7_0167.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_68d4ea54_0168",
+      "law_name": "Ley de Presupuesto y Gasto Público del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley034/L1320130814303.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_68d4ea54_0168.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ec711cad_0169",
+      "law_name": "Ley de Prevención del Delito para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130906322.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ec711cad_0169.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5ed577e2_0170",
+      "law_name": "Ley de Prevención, Atención Integral y Control para el VIH del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L266-XVI-20220713-L1620220713245.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5ed577e2_0170.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1c158bd5_0171",
+      "law_name": "Ley de Profesiones del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L0819980615132.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1c158bd5_0171.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d01cd8d0_0172",
+      "law_name": "Ley de Propiedad en Condominio de Inmuebles del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220110322448.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d01cd8d0_0172.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0c6642b3_0173",
+      "law_name": "Ley de Protección a la Salud de los no Fumadores para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1120070807194.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0c6642b3_0173.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1e5ffc8d_0174",
+      "law_name": "Ley de Protección Civil del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley046/L1320130430268.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1e5ffc8d_0174.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_be527691_0175",
+      "law_name": "Ley de Protección de Datos Personales en Posesión de Sujetos Obligados del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L338-XVIII-20251125-L1820251125154-ley-de-Protección-de-Datos-Personales.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_be527691_0175.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7fcf72e3_0176",
+      "law_name": "Ley de Protección y Bienestar Animal del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L206-XVI-20191125-L20191125344.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7fcf72e3_0176.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c2d9cd2c_0177",
+      "law_name": "Ley de Protección y Fomento Apícola del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L265-XVII-20220713-L1620220713243.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c2d9cd2c_0177.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_36dd6c69_0178",
+      "law_name": "Ley de Quemas y Prevención de Incendios Forestales para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420140616116.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_36dd6c69_0178.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_530835b7_0179",
+      "law_name": "Ley de Responsabilidad Ambiental del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L263-XVI-20220428-L1620220428229.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_530835b7_0179.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ebc4d62e_0180",
+      "law_name": "Ley de Responsabilidad Patrimonial del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L221-XVII-20200221-L1620200221002.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ebc4d62e_0180.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_adea0775_0181",
+      "law_name": "Ley de Responsabilidades Administrativas del Estado de Quintana Roo y sus Municipios.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L312-XVIII-20241015-L1820241009007.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_adea0775_0181.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e32a5860_0182",
+      "law_name": "Ley de Responsabilidades de los Servidores Públicos del Estado.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L49-XVIII-20130906-L1320130906320.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e32a5860_0182.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d658f1f8_0183",
+      "law_name": "Ley de Salud del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/salud/ley039/L1420141209159.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d658f1f8_0183.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f3a780d7_0184",
+      "law_name": "Ley de Salud Mental del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L222-XVI-20201221-L1620201221064-SM.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f3a780d7_0184.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5e644b35_0185",
+      "law_name": "Ley de Seguridad Ciudadana del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L284-XVIII-20230420-L1720230420057.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5e644b35_0185.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3a21d973_0186",
+      "law_name": "Ley de Seguridad Escolar Integral del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L262-XVI-20220427-L1620220427230.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3a21d973_0186.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f12617bb_0187",
+      "law_name": "Ley de Seguridad Social de los Servidores Públicos del Gobierno del Estado, Municipios y Organismos Públicos Descentralizados del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L051989041458.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f12617bb_0187.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b1156bad_0188",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L337-XVIII-20251125-L1820251125154-Ley-de-Tranparncia.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b1156bad_0188.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_53566d37_0189",
+      "law_name": "Ley de Transporte Ferroviario para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley078/L1020031216.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_53566d37_0189.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a7fc6f22_0190",
+      "law_name": "Ley de Turismo del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141222243.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a7fc6f22_0190.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b4a59762_0191",
+      "law_name": "Ley de Valuación para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141219245.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b4a59762_0191.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ed713da6_0192",
+      "law_name": "Ley de Vida Silvestre para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320120925131.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ed713da6_0192.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a0af889b_0193",
+      "law_name": "Ley de Vivienda del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley112/L1320111215001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a0af889b_0193.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e176a198_0194",
+      "law_name": "Ley de Víctimas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley025/L1420140407097.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e176a198_0194.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e62b7a5d_0195",
+      "law_name": "Ley del Colegio de Bachilleres del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L304-XVII-20231222-L1720231222197.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e62b7a5d_0195.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f06dd5a8_0196",
+      "law_name": "Ley del Consejo Estatal de Población de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130819306.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f06dd5a8_0196.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bdf0c26d_0197",
+      "law_name": "Ley del Equilibrio Ecológico y la Protección al Ambiente del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley023/L0920010629.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_bdf0c26d_0197.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_33a729e9_0198",
+      "law_name": "Ley del Fondo para el Mejoramiento de la Administración de Justicia del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L0719960115126.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_33a729e9_0198.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_16857435_0199",
+      "law_name": "Ley del Impuesto al Hospedaje del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L187-XV-27122017-611.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_16857435_0199.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c4e875b7_0200",
+      "law_name": "Ley del Impuesto sobre Adquisición de Bienes Inmuebles de los Municipios del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley119/L1320121030148.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c4e875b7_0200.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ed6b97cb_0201",
+      "law_name": "Ley del Impuesto sobre Nóminas del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L167-XVI-20151215-L1420151215372.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ed6b97cb_0201.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f081736c_0202",
+      "law_name": "Ley del Instituto de Defensoría Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420131122053.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f081736c_0202.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cbf41cca_0203",
+      "law_name": "Ley del Instituto para el Desarrollo y Financiamiento del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L303-XVII-20231222-L1720231222196.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cbf41cca_0203.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4e60146f_0204",
+      "law_name": "Ley del Notariado para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L201-XVI-20190702-L1620201015333.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4e60146f_0204.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d9a5bfc6_0205",
+      "law_name": "Ley del Patrimonio Cultural del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141223221.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d9a5bfc6_0205.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_53860812_0206",
+      "law_name": "Ley del Patrimonio del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley079/L1420140616124.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_53860812_0206.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5a2fe2af_0207",
+      "law_name": "Ley del Periódico Oficial del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L238-XVI-20201231-L1620201231094.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5a2fe2af_0207.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_46a52537_0208",
+      "law_name": "Ley del Secretariado Ejecutivo del Sistema Estatal de Seguridad Ciudadana del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L311-XVIII-20241015-L1820241015009-Secretariado-Ejecutivo.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_46a52537_0208.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bb93b8a5_0209",
+      "law_name": "Ley del Servicio de Administración Tributaria del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1520181231294.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_bb93b8a5_0209.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_273f054e_0210",
+      "law_name": "Ley del Servicio Público de Carrera del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L0920020215138.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_273f054e_0210.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ec31190b_0211",
+      "law_name": "Ley del Sistema Anticorrupción del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L152017071984.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ec31190b_0211.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5a84b8e3_0212",
+      "law_name": "Ley en materia de declaración especial de ausencia para personas desaparecidas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L335-XVIII-20250829-L1820250829141.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5a84b8e3_0212.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_a4110059_0213",
+      "law_name": "Ley en Materia de Trata de Personas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141223252.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a4110059_0213.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9fa66546_0214",
+      "law_name": "Ley Estatal de Cultura Física y Deporte.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/educacion/ley118/L1120080308001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9fa66546_0214.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ca4d9ff0_0215",
+      "law_name": "Ley Estatal de Medios de Impugnación en Materia Electoral.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/electoral/ley091/L1320121207002.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ca4d9ff0_0215.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d221d71d_0216",
+      "law_name": "Ley Orgánica de Justicia en Materia de Faltas de Policía y Buen Gobierno del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L34-XVI-19890331-L0519890331055.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d221d71d_0216.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_a4f0f14f_0217",
+      "law_name": "Ley Orgánica de la Administración Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley053/L1420141209167.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a4f0f14f_0217.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_f1d841f9_0218",
+      "law_name": "Ley Orgánica de la Fiscalía Especializada en Combate a la Corrupción del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L330-XVIII-20250110-L1820250110085.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f1d841f9_0218.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_6d6c4dc6_0219",
+      "law_name": "Ley Orgánica de la Fiscalía General del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L204-XVI-20190913-L1520190913357.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6d6c4dc6_0219.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_c251ce74_0220",
+      "law_name": "Ley Orgánica de la Secretaría de Seguridad Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420140407103.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c251ce74_0220.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_cf9b5244_0221",
+      "law_name": "Ley Orgánica de la Universidad de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420131204063.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cf9b5244_0221.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_70dbd7d2_0222",
+      "law_name": "Ley Orgánica de la Universidad Judicial del Poder Judicial del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L332-XVIII-20250204-L1820250204094.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_70dbd7d2_0222.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_a0ac6005_0223",
+      "law_name": "Ley Orgánica del Centro de Conciliación Laboral del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L243-XVI-20210622-L1620210622125.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a0ac6005_0223.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_db5b58e3_0224",
+      "law_name": "Ley Orgánica del Poder Judicial del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L334-XVIII-20250812-L1820250812134.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_db5b58e3_0224.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_a24da25c_0225",
+      "law_name": "Ley Orgánica del Poder Legislativo del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L198-XV-20190614-L1520190614302.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_a24da25c_0225.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_845ae745_0226",
+      "law_name": "Ley Orgánica del Sistema para el Desarrollo Integral de la Familia del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley061/L0419850115.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_845ae745_0226.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_0e844b2d_0227",
+      "law_name": "Ley Orgánica del Tribunal de Justicia Administrativa y Anticorrupción del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L309-XVIII-20241007-L1820241007020-Ley-Orgánica-del-Tribunal-de-Justicia.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0e844b2d_0227.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_c56c597b_0228",
+      "law_name": "Ley para el Desarrollo Social del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/LXII20100615283.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c56c597b_0228.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9d41c7f5_0229",
+      "law_name": "Ley para el Desarrollo y la Inclusión de las Personas con Discapacidad del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130730292.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9d41c7f5_0229.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2b8266b4_0230",
+      "law_name": "Ley para el Fomento de la Cultura de Donación Voluntaria de Sangre del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/salud/ley145/L1420140610120.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2b8266b4_0230.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d824bfbf_0231",
+      "law_name": "Ley para el Fomento de la Cultura del Cuidado del Agua en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130906323.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d824bfbf_0231.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_bcba0a6f_0232",
+      "law_name": "Ley para el Fomento de la Eficiencia Energética y del Aprovechamiento de las Fuentes de Energía Renovables en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L114-14-20141223-248.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_bcba0a6f_0232.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5b23476f_0233",
+      "law_name": "Ley para el Fomento de las Sociedades Cooperativas en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130619287.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5b23476f_0233.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d81a5449_0234",
+      "law_name": "Ley para Fomentar la Donación Altruista de Alimentos.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130430267.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d81a5449_0234.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_27941498_0235",
+      "law_name": "Ley para la Administración de Bienes Asegurados, Abandonados y Decomisados del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141209165.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_27941498_0235.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2b30c35d_0236",
+      "law_name": "Ley para la atención y protección a personas con la condición del espectro autista del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420160623408.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2b30c35d_0236.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_19550d83_0237",
+      "law_name": "Ley para la Igualdad entre Mujeres y Hombres del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley099/L1220091106001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_19550d83_0237.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6d3e47b6_0238",
+      "law_name": "Ley para la Prestación de Servicios para la Atención, Cuidado y Desarrollo Integral Infantil de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320121030146.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6d3e47b6_0238.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_cb97b3a8_0239",
+      "law_name": "Ley para la Prevención y el Tratamiento de las Adicciones del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320121214195.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_cb97b3a8_0239.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9dc5b876_0240",
+      "law_name": "Ley para la Prevención, Gestión Integral y Economía Circular de los Residuos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L199-XV-20190618-L1520190618337.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9dc5b876_0240.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3af0bc70_0241",
+      "law_name": "Ley para la Protección de Sujetos en Situación de Riesgo en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141209164.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3af0bc70_0241.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8f63b50a_0242",
+      "law_name": "Ley para Prevenir, Atender y Eliminar la Discriminación en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley127/L1320121231012.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8f63b50a_0242.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9796b5f2_0243",
+      "law_name": "Ley para Prevenir, Atender y Erradicar la Violencia entre Estudiantes del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/educacion/ley142/L1320130619285.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9796b5f2_0243.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_eb4fb93a_0244",
+      "law_name": "Ley para Prevenir, Investigar y Sancionar los Delitos en Materia de Extorsión del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L354-XVIII-20251210-L1820251210182-Ley-para-prevenir-sancio-materia-extorsion.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_eb4fb93a_0244.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d878ad3a_0245",
+      "law_name": "Ley para Regular las Remuneraciones de los Servidores Públicos de los Poderes del Estado, de los Municipios y de los Órganos Autónomos de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130822302.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d878ad3a_0245.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_32cce738_0246",
+      "law_name": "Ley por la que se Crea la Comisión de Arbitraje Médico del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1520170704065.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_32cce738_0246.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_75e5227b_0247",
+      "law_name": "Ley que Crea el Consejo Estatal de Armonización Contable del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley123/L1320120620001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_75e5227b_0247.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6a727f6b_0248",
+      "law_name": "Ley que crea el Consejo para el Desarrollo Insular del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420150515262.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6a727f6b_0248.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f79d773e_0249",
+      "law_name": "Ley que crea la Procuraduría de Protección al Ambiente del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220110322447.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f79d773e_0249.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_737e8836_0250",
+      "law_name": "Ley que establece las Bases de Apertura y Cierre de las Casas de Empeño o Préstamo en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220100426263.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_737e8836_0250.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_d52b4ec4_0251",
+      "law_name": "Ley que establece las Normas a que se Sujetaran los Contratos Celebrados en el Régimen de Tiempo Compartido Turístico del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L0619910701FE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_d52b4ec4_0251.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ab10e0c4_0252",
+      "law_name": "Ley Reglamentaria de los artículos 104 y 105 de la Constitución Política del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420160729437.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ab10e0c4_0252.pdf",
+      "format": "pdf",
+      "category": "Constitucion",
+      "law_type": "constitucion_estatal"
+    },
+    {
+      "file_id": "sc_b1853cf5_0253",
+      "law_name": "Ley sobre el Uso de Medios Electrónicos, Mensajes de Datos y Firma Electrónica Avanzada para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130430-F.E..pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b1853cf5_0253.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ef803784_0254",
+      "law_name": "Ley sobre la Bandera del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L71-XVI-20130906-L1320130906315.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ef803784_0254.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9aea1161_0255",
+      "law_name": "Ley sobre las Características y el Uso del Escudo del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/cultural/ley068/L1220110225002.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9aea1161_0255.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c21d7847_0256",
+      "law_name": "Ley sobre las Características, Difusión y Ejecución del Himno a Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/cultural/ley069/L1220110225003.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c21d7847_0256.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_377ee0b9_0257",
+      "law_name": "Ley sobre Venta y Consumo de Bebidas Alcohólicas en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley063/L1420131204061.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_377ee0b9_0257.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6fa76d7d_0258",
+      "law_name": "Ley de Asentamientos Humanos del Estado Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320120418107.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6fa76d7d_0258.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_52ae9c63_0259",
+      "law_name": "Ley de Ciencia y Tecnología del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L112006061586.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_52ae9c63_0259.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_32cf4ec2_0260",
+      "law_name": "Ley de Coordinación Fiscal del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley018/L1420131204060.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_32cf4ec2_0260.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_07239a9f_0261",
+      "law_name": "Ley de Deuda Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley021/L1220101116001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_07239a9f_0261.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_eb976902_0262",
+      "law_name": "Ley de Educación del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/educacion/ley022/L1420140403098.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_eb976902_0262.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_2929378b_0263",
+      "law_name": "Ley de Ejecución de Penas y Medidas Judiciales del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220110203432.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_2929378b_0263.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_669f5ea0_0264",
+      "law_name": "Ley de Emergencia Policial, Reglamentaria de la Fracción X del Articulo 90 y del Articulo 157 de la Constitución Política del Estado Libre y Soberano de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L203-XVI-20190910-L1620190910360.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_669f5ea0_0264.pdf",
+      "format": "pdf",
+      "category": "Constitucion",
+      "law_type": "constitucion_estatal"
+    },
+    {
+      "file_id": "sc_8c15b88c_0265",
+      "law_name": "Ley de Entrega y Recepción de los Recursos Asignados a los Servidores Públicos de la Administración Pública y de los Ayuntamientos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220100301217.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8c15b88c_0265.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e2e05908_0266",
+      "law_name": "Ley de Expropiación del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L021978113017.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e2e05908_0266.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_17866c23_0267",
+      "law_name": "Ley de Fraccionamientos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320111215035.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_17866c23_0267.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_e9dea9b1_0268",
+      "law_name": "Ley de Hacienda del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley010/L1420141216233.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_e9dea9b1_0268.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_67e52ed0_0269",
+      "law_name": "Ley de Hacienda del Municipio de Tulum, del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L141-XVI-20141008-L1420141008142.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_67e52ed0_0269.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8a149244_0270",
+      "law_name": "Ley de Imagen Institucional para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L192-XV-17102018-751.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8a149244_0270.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_786cf6a4_0271",
+      "law_name": "Ley de Ingresos del Estado de Quintana Roo, para el Ejercicio Fiscal  2019.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley008/L1420141216235.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_786cf6a4_0271.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_1a2e4b23_0272",
+      "law_name": "Ley de Justicia Administrativa del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1020040824123.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_1a2e4b23_0272.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c9dde3e2_0273",
+      "law_name": "Ley de Justicia Alternativa del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420140407101.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c9dde3e2_0273.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6caf81be_0274",
+      "law_name": "Ley de Justicia Alternativa para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley029/L1220110322003.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6caf81be_0274.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_3e84f3c5_0275",
+      "law_name": "Ley de Justicia para Adolescentes del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley043/L1420140421108.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_3e84f3c5_0275.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c1eb2a85_0276",
+      "law_name": "Ley de la Fiscalía General del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley157/L1420160624413.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c1eb2a85_0276.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9f57ba76_0277",
+      "law_name": "Ley de Mejora Regulatoria del Estado de Quintana Roo y sus Municipios.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L205-XVI-20191011-L1520191011327.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9f57ba76_0277.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f67a7ec7_0278",
+      "law_name": "Ley de Mejora Regulatoria para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141223246.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f67a7ec7_0278.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4981b630_0279",
+      "law_name": "Ley de Planeación para el Desarrollo del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley027/L1320130819306.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4981b630_0279.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7c99ac79_0280",
+      "law_name": "Ley de Prestación de Servicios Inmobiliarios del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420140606125.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7c99ac79_0280.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_64ba478b_0281",
+      "law_name": "Ley de Procedimiento Administrativo del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley105/L1420140616116.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_64ba478b_0281.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_fd56bc8f_0282",
+      "law_name": "Ley de Protección de Datos Personales en Posesión de Sujetos Obligados para el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley162/L1520170704066.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_fd56bc8f_0282.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8d3d397c_0283",
+      "law_name": "Ley de Protección y Bienestar Animal del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420141209163.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8d3d397c_0283.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f539d9a7_0284",
+      "law_name": "Ley de Protección y Desarrollo Integral para las Personas con Discapacidad del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley038/L1220100630002.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f539d9a7_0284.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_95310c6e_0285",
+      "law_name": "Ley de Protección y Fomento Apícola del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1320130906314.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_95310c6e_0285.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4b6b1e8b_0286",
+      "law_name": "Ley de Proyectos de Prestación de Servicios para el Estado y los Municipios de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley115/L1220110322008.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4b6b1e8b_0286.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9e8a26f0_0287",
+      "law_name": "Ley de Responsabilidades Administrativas del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L182-XV-20170719-85.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9e8a26f0_0287.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6baf1bc2_0288",
+      "law_name": "Ley de Seguridad Pública del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley080/L1320110617001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6baf1bc2_0288.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_b1b10568_0289",
+      "law_name": "Ley de Seguridad Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley080/L1420131224081.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b1b10568_0289.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_6d6a0c84_0290",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley109/L1320130409252.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6d6a0c84_0290.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_229fd67a_0291",
+      "law_name": "Ley de Transparencia y Acceso a la Información Pública para el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L169-XVI-20160503-L1420160503398.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_229fd67a_0291.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_95d58f95_0292",
+      "law_name": "Ley de Tránsito, Transporte y Explotación de Vías y Carreteras del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420150724273.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_95d58f95_0292.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f80f4532_0293",
+      "law_name": "Ley del Impuesto Adicional para el Fomento al Empleo del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L227-XVI-20201221-L1620201221073.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f80f4532_0293.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_c888e2cb_0294",
+      "law_name": "Ley del Instituto para el Desarrollo y Financiamiento del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1120061006104.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_c888e2cb_0294.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_7a47e1f7_0295",
+      "law_name": "Ley del Instituto Quintanarroense de la Mujer.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220080620FE.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_7a47e1f7_0295.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_f81ee1ec_0296",
+      "law_name": "Ley del Notariado para el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1220101229405.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f81ee1ec_0296.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_05ae3bae_0297",
+      "law_name": "Ley del Periódico Oficial del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1120071214242.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_05ae3bae_0297.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_40aad3da_0298",
+      "law_name": "Ley del Sistema de Documentación del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley085/L0920011228.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_40aad3da_0298.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ff9db73e_0299",
+      "law_name": "Ley del Órgano de Fiscalización Superior del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/fiscal/ley012/L1220110224001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ff9db73e_0299.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_059fda4a_0300",
+      "law_name": "Ley Electoral de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/electoral/ley092/L1320121207199.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_059fda4a_0300.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ac424396_0301",
+      "law_name": "Ley Forestal del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L62-XIII-20130819-306.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ac424396_0301.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_35500b46_0302",
+      "law_name": "Ley Orgánica de la Procuraduría General de Justicia del Estado de Quintana  Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley055/L1420141219241.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_35500b46_0302.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_f187ba2c_0303",
+      "law_name": "Ley Orgánica de la Procuraduría General de Justicia del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley055/L1220110225007.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_f187ba2c_0303.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_0e157e27_0304",
+      "law_name": "Ley Orgánica del Instituto Electoral de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/electoral/ley090/L1320130409252.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0e157e27_0304.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_42599163_0305",
+      "law_name": "Ley Orgánica del Poder Judicial del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley059/L1420141219241.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_42599163_0305.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_8727766a_0306",
+      "law_name": "Ley Orgánica del Poder Legislativo del Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley060/L1420141222244.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8727766a_0306.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_6bee500e_0307",
+      "law_name": "Ley Orgánica del Tribunal de Justicia Administrativa del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L183-XV-20170719-89.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_6bee500e_0307.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_b5700545_0308",
+      "law_name": "Ley Orgánica del Tribunal Electoral de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/electoral/ley089/L1420140616122.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_b5700545_0308.pdf",
+      "format": "pdf",
+      "category": "Ley Organica",
+      "law_type": "ley_organica"
+    },
+    {
+      "file_id": "sc_95afe197_0309",
+      "law_name": "Ley para la Dotación Gratuita de Uniformes, Mochilas y Útiles Escolares a las Alumnas y los Alumnos Inscritos en Escuelas Públicas de Educación Básica en el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L264-XVI-20220616-L1620220616241.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_95afe197_0309.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_4eb1335f_0310",
+      "law_name": "Ley para la Prevención y la Gestión Integral de Residuos del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L1420150330258.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_4eb1335f_0310.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_0ea43d03_0311",
+      "law_name": "Ley para la Prevención y Tratamiento del Sobrepeso, Obesidad y Trastornos de la Conducta Alimentaria en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/social/ley108/L1220101029001.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_0ea43d03_0311.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_ef9498b4_0312",
+      "law_name": "Ley para la Protección de Personas Defensoras de Derechos Humanos y Periodistas de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/administrativo/ley152/L1420150814276.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_ef9498b4_0312.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_9fc4cc2a_0313",
+      "law_name": "Ley para Prevenir y Sancionar la Tortura en el Estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L242-XVI-921113-L0619921113105.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_9fc4cc2a_0313.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_8647161b_0314",
+      "law_name": "Ley para Prevenir y Sancionar la Tortura en el Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L0619921113105.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_8647161b_0314.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_39c8e6e9_0315",
+      "law_name": "Ley que crea el organismo público descentralizado denominado Secretariado Ejecutivo del Sistema Estatal de Seguridad Pública del estado de Quintana Roo",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/L194-XV-20122018-761.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_39c8e6e9_0315.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
+    },
+    {
+      "file_id": "sc_5b4cbeed_0316",
+      "law_name": "Ley que crea la Procuraduría de la Defensa del Menor y la Familia del Estado de Quintana Roo.",
+      "url": "https://documentos.congresoqroo.gob.mx/leyes/penal/ley066/L0219780930.pdf",
+      "local_path": "/Users/aldoruizluna/labspace/tezca/data/state_laws/quintana_roo/sc_5b4cbeed_0316.pdf",
+      "format": "pdf",
+      "category": "Ley",
+      "law_type": "ley"
     }
-  ]
+  ],
+  "failed_laws": []
 }

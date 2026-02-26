@@ -105,6 +105,7 @@ data/*_conversion*.json
 !data/state_laws/**/*_metadata.json
 !data/state_laws/*.json
 !data/state_laws_metadata.json
+!data/municipal/**/*_metadata.json
 !data/municipal_laws/**/*_metadata.json
 !data/municipal_laws/**/*_catalog.json
 !data/municipal_laws/*.json
@@ -116,6 +117,20 @@ data/raw/text/
 data/raw/*_extracted.txt
 data/federal/mx-fed-reg_*-v2.xml
 data/reglamentos_ingest_results.json
+
+# Federal NOM source files (downloaded by scraper)
+data/federal/noms/pdfs/
+
+# Judicial corpus data (scraped batches, bulk downloads)
+data/judicial/batch_*.json
+data/judicial/bulk/
+
+# Probe results (ephemeral discovery outputs)
+data/probe_results.json
+
+# ── Keep These (federal & judicial metadata) ──────────────────────────
+!data/federal/noms/discovered_noms.json
+!data/judicial/probe_results.json
 
 # Pipeline runtime artifacts
 data/pipeline_status.json

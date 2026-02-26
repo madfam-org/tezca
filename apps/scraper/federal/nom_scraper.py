@@ -208,7 +208,9 @@ class NomScraper:
             resp = self._post(
                 DOF_SEARCH_URL,
                 data={
-                    "busqueda": search_term,
+                    "textobusqueda": search_term,
+                    "vienede": "header",
+                    "s": "s",
                     "p": page,
                 },
             )
@@ -255,12 +257,18 @@ class NomScraper:
         soup = BeautifulSoup(html_content, "html.parser")
         results: List[Dict[str, Any]] = []
 
-        # Strategy 1: result items with links
-        for item in soup.select(".resultado, .busqueda-item, .nota, tr"):
+        # Strategy 1: DOF td.txt_azul result cells (current layout)
+        for item in soup.select("td.txt_azul"):
             try:
-                link = item.find("a", href=True)
+                # Find the nota_detalle link (the main result link)
+                link = item.find(
+                    "a", href=lambda h: h and "nota_detalle" in h
+                )
                 if not link:
-                    continue
+                    # Fallback: any link with text
+                    link = item.find("a", href=True)
+                    if not link:
+                        continue
 
                 title = link.get_text(strip=True)
                 if not title:
@@ -282,7 +290,7 @@ class NomScraper:
                 nom_number = nom_match.group(1).upper()
                 secretaria = _extract_secretaria(nom_number)
 
-                # Try to find a date in the item.
+                # Try to find a date in the item (bold tag).
                 date_str = _extract_date(item.get_text())
 
                 results.append(
@@ -300,6 +308,43 @@ class NomScraper:
             except Exception:
                 logger.debug("Failed to parse search result item", exc_info=True)
                 continue
+
+        # Strategy 2: Fallback for older layout (.resultado, .nota, tr)
+        if not results:
+            for item in soup.select(".resultado, .busqueda-item, .nota, tr"):
+                try:
+                    link = item.find("a", href=True)
+                    if not link:
+                        continue
+                    title = link.get_text(strip=True)
+                    if not title:
+                        continue
+                    nom_match = _NOM_PATTERN.search(title)
+                    if not nom_match:
+                        full_text = item.get_text(strip=True)
+                        nom_match = _NOM_PATTERN.search(full_text)
+                        if not nom_match:
+                            continue
+                    href = link.get("href", "")
+                    if href and not href.startswith("http"):
+                        href = f"{DOF_BASE_URL}/{href.lstrip('/')}"
+                    nom_number = nom_match.group(1).upper()
+                    secretaria = _extract_secretaria(nom_number)
+                    date_str = _extract_date(item.get_text())
+                    results.append(
+                        {
+                            "id": nom_number.lower().replace("-", "_"),
+                            "name": _clean_text(title),
+                            "nom_number": nom_number,
+                            "secretaria": secretaria,
+                            "date_published": date_str,
+                            "url": href,
+                            "status": "vigente",
+                            "source": "dof_archive",
+                        }
+                    )
+                except Exception:
+                    continue
 
         return results
 

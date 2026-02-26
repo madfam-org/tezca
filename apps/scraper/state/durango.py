@@ -123,7 +123,9 @@ class DurangoScraper(StateCongressScraper):
         Extract law entries from a single catalog page.
 
         Searches for downloadable document links inside article elements,
-        content divs, tables, and lists.
+        content divs, tables, and lists. Handles the Durango portal's
+        pattern where law names are encoded in filenames under
+        /Archivos/legislacion/ with empty link text.
 
         Args:
             soup: Parsed HTML of the catalog page.
@@ -131,30 +133,68 @@ class DurangoScraper(StateCongressScraper):
         Returns:
             List of law dictionaries found on this page.
         """
+        from urllib.parse import unquote
+
         laws: List[Dict] = []
 
-        # Look in content containers first (WordPress-style layouts)
-        content_areas = soup.find_all(
-            ["article", "div", "section"],
-            class_=lambda c: c
-            and any(
-                kw in (c if isinstance(c, str) else " ".join(c))
-                for kw in ["content", "entry", "post", "legislacion", "leyes"]
-            ),
-        )
+        # Strategy 1: Direct legislation archive links (Durango-specific)
+        # Many links have empty text but law names encoded in filenames.
+        for link in soup.find_all("a", href=True):
+            href = link["href"].strip()
+            if "/Archivos/legislacion/" not in href and "/archivos/legislacion/" not in href.lower():
+                continue
+            if not self.is_downloadable(self.normalize_url(href)):
+                continue
 
-        # Fall back to full page if no content areas found
-        search_areas = content_areas if content_areas else [soup]
+            # Extract law name from filename
+            filename = unquote(href.split("/")[-1])
+            name = filename.rsplit(".", 1)[0].strip()
+            # Clean up common suffixes like "(NUEVA)", "(NUEVO)"
+            name = name.replace("(NUEVA)", "").replace("(NUEVO)", "").strip()
 
-        for area in search_areas:
-            for link in area.find_all("a", href=True):
-                try:
-                    law = self._parse_law_link(link)
-                    if law:
-                        laws.append(law)
-                except Exception as e:
-                    logger.debug("Error parsing link: %s", e)
-                    continue
+            text = link.get_text(strip=True)
+            # Prefer visible text if meaningful, otherwise use filename
+            if text and len(text) >= 10:
+                display_name = text
+            elif name and len(name) >= 5:
+                display_name = name
+            else:
+                continue
+
+            absolute_url = self.normalize_url(href)
+            law = {
+                "name": display_name[:500],
+                "url": absolute_url,
+                "state": self.state,
+                "tier": "state",
+                "category": self.extract_category(display_name),
+                "law_type": self._infer_law_type(display_name),
+            }
+            if self.validate_law_data(law):
+                laws.append(law)
+
+        # Strategy 2: Look in content containers (WordPress-style layouts)
+        if not laws:
+            content_areas = soup.find_all(
+                ["article", "div", "section"],
+                class_=lambda c: c
+                and any(
+                    kw in (c if isinstance(c, str) else " ".join(c))
+                    for kw in ["content", "entry", "post", "legislacion", "leyes"]
+                ),
+            )
+
+            search_areas = content_areas if content_areas else [soup]
+
+            for area in search_areas:
+                for link in area.find_all("a", href=True):
+                    try:
+                        law = self._parse_law_link(link)
+                        if law:
+                            laws.append(law)
+                    except Exception as e:
+                        logger.debug("Error parsing link: %s", e)
+                        continue
 
         return laws
 
