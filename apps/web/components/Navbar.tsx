@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Menu, X, LogIn } from 'lucide-react';
+import { BookOpen, Menu, X, LogIn, User } from 'lucide-react';
 import { UserButton } from '@janua/nextjs';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { CommandSearchTrigger } from '@/components/CommandSearch';
 import { AuthModal } from '@/components/AuthModal';
+import { NotificationBell } from '@/components/NotificationBell';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 
@@ -24,6 +25,7 @@ const content = {
         openMenu: 'Abrir menú',
         closeMenu: 'Cerrar menú',
         signIn: 'Iniciar sesión',
+        account: 'Mi cuenta',
     },
     en: {
         home: 'Home',
@@ -36,6 +38,7 @@ const content = {
         openMenu: 'Open menu',
         closeMenu: 'Close menu',
         signIn: 'Sign in',
+        account: 'My account',
     },
     nah: {
         home: 'Caltenco',
@@ -48,6 +51,7 @@ const content = {
         openMenu: 'Xictlapo tlahcuilōlli',
         closeMenu: 'Xictlatzacua tlahcuilōlli',
         signIn: 'Xicalaqui',
+        account: 'Notocaitl',
     },
 };
 
@@ -126,8 +130,18 @@ export function Navbar() {
                             <div className="hidden sm:block">
                                 <LanguageToggle />
                             </div>
+                            <NotificationBell />
                             {isAuthenticated ? (
-                                <UserButton afterSignOut={() => window.location.assign('/')} />
+                                <div className="flex items-center gap-1">
+                                    <Link
+                                        href="/cuenta"
+                                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                    >
+                                        <User className="h-4 w-4" aria-hidden="true" />
+                                        <span>{t.account}</span>
+                                    </Link>
+                                    <UserButton afterSignOut={() => window.location.assign('/')} />
+                                </div>
                             ) : (
                                 <button
                                     onClick={() => setAuthModalOpen(true)}

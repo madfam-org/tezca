@@ -1,5 +1,7 @@
+import hashlib
 import logging
 import math
+import time
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -9,13 +11,29 @@ from rest_framework.views import APIView
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
 from .schema import SEARCH_PARAMETERS, ErrorSchema, SearchResponseSchema
-from .throttles import SearchRateThrottle
 
 logger = logging.getLogger(__name__)
 
 
+def _log_search_query(query, filters, result_count, response_time_ms, request):
+    """Fire-and-forget search query logging."""
+    try:
+        from .models import SearchQuery
+
+        ip = request.META.get("REMOTE_ADDR", "")
+        session_id = hashlib.sha256(ip.encode()).hexdigest()[:16] if ip else ""
+        SearchQuery.objects.create(
+            query=query[:500],
+            filters=filters,
+            result_count=result_count,
+            response_time_ms=response_time_ms,
+            session_id=session_id,
+        )
+    except Exception:
+        logger.debug("Failed to log search query", exc_info=True)
+
+
 class SearchView(APIView):
-    throttle_classes = [SearchRateThrottle]
 
     @extend_schema(
         tags=["Search"],
@@ -29,6 +47,7 @@ class SearchView(APIView):
         if not query:
             return Response({"results": [], "total": 0})
 
+        _t0 = time.monotonic()
         try:
             es = es_client
             if not es.ping():
@@ -190,11 +209,12 @@ class SearchView(APIView):
             # Calculate pagination
             offset = (page - 1) * page_size
 
-            # Build request body
-            body = {
+            # Build search kwargs (ES 8 keyword args)
+            search_kwargs = {
+                "index": INDEX_NAME,
                 "query": es_query,
                 "highlight": {"fields": {"text": {}}},
-                "from": offset,
+                "from_": offset,
                 "size": page_size,
                 "aggs": {
                     "by_tier": {"terms": {"field": "tier"}},
@@ -206,10 +226,10 @@ class SearchView(APIView):
             }
 
             if sort_option:
-                body["sort"] = sort_option
+                search_kwargs["sort"] = sort_option
 
             # Execute search
-            res = es.search(index=INDEX_NAME, body=body)
+            res = es.search(**search_kwargs)
             hits = res["hits"]["hits"]
             total = res["hits"]["total"]["value"]
 
@@ -265,6 +285,20 @@ class SearchView(APIView):
                 }
             )
             response["Cache-Control"] = "public, max-age=300"
+
+            # Log search query for analytics (fire-and-forget)
+            _elapsed_ms = int((time.monotonic() - _t0) * 1000)
+            _filters = {}
+            if jurisdiction and jurisdiction != "all":
+                _filters["jurisdiction"] = jurisdiction
+            if category:
+                _filters["category"] = category
+            if state_filter:
+                _filters["state"] = state_filter
+            if law_type and law_type != "all":
+                _filters["law_type"] = law_type
+            _log_search_query(query, _filters, total, _elapsed_ms, request)
+
             return response
 
         except ValueError:

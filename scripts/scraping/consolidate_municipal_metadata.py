@@ -37,22 +37,35 @@ def _classify_law(name):
 
 
 def main():
-    municipal_dir = PROJECT_ROOT / "data" / "municipal_laws"
+    # Scan both data/municipal/ (scraper downloads) and data/municipal_laws/ (legacy)
+    municipal_dirs = [
+        PROJECT_ROOT / "data" / "municipal",
+        PROJECT_ROOT / "data" / "municipal_laws",
+    ]
     output_file = PROJECT_ROOT / "data" / "municipal_laws_metadata.json"
 
-    if not municipal_dir.exists():
-        print(f"ERROR: municipal_laws directory not found: {municipal_dir}")
+    found_any = False
+    for d in municipal_dirs:
+        if d.exists():
+            found_any = True
+    if not found_any:
+        print(
+            f"ERROR: no municipal directory found in {[str(d) for d in municipal_dirs]}"
+        )
         return 1
 
     all_laws = []
     sources_found = 0
     sources_skipped = 0
 
-    # Find all metadata/catalog files in subdirectories
+    # Find all metadata/catalog files in subdirectories of both dirs
     patterns = ["*/*_metadata.json", "*/*_municipal_metadata.json", "*/*_catalog.json"]
     metadata_files = set()
-    for pattern in patterns:
-        metadata_files.update(municipal_dir.glob(pattern))
+    for municipal_dir in municipal_dirs:
+        if not municipal_dir.exists():
+            continue
+        for pattern in patterns:
+            metadata_files.update(municipal_dir.glob(pattern))
 
     for metadata_file in sorted(metadata_files):
         try:

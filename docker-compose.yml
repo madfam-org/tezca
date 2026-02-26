@@ -166,13 +166,15 @@ services:
 
   # Search Engine: Elasticsearch
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: leyes_mx_search
     environment:
       - node.name=leyes-mx-es
       - cluster.name=leyes-mx-cluster
       - discovery.type=single-node
       - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"

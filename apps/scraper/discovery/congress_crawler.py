@@ -6,6 +6,8 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
+from apps.scraper.http import government_session
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -14,16 +16,11 @@ class CongressCrawler:
     def __init__(self, state_name: str, base_url: str):
         self.state_name = state_name
         self.base_url = base_url
-        self.session = requests.Session()
-        self.session.headers.update(
-            {"User-Agent": "Mozilla/5.0 (compatible; LeyesMxBot/0.1; +http://leyes.mx)"}
-        )
+        self.session = government_session(base_url)
 
     def fetch_page(self, url: str) -> Optional[str]:
         try:
-            response = self.session.get(
-                url, timeout=20, verify=False
-            )  # Skip verify for some gov sites
+            response = self.session.get(url, timeout=20)
             response.raise_for_status()
             return response.text
         except requests.RequestException as e:

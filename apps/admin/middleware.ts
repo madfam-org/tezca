@@ -3,8 +3,11 @@ import type { NextRequest } from "next/server";
 import { createJanuaMiddleware } from "@janua/nextjs/middleware";
 
 const jwtSecret = process.env.JANUA_SECRET_KEY || "";
+const isProduction = process.env.NODE_ENV === "production";
 
-// When no secret key is configured, all routes are open (dev mode)
+// When no secret key is configured:
+// - Production: return 503 (auth required but not configured)
+// - Dev mode: all routes are open (passthrough)
 const januaMiddleware = jwtSecret
     ? createJanuaMiddleware({
           jwtSecret,
@@ -15,6 +18,12 @@ const januaMiddleware = jwtSecret
 
 export default function middleware(req: NextRequest) {
     if (!januaMiddleware) {
+        if (isProduction) {
+            return new NextResponse(
+                "Admin panel unavailable: authentication not configured",
+                { status: 503 }
+            );
+        }
         return NextResponse.next();
     }
     return januaMiddleware(req);

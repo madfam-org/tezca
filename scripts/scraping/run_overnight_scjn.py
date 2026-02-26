@@ -16,12 +16,10 @@ import sys
 import time
 from pathlib import Path
 
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from apps.scraper.http import government_session
 
 from apps.scraper.judicial.scjn_scraper import ScjnScraper
 
@@ -213,8 +211,7 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     scraper = ScjnScraper()
-    # Disable SSL verification for government sites
-    scraper.session.verify = False
+    scraper.session = government_session("https://sjf.scjn.gob.mx")
 
     # Phase A: Probe
     probe_results = phase_a_probe(scraper)

@@ -72,6 +72,14 @@ jobs:
       env:
         NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
+    - name: Recover lockfile on integrity failure
+      if: failure()
+      run: |
+        npm cache clean --force
+        npm install
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
     - name: Lint web
       run: npm run lint --workspace=web
 
@@ -111,7 +119,10 @@ jobs:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: [test-frontend, test-backend]
-    continue-on-error: true  # E2E uses mocked API routes; advisory-only until full integration setup
+    # E2E roadmap: Phase 1 (current) = mocked API routes, advisory-only.
+    # Phase 2 = docker-compose.e2e.yml with seeded DB + ES, still advisory.
+    # Phase 3 = blocking gate once integration E2E is stable.
+    continue-on-error: true
     env:
       NEXT_BUILD_STANDALONE: 'false'
 
@@ -126,6 +137,14 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
+    - name: Recover lockfile on integrity failure
+      if: failure()
+      run: |
+        npm cache clean --force
+        npm install
       env:
         NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 

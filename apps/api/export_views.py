@@ -168,12 +168,10 @@ def _get_articles(law_id: str, max_articles: int = 10000) -> list[dict]:
 
         result = es.search(
             index=INDEX_NAME,
-            body={
-                "query": {"match_phrase": {"law_id": law_id}},
-                "size": max_articles,
-                "sort": [{"article": {"order": "asc"}}],
-                "_source": ["article", "text"],
-            },
+            query={"match_phrase": {"law_id": law_id}},
+            size=max_articles,
+            sort=[{"article": {"order": "asc"}}],
+            source=["article", "text"],
         )
         return [
             {

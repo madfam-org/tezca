@@ -18,6 +18,18 @@ export default defineConfig({
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
         },
+        {
+            name: 'firefox',
+            use: { ...devices['Desktop Firefox'] },
+        },
+        {
+            name: 'mobile-safari',
+            use: { ...devices['iPhone 14'] },
+        },
+        {
+            name: 'mobile-android',
+            use: { ...devices['Pixel 7'] },
+        },
     ],
     webServer: {
         command: 'echo CI=$CI && HOSTNAME=0.0.0.0 npx next start -p 3000',

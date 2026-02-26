@@ -15,12 +15,11 @@ ES_TIMEOUT = int(os.getenv("ES_TIMEOUT", "30"))
 ES_MAX_RETRIES = int(os.getenv("ES_MAX_RETRIES", "3"))
 ES_RETRY_ON_TIMEOUT = os.getenv("ES_RETRY_ON_TIMEOUT", "true").lower() == "true"
 
-# Singleton ES client with retry, timeout, and connection pooling
+# Singleton ES client with retry and timeout (ES 8.x)
 es_client = Elasticsearch(
     [ES_HOST],
     request_timeout=ES_TIMEOUT,
     max_retries=ES_MAX_RETRIES,
     retry_on_timeout=ES_RETRY_ON_TIMEOUT,
-    connections_per_node=10,
     sniff_on_start=False,
 )

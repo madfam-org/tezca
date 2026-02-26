@@ -25,6 +25,10 @@ vi.mock('@/components/providers/AuthContext', () => ({
         isAuthenticated: false,
         tier: 'anon' as const,
         loginUrl: '/api/auth/signin',
+        userId: null,
+        email: null,
+        name: null,
+        signOut: vi.fn(),
     })),
 }));
 
@@ -102,6 +106,10 @@ describe('Navbar', () => {
             isAuthenticated: true,
             tier: 'free',
             loginUrl: '/api/auth/signin',
+            userId: 'test-user',
+            email: 'test@example.com',
+            name: 'Test User',
+            signOut: vi.fn(),
         });
         render(<Navbar />);
         // Sign-in button should not be present

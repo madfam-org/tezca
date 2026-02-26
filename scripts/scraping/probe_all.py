@@ -16,13 +16,10 @@ import sys
 import time
 from pathlib import Path
 
-import urllib3
-
-# Suppress SSL warnings for federal scrapers that need verify=False
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from apps.scraper.http import government_session
 
 logging.basicConfig(
     level=logging.INFO,
@@ -68,8 +65,6 @@ def probe_municipal():
 
 def probe_federal():
     """Probe federal scrapers with SSL workarounds."""
-    import requests
-
     results = {}
 
     # --- NOMs (DOF) ---
@@ -78,8 +73,7 @@ def probe_federal():
         from apps.scraper.federal.nom_scraper import NomScraper
 
         scraper = NomScraper()
-        # Patch session to skip SSL verification
-        scraper.session.verify = False
+        scraper.session = government_session("https://dof.gob.mx")
         # Quick probe: search for 1 page of NOM results
         noms = scraper.scrape_dof_archive(search_term="NOM-001-SSA", max_pages=1)
         results["noms"] = {
@@ -98,7 +92,7 @@ def probe_federal():
         from apps.scraper.federal.conamer_scraper import ConamerScraper
 
         scraper = ConamerScraper()
-        scraper.session.verify = False
+        scraper.session = government_session("https://cnartys.conamer.gob.mx")
         probe_result = scraper.probe_api()
         results["conamer"] = {
             "count": 0,
@@ -123,15 +117,9 @@ def probe_federal():
         from apps.scraper.federal.treaty_scraper import TreatyScraper
 
         scraper = TreatyScraper()
-        scraper.session.verify = False
-        # Just try fetching the first catalog page
-        resp = scraper._get(f"{scraper.__class__.__module__}")
+        scraper.session = government_session("https://tratados.sre.gob.mx")
         # Try the base URL directly
-        import requests as req
-
-        s = req.Session()
-        s.verify = False
-        s.headers.update({"User-Agent": "Tezca/1.0"})
+        s = government_session("https://tratados.sre.gob.mx")
         try:
             r = s.get("https://tratados.sre.gob.mx", timeout=15)
             results["treaties"] = {

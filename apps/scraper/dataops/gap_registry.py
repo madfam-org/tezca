@@ -36,24 +36,24 @@ STATE_PORTAL_INVESTIGATION = {
         "portal_count": 340,
         "portal_url": "https://www.congresobc.gob.mx/Trabajolegislativo/Leyes",
         "formats": ["pdf", "doc"],
-        "status": "scraper_needed",
-        "notes": "OJN has only 3 entries (1 successful). State portal lists ~340 laws with PDF+DOC.",
+        "status": "scraped_pending_ingest",
+        "notes": "OJN has only 3 entries (1 successful). State portal lists ~340 laws with PDF+DOC. Scraped 483 files (2026-02-25), pending ingest.",
     },
     "Durango": {
         "ojn_count": 1,
         "portal_count": 160,
         "portal_url": "https://congresodurango.gob.mx/trabajo-legislativo/legislacion-estatal/",
         "formats": ["pdf", "docx"],
-        "status": "scraper_needed",
-        "notes": "OJN has 1 entry. State portal lists ~160 laws with PDF+DOCX downloads.",
+        "status": "scraped_pending_ingest",
+        "notes": "OJN has 1 entry. State portal lists ~160 laws with PDF+DOCX downloads. Scraped 305 files (2026-02-25), pending ingest.",
     },
     "Quintana Roo": {
         "ojn_count": 1,
         "portal_count": 356,
         "portal_url": "https://www.congresoqroo.gob.mx/leyes/",
         "formats": ["pdf", "csv", "xls"],
-        "status": "scraper_needed",
-        "notes": "OJN has 1 entry. State portal lists 356 laws with export APIs (csv/xls/xlsx).",
+        "status": "scraped_pending_ingest",
+        "notes": "OJN has 1 entry. State portal lists 356 laws with export APIs (csv/xls/xlsx). Scraped 316 files (2026-02-25), pending ingest.",
     },
     "Hidalgo": {
         "ojn_count": 38,
@@ -72,16 +72,23 @@ MISSING_SOURCES = [
     {
         "level": "federal",
         "gap_type": "missing_source",
-        "description": "CONAMER CNARTyS - 113,373 regulatory instruments (scraper in progress)",
+        "description": "CONAMER CNARTyS - 113,373+ regulatory instruments",
         "priority": 2,
-        "status_note": "Scraper: apps/scraper/federal/conamer_scraper.py. Dedup needed against existing corpus.",
+        "status_note": (
+            "Scraper: apps/scraper/federal/conamer_scraper.py. "
+            "Original portal cnartys.conamer.gob.mx DNS-dead since ~2025. "
+            "Successor: catalogonacional.gob.mx (150K+ regs). "
+            "Portal returns 403 to automated HTTP — needs browser-based scraping. "
+            "Legacy alt conamer.gob.mx/cnartys-t/ has expired SSL cert. "
+            "Dedup needed against existing corpus."
+        ),
     },
     {
         "level": "federal",
         "gap_type": "missing_source",
         "description": "NOMs (Normas Oficiales Mexicanas) - ~4,000 instruments",
         "priority": 3,
-        "status_note": "Scraper: apps/scraper/federal/nom_scraper.py. May overlap with CONAMER catalog.",
+        "status_note": "Scraper: apps/scraper/federal/nom_scraper.py. 80 NOMs cataloged from DOF. Pending download + ingest. May overlap with CONAMER catalog.",
     },
     {
         "level": "federal",
@@ -93,9 +100,15 @@ MISSING_SOURCES = [
     {
         "level": "federal",
         "gap_type": "missing_source",
-        "description": "International Treaties from SRE - ~1,500 instruments",
+        "description": "International Treaties from SRE - 1,509 instruments",
         "priority": 4,
-        "status_note": "Scraper: apps/scraper/federal/treaty_scraper.py. Portal: tratados.sre.gob.mx.",
+        "status_note": (
+            "Scraper: apps/scraper/federal/treaty_scraper.py. "
+            "Original portal tratados.sre.gob.mx DNS-dead since ~2025. "
+            "Successor: cja.sre.gob.mx/tratadosmexico/ (Biblioteca Virtual, 1,509 treaties). "
+            "Search at /buscador?page=N, 151 pages, server-rendered HTML. "
+            "Scraper updated to target successor (Feb 2026). Ready to run."
+        ),
     },
     {
         "level": "state",

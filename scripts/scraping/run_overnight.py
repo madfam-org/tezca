@@ -21,16 +21,14 @@ import sys
 import time
 from pathlib import Path
 
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 LOGS_DIR = PROJECT_ROOT / "logs"
 SCRIPTS_DIR = PROJECT_ROOT / "scripts" / "scraping"
 DATA_DIR = PROJECT_ROOT / "data"
 
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from apps.scraper.http import government_session
 
 logging.basicConfig(
     level=logging.INFO,
@@ -74,16 +72,7 @@ def run_cdmx_retry():
         from apps.scraper.municipal.generic import GenericMunicipalScraper
 
         scraper = GenericMunicipalScraper("cdmx")
-        scraper.session.verify = False
-        scraper.session.headers.update(
-            {
-                "User-Agent": (
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                )
-            }
-        )
+        scraper.session = government_session("https://data.consejeria.cdmx.gob.mx")
 
         catalog = scraper.scrape_catalog()
         logger.info("[Job 3] CDMX catalog: %d items", len(catalog))
@@ -141,16 +130,8 @@ def run_municipal_retry():
     for city_key in retry_cities:
         try:
             scraper = GenericMunicipalScraper(city_key)
-            scraper.session.verify = False
-            scraper.session.headers.update(
-                {
-                    "User-Agent": (
-                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/120.0.0.0 Safari/537.36"
-                    )
-                }
-            )
+            config = MUNICIPALITY_CONFIGS[city_key]
+            scraper.session = government_session(config.get("base_url", ""))
 
             catalog = scraper.scrape_catalog()
             if not catalog:
@@ -209,14 +190,11 @@ def run_nom_pdf_download():
     pdf_dir = DATA_DIR / "federal" / "noms" / "pdfs"
     pdf_dir.mkdir(parents=True, exist_ok=True)
 
-    import requests
     from bs4 import BeautifulSoup
 
-    session = requests.Session()
-    session.verify = False
+    session = government_session("https://dof.gob.mx")
     session.headers.update(
         {
-            "User-Agent": "Tezca/1.0 (+https://github.com/madfam-org/tezca)",
             "Accept": "text/html, application/xhtml+xml, */*",
         }
     )

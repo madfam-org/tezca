@@ -2,6 +2,15 @@ from django.urls import path
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from .analytics_views import search_analytics
+from .annotation_views import annotation_detail, annotation_list
+from .notification_views import (
+    alert_delete,
+    alert_list,
+    notification_list,
+    notification_mark_read,
+)
+from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -29,6 +38,7 @@ from .export_views import (
     export_quota,
     export_txt,
 )
+from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
 from .law_views import (
     LawDetailView,
     LawListView,
@@ -81,6 +91,11 @@ urlpatterns = [
     ),
     path("admin/dof/", _protected(dof_summary), name="admin-dof-summary"),
     path("admin/roadmap/", _protected(roadmap), name="admin-roadmap"),
+    path(
+        "admin/analytics/search/",
+        _protected(search_analytics),
+        name="admin-search-analytics",
+    ),
     # API Key management (Janua-protected)
     path("admin/apikeys/", _protected(create_api_key), name="admin-apikey-create"),
     path("admin/apikeys/list/", _protected(list_api_keys), name="admin-apikey-list"),
@@ -124,6 +139,31 @@ urlpatterns = [
     # ── Bulk data access (API key required) ──────────────────────────────
     path("bulk/articles/", bulk_articles, name="bulk-articles"),
     path("changelog/", changelog, name="changelog"),
+    # ── User endpoints (auth required) ─────────────────────────────────
+    path("user/preferences/", user_preferences, name="user-preferences"),
+    path("user/bookmarks/", user_bookmarks, name="user-bookmarks"),
+    path("user/recently-viewed/", user_recently_viewed, name="user-recently-viewed"),
+    path("user/annotations/", annotation_list, name="annotation-list"),
+    path(
+        "user/annotations/<int:annotation_id>/",
+        annotation_detail,
+        name="annotation-detail",
+    ),
+    path("user/notifications/", notification_list, name="notification-list"),
+    path(
+        "user/notifications/mark-read/",
+        notification_mark_read,
+        name="notification-mark-read",
+    ),
+    path("user/alerts/", alert_list, name="alert-list"),
+    path("user/alerts/<int:alert_id>/", alert_delete, name="alert-delete"),
+    # ── Newsletter (public) ────────────────────────────────────────────
+    path("newsletter/subscribe/", newsletter_subscribe, name="newsletter-subscribe"),
+    path(
+        "newsletter/unsubscribe/",
+        newsletter_unsubscribe,
+        name="newsletter-unsubscribe",
+    ),
     # ── Webhooks (API key required) ──────────────────────────────────────
     path("webhooks/", create_webhook, name="webhook-create"),
     path("webhooks/list/", list_webhooks, name="webhook-list"),

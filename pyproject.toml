@@ -17,7 +17,7 @@ redis = "^5.0"
 # XML Processing
 lxml = "^5.1"
 # Search
-elasticsearch = "^7.0"
+elasticsearch = "^8.0"
 # NLP
 spacy = "^3.7"
 # Scraping

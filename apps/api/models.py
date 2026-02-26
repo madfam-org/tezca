@@ -254,6 +254,141 @@ class APIUsageLog(models.Model):
         return f"{self.method} {self.endpoint} [{self.status_code}] ({self.api_key_prefix or 'anon'})"
 
 
+class SearchQuery(models.Model):
+    """Tracks search queries for analytics (top queries, zero-results, response times)."""
+
+    query = models.CharField(max_length=500, db_index=True)
+    filters = models.JSONField(default=dict, blank=True)
+    result_count = models.IntegerField(default=0)
+    response_time_ms = models.IntegerField(null=True, blank=True)
+    session_id = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        help_text="Hashed IP for session grouping",
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["query", "created_at"]),
+            models.Index(fields=["result_count", "created_at"]),
+        ]
+
+    def __str__(self):
+        return (
+            f'"{self.query}" → {self.result_count} results ({self.response_time_ms}ms)'
+        )
+
+
+class UserPreference(models.Model):
+    """Cross-device user preferences, bookmarks, and recently viewed laws."""
+
+    janua_user_id = models.CharField(max_length=255, unique=True, db_index=True)
+    bookmarks = models.JSONField(default=list)
+    recently_viewed = models.JSONField(default=list)
+    preferences = models.JSONField(
+        default=dict,
+        help_text="User preferences: font_size, language, theme, etc.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prefs for {self.janua_user_id} ({len(self.bookmarks)} bookmarks)"
+
+
+class Annotation(models.Model):
+    """User annotations/notes on law articles."""
+
+    janua_user_id = models.CharField(max_length=255, db_index=True)
+    law_id = models.CharField(max_length=200, db_index=True)
+    article_id = models.CharField(max_length=100, db_index=True)
+    text = models.TextField()
+    highlight_start = models.IntegerField(null=True, blank=True)
+    highlight_end = models.IntegerField(null=True, blank=True)
+    color = models.CharField(max_length=20, default="yellow")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["janua_user_id", "law_id"]),
+            models.Index(fields=["law_id", "article_id"]),
+        ]
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"Note on {self.law_id}:{self.article_id} by {self.janua_user_id[:8]}"
+
+
+class UserAlert(models.Model):
+    """User alert subscription for law change notifications."""
+
+    janua_user_id = models.CharField(max_length=255, db_index=True)
+    law_id = models.CharField(max_length=200, blank=True, default="")
+    category = models.CharField(max_length=100, blank=True, default="")
+    state = models.CharField(max_length=100, blank=True, default="")
+    alert_type = models.CharField(
+        max_length=20, help_text="law_updated, new_version, new_law"
+    )
+    delivery = models.CharField(max_length=20, default="in_app")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["janua_user_id", "is_active"]),
+        ]
+
+    def __str__(self):
+        target = self.law_id or self.category or self.state or "all"
+        return f"Alert {self.alert_type} on {target} for {self.janua_user_id[:8]}"
+
+
+class Notification(models.Model):
+    """In-app notification for users."""
+
+    janua_user_id = models.CharField(max_length=255, db_index=True)
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    link = models.CharField(max_length=500, blank=True, default="")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["janua_user_id", "is_read", "created_at"]),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        status = "read" if self.is_read else "unread"
+        return f"[{status}] {self.title} for {self.janua_user_id[:8]}"
+
+
+class NewsletterSubscription(models.Model):
+    """Collects newsletter subscribers for future delivery setup."""
+
+    email = models.EmailField(unique=True)
+    janua_user_id = models.CharField(max_length=255, blank=True, default="")
+    topics = models.JSONField(
+        default=list, help_text="e.g. ['federal', 'fiscal', 'weekly_digest']"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    unsubscribed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["email", "is_active"]),
+        ]
+
+    def __str__(self):
+        status = "active" if self.is_active else "unsubscribed"
+        return f"{self.email} ({status})"
+
+
 class WebhookSubscription(models.Model):
     """Webhook subscription for push notifications on law changes."""
 

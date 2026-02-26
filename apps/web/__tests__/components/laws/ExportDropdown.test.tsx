@@ -27,6 +27,10 @@ describe('ExportDropdown', () => {
             isAuthenticated: false,
             tier: 'anon',
             loginUrl: '/auth/login',
+            userId: null,
+            email: null,
+            name: null,
+            signOut: vi.fn(),
         });
     });
 
@@ -87,6 +91,10 @@ describe('ExportDropdown', () => {
             isAuthenticated: true,
             tier: 'free',
             loginUrl: '/auth/login',
+            userId: null,
+            email: null,
+            name: null,
+            signOut: vi.fn(),
         });
         render(<ExportDropdown lawId="mx-fed-cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
@@ -122,6 +130,10 @@ describe('ExportDropdown', () => {
             isAuthenticated: true,
             tier: 'free',
             loginUrl: '/auth/login',
+            userId: null,
+            email: null,
+            name: null,
+            signOut: vi.fn(),
         });
         const mockBlob = new Blob(['pdf'], { type: 'application/pdf' });
         const mockFetch = vi.fn().mockResolvedValue({
@@ -150,6 +162,10 @@ describe('ExportDropdown', () => {
             isAuthenticated: true,
             tier: 'premium',
             loginUrl: '/auth/login',
+            userId: null,
+            email: null,
+            name: null,
+            signOut: vi.fn(),
         });
         render(<ExportDropdown lawId="mx-fed-cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
@@ -165,6 +181,10 @@ describe('ExportDropdown', () => {
             isAuthenticated: false,
             tier: 'anon',
             loginUrl: '/auth/login',
+            userId: null,
+            email: null,
+            name: null,
+            signOut: vi.fn(),
         });
         const mockFetch = vi.fn().mockResolvedValue({
             ok: false,

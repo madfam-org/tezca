@@ -17,12 +17,10 @@ import time
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from apps.scraper.http import government_session
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,7 +60,7 @@ def download_city(city_key: str, catalog_only: bool = False, resume: bool = True
     logger.info("=== %s (%s) ===", config["name"], config["state"])
 
     scraper = GenericMunicipalScraper(city_key)
-    scraper.session.verify = False
+    scraper.session = government_session(config.get("base_url", ""))
 
     catalog = scraper.scrape_catalog()
     logger.info("[%s] Catalog: %d items", city_key, len(catalog))

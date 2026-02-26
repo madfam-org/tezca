@@ -22,7 +22,11 @@
         "test:e2e": "npx playwright test",
         "test:all": "npm run test:vitest && npm run test:pytest && npm run test:e2e"
     },
+    "overrides": {
+        "@janua/nextjs": "0.1.1",
+        "@janua/typescript-sdk": "0.1.1"
+    },
     "devDependencies": {
-        "@janua/typescript-sdk": "^0.1.1"
+        "@janua/typescript-sdk": "0.1.1"
     }
 }

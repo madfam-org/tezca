@@ -151,11 +151,12 @@ def bulk_articles(request):
 
     try:
         es = es_client
-        body = {
+        search_kwargs = {
+            "index": INDEX_NAME,
             "query": es_query,
             "sort": [{"law_id": "asc"}, {"article": "asc"}],
             "size": page_size,
-            "_source": [
+            "source": [
                 "law_id",
                 "law_name",
                 "category",
@@ -170,9 +171,9 @@ def bulk_articles(request):
         }
 
         if search_after:
-            body["search_after"] = search_after
+            search_kwargs["search_after"] = search_after
 
-        res = es.search(index=INDEX_NAME, body=body)
+        res = es.search(**search_kwargs)
         hits = res["hits"]["hits"]
         total = res["hits"]["total"]["value"]
 

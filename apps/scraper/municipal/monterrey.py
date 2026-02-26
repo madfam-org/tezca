@@ -9,6 +9,8 @@ from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
+from apps.scraper.http import government_session
+
 from .base import MunicipalScraper
 from .config import get_config
 
@@ -19,7 +21,7 @@ class MonterreyScraper(MunicipalScraper):
     def __init__(self):
         config = get_config("monterrey")
         super().__init__(config=config)
-        self.session.verify = False
+        self.session = government_session(config.get("base_url", ""))
         logger.info(f"Initialized {self.municipality} scraper - {self.base_url}")
 
     def scrape_catalog(self) -> List[Dict]:

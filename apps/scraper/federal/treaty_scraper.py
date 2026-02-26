@@ -1,13 +1,23 @@
 """
 International Treaties Scraper
 
-Scrapes bilateral and multilateral treaties from tratados.sre.gob.mx.
-~1,500 treaties ratified by Mexico. Per SCJN, treaties sit above
-federal laws in the normative hierarchy.
+Scrapes bilateral and multilateral treaties from SRE (Secretaría de
+Relaciones Exteriores). ~1,509 treaties ratified by Mexico. Per SCJN,
+treaties sit above federal laws in the normative hierarchy.
+
+The original portal (tratados.sre.gob.mx) was decommissioned circa 2025.
+The successor portal is cja.sre.gob.mx/tratadosmexico/ (Biblioteca Virtual
+de Tratados Internacionales), with a search interface at
+cja.sre.gob.mx/tratadosmexico/buscador.
+
+The search page is server-rendered HTML with pagination (?page=N),
+151 pages, 1,509 total treaties. Columns: name, adoption date, place,
+category (Bilateral/Multilateral).
 
 Usage:
     python -m apps.scraper.federal.treaty_scraper
     python -m apps.scraper.federal.treaty_scraper --output-dir data/treaties
+    python -m apps.scraper.federal.treaty_scraper --fetch-details
 """
 
 import json
@@ -29,7 +39,11 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-BASE_URL = "https://tratados.sre.gob.mx"
+# Primary: successor portal (Biblioteca Virtual de Tratados Internacionales)
+BASE_URL = "https://cja.sre.gob.mx/tratadosmexico"
+# Original (DNS-dead since ~2025): https://tratados.sre.gob.mx
+# Alternative: https://aplicaciones.sre.gob.mx/tratados/depositario.php
+# Senate records: https://www.senado.gob.mx/65/tratados_internacionales_aprobados
 _USER_AGENT = "Tezca/1.0 (+https://github.com/madfam-org/tezca)"
 _REQUEST_TIMEOUT = 30  # seconds
 _MIN_REQUEST_INTERVAL = 1.0  # 1 req/sec
@@ -127,11 +141,21 @@ class TreatyScraper:
     # Catalog scraping
     # ------------------------------------------------------------------
 
-    def scrape_catalog(self) -> List[Dict[str, Any]]:
+    def scrape_catalog(
+        self,
+        max_pages: Optional[int] = None,
+        resume_from_page: int = 1,
+    ) -> List[Dict[str, Any]]:
         """
         Fetch the SRE treaty portal catalog and parse treaty listings.
 
-        Handles pagination if the portal splits results across pages.
+        The successor portal at cja.sre.gob.mx/tratadosmexico/buscador
+        serves server-rendered paginated HTML with ~10 treaties per page.
+        Total: 1,509 treaties across ~151 pages.
+
+        Args:
+            max_pages: Stop after this many pages (None = unlimited).
+            resume_from_page: Start from this page number (1-based).
 
         Returns:
             List of treaty dicts with basic metadata.
@@ -139,12 +163,16 @@ class TreatyScraper:
         logger.info("Scraping treaty catalog from %s", BASE_URL)
 
         all_treaties: List[Dict[str, Any]] = []
-        seen_urls: set = set()
-        page = 1
+        seen_names: set = set()
+        page = resume_from_page
         empty_streak = 0
 
         while True:
-            url = f"{BASE_URL}/tratados?page={page}"
+            if max_pages is not None and (page - resume_from_page) >= max_pages:
+                logger.info("Reached max_pages=%d, stopping.", max_pages)
+                break
+
+            url = f"{BASE_URL}/buscador?page={page}"
             logger.info("Fetching catalog page %d: %s", page, url)
 
             resp = self._get(url)
@@ -158,29 +186,20 @@ class TreatyScraper:
 
             treaties = self._parse_catalog_page(resp.text)
             if not treaties:
-                # Also try the root URL on first page.
-                if page == 1:
-                    resp_root = self._get(BASE_URL)
-                    if resp_root:
-                        treaties = self._parse_catalog_page(resp_root.text)
-
-                if not treaties:
-                    empty_streak += 1
-                    if empty_streak >= 3:
-                        logger.info(
-                            "3 consecutive empty pages, assuming end of catalog."
-                        )
-                        break
-                    page += 1
-                    continue
+                empty_streak += 1
+                if empty_streak >= 3:
+                    logger.info("3 consecutive empty pages, assuming end of catalog.")
+                    break
+                page += 1
+                continue
 
             empty_streak = 0
             new_count = 0
             for treaty in treaties:
-                treaty_url = treaty.get("url", "")
-                if treaty_url in seen_urls:
+                name = treaty.get("name", "")
+                if name in seen_names:
                     continue
-                seen_urls.add(treaty_url)
+                seen_names.add(name)
                 all_treaties.append(treaty)
                 new_count += 1
 
@@ -268,7 +287,15 @@ class TreatyScraper:
         return treaties
 
     def _parse_table_row(self, row: Any) -> Optional[Dict[str, Any]]:
-        """Extract treaty data from a table row."""
+        """
+        Extract treaty data from a table row.
+
+        Successor portal columns (cja.sre.gob.mx/tratadosmexico/buscador):
+            0: Nombre (Treaty Name)
+            1: Fecha de adopción (Adoption Date)
+            2: Lugar de adopción (Place of Adoption)
+            3: Categoría (Bilateral/Multilateral)
+        """
         cells = row.find_all("td")
         if len(cells) < 2:
             return None
@@ -281,10 +308,17 @@ class TreatyScraper:
         href = link.get("href", "") if link else ""
         abs_url = self._resolve_url(href) if href else ""
 
-        treaty_type = _classify_treaty_type(name)
-        parties = cells[1].get_text(strip=True) if len(cells) > 1 else ""
-        date_signed = cells[2].get_text(strip=True) if len(cells) > 2 else ""
-        date_ratified = cells[3].get_text(strip=True) if len(cells) > 3 else ""
+        # Column 3 has explicit category on successor portal.
+        category_text = cells[3].get_text(strip=True).lower() if len(cells) > 3 else ""
+        if "bilateral" in category_text:
+            treaty_type = "bilateral"
+        elif "multilateral" in category_text:
+            treaty_type = "multilateral"
+        else:
+            treaty_type = _classify_treaty_type(name)
+
+        date_adopted = cells[1].get_text(strip=True) if len(cells) > 1 else ""
+        place_adopted = cells[2].get_text(strip=True) if len(cells) > 2 else ""
 
         # Check for PDF link.
         pdf_link = row.find("a", href=lambda h: h and h.endswith(".pdf"))
@@ -294,9 +328,10 @@ class TreatyScraper:
             "id": _generate_id(name),
             "name": _clean_text(name),
             "treaty_type": treaty_type,
-            "parties": _clean_text(parties),
-            "date_signed": _extract_date(date_signed),
-            "date_ratified": _extract_date(date_ratified),
+            "parties": "",
+            "date_signed": _extract_date(date_adopted),
+            "date_ratified": "",
+            "place_adopted": _clean_text(place_adopted),
             "url": abs_url,
             "pdf_url": pdf_url,
             "source": "sre_tratados",
@@ -438,6 +473,8 @@ class TreatyScraper:
         output_dir: str = "data/treaties",
         fetch_details: bool = False,
         max_details: int = 50,
+        max_pages: Optional[int] = None,
+        resume_from_page: int = 1,
     ) -> Dict[str, Any]:
         """
         Run the full treaty scraping pipeline.
@@ -451,6 +488,8 @@ class TreatyScraper:
             output_dir: Directory for output files.
             fetch_details: Whether to fetch individual detail pages.
             max_details: Maximum number of detail pages to fetch.
+            max_pages: Maximum catalog pages to scrape (None = all).
+            resume_from_page: Page number to resume from (1-based).
 
         Returns:
             Summary dict with total_treaties, output_path, details_fetched.
@@ -458,8 +497,11 @@ class TreatyScraper:
         out_path = Path(output_dir)
         logger.info("Starting treaty scraper (fetch_details=%s)", fetch_details)
 
-        # Step 1: scrape catalog
-        treaties = self.scrape_catalog()
+        # Step 1: scrape catalog from successor portal
+        treaties = self.scrape_catalog(
+            max_pages=max_pages,
+            resume_from_page=resume_from_page,
+        )
 
         # Step 2: optionally enrich with detail pages
         details_fetched = 0
@@ -547,14 +589,46 @@ def _classify_treaty_type(text: str) -> str:
     return "unknown"
 
 
+_SPANISH_MONTHS = {
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
+}
+
+
 def _extract_date(text: str) -> str:
     """
     Try to extract a date from free text.
+
+    Handles:
+      - "3 de febrero de 2004" (Spanish, used by successor portal)
+      - DD/MM/YYYY or DD-MM-YYYY
+      - YYYY-MM-DD (ISO)
 
     Returns ISO-format string or empty string.
     """
     if not text:
         return ""
+
+    # Spanish format: "3 de febrero de 2004"
+    match = re.search(r"(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})", text, re.IGNORECASE)
+    if match:
+        day_str, month_str, year_str = match.group(1), match.group(2), match.group(3)
+        month_num = _SPANISH_MONTHS.get(month_str.lower())
+        if month_num:
+            try:
+                return f"{year_str}-{month_num:02d}-{int(day_str):02d}"
+            except (ValueError, TypeError):
+                pass
 
     # DD/MM/YYYY or DD-MM-YYYY
     match = re.search(r"(\d{1,2})[/-](\d{1,2})[/-](\d{4})", text)
@@ -647,6 +721,18 @@ def main() -> None:
         default=50,
         help="Maximum number of detail pages to fetch (default: 50).",
     )
+    parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Maximum catalog pages to scrape (default: all ~151 pages).",
+    )
+    parser.add_argument(
+        "--resume-from",
+        type=int,
+        default=1,
+        help="Page number to resume from (1-based, default: 1).",
+    )
     args = parser.parse_args()
 
     scraper = TreatyScraper()
@@ -654,6 +740,8 @@ def main() -> None:
         output_dir=args.output_dir,
         fetch_details=args.fetch_details,
         max_details=args.max_details,
+        max_pages=args.max_pages,
+        resume_from_page=args.resume_from,
     )
 
     print(json.dumps(result, indent=2, ensure_ascii=False))

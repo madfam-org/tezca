@@ -16,8 +16,10 @@ import { KeyboardShortcuts } from './KeyboardShortcuts';
 import { RelatedLaws } from './RelatedLaws';
 import { CrossReferencePanel } from './CrossReferencePanel';
 import { VersionTimeline } from './VersionTimeline';
+import { AnnotationPanel } from './AnnotationPanel';
+import { AlertButton } from './AlertButton';
 import { recordLawView } from '@/components/RecentlyViewed';
-import { List } from 'lucide-react';
+import { List, MessageSquare } from 'lucide-react';
 
 const content = {
     es: {
@@ -66,6 +68,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
     const [error, setError] = useState<string | null>(null);
     const [fontSize, setFontSize] = useState<FontSize>('text-base');
     const [showToc, setShowToc] = useState(false);
+    const [annotationOpen, setAnnotationOpen] = useState(false);
 
     useEffect(() => {
         async function fetchLaw() {
@@ -179,7 +182,16 @@ export function LawDetail({ lawId }: LawDetailProps) {
                 <main className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                         <Breadcrumbs lawName={data.law.name} />
-                        <FontSizeControl onChange={setFontSize} />
+                        <div className="flex items-center gap-2">
+                            <AlertButton lawId={lawId} />
+                            <button
+                                onClick={() => setAnnotationOpen(true)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                            >
+                                <MessageSquare className="h-4 w-4" />
+                            </button>
+                            <FontSizeControl onChange={setFontSize} />
+                        </div>
                     </div>
                     <div className="mb-4">
                         <ArticleSearch
@@ -219,6 +231,12 @@ export function LawDetail({ lawId }: LawDetailProps) {
                     <RelatedLaws lawId={lawId} />
                 </main>
             </div>
+
+            <AnnotationPanel
+                lawId={lawId}
+                open={annotationOpen}
+                onClose={() => setAnnotationOpen(false)}
+            />
         </div>
     );
 }

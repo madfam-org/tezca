@@ -94,6 +94,7 @@ def main():
                 "url": law.get("url", ""),
                 "file_id": file_id,
                 "format": law.get("format", ""),
+                "law_type": law.get("law_type", ""),
             }
             all_laws.append(consolidated)
 

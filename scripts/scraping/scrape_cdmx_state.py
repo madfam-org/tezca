@@ -25,11 +25,11 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-import requests
-
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from apps.scraper.http import government_session
 
 from apps.scraper.municipal.cdmx import CDMXScraper
 
@@ -44,11 +44,11 @@ def url_to_file_id(url):
 
 def download_pdf(url, output_path, timeout=60):
     """Download a PDF with retry logic."""
+    session = government_session(url)
     for attempt in range(3):
         try:
             time.sleep(1.0)  # Rate limiting
-            # CDMX portal has SSL issues
-            response = requests.get(url, timeout=timeout, verify=False)
+            response = session.get(url, timeout=timeout)
             response.raise_for_status()
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_bytes(response.content)

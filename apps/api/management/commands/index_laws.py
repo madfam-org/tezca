@@ -59,19 +59,17 @@ class Command(BaseCommand):
         if not es.indices.exists(index=INDEX_LAWS):
             es.indices.create(
                 index=INDEX_LAWS,
-                body={
-                    "mappings": {
-                        "properties": {
-                            "id": {"type": "keyword"},
-                            "name": {"type": "text", "analyzer": "spanish"},
-                            "category": {"type": "keyword"},
-                            "tier": {"type": "keyword"},
-                            "state": {"type": "keyword"},
-                            "municipality": {"type": "keyword"},
-                            "publication_date": {"type": "date"},
-                            "status": {"type": "keyword"},
-                            "total_articles": {"type": "integer"},
-                        }
+                mappings={
+                    "properties": {
+                        "id": {"type": "keyword"},
+                        "name": {"type": "text", "analyzer": "spanish"},
+                        "category": {"type": "keyword"},
+                        "tier": {"type": "keyword"},
+                        "state": {"type": "keyword"},
+                        "municipality": {"type": "keyword"},
+                        "publication_date": {"type": "date"},
+                        "status": {"type": "keyword"},
+                        "total_articles": {"type": "integer"},
                     }
                 },
             )
@@ -81,102 +79,100 @@ class Command(BaseCommand):
         if not es.indices.exists(index=INDEX_ARTICLES):
             es.indices.create(
                 index=INDEX_ARTICLES,
-                body={
-                    "settings": {
-                        "analysis": {
-                            "filter": {
-                                "spanish_legal_synonyms": {
-                                    "type": "synonym",
-                                    "synonyms": [
-                                        "ley, legislación, ordenamiento",
-                                        "amparo, protección, tutela",
-                                        "constitución, carta magna, ley fundamental",
-                                        "código, codificación",
-                                        "reglamento, regulación, normativa",
-                                        "decreto, disposición",
-                                        "artículo, numeral, precepto",
-                                        "tribunal, juzgado, corte",
-                                        "juicio, proceso, litigio, procedimiento",
-                                        "demanda, acción, pretensión",
-                                        "sentencia, resolución, fallo",
-                                        "recurso, impugnación, medio de defensa",
-                                        "NOM, norma oficial mexicana",
-                                        "DOF, diario oficial de la federación",
-                                        "CPEUM, constitución política de los estados unidos mexicanos",
-                                        "LISR, ley del impuesto sobre la renta",
-                                        "LIVA, ley del impuesto al valor agregado",
-                                        "CFF, código fiscal de la federación",
-                                        "LFTR, ley federal de telecomunicaciones y radiodifusión",
-                                        "obligación, deber",
-                                        "derecho, facultad, potestad",
-                                        "sanción, multa, penalidad",
-                                        "contrato, convenio, acuerdo",
-                                        "propiedad, dominio, posesión",
-                                    ],
-                                },
-                                "spanish_stop": {
-                                    "type": "stop",
-                                    "stopwords": "_spanish_",
-                                },
-                                "spanish_stemmer": {
-                                    "type": "stemmer",
-                                    "language": "light_spanish",
-                                },
-                                "icu_folding": {
-                                    "type": "icu_folding",
-                                },
+                settings={
+                    "analysis": {
+                        "filter": {
+                            "spanish_legal_synonyms": {
+                                "type": "synonym",
+                                "synonyms": [
+                                    "ley, legislación, ordenamiento",
+                                    "amparo, protección, tutela",
+                                    "constitución, carta magna, ley fundamental",
+                                    "código, codificación",
+                                    "reglamento, regulación, normativa",
+                                    "decreto, disposición",
+                                    "artículo, numeral, precepto",
+                                    "tribunal, juzgado, corte",
+                                    "juicio, proceso, litigio, procedimiento",
+                                    "demanda, acción, pretensión",
+                                    "sentencia, resolución, fallo",
+                                    "recurso, impugnación, medio de defensa",
+                                    "NOM, norma oficial mexicana",
+                                    "DOF, diario oficial de la federación",
+                                    "CPEUM, constitución política de los estados unidos mexicanos",
+                                    "LISR, ley del impuesto sobre la renta",
+                                    "LIVA, ley del impuesto al valor agregado",
+                                    "CFF, código fiscal de la federación",
+                                    "LFTR, ley federal de telecomunicaciones y radiodifusión",
+                                    "obligación, deber",
+                                    "derecho, facultad, potestad",
+                                    "sanción, multa, penalidad",
+                                    "contrato, convenio, acuerdo",
+                                    "propiedad, dominio, posesión",
+                                ],
                             },
-                            "analyzer": {
-                                "spanish_legal": {
-                                    "type": "custom",
-                                    "tokenizer": "standard",
-                                    "filter": [
-                                        "lowercase",
-                                        "spanish_legal_synonyms",
-                                        "spanish_stop",
-                                        "spanish_stemmer",
-                                        "icu_folding",
-                                    ],
-                                },
+                            "spanish_stop": {
+                                "type": "stop",
+                                "stopwords": "_spanish_",
+                            },
+                            "spanish_stemmer": {
+                                "type": "stemmer",
+                                "language": "light_spanish",
+                            },
+                            "icu_folding": {
+                                "type": "icu_folding",
                             },
                         },
-                        "index": {
-                            "number_of_replicas": 0,
+                        "analyzer": {
+                            "spanish_legal": {
+                                "type": "custom",
+                                "tokenizer": "standard",
+                                "filter": [
+                                    "lowercase",
+                                    "spanish_legal_synonyms",
+                                    "spanish_stop",
+                                    "spanish_stemmer",
+                                    "icu_folding",
+                                ],
+                            },
                         },
                     },
-                    "mappings": {
-                        "properties": {
-                            "law_id": {"type": "keyword"},
-                            "law_name": {
-                                "type": "text",
-                                "analyzer": "spanish_legal",
-                                "fields": {
-                                    "keyword": {"type": "keyword"},
-                                },
-                            },
-                            "article": {"type": "keyword"},
-                            "text": {
-                                "type": "text",
-                                "analyzer": "spanish_legal",
-                            },
-                            "category": {"type": "keyword"},
-                            "tier": {"type": "keyword"},
-                            "law_type": {"type": "keyword"},
-                            "status": {"type": "keyword"},
-                            "state": {"type": "keyword"},
-                            "municipality": {"type": "keyword"},
-                            "book": {"type": "text"},
-                            "title": {"type": "text"},
-                            "chapter": {"type": "text"},
-                            "hierarchy": {"type": "keyword"},
-                            "publication_date": {"type": "date"},
-                            "tags": {"type": "keyword"},
-                            "suggest": {
-                                "type": "completion",
-                                "analyzer": "simple",
-                            },
-                        }
+                    "index": {
+                        "number_of_replicas": 0,
                     },
+                },
+                mappings={
+                    "properties": {
+                        "law_id": {"type": "keyword"},
+                        "law_name": {
+                            "type": "text",
+                            "analyzer": "spanish_legal",
+                            "fields": {
+                                "keyword": {"type": "keyword"},
+                            },
+                        },
+                        "article": {"type": "keyword"},
+                        "text": {
+                            "type": "text",
+                            "analyzer": "spanish_legal",
+                        },
+                        "category": {"type": "keyword"},
+                        "tier": {"type": "keyword"},
+                        "law_type": {"type": "keyword"},
+                        "status": {"type": "keyword"},
+                        "state": {"type": "keyword"},
+                        "municipality": {"type": "keyword"},
+                        "book": {"type": "text"},
+                        "title": {"type": "text"},
+                        "chapter": {"type": "text"},
+                        "hierarchy": {"type": "keyword"},
+                        "publication_date": {"type": "date"},
+                        "tags": {"type": "keyword"},
+                        "suggest": {
+                            "type": "completion",
+                            "analyzer": "simple",
+                        },
+                    }
                 },
             )
             self.stdout.write(self.style.SUCCESS(f"Created index: {INDEX_ARTICLES}"))

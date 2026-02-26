@@ -5,6 +5,8 @@ from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
+from apps.scraper.http import government_session
+
 from .base import MunicipalScraper
 from .config import get_config
 
@@ -14,8 +16,7 @@ class CDMXScraper(MunicipalScraper):
         config = get_config("cdmx")
         super().__init__(config=config)
         self.base_domain = "https://data.consejeria.cdmx.gob.mx"
-        # Disable SSL verification for this legacy site
-        self.session.verify = False
+        self.session = government_session(self.base_domain)
 
     def scrape_catalog(self) -> List[Dict]:
         """

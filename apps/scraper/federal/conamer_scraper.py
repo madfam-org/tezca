@@ -1,9 +1,16 @@
 """
 CONAMER CNARTyS Scraper
 
-Scrapes the Catalogo Nacional de Regulaciones, Tramites y Servicios.
+Scrapes the Catálogo Nacional de Regulaciones, Trámites y Servicios.
 113,373 regulations listed. Significant overlap expected with existing
 reglamentos + state non-legislative corpus -- dedup required.
+
+The original portal (cnartys.conamer.gob.mx) was decommissioned circa 2025.
+The successor portal is catalogonacional.gob.mx, which requires browser-based
+access (WAF blocks automated HTTP requests with 403).
+
+An alternative legacy endpoint at conamer.gob.mx/cnartys-t/ had an expired
+SSL certificate as of Feb 2026.
 
 Usage:
     python -m apps.scraper.federal.conamer_scraper
@@ -30,12 +37,17 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-BASE_URL = "https://cnartys.conamer.gob.mx"
+# Primary: successor portal (requires browser-based access, blocks automated HTTP)
+BASE_URL = "https://catalogonacional.gob.mx"
+# Fallback: legacy CONAMER portal (expired SSL cert as of Feb 2026)
+LEGACY_URL = "https://conamer.gob.mx/cnartys-t"
+# Original (DNS-dead since ~2025): https://cnartys.conamer.gob.mx
+
 _USER_AGENT = "Tezca/1.0 (+https://github.com/madfam-org/tezca)"
 _REQUEST_TIMEOUT = 30  # seconds
 _MIN_REQUEST_INTERVAL = 1.0  # 1 req/sec to be respectful
 
-# Common API path patterns to probe on the CONAMER site.
+# Common API path patterns to probe on the successor portal.
 _API_PROBE_PATHS = [
     "/api/regulaciones",
     "/api/v1/regulaciones",
@@ -46,6 +58,10 @@ _API_PROBE_PATHS = [
     "/api/v1/search",
     "/api/",
     "/api/v1/",
+    # Legacy CNARTyS patterns
+    "/FichaTramite",
+    "/Busqueda",
+    "/Catalogo",
 ]
 
 # Words stripped during title normalisation for dedup.

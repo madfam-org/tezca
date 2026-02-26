@@ -23,6 +23,8 @@ import requests
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from apps.scraper.http import government_session
+
 from apps.scraper.municipal import SCRAPERS, get_scraper
 
 MUNICIPAL_DIR = PROJECT_ROOT / "data" / "municipal_laws"
@@ -34,11 +36,11 @@ def download_pdf(url, output_path, session=None, timeout=60):
     if output_path.exists() and output_path.stat().st_size > 1024:
         return True
 
-    session = session or requests.Session()
+    session = session or government_session(url)
     for attempt in range(3):
         try:
             time.sleep(1.0)
-            response = session.get(url, timeout=timeout, verify=False)
+            response = session.get(url, timeout=timeout)
             response.raise_for_status()
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_bytes(response.content)

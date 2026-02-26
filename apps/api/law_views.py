@@ -67,7 +67,7 @@ class LawDetailView(APIView):
             if es.ping():
                 count_res = es.count(
                     index=INDEX_NAME,
-                    body={"query": {"match_phrase": {"law_id": law.official_id}}},
+                    query={"match_phrase": {"law_id": law.official_id}},
                 )
                 article_count = count_res.get("count", 0)
             else:
@@ -212,13 +212,13 @@ class RelatedLawsView(APIView):
             es = es_client
             if es.ping():
                 # Get first 3 article texts for similarity context
-                articles_body = {
-                    "query": {"match_phrase": {"law_id": law.official_id}},
-                    "sort": [{"article": "asc"}],
-                    "_source": ["text"],
-                    "size": 3,
-                }
-                articles_res = es.search(index=INDEX_NAME, body=articles_body)
+                articles_res = es.search(
+                    index=INDEX_NAME,
+                    query={"match_phrase": {"law_id": law.official_id}},
+                    sort=[{"article": "asc"}],
+                    source=["text"],
+                    size=3,
+                )
                 article_texts = [
                     hit["_source"]["text"][:500]
                     for hit in articles_res["hits"]["hits"]
@@ -227,8 +227,9 @@ class RelatedLawsView(APIView):
 
                 like_text = f"{law.name} {' '.join(article_texts)}"
 
-                mlt_body = {
-                    "query": {
+                mlt_res = es.search(
+                    index=INDEX_NAME,
+                    query={
                         "bool": {
                             "must": [
                                 {
@@ -244,7 +245,7 @@ class RelatedLawsView(APIView):
                             "must_not": [{"match_phrase": {"law_id": law.official_id}}],
                         }
                     },
-                    "aggs": {
+                    aggs={
                         "by_law": {
                             "terms": {"field": "law_id", "size": 8},
                             "aggs": {
@@ -262,10 +263,8 @@ class RelatedLawsView(APIView):
                             },
                         }
                     },
-                    "size": 0,
-                }
-
-                mlt_res = es.search(index=INDEX_NAME, body=mlt_body)
+                    size=0,
+                )
                 buckets = (
                     mlt_res.get("aggregations", {}).get("by_law", {}).get("buckets", [])
                 )
@@ -368,8 +367,9 @@ def law_search(request, law_id):
 
     try:
         es = es_client
-        body = {
-            "query": {
+        res = es.search(
+            index=INDEX_NAME,
+            query={
                 "bool": {
                     "must": [
                         {"match_phrase": {"law_id": law.official_id}},
@@ -377,11 +377,9 @@ def law_search(request, law_id):
                     ]
                 }
             },
-            "highlight": {"fields": {"text": {"fragment_size": 200}}},
-            "size": 50,
-        }
-
-        res = es.search(index=INDEX_NAME, body=body)
+            highlight={"fields": {"text": {"fragment_size": 200}}},
+            size=50,
+        )
 
         results = []
         for hit in res["hits"]["hits"]:
@@ -435,25 +433,24 @@ def law_articles(request, law_id):
         es = es_client
 
         # Get accurate total via count query (unaffected by dedup)
-        count_body = {
-            "query": {
+        count_res = es.count(
+            index=INDEX_NAME,
+            query={
                 "bool": {
                     "must": [{"match_phrase": {"law_id": law.official_id}}],
                     "must_not": [{"term": {"article": "full_text"}}],
                 }
-            }
-        }
-        count_res = es.count(index=INDEX_NAME, body=count_body)
+            },
+        )
         total_count = count_res.get("count", 0)
 
-        body = {
-            "query": {"match_phrase": {"law_id": law.official_id}},
-            "sort": [{"article": {"order": "asc"}}],
-            "from": offset,
-            "size": page_size,
-        }
-
-        res = es.search(index=INDEX_NAME, body=body)
+        res = es.search(
+            index=INDEX_NAME,
+            query={"match_phrase": {"law_id": law.official_id}},
+            sort=[{"article": {"order": "asc"}}],
+            from_=offset,
+            size=page_size,
+        )
 
         articles = []
         seen = set()
@@ -518,14 +515,13 @@ def law_structure(request, law_id):
         # Fix: We will rely on simple aggregation? No, aggregation buckets keys are sorted alphanumeric.
 
         # Fetch all hierarchy data — only need hierarchy field, not full text
-        body = {
-            "query": {"match_phrase": {"law_id": law.official_id}},
-            "sort": [{"article": "asc"}],
-            "_source": ["hierarchy", "article"],
-            "size": 5000,
-        }
-
-        res = es.search(index=INDEX_NAME, body=body)
+        res = es.search(
+            index=INDEX_NAME,
+            query={"match_phrase": {"law_id": law.official_id}},
+            sort=[{"article": "asc"}],
+            source=["hierarchy", "article"],
+            size=5000,
+        )
 
         # Build Tree
         root = []
@@ -612,8 +608,9 @@ def suggest(request):
     try:
         es = es_client
         if es.ping():
-            body = {
-                "suggest": {
+            res = es.search(
+                index="laws",
+                suggest={
                     "law-suggest": {
                         "prefix": q,
                         "completion": {
@@ -622,9 +619,9 @@ def suggest(request):
                             "skip_duplicates": True,
                         },
                     }
-                }
-            }
-            res = es.search(index="laws", body=body)
+                },
+                size=0,
+            )
             options = (
                 res.get("suggest", {}).get("law-suggest", [{}])[0].get("options", [])
             )

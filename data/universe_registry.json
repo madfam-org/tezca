@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "last_updated": "2026-02-07",
+  "last_updated": "2026-02-26",
   "methodology": "Only includes counts verified from official government sources. Each source entry includes the URL, institution name, and date of last verification. 'known_count' is null when no official census exists for that category.",
   "sources": {
     "federal_leyes_vigentes": {
@@ -14,13 +14,13 @@
     },
     "state_legislativo": {
       "known_count": 12120,
-      "scraped_count": 11363,
+      "scraped_count": 12465,
       "permanent_gaps": 782,
       "source_url": "https://compilacion.ordenjuridico.gob.mx/",
       "source_name": "OJN - Poder Legislativo (poder=2)",
       "last_verified": "2026-02-03",
       "confidence": "high",
-      "notes": "State-level legislation from all 32 states via OJN. 782 permanent dead links (Michoacán 504, EDOMEX 141, SLP 47, others <30 each). Remaining 975 gap = 12120 - 11363 - 782 = difference likely in low-count states.",
+      "notes": "State-level legislation from all 32 states via OJN + state portal scrapers. 782 permanent dead links on OJN (Michoacán 504, EDOMEX 141, SLP 47, others <30 each). BC (483), DGO (305), QR (316) scraped from state congress portals — 1,104 files pending ingest into production DB.",
       "gap_investigation": {
         "date": "2026-02-07",
         "findings": "OJN severely undercounts 3 states. State congress portals confirmed: BC ~340 laws (vs OJN 3), Durango ~160 (vs 1), QR ~356 (vs 1). Hidalgo OJN shows 38 but 740+ already scraped. Recovery requires state-specific scrapers.",
@@ -44,14 +44,14 @@
     },
     "municipal": {
       "known_count": null,
-      "scraped_count": 217,
-      "cities_covered": 5,
-      "cities": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "León"],
+      "scraped_count": 208,
+      "cities_covered": 6,
+      "cities": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "León", "Zapopan"],
       "total_municipalities": 2468,
-      "source_name": "Municipal government portals (5 cities)",
-      "last_verified": "2026-02-03",
+      "source_name": "Municipal government portals (6 cities)",
+      "last_verified": "2026-02-25",
       "confidence": "low",
-      "notes": "No authoritative census of municipal legislation exists. INEGI reports 2,468 municipalities. Only 5 tier-1 city portals have been scraped so far."
+      "notes": "No authoritative census of municipal legislation exists. INEGI reports 2,468 municipalities. 6 city portals scraped. Additionally, 2,195 files (GDL 186, MTY 307, León 1693, Zapopan 9) downloaded and pending ingest into production DB."
     },
     "federal_reglamentos": {
       "known_count": 150,
@@ -64,12 +64,12 @@
     },
     "federal_noms": {
       "known_count": null,
-      "scraped_count": 0,
+      "scraped_count": 80,
       "source_url": "https://www.gob.mx/conamer",
       "source_name": "CONAMER - NOMs",
-      "last_verified": "2026-02-06",
+      "last_verified": "2026-02-25",
       "confidence": "low",
-      "notes": "Normas Oficiales Mexicanas. No definitive count available; estimated 4,000+ across all secretarías."
+      "notes": "Normas Oficiales Mexicanas. No definitive count available; estimated 4,000+ across all secretarías. 80 NOMs cataloged from DOF search, pending download and ingest."
     },
     "conamer_cnartys": {
       "known_count": 113373,

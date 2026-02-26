@@ -39,12 +39,8 @@ REST_FRAMEWORK = {
         "apps.api.middleware.combined_auth.CombinedAuthentication",
     ],
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
+        "apps.api.tier_throttles.TieredRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {
-        "anon": "100/hour",
-        "search": "30/minute",
-    },
 }
 
 SPECTACULAR_SETTINGS = {

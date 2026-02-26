@@ -29,6 +29,37 @@ interface AdminMetricsResponse {
     last_updated: string;
 }
 
+export interface AnnotationData {
+    id: number;
+    law_id: string;
+    article_id: string;
+    text: string;
+    highlight_start: number | null;
+    highlight_end: number | null;
+    color: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface NotificationData {
+    id: number;
+    title: string;
+    body: string;
+    link: string;
+    is_read: boolean;
+    created_at: string;
+}
+
+export interface AlertData {
+    id: number;
+    law_id: string;
+    category: string;
+    state: string;
+    alert_type: string;
+    delivery: string;
+    created_at: string;
+}
+
 import { API_BASE_URL } from './config';
 
 class APIError extends Error {
@@ -291,6 +322,135 @@ export const api = {
 
     listJobs: async () => {
         return fetcher<{ jobs: IngestionStatus[] }>('/admin/jobs/');
+    },
+
+    // ── User Preferences ────────────────────────────────────────────
+
+    getUserPreferences: async (token: string) => {
+        return fetcher<{
+            bookmarks: string[];
+            recently_viewed: string[];
+            preferences: Record<string, unknown>;
+            updated_at: string;
+        }>('/user/preferences/', { headers: { Authorization: `Bearer ${token}` } });
+    },
+
+    syncBookmark: async (token: string, action: 'add' | 'remove', lawId: string) => {
+        return fetcher<{ bookmarks: string[] }>('/user/bookmarks/', {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ action, law_id: lawId }),
+        });
+    },
+
+    syncRecentlyViewed: async (token: string, lawId: string) => {
+        return fetcher<{ recently_viewed: string[] }>('/user/recently-viewed/', {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ law_id: lawId }),
+        });
+    },
+
+    // ── Annotations ─────────────────────────────────────────────────
+
+    getAnnotations: async (token: string, lawId?: string, page?: number) => {
+        const params = new URLSearchParams();
+        if (lawId) params.set('law_id', lawId);
+        if (page) params.set('page', page.toString());
+        const qs = params.toString();
+        return fetcher<{
+            total: number;
+            page: number;
+            annotations: AnnotationData[];
+        }>(`/user/annotations/${qs ? `?${qs}` : ''}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    createAnnotation: async (token: string, data: {
+        law_id: string;
+        article_id: string;
+        text: string;
+        color?: string;
+        highlight_start?: number;
+        highlight_end?: number;
+    }) => {
+        return fetcher<AnnotationData>('/user/annotations/', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+    },
+
+    updateAnnotation: async (token: string, id: number, data: {
+        text?: string;
+        color?: string;
+    }) => {
+        return fetcher<AnnotationData>(`/user/annotations/${id}/`, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+    },
+
+    deleteAnnotation: async (token: string, id: number) => {
+        return fetcher<void>(`/user/annotations/${id}/`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    // ── Notifications ───────────────────────────────────────────────
+
+    getNotifications: async (token: string, page?: number) => {
+        const qs = page ? `?page=${page}` : '';
+        return fetcher<{
+            total: number;
+            unread: number;
+            page: number;
+            notifications: NotificationData[];
+        }>(`/user/notifications/${qs}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    markNotificationsRead: async (token: string, ids?: number[]) => {
+        return fetcher<{ marked_read: number }>('/user/notifications/mark-read/', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(ids ? { ids } : { all: true }),
+        });
+    },
+
+    // ── Alerts ──────────────────────────────────────────────────────
+
+    getAlerts: async (token: string) => {
+        return fetcher<{
+            alerts: AlertData[];
+        }>('/user/alerts/', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    createAlert: async (token: string, data: {
+        law_id?: string;
+        category?: string;
+        state?: string;
+        alert_type: string;
+        delivery?: string;
+    }) => {
+        return fetcher<AlertData>('/user/alerts/', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+    },
+
+    deleteAlert: async (token: string, id: number) => {
+        return fetcher<void>(`/user/alerts/${id}/`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+        });
     },
 
 };
