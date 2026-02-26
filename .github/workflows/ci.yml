@@ -92,6 +92,10 @@ jobs:
       run: npx vitest run
       working-directory: apps/admin
 
+    - name: Run API Client tests
+      run: npx vitest run
+      working-directory: packages/api-client
+
     - name: Security audit (npm)
       run: npm audit --production || true
       continue-on-error: true
@@ -143,3 +147,95 @@ jobs:
       with:
         name: playwright-report
         path: apps/web/playwright-report/
+
+  publish-sdk:
+    name: Publish @tezca/api-client
+    runs-on: ubuntu-latest
+    needs: [test-frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Check if api-client changed
+      id: changed
+      run: |
+        if git diff --name-only HEAD~1 HEAD | grep -q '^packages/api-client/'; then
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Set up Node.js
+      if: steps.changed.outputs.changed == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Check if version already published
+      if: steps.changed.outputs.changed == 'true'
+      id: version
+      run: |
+        PKG_VERSION=$(node -p "require('./packages/api-client/package.json').version")
+        echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+          -H "Authorization: Bearer ${{ secrets.NPM_MADFAM_TOKEN }}" \
+          "https://npm.madfam.io/@tezca%2fapi-client/$PKG_VERSION")
+        if [ "$HTTP_CODE" = "200" ]; then
+          echo "published=true" >> "$GITHUB_OUTPUT"
+          echo "Version $PKG_VERSION already published, skipping"
+        else
+          echo "published=false" >> "$GITHUB_OUTPUT"
+          echo "Version $PKG_VERSION not yet published"
+        fi
+
+    - name: Install dependencies
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      working-directory: packages/api-client
+      run: npm install
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
+    - name: Build
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      working-directory: packages/api-client
+      run: npm run build
+
+    - name: Run tests
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      working-directory: packages/api-client
+      run: npx vitest run
+
+    - name: Verify no external @tezca/lib dependency
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      working-directory: packages/api-client
+      run: |
+        if grep -r "require.*@tezca/lib" dist/ 2>/dev/null || grep -r "from.*@tezca/lib" dist/ 2>/dev/null; then
+          echo "ERROR: @tezca/lib appears as external import in dist/"
+          exit 1
+        fi
+        echo "OK: @tezca/lib is fully self-contained"
+
+    - name: Publish
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      working-directory: packages/api-client
+      run: npm publish
+      env:
+        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
+    - name: Tag and create GitHub Release
+      if: steps.changed.outputs.changed == 'true' && steps.version.outputs.published == 'false'
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        TAG="api-client-v${{ steps.version.outputs.version }}"
+        git tag "$TAG"
+        git push origin "$TAG"
+        gh release create "$TAG" \
+          --title "@tezca/api-client@${{ steps.version.outputs.version }}" \
+          --notes "Published @tezca/api-client@${{ steps.version.outputs.version }} to npm.madfam.io" \
+          --latest

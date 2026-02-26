@@ -1,4 +1,4 @@
-name: Publish SDKs
+name: Publish SDKs (manual tag override)
 
 on:
   push:
