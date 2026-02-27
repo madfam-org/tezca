@@ -17,10 +17,18 @@ COPY packages/lib/package.json packages/lib/package.json
 COPY packages/tsconfig/package.json packages/tsconfig/package.json
 COPY packages/api-client/package.json packages/api-client/package.json
 
-# Install dependencies — force musl libc detection for Alpine native bindings
-# (Buildx doesn't expose musl libc to npm's platform detection — npm/cli#4828)
+# Install dependencies
 ARG NPM_MADFAM_TOKEN
-RUN npm_config_libc=musl npm ci
+RUN npm ci
+
+# Explicitly install musl-compatible native bindings for Alpine
+# npm ci skips platform-specific optional deps in Buildx (npm/cli#4828)
+RUN npm install --no-save \
+    lightningcss-linux-x64-musl \
+    @tailwindcss/oxide-linux-x64-musl \
+    @rollup/rollup-linux-x64-musl \
+    @unrs/resolver-binding-linux-x64-musl \
+    2>/dev/null || true
 
 # ── Stage 2: Build ───────────────────────────────────────────────────
 FROM node:20-alpine AS builder
