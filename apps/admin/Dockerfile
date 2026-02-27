@@ -17,9 +17,10 @@ COPY packages/lib/package.json packages/lib/package.json
 COPY packages/tsconfig/package.json packages/tsconfig/package.json
 COPY packages/api-client/package.json packages/api-client/package.json
 
-# Install ALL dependencies (unfiltered npm ci installs platform-specific optional deps)
+# Install dependencies — force musl libc detection for Alpine native bindings
+# (Buildx doesn't expose musl libc to npm's platform detection — npm/cli#4828)
 ARG NPM_MADFAM_TOKEN
-RUN npm ci
+RUN npm_config_libc=musl npm ci
 
 # ── Stage 2: Build ───────────────────────────────────────────────────
 FROM node:20-alpine AS builder
