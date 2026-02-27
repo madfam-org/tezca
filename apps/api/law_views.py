@@ -676,18 +676,38 @@ REGISTRY_PATH = os.path.join(
 
 
 def _load_universe_registry():
-    """Load universe_registry.json with file-mtime caching."""
+    """Load universe_registry.json with TTL caching (local or R2)."""
+    import time
+
+    now = time.time()
+    # Return cached data if still fresh (5 min TTL)
+    if _registry_cache["data"] is not None and (now - _registry_cache["mtime"]) < 300:
+        return _registry_cache["data"]
+
+    # Try local filesystem first
     try:
-        mtime = os.path.getmtime(REGISTRY_PATH)
-        if _registry_cache["data"] is not None and _registry_cache["mtime"] == mtime:
-            return _registry_cache["data"]
         with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
         _registry_cache["data"] = data
-        _registry_cache["mtime"] = mtime
+        _registry_cache["mtime"] = now
         return data
     except (OSError, json.JSONDecodeError):
-        return None
+        pass
+
+    # Fall back to R2 storage
+    try:
+        from apps.api.utils.paths import read_data_content
+
+        content = read_data_content("data/universe_registry.json")
+        if content:
+            data = json.loads(content)
+            _registry_cache["data"] = data
+            _registry_cache["mtime"] = now
+            return data
+    except (ImportError, json.JSONDecodeError, Exception):
+        pass
+
+    return None
 
 
 @extend_schema(
