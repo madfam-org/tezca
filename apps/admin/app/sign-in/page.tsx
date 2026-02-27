@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -15,7 +15,11 @@ export default function SignInPage() {
         return <UnconfiguredFallback />;
     }
 
-    return <SignInFormContent router={router} />;
+    return (
+        <Suspense fallback={<PageShell subtitle="Cargando..."><div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div></PageShell>}>
+            <SignInFormContent router={router} />
+        </Suspense>
+    );
 }
 
 function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> }) {
