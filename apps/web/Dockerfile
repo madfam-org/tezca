@@ -8,21 +8,17 @@ WORKDIR /app
 # Copy workspace root package files
 COPY package.json package-lock.json .npmrc ./
 
-# Copy ALL workspace package.json files for full dependency resolution
-# (npm ci --workspace=... skips platform-specific optional deps — npm/cli#4828)
-COPY apps/admin/package.json apps/admin/package.json
+# Copy workspace package.json files for dependency resolution
 COPY apps/web/package.json apps/web/package.json
 COPY packages/ui/package.json packages/ui/package.json
 COPY packages/lib/package.json packages/lib/package.json
-COPY packages/tsconfig/package.json packages/tsconfig/package.json
-COPY packages/api-client/package.json packages/api-client/package.json
 
-# Install dependencies
+# Install dependencies (workspaces need all package.json files present)
 ARG NPM_MADFAM_TOKEN
-RUN npm ci
+RUN npm ci --workspace=apps/web --workspace=packages/ui --workspace=packages/lib
 
 # Explicitly install musl-compatible native bindings for Alpine
-# npm ci skips platform-specific optional deps in Buildx (npm/cli#4828)
+# npm ci --workspace=... skips platform-specific optional deps (npm/cli#4828)
 RUN npm install --no-save \
     lightningcss-linux-x64-musl \
     @tailwindcss/oxide-linux-x64-musl \
