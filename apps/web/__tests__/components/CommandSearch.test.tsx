@@ -84,7 +84,7 @@ describe('CommandSearchTrigger', () => {
 
     it('displays suggestions after typing', async () => {
         mockSuggest.mockResolvedValue([
-            { id: 'mx-fed-cpeum', name: 'Constitución', tier: 'federal' },
+            { id: 'cpeum', name: 'Constitución', tier: 'federal' },
         ]);
 
         render(<CommandSearchTrigger />);
@@ -127,7 +127,7 @@ describe('CommandSearchTrigger', () => {
 
     it('navigates to law on suggestion click', async () => {
         mockSuggest.mockResolvedValue([
-            { id: 'mx-fed-cpeum', name: 'Constitución', tier: 'federal' },
+            { id: 'cpeum', name: 'Constitución', tier: 'federal' },
         ]);
 
         render(<CommandSearchTrigger />);
@@ -142,7 +142,7 @@ describe('CommandSearchTrigger', () => {
 
         fireEvent.click(screen.getByText('Constitución'));
 
-        expect(mockPush).toHaveBeenCalledWith('/leyes/mx-fed-cpeum');
+        expect(mockPush).toHaveBeenCalledWith('/leyes/cpeum');
     });
 
     it('navigates to search results on Enter with no selection', () => {

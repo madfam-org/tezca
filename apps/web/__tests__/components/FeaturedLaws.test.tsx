@@ -125,7 +125,7 @@ describe('FeaturedLaws', () => {
     it('links to correct law detail pages', async () => {
         mockGetLaws.mockResolvedValue({
             results: [
-                { id: 'mx-fed-lft', name: 'Ley Federal del Trabajo', tier: 'federal', versions: 5 },
+                { id: 'lft', name: 'Ley Federal del Trabajo', tier: 'federal', versions: 5 },
             ],
         });
 
@@ -133,7 +133,7 @@ describe('FeaturedLaws', () => {
 
         await waitFor(() => {
             const link = screen.getByText('Ley Federal del Trabajo').closest('a');
-            expect(link?.getAttribute('href')).toBe('/leyes/mx-fed-lft');
+            expect(link?.getAttribute('href')).toBe('/leyes/lft');
         });
     });
 

@@ -35,13 +35,13 @@ describe('ExportDropdown', () => {
     });
 
     it('renders the download button', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         const btn = screen.getByRole('button', { expanded: false });
         expect(btn).toBeInTheDocument();
     });
 
     it('opens dropdown on click', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         expect(screen.getByText('Descargar TXT')).toBeInTheDocument();
         expect(screen.getByText('Descargar PDF')).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('ExportDropdown', () => {
     });
 
     it('shows all 6 format buttons', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         // 6 format buttons + 1 toggle button = 7 buttons
         const buttons = screen.getAllByRole('button');
@@ -60,19 +60,19 @@ describe('ExportDropdown', () => {
     });
 
     it('shows Cuenta badge on PDF', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         expect(screen.getByText('Cuenta')).toBeInTheDocument();
     });
 
     it('shows Premium badges on premium formats', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         expect(screen.getAllByText('Premium')).toHaveLength(4);
     });
 
     it('shows login message when anon clicks PDF', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar PDF'));
         expect(screen.getByText('Inicia sesión para descargar en este formato')).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe('ExportDropdown', () => {
     });
 
     it('shows login message when anon clicks premium format', () => {
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar LaTeX'));
         expect(screen.getByText('Inicia sesión para descargar en este formato')).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('ExportDropdown', () => {
             name: null,
             signOut: vi.fn(),
         });
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar DOCX'));
         expect(screen.getByText('Formato Premium — Actualiza tu cuenta')).toBeInTheDocument();
@@ -113,13 +113,13 @@ describe('ExportDropdown', () => {
         global.URL.createObjectURL = vi.fn(() => 'blob:test');
         global.URL.revokeObjectURL = vi.fn();
 
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar TXT'));
 
         await waitFor(() => {
             expect(mockFetch).toHaveBeenCalledWith(
-                'http://localhost:8000/laws/mx-fed-cpeum/export/txt/',
+                'http://localhost:8000/laws/cpeum/export/txt/',
                 expect.any(Object),
             );
         });
@@ -145,13 +145,13 @@ describe('ExportDropdown', () => {
         global.URL.createObjectURL = vi.fn(() => 'blob:test');
         global.URL.revokeObjectURL = vi.fn();
 
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar PDF'));
 
         await waitFor(() => {
             expect(mockFetch).toHaveBeenCalledWith(
-                'http://localhost:8000/laws/mx-fed-cpeum/export/pdf/',
+                'http://localhost:8000/laws/cpeum/export/pdf/',
                 expect.any(Object),
             );
         });
@@ -167,7 +167,7 @@ describe('ExportDropdown', () => {
             name: null,
             signOut: vi.fn(),
         });
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         // No lock icons should be visible — all formats accessible
         // Click EPUB — should not show any message
@@ -193,7 +193,7 @@ describe('ExportDropdown', () => {
         });
         global.fetch = mockFetch;
 
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar TXT'));
 
@@ -211,7 +211,7 @@ describe('ExportDropdown', () => {
         });
         global.fetch = mockFetch;
 
-        render(<ExportDropdown lawId="mx-fed-cpeum" />);
+        render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         // Manually force a fetch for TXT (anon should be allowed, but server returns 403)
         fireEvent.click(screen.getByText('Descargar TXT'));
