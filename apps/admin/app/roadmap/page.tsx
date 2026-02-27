@@ -82,7 +82,7 @@ function RoadmapItemRow({
             <div className="shrink-0">
                 <select
                     value={item.status}
-                    onChange={(e) => onStatusChange(item.id, e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onStatusChange(item.id, e.target.value)}
                     disabled={updating === item.id}
                     aria-label={`Estado de ${item.title}`}
                     className={`text-xs rounded-md px-2 py-1 border border-muted cursor-pointer ${STATUS_STYLES[item.status] ?? ''}`}
@@ -223,7 +223,7 @@ export default function RoadmapPage() {
                     <CardHeader
                         className="pb-3 cursor-pointer select-none"
                         onClick={() => togglePhase(phase.phase)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePhase(phase.phase); } }}
+                        onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePhase(phase.phase); } }}
                         tabIndex={0}
                         role="button"
                         aria-expanded={!collapsed[phase.phase]}

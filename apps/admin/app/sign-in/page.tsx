@@ -194,7 +194,7 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
                             autoComplete="email"
                             required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                             disabled={submitting}
                             placeholder="admin@madfam.io"
                             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
@@ -215,7 +215,7 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
                             autoComplete="current-password"
                             required
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                             disabled={submitting}
                             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                         />
