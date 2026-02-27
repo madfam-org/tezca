@@ -73,6 +73,71 @@ The audience value must be consistent across:
 
 ---
 
+## Tier-Based Authorization
+
+After authentication, every request gets a tier that controls feature access and rate limits. Tiers are managed by Dhanam (billing) and embedded as JWT claims by Janua.
+
+### Tier Hierarchy
+
+| Tier | Rank | Description |
+|------|------|-------------|
+| `anon` | 0 | Unauthenticated requests. Most restrictive limits. |
+| `essentials` | 1 | Free tier (default for authenticated users). Matches the open-source self-hosted build. |
+| `pro` | 2 | Paid tier. Unlocks search analytics, API keys, bulk download, premium exports. |
+| `madfam` | 3 | Internal/operator tier. All features enabled, no limits. |
+
+Legacy tier names are normalized automatically: `free` maps to `essentials`, `premium` maps to `pro`, `internal` and `enterprise` map to `madfam`.
+
+### JWT Claim Extraction
+
+`CombinedAuthentication` reads the tier from JWT claims in this order:
+
+1. `tezca_tier` -- product-specific claim set by Dhanam via Janua webhook. Preferred.
+2. `tier` -- generic cross-product claim.
+3. `plan` -- legacy claim name.
+4. Falls back to `"free"` if none are present.
+
+The product-specific `tezca_tier` claim allows a user to have different tiers across MADFAM products (e.g., `pro` on Tezca but `essentials` on Yantra4D).
+
+### Feature Gating
+
+Use `RequireTier` as a DRF permission class to gate endpoints:
+
+```python
+from apps.api.middleware.tier_permissions import RequireTier
+
+@permission_classes([RequireTier.of("pro")])
+def premium_endpoint(request):
+    ...
+```
+
+Only `pro` and above features are gated. Essentials-level features are identical to the open-source self-hosted build and require no permission check beyond authentication.
+
+For individual feature flags, use `check_feature()`:
+
+```python
+from apps.api.middleware.tier_permissions import check_feature
+
+if check_feature(request.user.tier, "search_analytics"):
+    ...
+```
+
+Feature definitions and per-tier limits are in `apps/api/tiers.json`.
+
+### Rate Limiting by Tier
+
+Tier limits from `tiers.json` control request quotas:
+
+| Tier | API requests/day | Search results/query |
+|------|-----------------|---------------------|
+| `essentials` | 500 | 25 |
+| `pro` | Unlimited (-1) | Unlimited (-1) |
+| `madfam` | Unlimited (-1) | Unlimited (-1) |
+
+Use `get_tier_limits(tier)` to retrieve the full limits dict for rate limiter configuration.
+
+---
+
 ## Admin App
 
 The admin interface uses the same Janua authentication mechanism but with a separate OAuth client configuration. This separation allows:
@@ -143,3 +208,11 @@ Other MADFAM repos with Janua integrations (for comparison):
 **Cause**: Server-side sessions may be stored in memory or in a store that was cleared during deployment.
 
 **Fix**: Verify the session store configuration. Use a persistent store (e.g., Redis) for production deployments to preserve sessions across restarts.
+
+### 403 Forbidden on tier-gated endpoints
+
+**Symptom**: Authenticated user gets a 403 with a message about upgrading their tier.
+
+**Cause**: The user's tier (from JWT claims) does not meet the endpoint's minimum tier requirement. The response body includes an upgrade URL.
+
+**Fix**: Verify the user's subscription status in Dhanam. Check that Janua is issuing the correct `tezca_tier` claim. If the user recently upgraded, they may need to re-authenticate to get a fresh token with the updated claim.

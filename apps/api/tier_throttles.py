@@ -17,8 +17,10 @@ logger = logging.getLogger(__name__)
 TIER_RATE_LIMITS = {
     "anon": (10, 100),
     "free": (30, 500),
+    "essentials": (30, 500),      # Same as free (essentials = open-source baseline)
     "pro": (60, 2_000),
     "enterprise": (120, 10_000),
+    "madfam": (120, 10_000),      # Same as enterprise
     "internal": (200, 50_000),
 }
 

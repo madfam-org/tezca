@@ -1,0 +1,35 @@
+{
+  "essentials": {
+    "search_results_per_query": 25,
+    "api_requests_per_day": 500,
+    "export_formats": ["json"],
+    "search_analytics": false,
+    "newsletter_access": true,
+    "api_key_access": false,
+    "bulk_download": false,
+    "pdf_export": true,
+    "premium_export": false
+  },
+  "pro": {
+    "search_results_per_query": -1,
+    "api_requests_per_day": -1,
+    "export_formats": ["json", "csv", "pdf"],
+    "search_analytics": true,
+    "newsletter_access": true,
+    "api_key_access": true,
+    "bulk_download": true,
+    "pdf_export": true,
+    "premium_export": true
+  },
+  "madfam": {
+    "search_results_per_query": -1,
+    "api_requests_per_day": -1,
+    "export_formats": ["json", "csv", "pdf", "xml"],
+    "search_analytics": true,
+    "newsletter_access": true,
+    "api_key_access": true,
+    "bulk_download": true,
+    "pdf_export": true,
+    "premium_export": true
+  }
+}

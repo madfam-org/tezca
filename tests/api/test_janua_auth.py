@@ -243,3 +243,78 @@ class TestJanuaAuthentication:
         assert user.name == "Alice"
         assert user.claims["tier"] == "premium"
         assert user.is_authenticated is True
+
+
+class TestCombinedAuthTierExtraction:
+    """Tests for tier claim extraction in CombinedAuthentication.
+
+    CombinedAuthentication enriches JanuaUser with a .tier attribute using
+    the following precedence: tezca_tier > tier > plan > "free" (default).
+    """
+
+    def setup_method(self):
+        _reset_jwks_cache()
+        self.factory = APIRequestFactory()
+
+    def _authenticate_with_claims(self, mock_settings, mock_get_jwks, extra_claims):
+        """Helper: create a JWT with extra_claims and run CombinedAuthentication."""
+        from apps.api.middleware.combined_auth import CombinedAuthentication
+
+        mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
+        mock_settings.JANUA_AUDIENCE = "tezca-api"
+        mock_get_jwks.return_value = [_public_jwk]
+
+        token = _make_token(_private_key, _valid_claims(**extra_claims))
+        request = self.factory.get("/api/v1/test/")
+        request.META["HTTP_AUTHORIZATION"] = f"Bearer {token}"
+
+        auth = CombinedAuthentication()
+        return auth.authenticate(request)
+
+    @patch("apps.api.middleware.janua_auth._get_jwks")
+    @patch("apps.api.middleware.janua_auth.settings")
+    def test_tezca_tier_takes_precedence_over_tier(self, mock_settings, mock_get_jwks):
+        """tezca_tier claim should override generic tier claim."""
+        result = self._authenticate_with_claims(
+            mock_settings,
+            mock_get_jwks,
+            {"tezca_tier": "pro", "tier": "free"},
+        )
+        user, _ = result
+        assert user.tier == "pro"
+
+    @patch("apps.api.middleware.janua_auth._get_jwks")
+    @patch("apps.api.middleware.janua_auth.settings")
+    def test_tier_used_when_tezca_tier_absent(self, mock_settings, mock_get_jwks):
+        """When tezca_tier is absent, fall back to tier claim."""
+        result = self._authenticate_with_claims(
+            mock_settings,
+            mock_get_jwks,
+            {"tier": "pro"},
+        )
+        user, _ = result
+        assert user.tier == "pro"
+
+    @patch("apps.api.middleware.janua_auth._get_jwks")
+    @patch("apps.api.middleware.janua_auth.settings")
+    def test_plan_used_when_tier_claims_absent(self, mock_settings, mock_get_jwks):
+        """When both tezca_tier and tier are absent, fall back to plan claim."""
+        result = self._authenticate_with_claims(
+            mock_settings,
+            mock_get_jwks,
+            {"plan": "pro"},
+        )
+        user, _ = result
+        assert user.tier == "pro"
+
+    @patch("apps.api.middleware.janua_auth._get_jwks")
+    @patch("apps.api.middleware.janua_auth.settings")
+    def test_defaults_to_free_when_no_tier_claims(self, mock_settings, mock_get_jwks):
+        """When no tier-related claims exist, default to 'free'."""
+        result = self._authenticate_with_claims(
+            mock_settings,
+            mock_get_jwks,
+            {},
+        )
+        user, _ = result
+        assert user.tier == "free"

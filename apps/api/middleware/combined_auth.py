@@ -64,8 +64,12 @@ class CombinedAuthentication(BaseAuthentication):
             if result is not None:
                 user, token = result
                 # Enrich JanuaUser with tier/scopes for uniform access
+                # Prefer product-specific tezca_tier claim, fall back to generic tier/plan
                 if not hasattr(user, "tier"):
-                    user.tier = user.claims.get("tier", user.claims.get("plan", "free"))
+                    user.tier = user.claims.get(
+                        "tezca_tier",
+                        user.claims.get("tier", user.claims.get("plan", "free")),
+                    )
                 if not hasattr(user, "scopes"):
                     user.scopes = user.claims.get("scopes", ["read", "search"])
                 if not hasattr(user, "allowed_domains"):
