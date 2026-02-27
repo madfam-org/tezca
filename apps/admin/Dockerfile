@@ -24,8 +24,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/admin/node_modules ./apps/admin/node_modules
 
-# Ensure native binaries are built for Alpine (musl)
-RUN npm rebuild lightningcss || true
+# Install platform-specific lightningcss binary for Alpine (musl)
+# npm ci --workspace=... skips optional deps of hoisted packages
+RUN npm install --no-save lightningcss-linux-x64-musl 2>/dev/null || true
 
 # Copy source code
 COPY package.json package-lock.json ./
