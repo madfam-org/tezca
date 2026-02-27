@@ -8,18 +8,18 @@ WORKDIR /app
 # Copy workspace root package files
 COPY package.json package-lock.json .npmrc ./
 
-# Copy workspace package.json files for dependency resolution
+# Copy ALL workspace package.json files for full dependency resolution
+# (npm ci --workspace=... skips platform-specific optional deps — npm/cli#4828)
 COPY apps/admin/package.json apps/admin/package.json
+COPY apps/web/package.json apps/web/package.json
 COPY packages/ui/package.json packages/ui/package.json
 COPY packages/lib/package.json packages/lib/package.json
+COPY packages/tsconfig/package.json packages/tsconfig/package.json
+COPY packages/api-client/package.json packages/api-client/package.json
 
-# Install dependencies
+# Install ALL dependencies (unfiltered npm ci installs platform-specific optional deps)
 ARG NPM_MADFAM_TOKEN
-RUN npm ci --workspace=apps/admin --workspace=packages/ui --workspace=packages/lib
-
-# Install platform-specific lightningcss binary for Alpine (musl)
-# npm ci --workspace=... skips optional deps of hoisted packages
-RUN npm install --no-save lightningcss-linux-x64-musl 2>/dev/null || true
+RUN npm ci
 
 # ── Stage 2: Build ───────────────────────────────────────────────────
 FROM node:20-alpine AS builder
