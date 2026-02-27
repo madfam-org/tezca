@@ -9,7 +9,7 @@ The administrative dashboard for operating the Tezca platform (law ingestion, mo
 - **Expansion Roadmap**: Phase tracking with status updates, next priorities.
 - **Settings**: System configuration, environment info, Elasticsearch status.
 - **Job History**: Real job history from AcquisitionLog (last 20 runs).
-- **Authentication**: Janua SSO with dev-mode bypass when unconfigured.
+- **Authentication**: Janua SSO (hardcoded SSO button + email/password fallback), dev-mode bypass when unconfigured.
 
 ## Pages
 
@@ -21,7 +21,7 @@ The administrative dashboard for operating the Tezca platform (law ingestion, mo
 | `/dashboard/dataops` | Coverage dashboard, state table, gaps, health |
 | `/dashboard/roadmap` | Expansion roadmap with phase tracking |
 | `/dashboard/settings` | System configuration and health |
-| `/sign-in` | Janua sign-in form (or dev bypass when unconfigured) |
+| `/sign-in` | Janua SSO button + email/password fallback (dev bypass when unconfigured) |
 
 ## Auth Architecture
 
