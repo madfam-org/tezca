@@ -33,10 +33,12 @@ export async function GET(request: Request) {
         );
     }
 
-    // Validate state
+    // Validate state and retrieve PKCE verifier
     const cookieStore = await cookies();
     const storedState = cookieStore.get("janua-oauth-state")?.value;
+    const codeVerifier = cookieStore.get("janua-pkce-verifier")?.value;
     cookieStore.delete("janua-oauth-state");
+    cookieStore.delete("janua-pkce-verifier");
 
     if (!storedState || storedState !== state) {
         return NextResponse.redirect(
@@ -57,6 +59,7 @@ export async function GET(request: Request) {
                 redirect_uri: redirectUri,
                 client_id: CLIENT_ID,
                 client_secret: CLIENT_SECRET,
+                ...(codeVerifier ? { code_verifier: codeVerifier } : {}),
             }),
         });
 
