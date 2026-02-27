@@ -24,6 +24,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 
+# Ensure native binaries are built for Alpine (musl)
+RUN npm rebuild lightningcss || true
+
 # Copy source code
 COPY package.json package-lock.json ./
 COPY apps/web ./apps/web
