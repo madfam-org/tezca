@@ -161,6 +161,11 @@ npm run build:all
 - `apps/api/storage.py` -- `StorageBackend` abstraction (local filesystem or Cloudflare R2)
 - Controlled by `STORAGE_BACKEND` env var (`local` or `r2`)
 - boto3 is an optional dependency (`poetry install -E r2`)
+- `apps/api/utils/paths.py` -- `read_data_content()`, `data_exists()`, `read_metadata_json()` provide R2 fallback for all data reads
+- R2 fallback pattern: try local filesystem first → fall back to R2 via `read_data_content()`. Used by:
+  - `law_views.py::_load_universe_registry()` — coverage stats (TTL-cached 5 min)
+  - All ingestion management commands (`index_laws`, `ingest_state_laws`, etc.)
+  - **Not yet**: `coverage_dashboard.py` — still uses local-only `_load_json()`
 
 ---
 

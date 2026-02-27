@@ -475,6 +475,107 @@ class TestLawApi:
             lv._registry_cache["data"] = None
             os.unlink(tmp_path)
 
+    @patch("apps.api.law_views.es_client")
+    def test_stats_coverage_r2_fallback(self, mock_es):
+        """Test that /stats/ loads universe registry from R2 when local file is missing."""
+        import apps.api.law_views as lv
+
+        registry = {
+            "version": "1.0",
+            "sources": {
+                "federal_leyes_vigentes": {
+                    "known_count": 336,
+                    "source_name": "Camara de Diputados",
+                    "last_verified": "2026-02-03",
+                },
+                "state_legislativo": {
+                    "known_count": 12120,
+                    "source_name": "OJN - Poder Legislativo",
+                    "permanent_gaps": 782,
+                },
+                "state_non_legislativo": {"known_count": 23660},
+                "municipal": {
+                    "known_count": None,
+                    "cities_covered": 5,
+                    "total_municipalities": 2468,
+                },
+            },
+        }
+
+        # Point REGISTRY_PATH to a non-existent file so local read fails
+        original_path = lv.REGISTRY_PATH
+        lv.REGISTRY_PATH = "/nonexistent/path/universe_registry.json"
+        lv._registry_cache["data"] = None
+        lv._registry_cache["mtime"] = 0
+
+        mock_es.ping.return_value = True
+        mock_es.count.return_value = {"count": 500000}
+
+        try:
+            # Patch where the function imports from — the lazy import resolves
+            # to apps.api.utils.paths.read_data_content
+            with patch(
+                "apps.api.utils.paths.read_data_content",
+                return_value=json.dumps(registry),
+            ):
+                url = reverse("law-stats")
+                response = self.client.get(url)
+
+            assert response.status_code == 200
+            data = response.json()
+
+            assert "coverage" in data
+            cov = data["coverage"]
+            assert cov["federal"]["universe"] == 336
+            assert cov["state"]["universe"] == 12120
+            assert cov["leyes_vigentes"]["universe"] == 336 + 12120
+        finally:
+            lv.REGISTRY_PATH = original_path
+            lv._registry_cache["data"] = None
+
+    @patch("apps.api.law_views.es_client")
+    def test_stats_coverage_both_fail(self, mock_es):
+        """Test that /stats/ handles gracefully when both local and R2 fail."""
+        import apps.api.law_views as lv
+
+        original_path = lv.REGISTRY_PATH
+        lv.REGISTRY_PATH = "/nonexistent/path/universe_registry.json"
+        lv._registry_cache["data"] = None
+        lv._registry_cache["mtime"] = 0
+
+        mock_es.ping.return_value = True
+        mock_es.count.return_value = {"count": 500000}
+
+        try:
+            with patch("apps.api.utils.paths.read_data_content", return_value=None):
+                url = reverse("law-stats")
+                response = self.client.get(url)
+
+            assert response.status_code == 200
+            data = response.json()
+            # When registry is None, coverage fields should still exist but be empty/None
+            assert "total_laws" in data
+        finally:
+            lv.REGISTRY_PATH = original_path
+            lv._registry_cache["data"] = None
+
+    def test_stats_coverage_cache_ttl(self):
+        """Test that registry cache respects TTL and returns cached data within window."""
+        import time
+
+        import apps.api.law_views as lv
+
+        cached_data = {"version": "1.0", "sources": {"federal_leyes_vigentes": {"known_count": 100}}}
+        lv._registry_cache["data"] = cached_data
+        lv._registry_cache["mtime"] = time.time()  # Just cached
+
+        result = lv._load_universe_registry()
+        assert result == cached_data
+        assert result["sources"]["federal_leyes_vigentes"]["known_count"] == 100
+
+        # Restore
+        lv._registry_cache["data"] = None
+
     def test_law_cross_references(self):
         """Test GET /laws/{id}/references/ returns aggregated statistics."""
         # NOTE: Same URL parameter name mismatch caveat as article_cross_references.
