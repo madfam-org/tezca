@@ -33,7 +33,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/admin/node_modules ./apps/admin/node_modules
 COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
-COPY --from=deps /app/packages/lib/node_modules ./packages/lib/node_modules
 
 # Copy source code
 COPY package.json package-lock.json ./
