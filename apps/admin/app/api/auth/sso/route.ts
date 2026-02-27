@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 const JANUA_BASE_URL = process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
 const CLIENT_ID = process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "";
+
+function getOrigin(request: Request): string {
+    const h = new Headers(request.headers);
+    const host = h.get("x-forwarded-host") || h.get("host") || new URL(request.url).host;
+    const proto = h.get("x-forwarded-proto") || "https";
+    return `${proto}://${host}`;
+}
 
 export async function GET(request: Request) {
     if (!CLIENT_ID) {
         return NextResponse.json({ error: "Janua not configured" }, { status: 503 });
     }
 
-    const origin = new URL(request.url).origin;
+    const origin = getOrigin(request);
     const redirectUri = `${origin}/api/auth/callback`;
 
     // Generate state for CSRF protection

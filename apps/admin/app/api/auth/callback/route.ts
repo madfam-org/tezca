@@ -6,8 +6,16 @@ const JANUA_BASE_URL = process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.m
 const CLIENT_ID = process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "";
 const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
 
+function getOrigin(request: Request): string {
+    const h = new Headers(request.headers);
+    const host = h.get("x-forwarded-host") || h.get("host") || new URL(request.url).host;
+    const proto = h.get("x-forwarded-proto") || "https";
+    return `${proto}://${host}`;
+}
+
 export async function GET(request: Request) {
     const url = new URL(request.url);
+    const origin = getOrigin(request);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
     const error = url.searchParams.get("error");
@@ -15,13 +23,13 @@ export async function GET(request: Request) {
     if (error) {
         const desc = url.searchParams.get("error_description") || error;
         return NextResponse.redirect(
-            `${url.origin}/sign-in?sso_error=${encodeURIComponent(desc)}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent(desc)}`
         );
     }
 
     if (!code || !state) {
         return NextResponse.redirect(
-            `${url.origin}/sign-in?sso_error=${encodeURIComponent("Respuesta de autenticación incompleta")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Respuesta de autenticación incompleta")}`
         );
     }
 
@@ -32,12 +40,12 @@ export async function GET(request: Request) {
 
     if (!storedState || storedState !== state) {
         return NextResponse.redirect(
-            `${url.origin}/sign-in?sso_error=${encodeURIComponent("Estado de sesión inválido. Intenta de nuevo.")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Estado de sesión inválido. Intenta de nuevo.")}`
         );
     }
 
     // Exchange authorization code for tokens
-    const redirectUri = `${url.origin}/api/auth/callback`;
+    const redirectUri = `${origin}/api/auth/callback`;
     let tokenData;
     try {
         const tokenRes = await fetch(`${JANUA_BASE_URL}/api/v1/oauth/token`, {
@@ -56,7 +64,7 @@ export async function GET(request: Request) {
             const body = await tokenRes.text();
             console.error("Token exchange failed:", tokenRes.status, body);
             return NextResponse.redirect(
-                `${url.origin}/sign-in?sso_error=${encodeURIComponent("Error al intercambiar código de autorización")}`
+                `${origin}/sign-in?sso_error=${encodeURIComponent("Error al intercambiar código de autorización")}`
             );
         }
 
@@ -64,7 +72,7 @@ export async function GET(request: Request) {
     } catch (err) {
         console.error("Token exchange error:", err);
         return NextResponse.redirect(
-            `${url.origin}/sign-in?sso_error=${encodeURIComponent("Error de conexión con el servidor de autenticación")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Error de conexión con el servidor de autenticación")}`
         );
     }
 
@@ -142,5 +150,5 @@ export async function GET(request: Request) {
         maxAge: 60,
     });
 
-    return NextResponse.redirect(`${url.origin}/`);
+    return NextResponse.redirect(`${origin}/`);
 }
