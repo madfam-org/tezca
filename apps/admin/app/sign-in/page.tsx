@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Shield } from "lucide-react";
 
@@ -20,8 +20,8 @@ export default function SignInPage() {
 
 function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> }) {
     const { auth, isAuthenticated, isLoading: authLoading } = useAuth();
+    const searchParams = useSearchParams();
     const [ssoError, setSsoError] = useState<string | null>(null);
-    const [ssoRedirecting, setSsoRedirecting] = useState(false);
 
     // Email/password fallback state
     const [email, setEmail] = useState("");
@@ -35,23 +35,17 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         }
     }, [isAuthenticated, authLoading, router]);
 
-    async function handleSsoLogin() {
-        setSsoError(null);
-        setSsoRedirecting(true);
-        try {
-            const result = await auth.signInWithOAuth({
-                provider: "janua",
-                redirect_uri: window.location.origin + "/sign-in",
-            });
-            window.location.href = result.authorization_url;
-        } catch (err) {
-            setSsoError(
-                err instanceof Error
-                    ? err.message
-                    : "Error al iniciar SSO. Intenta de nuevo."
-            );
-            setSsoRedirecting(false);
+    // Pick up SSO errors from callback redirect
+    useEffect(() => {
+        const error = searchParams.get("sso_error");
+        if (error) {
+            setSsoError(error);
         }
+    }, [searchParams]);
+
+    function handleSsoLogin() {
+        // Navigate to the server-side OIDC initiation route
+        window.location.href = "/api/auth/sso";
     }
 
     async function handleSubmit(e: FormEvent) {
@@ -97,13 +91,10 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
 
                 <button
                     onClick={handleSsoLogin}
-                    disabled={ssoRedirecting}
                     className="w-full flex justify-center items-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                     <Shield className="h-4 w-4" />
-                    {ssoRedirecting
-                        ? "Redirigiendo..."
-                        : "Iniciar sesión con Janua SSO"}
+                    Iniciar sesión con Janua SSO
                 </button>
 
                 <p className="text-center text-xs text-muted-foreground">

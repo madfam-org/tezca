@@ -11,7 +11,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const januaMiddleware = jwtSecret
     ? createJanuaMiddleware({
           jwtSecret,
-          publicRoutes: ["/sign-in", "/api/health"],
+          publicRoutes: ["/sign-in", "/api/health", "/api/auth/*"],
           redirectUrl: "/sign-in",
       })
     : null;

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 const mockSignIn = vi.fn();
 const mockSignInWithOAuth = vi.fn();
 const mockReplace = vi.fn();
+const mockGet = vi.fn(() => null);
 const mockUseAuth = vi.fn(() => ({
     auth: {
         signIn: mockSignIn,
@@ -39,6 +40,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('next/navigation', () => ({
     useRouter: () => ({ replace: mockReplace }),
+    useSearchParams: () => ({ get: mockGet }),
 }));
 
 vi.mock('lucide-react', () => ({
@@ -53,6 +55,7 @@ describe('SignInPage', () => {
         mockSignIn.mockReset();
         mockSignInWithOAuth.mockReset();
         mockReplace.mockReset();
+        mockGet.mockReturnValue(null);
         mockUseAuth.mockReturnValue({
             auth: {
                 signIn: mockSignIn,
@@ -85,13 +88,8 @@ describe('SignInPage', () => {
         expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument();
     });
 
-    it('calls signInWithOAuth and redirects on SSO button click', async () => {
+    it('navigates to /api/auth/sso on SSO button click', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-        mockSignInWithOAuth.mockResolvedValue({
-            authorization_url: 'https://auth.example.com/authorize?state=abc',
-            state: 'abc',
-            provider: 'janua',
-        });
 
         const originalLocation = window.location;
         // @ts-expect-error — override for test
@@ -103,28 +101,22 @@ describe('SignInPage', () => {
 
         fireEvent.click(screen.getByText('Iniciar sesión con Janua SSO'));
 
-        await waitFor(() => {
-            expect(mockSignInWithOAuth).toHaveBeenCalledWith({
-                provider: 'janua',
-                redirect_uri: 'http://localhost:3000/sign-in',
-            });
-            expect(window.location.href).toBe('https://auth.example.com/authorize?state=abc');
-        });
+        expect(window.location.href).toBe('/api/auth/sso');
 
         window.location = originalLocation;
     });
 
-    it('shows SSO error when signInWithOAuth fails', async () => {
+    it('shows SSO error from query parameter', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-        mockSignInWithOAuth.mockRejectedValue(new Error('OAuth unavailable'));
+        mockGet.mockImplementation((key: string) =>
+            key === 'sso_error' ? 'Token exchange failed' : null
+        );
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
         render(<SignInPage />);
 
-        fireEvent.click(screen.getByText('Iniciar sesión con Janua SSO'));
-
         await waitFor(() => {
-            expect(screen.getByRole('alert')).toHaveTextContent('OAuth unavailable');
+            expect(screen.getByRole('alert')).toHaveTextContent('Token exchange failed');
         });
     });
 
