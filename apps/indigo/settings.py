@@ -280,4 +280,29 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.check_dof_daily",
         "schedule": crontab(hour=7, minute=0),
     },
+    # ── Data acquisition tasks ────────────────────────────────────────
+    "treaty-weekly-check": {
+        "task": "dataops.scrape_treaties",
+        "schedule": crontab(hour=2, minute=0, day_of_week="wednesday"),
+        "kwargs": {"retry_failed": True, "merge_sources": True},
+    },
+    "nom-weekly-discovery": {
+        "task": "dataops.scrape_noms",
+        "schedule": crontab(hour=3, minute=0, day_of_week="thursday"),
+        "kwargs": {"all_agencies": True, "max_results": 5000},
+    },
+    "conamer-weekly-scrape": {
+        "task": "dataops.scrape_conamer",
+        "schedule": crontab(hour=1, minute=0, day_of_week="saturday"),
+        "kwargs": {"max_pages": 100},
+    },
+    "municipal-monthly-scan": {
+        "task": "dataops.scrape_municipal",
+        "schedule": crontab(hour=4, minute=0, day_of_month="15"),
+        "kwargs": {"tiers": ["tier1", "tier2"]},
+    },
+    "coverage-report-weekly": {
+        "task": "dataops.generate_coverage_report",
+        "schedule": crontab(hour=6, minute=0, day_of_week="monday"),
+    },
 }

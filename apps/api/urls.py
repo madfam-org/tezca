@@ -28,7 +28,19 @@ from .admin_views import (
 from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
 from .bulk_views import bulk_articles
 from .changelog_views import changelog
+from .contribution_views import (
+    list_contributions,
+    submit_contribution,
+    submit_expert_contact,
+)
+from .coverage_views import public_coverage
 from .cross_reference_views import article_cross_references, law_cross_references
+from .judicial_views import (
+    judicial_detail,
+    judicial_list,
+    judicial_search,
+    judicial_stats,
+)
 from .export_views import (
     export_docx,
     export_epub,
@@ -139,6 +151,15 @@ urlpatterns = [
     # ── Bulk data access (API key required) ──────────────────────────────
     path("bulk/articles/", bulk_articles, name="bulk-articles"),
     path("changelog/", changelog, name="changelog"),
+    path("coverage/", public_coverage, name="public-coverage"),
+    # ── Contributions (public submission) ──────────────────────────────
+    path("contributions/", submit_contribution, name="contribution-submit"),
+    path("contributions/expert/", submit_expert_contact, name="expert-contact"),
+    path(
+        "admin/contributions/",
+        _protected(list_contributions),
+        name="admin-contributions",
+    ),
     # ── User endpoints (auth required) ─────────────────────────────────
     path("user/preferences/", user_preferences, name="user-preferences"),
     path("user/bookmarks/", user_bookmarks, name="user-bookmarks"),
@@ -169,4 +190,9 @@ urlpatterns = [
     path("webhooks/list/", list_webhooks, name="webhook-list"),
     path("webhooks/<int:webhook_id>/", delete_webhook, name="webhook-delete"),
     path("webhooks/<int:webhook_id>/test/", test_webhook, name="webhook-test"),
+    # ── Judicial records (public) ─────────────────────────────────────
+    path("judicial/", judicial_list, name="judicial-list"),
+    path("judicial/search/", judicial_search, name="judicial-search"),
+    path("judicial/stats/", judicial_stats, name="judicial-stats"),
+    path("judicial/<str:registro>/", judicial_detail, name="judicial-detail"),
 ]

@@ -4,14 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, Menu, X, LogIn, User } from 'lucide-react';
-import { UserButton } from '@janua/nextjs';
+import { UserButton, SignedIn, SignedOut } from '@janua/nextjs';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { CommandSearchTrigger } from '@/components/CommandSearch';
 import { AuthModal } from '@/components/AuthModal';
 import { NotificationBell } from '@/components/NotificationBell';
 import { useLang } from '@/components/providers/LanguageContext';
-import { useAuth } from '@/components/providers/AuthContext';
 
 const content = {
     es: {
@@ -68,7 +67,6 @@ const NAV_LINKS = [
 export function Navbar() {
     const { lang } = useLang();
     const t = content[lang];
-    const { isAuthenticated } = useAuth();
     const pathname = usePathname();
     const isHome = pathname === '/';
     // Key mobile menu state to pathname — resets to false on navigation
@@ -131,7 +129,7 @@ export function Navbar() {
                                 <LanguageToggle />
                             </div>
                             <NotificationBell />
-                            {isAuthenticated ? (
+                            <SignedIn>
                                 <div className="flex items-center gap-1">
                                     <Link
                                         href="/cuenta"
@@ -142,7 +140,8 @@ export function Navbar() {
                                     </Link>
                                     <UserButton afterSignOut={() => window.location.assign('/')} />
                                 </div>
-                            ) : (
+                            </SignedIn>
+                            <SignedOut>
                                 <button
                                     onClick={() => setAuthModalOpen(true)}
                                     className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -151,7 +150,7 @@ export function Navbar() {
                                     <LogIn className="h-4 w-4" aria-hidden="true" />
                                     <span>{t.signIn}</span>
                                 </button>
-                            )}
+                            </SignedOut>
                             <ModeToggle />
                             {/* Mobile hamburger */}
                             <button
@@ -190,7 +189,7 @@ export function Navbar() {
                                     </Link>
                                 );
                             })}
-                            {!isAuthenticated && (
+                            <SignedOut>
                                 <button
                                     onClick={() => {
                                         setMobileOpen(false);
@@ -201,7 +200,7 @@ export function Navbar() {
                                     <LogIn className="h-4 w-4" aria-hidden="true" />
                                     {t.signIn}
                                 </button>
-                            )}
+                            </SignedOut>
                             <div className="pt-3 px-3 sm:hidden">
                                 <LanguageToggle />
                             </div>

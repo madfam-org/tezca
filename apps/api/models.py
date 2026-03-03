@@ -389,6 +389,118 @@ class NewsletterSubscription(models.Model):
         return f"{self.email} ({status})"
 
 
+class Contribution(models.Model):
+    """Community data contribution submissions."""
+
+    class DataType(models.TextChoices):
+        FEDERAL = "federal", "Legislación federal"
+        STATE = "state", "Legislación estatal"
+        MUNICIPAL = "municipal", "Reglamentación municipal"
+        NOM = "nom", "Norma Oficial Mexicana"
+        JUDICIAL = "judicial", "Jurisprudencia"
+        TREATY = "treaty", "Tratado internacional"
+        REGULATION = "regulation", "Regulación/reglamento"
+        OTHER = "other", "Otro"
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pendiente"
+        REVIEWING = "reviewing", "En revisión"
+        APPROVED = "approved", "Aprobado"
+        REJECTED = "rejected", "Rechazado"
+        INGESTED = "ingested", "Ingresado"
+
+    # Submitter info
+    submitter_name = models.CharField(max_length=200)
+    submitter_email = models.EmailField()
+    submitter_institution = models.CharField(max_length=300, blank=True, default="")
+
+    # Contribution details
+    data_type = models.CharField(max_length=20, choices=DataType.choices)
+    jurisdiction = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="State, municipality, or 'federal'",
+    )
+    description = models.TextField()
+    file_url = models.URLField(max_length=500, blank=True, default="")
+    file_format = models.CharField(max_length=50, blank=True, default="")
+
+    # Status tracking
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.PENDING
+    )
+    reviewer_notes = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "data_type"]),
+        ]
+
+    def __str__(self):
+        return (
+            f"[{self.get_status_display()}] {self.data_type} from {self.submitter_name}"
+        )
+
+
+class JudicialRecord(models.Model):
+    """SCJN jurisprudencia and tesis aisladas."""
+
+    class RecordType(models.TextChoices):
+        JURISPRUDENCIA = "jurisprudencia", "Jurisprudencia"
+        TESIS_AISLADA = "tesis_aislada", "Tesis Aislada"
+
+    class Materia(models.TextChoices):
+        CIVIL = "civil", "Civil"
+        PENAL = "penal", "Penal"
+        ADMINISTRATIVA = "administrativa", "Administrativa"
+        LABORAL = "laboral", "Laboral"
+        CONSTITUCIONAL = "constitucional", "Constitucional"
+        COMUN = "comun", "Común"
+
+    registro = models.CharField(
+        max_length=100, unique=True, help_text="SCJN registry key"
+    )
+    epoca = models.CharField(max_length=50, db_index=True, help_text="Epoch (e.g. 11a)")
+    instancia = models.CharField(
+        max_length=200, help_text="Issuing body (Pleno, Primera Sala, TCC, etc.)"
+    )
+    materia = models.CharField(max_length=30, choices=Materia.choices, db_index=True)
+    tipo = models.CharField(max_length=30, choices=RecordType.choices, db_index=True)
+    rubro = models.TextField(help_text="Subject heading / title")
+    texto = models.TextField(help_text="Full text of the thesis")
+    precedentes = models.TextField(blank=True, default="", help_text="Precedent cases")
+    votos = models.TextField(
+        blank=True, default="", help_text="Dissenting/concurring votes"
+    )
+    ponente = models.CharField(
+        max_length=200, blank=True, default="", help_text="Reporting justice"
+    )
+    fuente = models.CharField(
+        max_length=300,
+        blank=True,
+        default="",
+        help_text="Source publication (Semanario Judicial, Gaceta)",
+    )
+    fecha_publicacion = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-fecha_publicacion"]
+        indexes = [
+            models.Index(fields=["tipo", "materia"]),
+            models.Index(fields=["epoca", "instancia"]),
+        ]
+
+    def __str__(self):
+        return f"[{self.get_tipo_display()}] {self.rubro[:80]}"
+
+
 class WebhookSubscription(models.Model):
     """Webhook subscription for push notifications on law changes."""
 

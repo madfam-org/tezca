@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell } from 'lucide-react';
+import { Protect } from '@janua/nextjs';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 
@@ -62,64 +63,66 @@ export default function CuentaPage() {
     const tierLabel = t.tierLabels[tier] || tier;
 
     return (
-        <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-            <h1 className="text-2xl font-bold mb-8">{t.title}</h1>
+        <Protect redirectUrl="/login">
+            <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+                <h1 className="text-2xl font-bold mb-8">{t.title}</h1>
 
-            {/* Profile card */}
-            <div className="rounded-lg border border-border bg-background p-6 mb-6">
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                        {(name || email || '?')[0].toUpperCase()}
+                {/* Profile card */}
+                <div className="rounded-lg border border-border bg-background p-6 mb-6">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                            {(name || email || '?')[0].toUpperCase()}
+                        </div>
+                        <div>
+                            <p className="font-semibold text-lg">{displayName}</p>
+                            {email && <p className="text-sm text-muted-foreground">{email}</p>}
+                        </div>
                     </div>
-                    <div>
-                        <p className="font-semibold text-lg">{displayName}</p>
-                        {email && <p className="text-sm text-muted-foreground">{email}</p>}
+
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">{t.tier}:</span>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${TIER_COLORS[tier] || TIER_COLORS.free}`}>
+                            {tierLabel}
+                        </span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">{t.tier}:</span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${TIER_COLORS[tier] || TIER_COLORS.free}`}>
-                        {tierLabel}
-                    </span>
+                {/* Quick links */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <QuickLinkCard
+                        href="/favoritos"
+                        icon={<BookmarkCheck className="h-5 w-5" />}
+                        label={t.bookmarks}
+                    />
+                    <QuickLinkCard
+                        href="/leyes"
+                        icon={<Clock className="h-5 w-5" />}
+                        label={t.recentlyViewed}
+                    />
+                    <QuickLinkCard
+                        href="/cuenta/notas"
+                        icon={<MessageSquare className="h-5 w-5" />}
+                        label={t.notes}
+                    />
+                    <QuickLinkCard
+                        href="/cuenta/alertas"
+                        icon={<Bell className="h-5 w-5" />}
+                        label={t.alerts}
+                    />
                 </div>
-            </div>
 
-            {/* Quick links */}
-            <div className="grid gap-4 sm:grid-cols-2">
-                <QuickLinkCard
-                    href="/favoritos"
-                    icon={<BookmarkCheck className="h-5 w-5" />}
-                    label={t.bookmarks}
-                />
-                <QuickLinkCard
-                    href="/leyes"
-                    icon={<Clock className="h-5 w-5" />}
-                    label={t.recentlyViewed}
-                />
-                <QuickLinkCard
-                    href="/cuenta/notas"
-                    icon={<MessageSquare className="h-5 w-5" />}
-                    label={t.notes}
-                />
-                <QuickLinkCard
-                    href="/cuenta/alertas"
-                    icon={<Bell className="h-5 w-5" />}
-                    label={t.alerts}
-                />
-            </div>
-
-            {/* Sign out */}
-            <div className="mt-8">
-                <button
-                    onClick={signOut}
-                    className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                >
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
-                    {t.signOut}
-                </button>
-            </div>
-        </main>
+                {/* Sign out */}
+                <div className="mt-8">
+                    <button
+                        onClick={signOut}
+                        className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                        <LogOut className="h-4 w-4" aria-hidden="true" />
+                        {t.signOut}
+                    </button>
+                </div>
+            </main>
+        </Protect>
     );
 }
 

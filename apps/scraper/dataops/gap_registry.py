@@ -36,24 +36,36 @@ STATE_PORTAL_INVESTIGATION = {
         "portal_count": 340,
         "portal_url": "https://www.congresobc.gob.mx/Trabajolegislativo/Leyes",
         "formats": ["pdf", "doc"],
-        "status": "scraped_pending_ingest",
-        "notes": "OJN has only 3 entries (1 successful). State portal lists ~340 laws with PDF+DOC. Scraped 483 files (2026-02-25), pending ingest.",
+        "status": "ready_to_ingest",
+        "notes": (
+            "OJN has only 3 entries (1 successful). State portal lists ~340 laws. "
+            "Scraped 483 files (2026-02-25). 163 txt files extracted. "
+            "Run: python scripts/ingestion/consolidate_state_portal_laws.py --states baja_california"
+        ),
     },
     "Durango": {
         "ojn_count": 1,
         "portal_count": 160,
         "portal_url": "https://congresodurango.gob.mx/trabajo-legislativo/legislacion-estatal/",
         "formats": ["pdf", "docx"],
-        "status": "scraped_pending_ingest",
-        "notes": "OJN has 1 entry. State portal lists ~160 laws with PDF+DOCX downloads. Scraped 305 files (2026-02-25), pending ingest.",
+        "status": "ready_to_ingest",
+        "notes": (
+            "OJN has 1 entry. State portal lists ~160 laws. "
+            "Scraped 305 files (2026-02-25). 153 txt files extracted. "
+            "Run: python scripts/ingestion/consolidate_state_portal_laws.py --states durango"
+        ),
     },
     "Quintana Roo": {
         "ojn_count": 1,
         "portal_count": 356,
         "portal_url": "https://www.congresoqroo.gob.mx/leyes/",
         "formats": ["pdf", "csv", "xls"],
-        "status": "scraped_pending_ingest",
-        "notes": "OJN has 1 entry. State portal lists 356 laws with export APIs (csv/xls/xlsx). Scraped 316 files (2026-02-25), pending ingest.",
+        "status": "ready_to_ingest",
+        "notes": (
+            "OJN has 1 entry. State portal lists 356 laws. "
+            "Scraped 316 files (2026-02-25). 316 txt files extracted. "
+            "Run: python scripts/ingestion/consolidate_state_portal_laws.py --states quintana_roo"
+        ),
     },
     "Hidalgo": {
         "ojn_count": 38,

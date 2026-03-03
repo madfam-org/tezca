@@ -10,8 +10,8 @@ from typing import Any, Dict, List
 MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     # Tier 0 - Capital
     "cdmx": {
-        "name": "Ciudad de México",
-        "state": "Ciudad de México",
+        "name": "Ciudad de Mexico",
+        "state": "Ciudad de Mexico",
         "base_url": "https://data.consejeria.cdmx.gob.mx/",
         "catalog_type": "html",
         "tier": 0,
@@ -40,7 +40,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "monterrey": {
         "name": "Monterrey",
-        "state": "Nuevo León",
+        "state": "Nuevo Leon",
         "base_url": "https://www.monterrey.gob.mx/",
         "catalog_type": "html",
         "tier": 1,
@@ -48,7 +48,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "selectors": {
             "catalog_path": "/transparencia/Oficial_/Normatividad.html",
             "law_links": "a",
-            "title": "td",  # Placeholder, need to check HTML
+            "title": "td",
         },
         "status": "stub",  # Needs implementation
     },
@@ -61,9 +61,10 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "population": 1_692_181,
         "selectors": {
             "catalog_path": "/transparencia/normatividad",
-            "law_links": "a.law-link",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a",
         },
-        "status": "planned",
+        "status": "implemented",
     },
     "tijuana": {
         "name": "Tijuana",
@@ -73,32 +74,42 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "tier": 1,
         "population": 1_810_645,
         "selectors": {
-            "catalog_path": "/transparencia",
+            "catalog_path": "/Transparencia/MarcoJuridico",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
         },
-        "status": "planned",
+        "status": "implemented",
     },
     "leon": {
-        "name": "León",
+        "name": "Leon",
         "state": "Guanajuato",
         "base_url": "https://www.leon.gob.mx/",
         "catalog_type": "html",
         "tier": 1,
         "population": 1_721_626,
         "selectors": {
-            "catalog_path": "/transparencia",
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], table a[href$='.pdf']",
+            "title": "td:first-child, a",
         },
-        "status": "planned",
+        "status": "implemented",
     },
     # Tier 2 - Expansion Cities (next 15 by population)
+    # These use GenericMunicipalScraper with keyword-based link discovery.
+    # Selectors are configured for common Mexican government portal patterns.
     "juarez": {
-        "name": "Ciudad Juárez",
+        "name": "Ciudad Juarez",
         "state": "Chihuahua",
         "base_url": "https://www.juarez.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 1_512_354,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "zapopan": {
         "name": "Zapopan",
@@ -107,28 +118,40 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 1_476_491,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='normativ']",
+            "title": "a, .entry-title",
+        },
+        "status": "ready",
     },
     "merida": {
-        "name": "Mérida",
-        "state": "Yucatán",
+        "name": "Merida",
+        "state": "Yucatan",
         "base_url": "https://www.merida.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 995_129,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child, .titulo",
+        },
+        "status": "ready",
     },
     "cancun": {
-        "name": "Cancún (Benito Juárez)",
+        "name": "Cancun (Benito Juarez)",
         "state": "Quintana Roo",
         "base_url": "https://www.benitojuarez.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 888_797,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='normativ']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "aguascalientes": {
         "name": "Aguascalientes",
@@ -137,18 +160,26 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 863_893,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, span.title",
+        },
+        "status": "ready",
     },
     "san_luis_potosi": {
-        "name": "San Luis Potosí",
-        "state": "San Luis Potosí",
+        "name": "San Luis Potosi",
+        "state": "San Luis Potosi",
         "base_url": "https://www.slp.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 824_229,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='marco-juridico']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "hermosillo": {
         "name": "Hermosillo",
@@ -157,8 +188,12 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 812_229,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "chihuahua": {
         "name": "Chihuahua",
@@ -167,28 +202,40 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 878_062,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='normativ']",
+            "title": "a, .content-title, td:first-child",
+        },
+        "status": "ready",
     },
     "queretaro": {
-        "name": "Querétaro",
-        "state": "Querétaro",
+        "name": "Queretaro",
+        "state": "Queretaro",
         "base_url": "https://www.municipiodequeretaro.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 801_940,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child, .titulo",
+        },
+        "status": "ready",
     },
     "morelia": {
         "name": "Morelia",
-        "state": "Michoacán",
+        "state": "Michoacan",
         "base_url": "https://www.morelia.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 743_275,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "saltillo": {
         "name": "Saltillo",
@@ -197,28 +244,40 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 823_128,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child, .entry-title",
+        },
+        "status": "ready",
     },
     "toluca": {
         "name": "Toluca",
-        "state": "Estado de México",
+        "state": "Estado de Mexico",
         "base_url": "https://www.toluca.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 873_536,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='marco-juridico']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "culiacan": {
-        "name": "Culiacán",
+        "name": "Culiacan",
         "state": "Sinaloa",
         "base_url": "https://culiacan.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
         "population": 808_416,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "villahermosa": {
         "name": "Villahermosa (Centro)",
@@ -227,8 +286,12 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 684_847,
-        "selectors": {"catalog_path": "/transparencia"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='normativ']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
     "acapulco": {
         "name": "Acapulco",
@@ -237,8 +300,12 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "catalog_type": "html",
         "tier": 2,
         "population": 779_566,
-        "selectors": {"catalog_path": "/transparencia/normatividad"},
-        "status": "planned",
+        "selectors": {
+            "catalog_path": "/transparencia/normatividad",
+            "law_links": "a[href$='.pdf'], a[href*='reglamento']",
+            "title": "a, td:first-child",
+        },
+        "status": "ready",
     },
 }
 
@@ -257,7 +324,7 @@ def list_municipalities(tier: int = None, status: str = None) -> List[str]:
 
     Args:
         tier: Filter by tier (0, 1, 2, etc.)
-        status: Filter by status ('implemented', 'partial', 'stub', 'planned')
+        status: Filter by status ('implemented', 'partial', 'stub', 'planned', 'ready')
 
     Returns:
         List of municipality identifiers

@@ -453,6 +453,69 @@ export const api = {
         });
     },
 
+    /**
+     * Get public coverage statistics
+     */
+    getCoverage: async () => {
+        return fetcher<{
+            total_laws: number;
+            total_items: number;
+            total_universe: number;
+            overall_pct: number;
+            tiers: Array<{
+                id: string;
+                name: Record<string, string>;
+                have: number;
+                universe: number | null;
+                pct: number | null;
+                color: string;
+                note?: Record<string, string>;
+            }>;
+            last_updated: string;
+            version: string;
+        }>('/coverage/');
+    },
+
+    searchJudicial: async (params: {
+        q: string;
+        tipo?: string;
+        materia?: string;
+        page?: number;
+        page_size?: number;
+    }) => {
+        const searchParams = new URLSearchParams({ q: params.q });
+        if (params.tipo) searchParams.set('tipo', params.tipo);
+        if (params.materia) searchParams.set('materia', params.materia);
+        if (params.page) searchParams.set('page', String(params.page));
+        if (params.page_size) searchParams.set('page_size', String(params.page_size));
+        return fetcher<{
+            total: number;
+            page: number;
+            page_size: number;
+            query: string;
+            results: Array<{
+                id: number;
+                registro: string;
+                epoca: string;
+                instancia: string;
+                materia: string;
+                tipo: string;
+                rubro: string;
+                ponente: string;
+                fecha_publicacion: string | null;
+            }>;
+        }>(`/judicial/search/?${searchParams}`);
+    },
+
+    getJudicialStats: async () => {
+        return fetcher<{
+            total: number;
+            by_tipo: Record<string, number>;
+            by_materia: Record<string, number>;
+            by_epoca: Record<string, number>;
+        }>('/judicial/stats/');
+    },
+
 };
 
 export { APIError };
