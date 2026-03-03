@@ -1,11 +1,21 @@
 """
-León Municipal Scraper
+Leon Municipal Scraper
 
-Scrapes regulations from León's municipal transparency portal.
+Scrapes reglamentos municipales from Leon's transparency portal
+(leon.gob.mx) and its marco juridico sections.
+
+Leon (Guanajuato) publishes its municipal regulations through its
+transparency portal, typically under normatividad/marco juridico sections,
+with PDF documents organized by legal category.
 """
 
+import argparse
+import json
 import logging
-from typing import Dict, List, Optional
+import re
+from pathlib import Path
+from typing import Dict, List, Optional, Set
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
@@ -14,8 +24,45 @@ from .config import get_config
 
 logger = logging.getLogger(__name__)
 
+# Leon-specific regulatory keywords
+LEON_KEYWORDS = re.compile(
+    r"reglamento|c[oó]digo|bando|decreto|normativ|acuerdo|lineamiento"
+    r"|disposici[oó]n|manual\s+de|ley\s+de\s+ingresos|marco\s+jur[ií]dico",
+    re.IGNORECASE,
+)
+
+# Exclude navigation and non-regulatory links
+EXCLUDE_PATTERNS = re.compile(
+    r"inicio|contacto|aviso\s+de\s+privacidad|mapa\s+del\s+sitio|rss"
+    r"|facebook|twitter|instagram|youtube|login|registro|english"
+    r"|gobierno\s+federal|gobierno\s+del\s+estado",
+    re.IGNORECASE,
+)
+
 
 class LeonScraper(MunicipalScraper):
+    """
+    Scraper for Leon municipal regulations.
+
+    Strategy:
+    1. Try the transparency/normatividad paths on leon.gob.mx
+    2. Also check implan.leon.gob.mx for urban regulations
+    3. Follow subpages one level deep for PDF discovery
+    4. Deduplicate by URL
+    """
+
+    # Catalog paths to try, in priority order
+    CATALOG_PATHS = [
+        "/transparencia/normatividad",
+        "/transparencia/marco-juridico",
+        "/transparencia/i-marco-normativo",
+        "/marco-juridico",
+        "/normatividad",
+        "/reglamentos-municipales",
+        "/reglamentos",
+        "/transparencia",
+    ]
+
     def __init__(self):
         config = get_config("leon")
         super().__init__(config=config)
@@ -23,89 +70,359 @@ class LeonScraper(MunicipalScraper):
 
     def scrape_catalog(self) -> List[Dict]:
         """
-        Scrape León's regulations catalog.
+        Scrape Leon's regulations catalog.
 
-        León (Guanajuato) - major industrial city.
+        Returns:
+            List of law dictionaries with title, url, law_type, municipality, state.
         """
-        # Try transparency path from config
-        catalog_path = self.selectors.get("catalog_path", "/transparencia")
-        catalog_url = self.normalize_url(catalog_path)
+        laws: List[Dict] = []
+        seen_urls: Set[str] = set()
 
-        html = self.fetch_page(catalog_url)
-        if not html:
-            logger.warning(
-                f"Failed to fetch catalog from {catalog_url}, trying alternatives"
-            )
-            # Try alternative paths
-            alternatives = [
-                "/transparencia/normatividad",
-                "/normatividad",
-                "/reglamentos-municipales",
-                "/marco-juridico",
-            ]
-            for alt_path in alternatives:
-                alt_url = self.normalize_url(alt_path)
-                html = self.fetch_page(alt_url)
-                if html:
-                    catalog_url = alt_url
-                    logger.info(f"Found catalog at alternative path: {alt_url}")
-                    break
+        # Try each catalog path until we find results
+        for path in self.CATALOG_PATHS:
+            catalog_url = urljoin(self.base_url, path)
+            logger.info(f"[leon] Trying catalog: {catalog_url}")
 
-        if not html:
-            logger.error(f"Could not fetch any catalog page for {self.municipality}")
-            return []
-
-        soup = BeautifulSoup(html, "html.parser")
-        laws = []
-
-        # Search for regulation links
-        for link in soup.find_all("a", href=True):
-            href = link["href"].strip()
-            text = link.get_text(strip=True)
-
-            # Skip short/empty links
-            if not text or len(text) < 10:
+            html = self.fetch_page(catalog_url)
+            if not html:
                 continue
 
-            if self._is_regulation_link(text, href):
-                absolute_url = self.normalize_url(href, base=catalog_url)
+            soup = BeautifulSoup(html, "html.parser")
 
-                law = {
-                    "name": text,
-                    "url": absolute_url,
-                    "municipality": self.municipality,
-                    "state": self.state,
-                    "tier": "municipal",
-                    "category": self.extract_category(text),
-                }
+            # Direct PDF/document links on the page
+            page_laws = self._extract_laws_from_page(soup, catalog_url, seen_urls)
+            laws.extend(page_laws)
 
+            # Follow subpages one level deep
+            subpage_laws = self._follow_subpages(soup, catalog_url, seen_urls)
+            laws.extend(subpage_laws)
+
+            if laws:
+                logger.info(f"[leon] Found {len(laws)} laws from catalog at {path}")
+                break
+
+        # If primary portal found nothing, try Guanajuato state transparency platform
+        if not laws:
+            state_laws = self._scrape_state_platform(seen_urls)
+            laws.extend(state_laws)
+
+        logger.info(f"[leon] Total regulations discovered: {len(laws)}")
+        return laws
+
+    def _extract_laws_from_page(
+        self, soup: BeautifulSoup, page_url: str, seen_urls: Set[str]
+    ) -> List[Dict]:
+        """Extract regulatory links from a parsed HTML page."""
+        laws: List[Dict] = []
+
+        # Check for table-based layouts (common in Mexican gov portals)
+        tables = soup.find_all("table")
+        if tables:
+            table_laws = self._extract_from_tables(tables, page_url, seen_urls)
+            if table_laws:
+                return table_laws
+
+        # Fall back to general link extraction
+        for link in soup.find_all("a", href=True):
+            href = link["href"].strip()
+            text = link.get_text(separator=" ", strip=True)
+
+            if not text or len(text) < 8:
+                continue
+            if EXCLUDE_PATTERNS.search(text):
+                continue
+
+            if not self._is_regulation_link(text, href):
+                continue
+
+            absolute_url = self.normalize_url(href, base=page_url)
+
+            parsed = urlparse(absolute_url)
+            if parsed.scheme not in ("http", "https"):
+                continue
+
+            if absolute_url in seen_urls:
+                continue
+            seen_urls.add(absolute_url)
+
+            if self.is_pdf(absolute_url) or self._is_doc(absolute_url):
+                law = self._build_law_dict(text, absolute_url)
                 if self.validate_law_data(law):
                     laws.append(law)
-                    logger.debug(f"Found regulation: {text}")
+                    logger.debug(f"[leon] Found: {text}")
 
-        logger.info(f"Scraped {len(laws)} regulations from {self.municipality}")
+        return laws
+
+    def _extract_from_tables(
+        self, tables: list, page_url: str, seen_urls: Set[str]
+    ) -> List[Dict]:
+        """
+        Extract laws from HTML tables.
+
+        Many Leon government pages use tables with columns like:
+        | Nombre | Tipo | Fecha | Descarga |
+        """
+        laws: List[Dict] = []
+
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows:
+                cells = row.find_all(["td", "th"])
+                if not cells:
+                    continue
+
+                # Look for links in any cell
+                for cell in cells:
+                    for link in cell.find_all("a", href=True):
+                        href = link["href"].strip()
+                        absolute_url = self.normalize_url(href, base=page_url)
+
+                        parsed = urlparse(absolute_url)
+                        if parsed.scheme not in ("http", "https"):
+                            continue
+                        if absolute_url in seen_urls:
+                            continue
+
+                        if not (
+                            self.is_pdf(absolute_url) or self._is_doc(absolute_url)
+                        ):
+                            continue
+
+                        seen_urls.add(absolute_url)
+
+                        # Try to get title from the first cell or link text
+                        text = link.get_text(separator=" ", strip=True)
+                        if not text or len(text) < 8:
+                            # Try the first cell of this row
+                            text = cells[0].get_text(separator=" ", strip=True)
+                        if not text or len(text) < 5:
+                            text = self._title_from_url(absolute_url)
+
+                        law = self._build_law_dict(text, absolute_url)
+                        if self.validate_law_data(law):
+                            laws.append(law)
+
+        return laws
+
+    def _follow_subpages(
+        self, soup: BeautifulSoup, page_url: str, seen_urls: Set[str]
+    ) -> List[Dict]:
+        """Follow HTML links one level deep to discover PDFs."""
+        laws: List[Dict] = []
+        subpage_candidates: List[tuple] = []
+
+        for link in soup.find_all("a", href=True):
+            href = link["href"].strip()
+            text = link.get_text(separator=" ", strip=True)
+
+            if not text or len(text) < 8:
+                continue
+            if EXCLUDE_PATTERNS.search(text):
+                continue
+            if not LEON_KEYWORDS.search(text) and not LEON_KEYWORDS.search(href):
+                continue
+
+            absolute_url = self.normalize_url(href, base=page_url)
+            parsed = urlparse(absolute_url)
+            if parsed.scheme not in ("http", "https"):
+                continue
+            if absolute_url in seen_urls:
+                continue
+            if self.is_pdf(absolute_url) or self._is_doc(absolute_url):
+                continue  # Already handled as direct links
+
+            # Only follow links on the same domain
+            base_netloc = urlparse(self.base_url).netloc
+            if parsed.netloc and parsed.netloc != base_netloc:
+                continue
+
+            subpage_candidates.append((absolute_url, text))
+
+        logger.info(f"[leon] Following {len(subpage_candidates)} subpages")
+        for sub_url, parent_text in subpage_candidates:
+            seen_urls.add(sub_url)
+            html = self.fetch_page(sub_url)
+            if not html:
+                continue
+
+            sub_soup = BeautifulSoup(html, "html.parser")
+            for link in sub_soup.find_all("a", href=True):
+                href = link["href"].strip()
+                text = link.get_text(separator=" ", strip=True)
+                abs_url = self.normalize_url(href, base=sub_url)
+
+                parsed = urlparse(abs_url)
+                if parsed.scheme not in ("http", "https"):
+                    continue
+                if abs_url in seen_urls:
+                    continue
+
+                if self.is_pdf(abs_url) or self._is_doc(abs_url):
+                    seen_urls.add(abs_url)
+                    title = text if text and len(text) >= 8 else parent_text
+                    law = self._build_law_dict(title, abs_url)
+                    if self.validate_law_data(law):
+                        laws.append(law)
+
+        return laws
+
+    def _scrape_state_platform(self, seen_urls: Set[str]) -> List[Dict]:
+        """
+        Try the Guanajuato state transparency platform for Leon regulations.
+
+        Some municipalities in Guanajuato publish their marco juridico
+        through the state-level Plataforma Nacional de Transparencia.
+        """
+        laws: List[Dict] = []
+        state_url = "https://transparencia.guanajuato.gob.mx/bibliotecadigital/mot/leon"
+
+        logger.info(f"[leon] Trying state platform: {state_url}")
+        html = self.fetch_page(state_url)
+        if not html:
+            return laws
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        for link in soup.find_all("a", href=True):
+            href = link["href"].strip()
+            text = link.get_text(separator=" ", strip=True)
+            absolute_url = self.normalize_url(href, base=state_url)
+
+            parsed = urlparse(absolute_url)
+            if parsed.scheme not in ("http", "https"):
+                continue
+            if absolute_url in seen_urls:
+                continue
+
+            if self.is_pdf(absolute_url):
+                seen_urls.add(absolute_url)
+                title = (
+                    text
+                    if text and len(text) >= 8
+                    else self._title_from_url(absolute_url)
+                )
+                if LEON_KEYWORDS.search(title) or LEON_KEYWORDS.search(absolute_url):
+                    law = self._build_law_dict(title, absolute_url)
+                    if self.validate_law_data(law):
+                        laws.append(law)
+
         return laws
 
     def _is_regulation_link(self, text: str, href: str) -> bool:
-        """Check if link appears to be a regulation."""
-        text_lower = text.lower()
-        href_lower = href.lower()
+        """Check if a link is a regulatory document."""
+        if LEON_KEYWORDS.search(text):
+            return True
+        if LEON_KEYWORDS.search(href):
+            return True
+        if self.is_pdf(href) or self._is_doc(href):
+            return True
+        return False
 
-        keywords = [
-            "reglamento",
-            "código",
-            "codigo",
-            "bando",
-            "normativ",
-            "ley municipal",
-            "marco jurídico",
-        ]
-        return any(
-            keyword in text_lower or keyword in href_lower for keyword in keywords
-        )
+    def _is_doc(self, url: str) -> bool:
+        """Check if URL points to a Word document."""
+        path = urlparse(url.lower()).path
+        return path.endswith(".doc") or path.endswith(".docx")
+
+    def _title_from_url(self, url: str) -> str:
+        """Extract a human-readable title from a URL path."""
+        from os.path import basename, splitext
+        from urllib.parse import unquote
+
+        filename = basename(unquote(urlparse(url).path))
+        name_body = splitext(filename)[0]
+        return name_body.replace("_", " ").replace("-", " ")
+
+    def _build_law_dict(self, name: str, url: str) -> Dict:
+        """Build a standardized law dictionary."""
+        name = re.sub(r"\s+", " ", name).strip()
+
+        return {
+            "title": name,
+            "url": url,
+            "law_type": self._classify_law_type(name),
+            "municipality": self.municipality,
+            "state": self.state,
+            "tier": "municipal",
+            "category": self.extract_category(name),
+            "status": "Discovered",
+        }
+
+    def _classify_law_type(self, name: str) -> str:
+        """Classify the law type from its title."""
+        name_lower = name.lower()
+        if "bando" in name_lower:
+            return "bando"
+        elif "reglamento" in name_lower:
+            return "reglamento"
+        elif re.search(r"c[oó]digo", name_lower):
+            return "codigo"
+        elif "decreto" in name_lower:
+            return "decreto"
+        elif "lineamiento" in name_lower:
+            return "lineamiento"
+        elif "acuerdo" in name_lower:
+            return "acuerdo"
+        elif "manual" in name_lower:
+            return "manual"
+        elif "ley de ingresos" in name_lower:
+            return "ley_de_ingresos"
+        else:
+            return "otro"
 
     def scrape_law_content(self, url: str, output_dir: str = None) -> Optional[Dict]:
         """Download and extract content of a specific law."""
         if output_dir is None:
             output_dir = "data/municipal/leon/raw"
         return self.download_law_content(url, output_dir)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
+    parser = argparse.ArgumentParser(
+        description="Scrape municipal regulations from Leon, Guanajuato"
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default="data/municipal/leon",
+        help="Output directory for JSON results (default: data/municipal/leon)",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Limit number of results displayed (0 = all)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Only discover laws, do not download content",
+    )
+    args = parser.parse_args()
+
+    scraper = LeonScraper()
+    results = scraper.scrape_catalog()
+
+    # Save results to JSON
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / "catalog.json"
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+
+    print(f"\n{'=' * 60}")
+    print(f"City: {scraper.municipality} ({scraper.state})")
+    print(f"Laws discovered: {len(results)}")
+    print(f"Results saved to: {output_file}")
+    print(f"{'=' * 60}")
+
+    display = results[: args.limit] if args.limit > 0 else results
+    for i, law in enumerate(display, 1):
+        print(f"\n[{i}] {law['title']}")
+        print(f"    URL: {law['url']}")
+        print(f"    Type: {law['law_type']}")
+        print(f"    Category: {law['category']}")

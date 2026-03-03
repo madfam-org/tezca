@@ -138,8 +138,8 @@ npm run build:all
 
 ### Route Conventions
 
-- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`
+- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Elasticsearch
@@ -155,6 +155,7 @@ npm run build:all
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
+- 11 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports
 
 ### Storage
 
@@ -236,7 +237,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
-| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog |
+| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |

@@ -3,12 +3,15 @@ NOM Scraper
 
 Scrapes Normas Oficiales Mexicanas from DOF archive and/or CONAMER.
 ~4,000 NOMs across all secretarias. Priority NOMs: health (NOM-001
-through NOM-260), construction, food safety.
+through NOM-260), construction, food safety, environment, labor, energy.
 
 Usage:
     python -m apps.scraper.federal.nom_scraper
     python -m apps.scraper.federal.nom_scraper --priority-only
-    python -m apps.scraper.federal.nom_scraper --max-results 200
+    python -m apps.scraper.federal.nom_scraper --max-results 5000
+    python -m apps.scraper.federal.nom_scraper --all-agencies
+    python -m apps.scraper.federal.nom_scraper --year-range 1990 2026
+    python -m apps.scraper.federal.nom_scraper --all-agencies --year-range 1993 2026 --max-results 5000
 """
 
 import json
@@ -16,7 +19,7 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -41,26 +44,120 @@ _NOM_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Mapping of secretaria abbreviations to full names.
+# ---------------------------------------------------------------------------
+# Complete mapping of NOM-issuing agencies (20+ agencies, 40+ abbreviations)
+# ---------------------------------------------------------------------------
+
 _SECRETARIA_MAP: Dict[str, str] = {
-    "SSA": "Secretaria de Salud",
-    "SSA1": "Secretaria de Salud",
-    "SSA2": "Secretaria de Salud",
-    "SSA3": "Secretaria de Salud",
-    "SEMARNAT": "Secretaria de Medio Ambiente y Recursos Naturales",
-    "STPS": "Secretaria del Trabajo y Prevision Social",
-    "SCT": "Secretaria de Comunicaciones y Transportes",
-    "SE": "Secretaria de Economia",
-    "SAGARPA": "Secretaria de Agricultura",
-    "SENER": "Secretaria de Energia",
-    "CONAGUA": "Comision Nacional del Agua",
-    "SCFI": "Secretaria de Comercio y Fomento Industrial",
-    "CNA": "Comision Nacional del Agua",
-    "SEDATU": "Secretaria de Desarrollo Agrario, Territorial y Urbano",
+    # Secretaría de Salud (multiple sub-numbering series)
+    "SSA": "Secretaría de Salud",
+    "SSA1": "Secretaría de Salud",
+    "SSA2": "Secretaría de Salud",
+    "SSA3": "Secretaría de Salud",
+    # Medio Ambiente
+    "SEMARNAT": "Secretaría de Medio Ambiente y Recursos Naturales",
+    "INECC": "Instituto Nacional de Ecología y Cambio Climático",
+    # Trabajo
+    "STPS": "Secretaría del Trabajo y Previsión Social",
+    # Comunicaciones y Transportes (SCT -> SICT)
+    "SCT": "Secretaría de Comunicaciones y Transportes",
+    "SICT": "Secretaría de Infraestructura, Comunicaciones y Transportes",
+    # Economía (SE, formerly SCFI)
+    "SE": "Secretaría de Economía",
+    "SCFI": "Secretaría de Comercio y Fomento Industrial",
+    # Agricultura (SAGARPA -> SADER)
+    "SAGARPA": "Secretaría de Agricultura, Ganadería, Desarrollo Rural, Pesca y Alimentación",
+    "SADER": "Secretaría de Agricultura y Desarrollo Rural",
+    "SENASICA": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria",
+    "INAPESCA": "Instituto Nacional de Pesca y Acuacultura",
+    "CONAPESCA": "Comisión Nacional de Acuacultura y Pesca",
+    # Energía
+    "SENER": "Secretaría de Energía",
+    "ENER": "Secretaría de Energía",
+    "CRE": "Comisión Reguladora de Energía",
+    "CONUEE": "Comisión Nacional para el Uso Eficiente de la Energía",
+    "ASEA": "Agencia de Seguridad, Energía y Ambiente",
+    # Agua
+    "CONAGUA": "Comisión Nacional del Agua",
+    "CNA": "Comisión Nacional del Agua",
+    # Desarrollo Territorial
+    "SEDATU": "Secretaría de Desarrollo Agrario, Territorial y Urbano",
+    # Gobernación
+    "SEGOB": "Secretaría de Gobernación",
+    # Seguridad
+    "SSP": "Secretaría de Seguridad y Protección Ciudadana",
+    "SSPC": "Secretaría de Seguridad y Protección Ciudadana",
+    # Hacienda y SAT
+    "SHCP": "Secretaría de Hacienda y Crédito Público",
+    "SAT": "Servicio de Administración Tributaria",
+    # Consumidor
+    "PROFECO": "Procuraduría Federal del Consumidor",
+    # Salud - riesgos sanitarios
+    "COFEPRIS": "Comisión Federal para la Protección contra Riesgos Sanitarios",
+    # Turismo
+    "SECTUR": "Secretaría de Turismo",
+    # Relaciones Exteriores
+    "SRE": "Secretaría de Relaciones Exteriores",
+    # Defensa y Marina
+    "SEDENA": "Secretaría de la Defensa Nacional",
+    "SEMAR": "Secretaría de Marina",
+    # Educación
+    "SEP": "Secretaría de Educación Pública",
+    # Desarrollo Social / Bienestar
+    "SEDESOL": "Secretaría de Desarrollo Social",
+    "BIENESTAR": "Secretaría del Bienestar",
+    # Otros organismos
+    "INMUJERES": "Instituto Nacional de las Mujeres",
 }
 
-# Priority NOM series for health/safety scraping.
-_PRIORITY_PREFIXES = [
+# All distinct agency abbreviations used in NOM numbering (for --all-agencies mode).
+_ALL_AGENCY_ABBREVIATIONS: List[str] = sorted(
+    {
+        "SSA",
+        "SEMARNAT",
+        "STPS",
+        "SCT",
+        "SICT",
+        "SE",
+        "SCFI",
+        "SAGARPA",
+        "SADER",
+        "SENER",
+        "ENER",
+        "CONAGUA",
+        "CNA",
+        "SEDATU",
+        "SEGOB",
+        "SSP",
+        "SSPC",
+        "SHCP",
+        "SAT",
+        "PROFECO",
+        "COFEPRIS",
+        "SECTUR",
+        "SRE",
+        "SEDENA",
+        "SEMAR",
+        "SEP",
+        "SEDESOL",
+        "BIENESTAR",
+        "INMUJERES",
+        "SENASICA",
+        "INAPESCA",
+        "CONAPESCA",
+        "CRE",
+        "CONUEE",
+        "ASEA",
+        "INECC",
+    }
+)
+
+# ---------------------------------------------------------------------------
+# Priority NOM series — major series across all key agencies
+# ---------------------------------------------------------------------------
+
+_PRIORITY_PREFIXES: List[str] = [
+    # SSA (health) — NOM-001 through NOM-015
     "NOM-001-SSA",
     "NOM-002-SSA",
     "NOM-003-SSA",
@@ -76,6 +173,40 @@ _PRIORITY_PREFIXES = [
     "NOM-013-SSA",
     "NOM-014-SSA",
     "NOM-015-SSA",
+    # SEMARNAT (environment) — NOM-001 through NOM-005
+    "NOM-001-SEMARNAT",
+    "NOM-002-SEMARNAT",
+    "NOM-003-SEMARNAT",
+    "NOM-004-SEMARNAT",
+    "NOM-005-SEMARNAT",
+    # STPS (labor safety) — NOM-001 through NOM-005
+    "NOM-001-STPS",
+    "NOM-002-STPS",
+    "NOM-003-STPS",
+    "NOM-004-STPS",
+    "NOM-005-STPS",
+    # SCFI (commerce/industry) — NOM-001 through NOM-003
+    "NOM-001-SCFI",
+    "NOM-002-SCFI",
+    "NOM-003-SCFI",
+    # SE (economy) — NOM-001 through NOM-003
+    "NOM-001-SE",
+    "NOM-002-SE",
+    "NOM-003-SE",
+    # CONAGUA (water) — NOM-001 through NOM-003
+    "NOM-001-CONAGUA",
+    "NOM-002-CONAGUA",
+    "NOM-003-CONAGUA",
+    # SENER (energy) — NOM-001 through NOM-003
+    "NOM-001-SENER",
+    "NOM-002-SENER",
+    "NOM-003-SENER",
+    # SEDATU (territorial development) — NOM-001
+    "NOM-001-SEDATU",
+    # SCT (transport) — NOM-001 through NOM-003
+    "NOM-001-SCT",
+    "NOM-002-SCT",
+    "NOM-003-SCT",
 ]
 
 
@@ -89,8 +220,9 @@ class NomScraper:
     Scraper for Normas Oficiales Mexicanas (NOMs).
 
     Searches the DOF archive for NOM publications and parses result pages
-    to extract structured NOM metadata. Supports priority filtering to
-    focus on health and safety NOMs.
+    to extract structured NOM metadata. Supports priority filtering,
+    per-agency targeted search, and year-range iteration to maximize
+    coverage of the ~4,000 NOM universe.
     """
 
     def __init__(self) -> None:
@@ -352,10 +484,11 @@ class NomScraper:
 
     def scrape_priority_noms(self) -> List[Dict[str, Any]]:
         """
-        Focus on health NOMs (NOM-001 through NOM-260 SSA series).
+        Focus on high-priority NOMs across all major agencies.
 
         Runs targeted searches for each priority prefix to maximise
-        coverage of health and safety standards.
+        coverage of health, safety, environment, labor, energy, and
+        commerce standards.
 
         Returns:
             List of priority NOM dicts.
@@ -388,6 +521,141 @@ class NomScraper:
         return all_noms
 
     # ------------------------------------------------------------------
+    # All-agencies targeted search
+    # ------------------------------------------------------------------
+
+    def scrape_all_agencies(
+        self,
+        max_results_per_agency: int = 200,
+    ) -> List[Dict[str, Any]]:
+        """
+        Run targeted searches for each known NOM-issuing agency abbreviation.
+
+        For each agency in _ALL_AGENCY_ABBREVIATIONS, searches DOF for
+        "NOM- {agency}" to find NOMs specific to that agency. This catches
+        NOMs that the generic "NOM-" search misses due to DOF pagination
+        limits.
+
+        Args:
+            max_results_per_agency: Max results per individual agency search.
+
+        Returns:
+            Deduplicated list of NOM dicts across all agencies.
+        """
+        logger.info(
+            "Scraping all %d agencies (max %d per agency)",
+            len(_ALL_AGENCY_ABBREVIATIONS),
+            max_results_per_agency,
+        )
+
+        all_noms: List[Dict[str, Any]] = []
+        seen_numbers: set = set()
+
+        for abbr in _ALL_AGENCY_ABBREVIATIONS:
+            search_term = f"NOM- {abbr}"
+            logger.info("Agency search: '%s'", search_term)
+
+            noms = self.scrape_dof_archive(
+                search_term=search_term,
+                max_results=max_results_per_agency,
+            )
+
+            new_count = 0
+            for nom in noms:
+                num = nom.get("nom_number", "")
+                if num in seen_numbers:
+                    continue
+                seen_numbers.add(num)
+                all_noms.append(nom)
+                new_count += 1
+
+            logger.info(
+                "Agency %s: %d new NOMs (running total: %d)",
+                abbr,
+                new_count,
+                len(all_noms),
+            )
+
+        logger.info("All-agencies scrape complete: %d unique NOMs", len(all_noms))
+        return all_noms
+
+    # ------------------------------------------------------------------
+    # Year-range iteration
+    # ------------------------------------------------------------------
+
+    def scrape_by_year_range(
+        self,
+        start_year: int = 1990,
+        end_year: int = 2026,
+        max_results_per_year: int = 300,
+    ) -> List[Dict[str, Any]]:
+        """
+        Iterate year by year searching for NOMs published in each year.
+
+        Searches for "NOM- {year}" for each year in the range. This catches
+        historical NOMs that don't appear in the generic "NOM-" search due
+        to DOF pagination limits (DOF only returns ~500 most recent results
+        for a generic query).
+
+        Args:
+            start_year: First year to search (inclusive). Default 1990.
+            end_year: Last year to search (inclusive). Default 2026.
+            max_results_per_year: Max results per individual year search.
+
+        Returns:
+            Deduplicated list of NOM dicts across all years.
+        """
+        if start_year > end_year:
+            raise ValueError(
+                f"start_year ({start_year}) must be <= end_year ({end_year})"
+            )
+
+        total_years = end_year - start_year + 1
+        logger.info(
+            "Scraping NOMs by year range %d-%d (%d years, max %d per year)",
+            start_year,
+            end_year,
+            total_years,
+            max_results_per_year,
+        )
+
+        all_noms: List[Dict[str, Any]] = []
+        seen_numbers: set = set()
+
+        for year in range(start_year, end_year + 1):
+            search_term = f"NOM- {year}"
+            logger.info("Year search: '%s'", search_term)
+
+            noms = self.scrape_dof_archive(
+                search_term=search_term,
+                max_results=max_results_per_year,
+            )
+
+            new_count = 0
+            for nom in noms:
+                num = nom.get("nom_number", "")
+                if num in seen_numbers:
+                    continue
+                seen_numbers.add(num)
+                all_noms.append(nom)
+                new_count += 1
+
+            logger.info(
+                "Year %d: %d new NOMs (running total: %d)",
+                year,
+                new_count,
+                len(all_noms),
+            )
+
+        logger.info(
+            "Year-range scrape complete (%d-%d): %d unique NOMs",
+            start_year,
+            end_year,
+            len(all_noms),
+        )
+        return all_noms
+
+    # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
 
@@ -406,6 +674,30 @@ class NomScraper:
         logger.info("Saved %d NOMs to %s", len(noms), output_path)
 
     # ------------------------------------------------------------------
+    # Deduplication utility
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _merge_nom_lists(*nom_lists: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Merge multiple NOM lists, deduplicating by nom_number.
+
+        Later entries with the same nom_number are discarded (first seen wins).
+
+        Returns:
+            Deduplicated merged list.
+        """
+        seen: set = set()
+        merged: List[Dict[str, Any]] = []
+        for nom_list in nom_lists:
+            for nom in nom_list:
+                num = nom.get("nom_number", "")
+                if num and num not in seen:
+                    seen.add(num)
+                    merged.append(nom)
+        return merged
+
+    # ------------------------------------------------------------------
     # Main entry point
     # ------------------------------------------------------------------
 
@@ -413,33 +705,74 @@ class NomScraper:
         self,
         output_dir: str = "data/noms",
         priority_only: bool = False,
+        all_agencies: bool = False,
+        year_range: Optional[Tuple[int, int]] = None,
         max_results: int = 500,
     ) -> Dict[str, Any]:
         """
         Run the full NOM scraping pipeline.
 
+        Modes (can be combined for maximum coverage):
+        - Default: generic "NOM-" search with pagination.
+        - priority_only: targeted search for priority prefixes only.
+        - all_agencies: targeted search for each agency abbreviation.
+        - year_range: year-by-year iteration to catch historical NOMs.
+
+        When multiple modes are active, results are merged and deduplicated.
+
         Args:
             output_dir: Directory for output files.
-            priority_only: If True, only scrape priority health NOMs.
+            priority_only: If True, only scrape priority NOMs.
+            all_agencies: If True, run per-agency targeted searches.
+            year_range: Optional (start_year, end_year) tuple.
             max_results: Maximum results for the general archive search.
 
         Returns:
-            Summary dict with total_noms, output_path, priority_only.
+            Summary dict with total_noms, output_path, modes_used.
         """
         out_path = Path(output_dir)
+        modes_used: List[str] = []
+
         logger.info(
-            "Starting NOM scraper (priority_only=%s, max_results=%d)",
+            "Starting NOM scraper (priority_only=%s, all_agencies=%s, "
+            "year_range=%s, max_results=%d)",
             priority_only,
+            all_agencies,
+            year_range,
             max_results,
         )
 
+        collected_lists: List[List[Dict[str, Any]]] = []
+
         if priority_only:
-            noms = self.scrape_priority_noms()
+            modes_used.append("priority")
+            collected_lists.append(self.scrape_priority_noms())
         else:
-            noms = self.scrape_dof_archive(
-                search_term="NOM-",
-                max_results=max_results,
+            # Always run the general search unless priority_only
+            modes_used.append("general")
+            collected_lists.append(
+                self.scrape_dof_archive(
+                    search_term="NOM-",
+                    max_results=max_results,
+                )
             )
+
+        if all_agencies:
+            modes_used.append("all_agencies")
+            collected_lists.append(self.scrape_all_agencies())
+
+        if year_range is not None:
+            start_year, end_year = year_range
+            modes_used.append(f"year_range_{start_year}_{end_year}")
+            collected_lists.append(
+                self.scrape_by_year_range(
+                    start_year=start_year,
+                    end_year=end_year,
+                )
+            )
+
+        # Merge and deduplicate all collected results
+        noms = self._merge_nom_lists(*collected_lists)
 
         output_file = out_path / "discovered_noms.json"
         self.save_results(noms, output_file)
@@ -447,7 +780,10 @@ class NomScraper:
         summary = {
             "total_noms": len(noms),
             "output_path": str(output_file),
+            "modes_used": modes_used,
             "priority_only": priority_only,
+            "all_agencies": all_agencies,
+            "year_range": list(year_range) if year_range else None,
         }
         logger.info("NOM scraper complete: %s", summary)
         return summary
@@ -467,8 +803,8 @@ def _extract_secretaria(nom_number: str) -> str:
     """
     Extract the issuing secretaria from a NOM identifier.
 
-    NOM-001-SSA1-2010 -> "Secretaria de Salud"
-    NOM-059-SEMARNAT-2010 -> "Secretaria de Medio Ambiente..."
+    NOM-001-SSA1-2010 -> "Secretaría de Salud"
+    NOM-059-SEMARNAT-2010 -> "Secretaría de Medio Ambiente..."
     """
     parts = nom_number.split("-")
     if len(parts) >= 3:
@@ -532,20 +868,41 @@ def main() -> None:
     parser.add_argument(
         "--priority-only",
         action="store_true",
-        help="Only scrape priority health NOMs (SSA series).",
+        help="Only scrape priority NOMs (major series across all key agencies).",
+    )
+    parser.add_argument(
+        "--all-agencies",
+        action="store_true",
+        help="Run targeted searches for each of the 36 known agency abbreviations.",
+    )
+    parser.add_argument(
+        "--year-range",
+        type=int,
+        nargs=2,
+        metavar=("START", "END"),
+        help="Search year by year (e.g. --year-range 1990 2026).",
     )
     parser.add_argument(
         "--max-results",
         type=int,
         default=500,
-        help="Maximum number of results for general search (default: 500).",
+        help="Maximum results for general search (default: 500, use 5000 for full coverage).",
     )
     args = parser.parse_args()
+
+    year_range = None
+    if args.year_range:
+        start_y, end_y = args.year_range
+        if start_y > end_y:
+            parser.error("year-range START must be <= END")
+        year_range = (start_y, end_y)
 
     scraper = NomScraper()
     result = scraper.run(
         output_dir=args.output_dir,
         priority_only=args.priority_only,
+        all_agencies=args.all_agencies,
+        year_range=year_range,
         max_results=args.max_results,
     )
 
