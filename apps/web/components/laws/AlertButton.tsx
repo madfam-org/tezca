@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, BellOff, Check } from 'lucide-react';
 import { cn } from '@tezca/lib';
 import { api } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getAuthToken } from '@/lib/auth-token';
 
 const content = {
     es: {
@@ -44,19 +45,27 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
     const [justSaved, setJustSaved] = useState(false);
     const [alertId, setAlertId] = useState<number | null>(null);
 
-    const getToken = useCallback((): string | null => {
-        if (typeof document !== 'undefined') {
-            const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
-            if (match) return decodeURIComponent(match[1]);
-        }
-        if (typeof localStorage !== 'undefined') {
-            return localStorage.getItem('janua_token');
-        }
-        return null;
-    }, []);
+    // Load existing watch state on mount
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        const token = getAuthToken();
+        if (!token) return;
+
+        api.getAlerts(token)
+            .then(({ alerts }) => {
+                const existing = alerts.find(a => a.law_id === lawId);
+                if (existing) {
+                    setWatching(true);
+                    setAlertId(existing.id);
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }, [isAuthenticated, lawId]);
 
     const handleToggle = async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
 
         if (watching && alertId) {
@@ -64,8 +73,8 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
                 await api.deleteAlert(token, alertId);
                 setWatching(false);
                 setAlertId(null);
-            } catch {
-                // silent
+            } catch (err) {
+                console.error(err);
             }
         } else {
             try {
@@ -77,8 +86,8 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
                 setAlertId(alert.id);
                 setJustSaved(true);
                 setTimeout(() => setJustSaved(false), 2000);
-            } catch {
-                // silent
+            } catch (err) {
+                console.error(err);
             }
         }
     };

@@ -150,7 +150,7 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
                             onMouseEnter={() => setActiveIndex(index)}
                         >
                             <span className="truncate text-foreground">{suggestion.name}</span>
-                            <Badge variant="secondary" className="text-[10px] flex-shrink-0">
+                            <Badge variant="secondary" className="text-xs flex-shrink-0">
                                 {tierLabels[suggestion.tier] || suggestion.tier}
                             </Badge>
                         </li>

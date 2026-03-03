@@ -5,6 +5,7 @@ import { Download, FileText, FileDown, Code, BookOpen, Braces, FileSpreadsheet, 
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth, type UserTier } from '@/components/providers/AuthContext';
 import { API_BASE_URL } from '@/lib/config';
+import { getAuthToken } from '@/lib/auth-token';
 
 type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
@@ -86,12 +87,12 @@ interface FormatConfig {
 }
 
 const FORMAT_LIST: FormatConfig[] = [
-    { format: 'txt', icon: <FileText className="h-4 w-4 text-blue-500" />, tierBadge: null },
-    { format: 'pdf', icon: <FileDown className="h-4 w-4 text-red-500" />, tierBadge: 'account' },
+    { format: 'txt', icon: <FileText className="h-4 w-4 text-primary" />, tierBadge: null },
+    { format: 'pdf', icon: <FileDown className="h-4 w-4 text-destructive" />, tierBadge: 'account' },
     { format: 'latex', icon: <Code className="h-4 w-4 text-purple-500" />, tierBadge: 'premium' },
-    { format: 'docx', icon: <FileSpreadsheet className="h-4 w-4 text-green-500" />, tierBadge: 'premium' },
+    { format: 'docx', icon: <FileSpreadsheet className="h-4 w-4 text-foreground" />, tierBadge: 'premium' },
     { format: 'epub', icon: <BookOpen className="h-4 w-4 text-orange-500" />, tierBadge: 'premium' },
-    { format: 'json', icon: <Braces className="h-4 w-4 text-gray-500" />, tierBadge: 'premium' },
+    { format: 'json', icon: <Braces className="h-4 w-4 text-muted-foreground" />, tierBadge: 'premium' },
 ];
 
 interface ExportDropdownProps {
@@ -143,14 +144,9 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
         const headers: Record<string, string> = {};
 
         // Include JWT if available
-        const token = typeof document !== 'undefined'
-            ? document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/)?.[1]
-            : null;
+        const token = getAuthToken();
         if (token) {
-            headers['Authorization'] = `Bearer ${decodeURIComponent(token)}`;
-        } else if (typeof localStorage !== 'undefined') {
-            const lsToken = localStorage.getItem('janua_token');
-            if (lsToken) headers['Authorization'] = `Bearer ${lsToken}`;
+            headers['Authorization'] = `Bearer ${token}`;
         }
 
         try {
@@ -230,7 +226,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                                         <div className="font-medium flex items-center gap-2">
                                             {fmtContent.label}
                                             {tierBadge === 'account' && (
-                                                <span className="text-xs leading-none bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded">
+                                                <span className="text-xs leading-none bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                                                     {t.accountBadge}
                                                 </span>
                                             )}

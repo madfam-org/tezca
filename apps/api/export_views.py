@@ -23,8 +23,15 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .config import INDEX_NAME, es_client
-from .export_throttles import TIER_LIMITS, check_export_quota, log_export
+from .export_throttles import check_export_quota, log_export
 from .models import Law
+from .tier_permissions import (
+    EXPORT_HOURLY_LIMITS as TIER_LIMITS,
+    EXPORT_TIER_MAP,
+    FORMAT_TIERS,
+    TIER_RANK,
+    normalize_export_tier,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,20 +65,6 @@ try:
 except (ImportError, OSError):
     _has_ebooklib = False
 
-# ── Format → minimum tier mapping ──────────────────────────────────────
-
-FORMAT_TIERS = {
-    "txt": "anon",
-    "pdf": "free",
-    "latex": "premium",
-    "docx": "premium",
-    "epub": "premium",
-    "json": "premium",
-}
-
-TIER_RANK = {"anon": 0, "free": 1, "premium": 2}
-
-
 # ── Helpers ────────────────────────────────────────────────────────────
 
 
@@ -83,10 +76,7 @@ def _get_user_tier(request) -> tuple[str, str]:
     """
     user = getattr(request, "user", None)
     if user and getattr(user, "is_authenticated", False):
-        tier = getattr(user, "tier", "free")
-        # Map API key tiers to export tiers
-        tier_map = {"internal": "premium", "pro": "premium", "enterprise": "premium"}
-        tier = tier_map.get(tier, tier)
+        tier = normalize_export_tier(getattr(user, "tier", "free"))
         if tier not in TIER_RANK:
             tier = "free"
         return (tier, getattr(user, "id", ""))
@@ -320,7 +310,7 @@ def export_pdf(request, law_id):
 
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.pdf"'
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "private, max-age=3600"
     return response
 
 
@@ -395,7 +385,7 @@ def export_latex(request, law_id):
         tex_content, content_type="application/x-tex; charset=utf-8"
     )
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.tex"'
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "private, max-age=3600"
     return response
 
 
@@ -473,7 +463,7 @@ def export_docx(request, law_id):
         content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     )
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.docx"'
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "private, max-age=3600"
     return response
 
 
@@ -573,7 +563,7 @@ def export_epub(request, law_id):
 
     response = HttpResponse(buf.getvalue(), content_type="application/epub+zip")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.epub"'
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "private, max-age=3600"
     return response
 
 
@@ -638,7 +628,7 @@ def export_json(request, law_id):
 
     response = HttpResponse(json_str, content_type="application/json; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.json"'
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "private, max-age=3600"
     return response
 
 

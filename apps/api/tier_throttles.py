@@ -6,23 +6,13 @@ throttle class that respects the user's API key tier.
 """
 
 import logging
-import time
 
 from django.core.cache import cache
 from rest_framework.throttling import BaseThrottle
 
-logger = logging.getLogger(__name__)
+from .tier_permissions import RATE_LIMITS as TIER_RATE_LIMITS
 
-# (requests_per_minute, requests_per_hour)
-TIER_RATE_LIMITS = {
-    "anon": (10, 100),
-    "free": (30, 500),
-    "essentials": (30, 500),      # Same as free (essentials = open-source baseline)
-    "pro": (60, 2_000),
-    "enterprise": (120, 10_000),
-    "madfam": (120, 10_000),      # Same as enterprise
-    "internal": (200, 50_000),
-}
+logger = logging.getLogger(__name__)
 
 
 def _get_client_ip(request) -> str:
@@ -47,34 +37,16 @@ class TieredRateThrottle(BaseThrottle):
 
         per_minute, per_hour = limits
 
-        # Check per-minute limit
+        # Atomic check-and-increment for both windows
         minute_key = f"tezca:throttle:{identity}:min"
-        if not self._check_window(minute_key, per_minute, 60):
+        if not self._check_and_increment(minute_key, per_minute, 60):
             self.wait_seconds = self._get_wait(minute_key, 60)
             return False
 
-        # Check per-hour limit
         hour_key = f"tezca:throttle:{identity}:hr"
-        if not self._check_window(hour_key, per_hour, 3600):
+        if not self._check_and_increment(hour_key, per_hour, 3600):
             self.wait_seconds = self._get_wait(hour_key, 3600)
             return False
-
-        # Record this request in both windows
-        now = time.time()
-        pipe_minute = f"tezca:throttle:{identity}:min"
-        pipe_hour = f"tezca:throttle:{identity}:hr"
-
-        # Use a simple counter approach with expiry
-        (
-            cache.incr(f"{pipe_minute}:count", 1)
-            if cache.get(f"{pipe_minute}:count")
-            else cache.set(f"{pipe_minute}:count", 1, 60)
-        )
-        (
-            cache.incr(f"{pipe_hour}:count", 1)
-            if cache.get(f"{pipe_hour}:count")
-            else cache.set(f"{pipe_hour}:count", 1, 3600)
-        )
 
         return True
 
@@ -106,11 +78,16 @@ class TieredRateThrottle(BaseThrottle):
             pass
         return TIER_RATE_LIMITS.get(tier, TIER_RATE_LIMITS["anon"])
 
-    def _check_window(self, key: str, limit: int, window: int) -> bool:
-        count_key = f"{key}:count"
-        current = cache.get(count_key, 0)
-        return current < limit
+    def _check_and_increment(self, key: str, limit: int, window: int) -> bool:
+        """Atomically increment the counter and check against the limit."""
+        try:
+            count = cache.incr(key)
+        except ValueError:
+            # Key doesn't exist yet — set it with expiry
+            cache.set(key, 1, window)
+            return True
+        return count <= limit
 
     def _get_wait(self, key: str, window: int) -> int:
-        ttl = cache.ttl(f"{key}:count") if hasattr(cache, "ttl") else window
+        ttl = cache.ttl(key) if hasattr(cache, "ttl") else window
         return max(ttl, 1)

@@ -12,7 +12,8 @@ if not DEBUG and SECRET_KEY == "django-insecure-mock-key-for-dev":
     raise ImproperlyConfigured(
         "DJANGO_SECRET_KEY must be set in production (DEBUG=False)"
     )
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+_default_hosts = "*" if DEBUG else "tezca.mx,api.tezca.mx,admin.tezca.mx"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", _default_hosts).split(",")
 
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001"
@@ -107,6 +108,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.api.middleware.usage_logger.UsageLoggingMiddleware",
 ]
 
 TEMPLATES = [

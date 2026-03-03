@@ -77,7 +77,7 @@ export function CommandSearchTrigger() {
             >
                 <Search className="h-3.5 w-3.5" />
                 <span className="hidden lg:inline">{t.placeholder}</span>
-                <kbd className="hidden lg:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                <kbd className="hidden lg:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-xs font-medium text-muted-foreground">
                     <span className="text-xs">&#8984;</span>K
                 </kbd>
             </button>
@@ -275,15 +275,15 @@ function CommandSearchDialog({ onClose }: { onClose: () => void }) {
                     {/* Footer hint */}
                     <div className="border-t border-border px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-1.5">
-                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px]">&uarr;&darr;</kbd>
+                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-xs">&uarr;&darr;</kbd>
                             <span>{lang === 'es' ? 'navegar' : lang === 'en' ? 'navigate' : 'tlanemi'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px]">&#9166;</kbd>
+                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-xs">&#9166;</kbd>
                             <span>{lang === 'es' ? 'seleccionar' : lang === 'en' ? 'select' : 'xictlapo'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px]">esc</kbd>
+                            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-xs">esc</kbd>
                             <span>{lang === 'es' ? 'cerrar' : lang === 'en' ? 'close' : 'tlatzacua'}</span>
                         </div>
                     </div>

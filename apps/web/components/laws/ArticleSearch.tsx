@@ -64,7 +64,8 @@ export function ArticleSearch({ lawId, onResultClick }: ArticleSearchProps) {
             setResults(data.results || []);
             setTotal(data.total || 0);
             setShowResults(true);
-        } catch {
+        } catch (err) {
+            console.error(err);
             setResults([]);
             setTotal(0);
         } finally {

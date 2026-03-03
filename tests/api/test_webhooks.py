@@ -169,16 +169,18 @@ class TestWebhookDispatch:
             secret="test_secret_key",
         )
 
-    @patch("apps.api.webhooks.requests.post")
+    @patch("apps.api.tasks.http_requests.post")
     def test_dispatch_sends_signed_payload(self, mock_post):
-        """Webhook dispatch sends HMAC-signed POST request."""
+        """Webhook dispatch sends HMAC-signed POST request via Celery task."""
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        from apps.api.webhooks import dispatch_webhook_event
+        from apps.api.tasks import deliver_webhook
 
-        dispatch_webhook_event(
+        # Call the task directly (synchronously) for testing
+        deliver_webhook(
+            self.sub.pk,
             "version.created",
             {
                 "law_id": "cff",
@@ -204,8 +206,8 @@ class TestWebhookDispatch:
         ).hexdigest()
         assert headers["X-Tezca-Signature"] == f"sha256={expected_sig}"
 
-    @patch("apps.api.webhooks.requests.post")
-    def test_dispatch_skips_non_matching_domain(self, mock_post):
+    @patch("apps.api.tasks.deliver_webhook.delay")
+    def test_dispatch_skips_non_matching_domain(self, mock_delay):
         """Webhook with domain_filter=['fiscal'] ignores penal events."""
         from apps.api.webhooks import dispatch_webhook_event
 
@@ -217,11 +219,10 @@ class TestWebhookDispatch:
             },
         )
 
-        assert not mock_post.called
+        assert not mock_delay.called
 
-    @patch("apps.api.webhooks.time.sleep")
-    @patch("apps.api.webhooks.requests.post")
-    def test_auto_disable_after_failures(self, mock_post, mock_sleep):
+    @patch("apps.api.tasks.http_requests.post")
+    def test_auto_disable_after_failures(self, mock_post):
         """Webhook is auto-disabled after MAX_FAILURES consecutive failures."""
         import requests as req_lib
 
@@ -229,15 +230,18 @@ class TestWebhookDispatch:
         self.sub.failure_count = 9
         self.sub.save()
 
-        from apps.api.webhooks import dispatch_webhook_event
+        from apps.api.tasks import deliver_webhook
 
-        dispatch_webhook_event(
-            "version.created",
-            {
-                "law_id": "cff",
-                "category": "fiscal",
-            },
-        )
+        # Simulate final retry (retries exhausted)
+        with patch.object(deliver_webhook, "max_retries", 0):
+            deliver_webhook(
+                self.sub.pk,
+                "version.created",
+                {
+                    "law_id": "cff",
+                    "category": "fiscal",
+                },
+            )
 
         self.sub.refresh_from_db()
         assert self.sub.failure_count >= 10

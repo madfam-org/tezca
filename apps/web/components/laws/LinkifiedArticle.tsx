@@ -42,6 +42,7 @@ interface LinkifiedArticleProps {
     articleId: string;
     text: string;
     minConfidence?: number;
+    crossRefsDisabled?: boolean;
 }
 
 /**
@@ -49,7 +50,7 @@ interface LinkifiedArticleProps {
  *
  * Fetches cross-references from API and makes legal references clickable.
  */
-export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6 }: LinkifiedArticleProps) {
+export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6, crossRefsDisabled = false }: LinkifiedArticleProps) {
     const { lang } = useLang();
     const t = content[lang];
 
@@ -57,9 +58,11 @@ export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidenc
     const text = rawText.replace(/^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w]*\.?\s*/i, '').trim();
 
     const [allReferences, setAllReferences] = useState<CrossReference[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!crossRefsDisabled);
 
     useEffect(() => {
+        if (crossRefsDisabled) return;
+
         const apiUrl = API_BASE_URL;
 
         fetch(`${apiUrl}/laws/${lawId}/articles/${articleId}/references/`)
@@ -68,11 +71,10 @@ export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidenc
                 setAllReferences(data.outgoing || []);
                 setLoading(false);
             })
-            .catch(err => {
-                console.error('Failed to load cross-references:', err);
+            .catch(() => {
                 setLoading(false);
             });
-    }, [lawId, articleId]);
+    }, [lawId, articleId, crossRefsDisabled]);
 
     // Filter by confidence threshold
     const references = allReferences.filter(ref => ref.confidence >= minConfidence);

@@ -6,6 +6,7 @@ import { cn } from '@tezca/lib';
 import { api, type NotificationData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getAuthToken } from '@/lib/auth-token';
 
 const content = {
     es: {
@@ -37,28 +38,17 @@ export function NotificationBell() {
     const [unread, setUnread] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const getToken = useCallback((): string | null => {
-        if (typeof document !== 'undefined') {
-            const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
-            if (match) return decodeURIComponent(match[1]);
-        }
-        if (typeof localStorage !== 'undefined') {
-            return localStorage.getItem('janua_token');
-        }
-        return null;
-    }, []);
-
     const fetchNotifications = useCallback(async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             const res = await api.getNotifications(token);
             setNotifications(res.notifications);
             setUnread(res.unread);
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         }
-    }, [getToken]);
+    }, []);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -81,14 +71,14 @@ export function NotificationBell() {
     }, [open]);
 
     const handleMarkAllRead = async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             await api.markNotificationsRead(token);
             setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
             setUnread(0);
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -103,7 +93,7 @@ export function NotificationBell() {
             >
                 <Bell className="h-4 w-4" />
                 {unread > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
                         {unread > 9 ? '9+' : unread}
                     </span>
                 )}

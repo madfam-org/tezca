@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@tezca/ui';
 import { Bell, Trash2, Plus } from 'lucide-react';
 import { api, type AlertData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getAuthToken } from '@/lib/auth-token';
 
 const content = {
     es: {
@@ -74,20 +75,9 @@ export default function AlertasPage() {
     const [newAlertType, setNewAlertType] = useState('law_updated');
     const [newLawId, setNewLawId] = useState('');
 
-    const getToken = useCallback((): string | null => {
-        if (typeof document !== 'undefined') {
-            const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
-            if (match) return decodeURIComponent(match[1]);
-        }
-        if (typeof localStorage !== 'undefined') {
-            return localStorage.getItem('janua_token');
-        }
-        return null;
-    }, []);
-
     useEffect(() => {
         async function fetch() {
-            const token = getToken();
+            const token = getAuthToken();
             if (!token) {
                 setLoading(false);
                 return;
@@ -103,10 +93,10 @@ export default function AlertasPage() {
         }
         if (isAuthenticated) fetch();
         else setLoading(false);
-    }, [isAuthenticated, getToken]);
+    }, [isAuthenticated]);
 
     const handleDelete = async (id: number) => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             await api.deleteAlert(token, id);
@@ -117,7 +107,7 @@ export default function AlertasPage() {
     };
 
     const handleCreate = async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             const alert = await api.createAlert(token, {

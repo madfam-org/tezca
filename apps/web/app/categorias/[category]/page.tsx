@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { Card, CardContent, Badge } from '@tezca/ui';
 import type { Metadata } from 'next';
 import { API_BASE_URL } from '@/lib/config';
@@ -93,10 +92,24 @@ const CATEGORIES: Record<CategoryKey, CategoryMeta> = {
   },
 };
 
-const VALID_CATEGORIES = new Set<string>(Object.keys(CATEGORIES));
+function isKnownCategory(value: string): value is CategoryKey {
+  return value in CATEGORIES;
+}
 
-function isValidCategory(value: string): value is CategoryKey {
-  return VALID_CATEGORIES.has(value);
+function getCategoryDisplay(slug: string, field: 'es' | 'en' | 'nah'): string {
+  if (isKnownCategory(slug)) return CATEGORIES[slug][field];
+  // Title-case unknown slugs: "ley" → "Ley", "derecho_agrario" → "Derecho agrario"
+  return slug.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+}
+
+function getCategoryDesc(slug: string, field: 'desc_es' | 'desc_en' | 'desc_nah'): string {
+  if (isKnownCategory(slug)) return CATEGORIES[slug][field];
+  return getCategoryDisplay(slug, 'es');
+}
+
+function getCategoryIcon(slug: string): string {
+  if (isKnownCategory(slug)) return CATEGORIES[slug].icon;
+  return '📂';
 }
 
 /* ------------------------------------------------------------------ */
@@ -213,21 +226,16 @@ export async function generateMetadata({
   const { category } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
-  if (!isValidCategory(category)) {
-    return {
-      title: 'Categoria no encontrada — Tezca',
-      description: 'La categoria solicitada no existe.',
-    };
-  }
-
-  const cat = CATEGORIES[category];
-  const description = `${cat.desc_es}. Consulta todas las leyes de derecho ${cat.es.toLowerCase()} en Tezca.`;
+  const displayName = getCategoryDisplay(category, 'es');
+  const description = isKnownCategory(category)
+    ? `${CATEGORIES[category].desc_es}. Consulta todas las leyes de derecho ${displayName.toLowerCase()} en Tezca.`
+    : `Leyes de la categoría ${displayName} en Tezca.`;
 
   return {
-    title: `${cat.es} — Categorias — Tezca`,
+    title: `${displayName} — Categorías — Tezca`,
     description,
     openGraph: {
-      title: `${cat.es} — Tezca`,
+      title: `${displayName} — Tezca`,
       description,
       type: 'website',
       url: `${siteUrl}/categorias/${category}`,
@@ -247,13 +255,13 @@ export async function generateMetadata({
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Categorias',
+            name: 'Categorías',
             item: siteUrl + '/categorias',
           },
           {
             '@type': 'ListItem',
             position: 3,
-            name: cat.es,
+            name: displayName,
             item: `${siteUrl}/categorias/${category}`,
           },
         ],
@@ -297,13 +305,12 @@ export default async function CategoryDetailPage({
   const { category } = await params;
   const { page: pageParam } = await searchParams;
 
-  if (!isValidCategory(category)) {
-    notFound();
-  }
-
-  const cat = CATEGORIES[category];
   const lang = 'es' as const;
   const t = content[lang];
+
+  const displayName = getCategoryDisplay(category, lang);
+  const displayDesc = getCategoryDesc(category, 'desc_es');
+  const displayIcon = getCategoryIcon(category);
 
   const currentPage = Math.max(1, parseInt(pageParam || '1', 10) || 1);
   const data = await fetchLawsByCategory(category, currentPage);
@@ -336,7 +343,7 @@ export default async function CategoryDetailPage({
               {
                 '@type': 'ListItem',
                 position: 3,
-                name: cat.es,
+                name: displayName,
                 item: `${siteUrl}/categorias/${category}`,
               },
             ],
@@ -373,7 +380,7 @@ export default async function CategoryDetailPage({
                 /
               </li>
               <li className="text-primary-foreground font-medium" aria-current="page">
-                {cat.es}
+                {displayName}
               </li>
             </ol>
           </nav>
@@ -384,14 +391,14 @@ export default async function CategoryDetailPage({
               role="img"
               aria-hidden="true"
             >
-              {cat.icon}
+              {displayIcon}
             </span>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                {cat[lang]}
+                {displayName}
               </h1>
               <p className="mt-1 text-lg text-primary-foreground/80">
-                {cat.desc_es}
+                {displayDesc}
               </p>
             </div>
           </div>

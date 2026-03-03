@@ -2,13 +2,19 @@
 Celery tasks for background processing.
 """
 
+import hashlib
+import hmac
 import json
+import logging
 import subprocess
 import time
 from pathlib import Path
 
+import requests as http_requests
 from celery import shared_task
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).parent.parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -555,3 +561,90 @@ def _finish_acquisition_log(log_entry, succeeded, failed, total):
         log_entry.finish(error_summary=error_summary)
     except Exception:
         pass
+
+
+# ---------------------------------------------------------------------------
+# Webhook delivery
+# ---------------------------------------------------------------------------
+
+WEBHOOK_TIMEOUT = 10
+MAX_WEBHOOK_FAILURES = 10
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=2)
+def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
+    """Deliver a single webhook with HMAC signature. Retries via Celery."""
+    from .models import WebhookSubscription
+
+    try:
+        subscription = WebhookSubscription.objects.select_related("api_key").get(
+            pk=subscription_id
+        )
+    except WebhookSubscription.DoesNotExist:
+        logger.warning("Webhook subscription %d no longer exists", subscription_id)
+        return
+
+    if not subscription.is_active:
+        return
+
+    body = json.dumps(
+        {
+            "event": event,
+            "timestamp": timezone.now().isoformat(),
+            "data": payload,
+        },
+        ensure_ascii=False,
+    )
+
+    signature = hmac.new(
+        subscription.secret.encode(),
+        body.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-Tezca-Event": event,
+        "X-Tezca-Signature": f"sha256={signature}",
+        "User-Agent": "Tezca-Webhooks/1.0",
+    }
+
+    try:
+        resp = http_requests.post(
+            subscription.url,
+            data=body,
+            headers=headers,
+            timeout=WEBHOOK_TIMEOUT,
+        )
+        if resp.status_code < 400:
+            WebhookSubscription.objects.filter(pk=subscription.pk).update(
+                last_triggered_at=timezone.now(),
+                failure_count=0,
+            )
+            return
+        error_msg = f"HTTP {resp.status_code}"
+    except http_requests.RequestException as exc:
+        error_msg = str(exc)
+
+    # Retry via Celery if attempts remain
+    if self.request.retries < self.max_retries:
+        raise self.retry(exc=Exception(error_msg))
+
+    # All retries exhausted
+    new_count = subscription.failure_count + 1
+    updates = {"failure_count": new_count}
+    if new_count >= MAX_WEBHOOK_FAILURES:
+        updates["is_active"] = False
+        logger.warning(
+            "Webhook auto-disabled after %d failures: sub=%d url=%s",
+            new_count,
+            subscription.pk,
+            subscription.url,
+        )
+
+    WebhookSubscription.objects.filter(pk=subscription.pk).update(**updates)
+    logger.warning(
+        "Webhook delivery failed: sub=%d error=%s",
+        subscription.pk,
+        error_msg,
+    )

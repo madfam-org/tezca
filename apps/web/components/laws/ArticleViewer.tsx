@@ -115,7 +115,8 @@ function formatDofDate(dateStr: string | null | undefined, locale: string): stri
     try {
         const date = new Date(dateStr);
         return `DOF ${date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
-    } catch {
+    } catch (err) {
+        console.error(err);
         return '';
     }
 }
@@ -237,7 +238,7 @@ function SingleArticle({
                         className={cn(
                             "p-2 rounded-md transition-all",
                             copiedState === 'citation'
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                ? "bg-primary/10 text-primary"
                                 : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                         )}
                         aria-label={t.copyCitation}
@@ -251,7 +252,7 @@ function SingleArticle({
                         className={cn(
                             "p-2 rounded-md transition-all",
                             copiedState === 'bibtex'
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                ? "bg-primary/10 text-primary"
                                 : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                         )}
                         aria-label={t.copyCitationBibtex}
@@ -265,7 +266,7 @@ function SingleArticle({
                         className={cn(
                             "p-2 rounded-md transition-all",
                             copiedState === 'link'
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                ? "bg-primary/10 text-primary"
                                 : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                         )}
                         aria-label={t.copyLink}
@@ -280,6 +281,7 @@ function SingleArticle({
                 lawId={lawId}
                 articleId={article.article_id}
                 text={article.text}
+                crossRefsDisabled
             />
         </article>
     );

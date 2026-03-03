@@ -46,10 +46,30 @@ export function DynamicFeatures() {
     const t = content[lang];
     const locale = LOCALE_MAP[lang];
     const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.getStats().then(setStats).catch(console.error);
+        api.getStats()
+            .then(setStats)
+            .catch(console.error)
+            .finally(() => setLoading(false));
     }, []);
+
+    if (loading) {
+        return (
+            <div className="rounded-2xl border border-border bg-muted/30 p-6 sm:p-8 md:p-12">
+                <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-3">
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="text-center animate-pulse">
+                            <div className="mb-3 sm:mb-4 h-10 w-10 rounded-full bg-muted mx-auto" />
+                            <div className="h-5 bg-muted rounded w-3/4 mx-auto mb-2" />
+                            <div className="h-4 bg-muted rounded w-full mx-auto" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     const coverage = stats?.coverage?.leyes_vigentes;
     const totalArticles = stats?.total_articles ?? 0;

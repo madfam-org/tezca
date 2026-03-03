@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import APIKey, WebhookSubscription
-from .webhooks import _send_webhook
+from .tasks import deliver_webhook
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +192,8 @@ def test_webhook(request, webhook_id):
     }
 
     try:
-        _send_webhook(sub, "test.ping", test_payload)
+        # Call synchronously for immediate feedback on test pings
+        deliver_webhook(sub.pk, "test.ping", test_payload)
         return Response({"status": "sent", "id": webhook_id})
     except Exception as exc:
         return Response(

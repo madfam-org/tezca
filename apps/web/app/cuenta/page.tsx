@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
@@ -124,12 +125,12 @@ export default function CuentaPage() {
 
 function QuickLinkCard({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
     return (
-        <a
+        <Link
             href={href}
             className="flex items-center gap-3 rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors"
         >
             <div className="text-muted-foreground">{icon}</div>
             <span className="text-sm font-medium">{label}</span>
-        </a>
+        </Link>
     );
 }

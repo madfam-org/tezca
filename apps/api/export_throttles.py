@@ -11,12 +11,7 @@ from django.utils import timezone
 from rest_framework.throttling import BaseThrottle
 
 from .models import ExportLog
-
-TIER_LIMITS = {
-    "anon": 10,
-    "free": 30,
-    "premium": 100,
-}
+from .tier_permissions import EXPORT_HOURLY_LIMITS as TIER_LIMITS
 
 
 def get_export_count(*, user_id: str = "", ip_address: str = "") -> int:

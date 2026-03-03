@@ -55,6 +55,9 @@ class CombinedAuthentication(BaseAuthentication):
                 "HTTP_AUTHORIZATION", ""
             ).startswith("ApiKey ")
             if has_api_key:
+                logger.warning(
+                    "API key auth failed for %s", request.path, exc_info=True
+                )
                 raise
             # No API key header — fall through to JWT
 
@@ -83,6 +86,7 @@ class CombinedAuthentication(BaseAuthentication):
                 "Bearer "
             )
             if has_bearer:
+                logger.warning("JWT auth failed for %s", request.path, exc_info=True)
                 raise
 
         # 3. No auth — return None (DRF sets AnonymousUser)

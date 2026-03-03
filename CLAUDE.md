@@ -231,13 +231,15 @@ type Lang = 'es' | 'en' | 'nah';
 |------|---------|
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
 | `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP |
-| `apps/api/tier_throttles.py` | Rate limiting by tier |
+| `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits |
+| `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
-| `apps/api/export_throttles.py` | Export-specific rate limits by tier |
+| `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
+| `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
 

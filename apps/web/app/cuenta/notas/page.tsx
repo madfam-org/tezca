@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@tezca/ui';
 import { MessageSquare, Trash2, ExternalLink } from 'lucide-react';
 import { api, type AnnotationData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getAuthToken } from '@/lib/auth-token';
 import Link from 'next/link';
 
 const content = {
@@ -52,20 +53,9 @@ export default function NotasPage() {
     const [annotations, setAnnotations] = useState<AnnotationData[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const getToken = useCallback((): string | null => {
-        if (typeof document !== 'undefined') {
-            const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
-            if (match) return decodeURIComponent(match[1]);
-        }
-        if (typeof localStorage !== 'undefined') {
-            return localStorage.getItem('janua_token');
-        }
-        return null;
-    }, []);
-
     useEffect(() => {
         async function fetch() {
-            const token = getToken();
+            const token = getAuthToken();
             if (!token) {
                 setLoading(false);
                 return;
@@ -81,10 +71,10 @@ export default function NotasPage() {
         }
         if (isAuthenticated) fetch();
         else setLoading(false);
-    }, [isAuthenticated, getToken]);
+    }, [isAuthenticated]);
 
     const handleDelete = async (id: number) => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             await api.deleteAnnotation(token, id);

@@ -565,7 +565,10 @@ class TestLawApi:
 
         import apps.api.law_views as lv
 
-        cached_data = {"version": "1.0", "sources": {"federal_leyes_vigentes": {"known_count": 100}}}
+        cached_data = {
+            "version": "1.0",
+            "sources": {"federal_leyes_vigentes": {"known_count": 100}},
+        }
         lv._registry_cache["data"] = cached_data
         lv._registry_cache["mtime"] = time.time()  # Just cached
 

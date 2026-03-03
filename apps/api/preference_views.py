@@ -10,8 +10,11 @@ from .models import UserPreference
 def _get_user_id(request):
     """Extract Janua user ID from the authenticated request."""
     user = getattr(request, "user", None)
-    if user and hasattr(user, "janua_user_id"):
-        return user.janua_user_id
+    if user and getattr(user, "is_authenticated", False):
+        # JanuaUser sets self.id from claims["sub"]
+        uid = getattr(user, "id", None)
+        if uid:
+            return uid
     # Fallback: check auth header claims
     auth = getattr(request, "auth", None)
     if isinstance(auth, dict):

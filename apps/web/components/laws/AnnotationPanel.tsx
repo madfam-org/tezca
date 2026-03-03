@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Plus, Trash2, Pencil, Check, MessageSquare } from 'lucide-react';
 import { Card } from '@tezca/ui';
 import { cn } from '@tezca/lib';
 import { api, type AnnotationData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getAuthToken } from '@/lib/auth-token';
 
 const content = {
     es: {
@@ -85,30 +86,19 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
     const [editText, setEditText] = useState('');
     const [editColor, setEditColor] = useState('yellow');
 
-    const getToken = useCallback((): string | null => {
-        if (typeof document !== 'undefined') {
-            const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
-            if (match) return decodeURIComponent(match[1]);
-        }
-        if (typeof localStorage !== 'undefined') {
-            return localStorage.getItem('janua_token');
-        }
-        return null;
-    }, []);
-
     const fetchAnnotations = useCallback(async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         setLoading(true);
         try {
             const res = await api.getAnnotations(token, lawId);
             setAnnotations(res.annotations);
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
-    }, [lawId, getToken]);
+    }, [lawId]);
 
     useEffect(() => {
         if (open && isAuthenticated) {
@@ -123,7 +113,7 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
     }, [focusArticleId]);
 
     const handleCreate = async () => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token || !newText.trim() || !newArticleId.trim()) return;
         try {
             const annotation = await api.createAnnotation(token, {
@@ -135,13 +125,13 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
             setAnnotations((prev) => [...prev, annotation]);
             setNewText('');
             setAdding(false);
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         }
     };
 
     const handleUpdate = async (id: number) => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             const updated = await api.updateAnnotation(token, id, {
@@ -150,21 +140,57 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
             });
             setAnnotations((prev) => prev.map((a) => (a.id === id ? updated : a)));
             setEditingId(null);
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         }
     };
 
     const handleDelete = async (id: number) => {
-        const token = getToken();
+        const token = getAuthToken();
         if (!token) return;
         try {
             await api.deleteAnnotation(token, id);
             setAnnotations((prev) => prev.filter((a) => a.id !== id));
-        } catch {
-            // silent
+        } catch (err) {
+            console.error(err);
         }
     };
+
+    const panelRef = useRef<HTMLDivElement>(null);
+
+    // Focus trap and keyboard handling
+    useEffect(() => {
+        if (!open) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+                return;
+            }
+            if (e.key === 'Tab' && panelRef.current) {
+                const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        // Focus the close button on open
+        const closeBtn = panelRef.current?.querySelector<HTMLElement>('button[aria-label]');
+        closeBtn?.focus();
+
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [open, onClose]);
 
     if (!open) return null;
 
@@ -179,7 +205,13 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
     }, {});
 
     return (
-        <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-background border-l shadow-xl flex flex-col animate-slide-in-right">
+        <div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.title}
+            className="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-background border-l shadow-xl flex flex-col animate-slide-in-right"
+        >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
                 <div className="flex items-center gap-2">

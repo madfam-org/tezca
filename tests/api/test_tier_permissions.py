@@ -46,18 +46,14 @@ class TestLoadTiers:
 
     def test_returns_empty_dict_on_missing_file(self):
         load_tiers.cache_clear()
-        with patch(
-            "apps.api.middleware.tier_permissions.TIERS_FILE"
-        ) as mock_path:
+        with patch("apps.api.middleware.tier_permissions.TIERS_FILE") as mock_path:
             mock_path.read_text.side_effect = FileNotFoundError("missing")
             result = load_tiers()
             assert result == {}
 
     def test_returns_empty_dict_on_invalid_json(self):
         load_tiers.cache_clear()
-        with patch(
-            "apps.api.middleware.tier_permissions.TIERS_FILE"
-        ) as mock_path:
+        with patch("apps.api.middleware.tier_permissions.TIERS_FILE") as mock_path:
             mock_path.read_text.return_value = "not json {"
             result = load_tiers()
             assert result == {}

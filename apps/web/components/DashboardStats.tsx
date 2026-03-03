@@ -194,7 +194,7 @@ export function RecentLawsList() {
                                         {law.name}
                                     </h4>
                                     {isNew(law.date) && (
-                                        <Badge variant="secondary" className="bg-success-50 text-success-700 dark:bg-success-700/15 dark:text-success-500 hover:bg-success-50 h-5 px-1.5 text-[10px]">
+                                        <Badge variant="secondary" className="bg-success-50 text-success-700 dark:bg-success-700/15 dark:text-success-500 hover:bg-success-50 h-5 px-1.5 text-xs">
                                             {t.new}
                                         </Badge>
                                     )}

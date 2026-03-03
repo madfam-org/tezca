@@ -77,6 +77,13 @@ class LawDetailView(APIView):
             es_degraded = True
 
         # 5. Format Response
+        # Check if cross-references exist for this law
+        from .models import CrossReference
+
+        has_cross_refs = CrossReference.objects.filter(
+            source_law_slug=law.official_id
+        ).exists()
+
         data = {
             "id": law.official_id,
             "name": law.name,
@@ -104,6 +111,7 @@ class LawDetailView(APIView):
             "articles": article_count,
             "grade": None,
             "score": None,
+            "has_cross_refs": has_cross_refs,
         }
 
         if es_degraded:

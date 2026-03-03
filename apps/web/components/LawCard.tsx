@@ -1,6 +1,6 @@
 'use client';
 
-import { Law } from "@tezca/lib";
+import type { Law, LawListItem } from "@tezca/lib";
 import { Badge, Card } from "@tezca/ui";
 import Link from 'next/link';
 import { useComparison } from './providers/ComparisonContext';
@@ -15,6 +15,10 @@ const content = {
         articles: 'artículos',
         quality: 'calidad',
         transitory: 'transitorios',
+        federal: 'Federal',
+        state: 'Estatal',
+        municipal: 'Municipal',
+        versions: 'versiones',
     },
     en: {
         selectCompare: 'Select to compare',
@@ -23,6 +27,10 @@ const content = {
         articles: 'articles',
         quality: 'quality',
         transitory: 'transitory',
+        federal: 'Federal',
+        state: 'State',
+        municipal: 'Municipal',
+        versions: 'versions',
     },
     nah: {
         selectCompare: 'Xicpēpena ic tlanānamiquiliztli',
@@ -31,11 +39,21 @@ const content = {
         articles: 'tlanahuatilli',
         quality: 'cuallōtl',
         transitory: 'tlanquiliztli',
+        federal: 'Hueyaltepetl',
+        state: 'Altepetl',
+        municipal: 'Calpulli',
+        versions: 'tlamantli',
     },
 };
 
+const tierVariantMap: Record<string, 'default' | 'secondary' | 'outline'> = {
+    federal: 'default',
+    state: 'secondary',
+    municipal: 'outline',
+};
+
 interface LawCardProps {
-    law: Law;
+    law: Law | LawListItem;
 }
 
 export default function LawCard({ law }: LawCardProps) {
@@ -43,7 +61,7 @@ export default function LawCard({ law }: LawCardProps) {
     const t = content[lang];
 
     const getGradeVariant = (grade: string = '') => {
-        if (grade === 'A') return 'default'; // Greenish usually?
+        if (grade === 'A') return 'default';
         if (grade === 'C') return 'destructive';
         return 'secondary';
     };
@@ -51,7 +69,6 @@ export default function LawCard({ law }: LawCardProps) {
     const { isLawSelected, toggleLaw } = useComparison();
     const isSelected = isLawSelected(law.id);
 
-    // Prevent navigation when clicking the checkbox area
     const handleCheckboxClick = (e: React.MouseEvent | React.KeyboardEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -63,6 +80,10 @@ export default function LawCard({ law }: LawCardProps) {
             handleCheckboxClick(e);
         }
     };
+
+    // Check if this is a full Law (with grade/score) or a LawListItem
+    const hasDetailFields = 'grade' in law && law.grade != null;
+    const tierLabel = law.tier ? (t as Record<string, string>)[law.tier] ?? law.tier : null;
 
     return (
         <Link href={`/leyes/${law.id}`}>
@@ -82,31 +103,63 @@ export default function LawCard({ law }: LawCardProps) {
                     </div>
                 </div>
 
-                <h3 className="text-xl font-display font-bold text-primary-700 dark:text-primary-300 mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-200 transition-colors pr-8">
+                <h3 className="text-xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors pr-8">
                     {law.name}
                 </h3>
 
                 <div className="flex gap-2 flex-wrap mb-4">
-                    <Badge variant={getGradeVariant(law.grade)} className="shadow-sm">
-                        {t.grade} {law.grade}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-secondary-100 dark:bg-secondary-900/50">
-                        {t.priority} {law.priority}
-                    </Badge>
+                    {hasDetailFields ? (
+                        <>
+                            <Badge variant={getGradeVariant((law as Law).grade)} className="shadow-sm">
+                                {t.grade} {(law as Law).grade}
+                            </Badge>
+                            {(law as Law).priority != null && (
+                                <Badge variant="secondary">
+                                    {t.priority} {(law as Law).priority}
+                                </Badge>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            {tierLabel && (
+                                <Badge variant={tierVariantMap[law.tier!] ?? 'outline'}>
+                                    {tierLabel}
+                                </Badge>
+                            )}
+                            {law.category && (
+                                <Badge variant="outline" className="capitalize">
+                                    {law.category}
+                                </Badge>
+                            )}
+                            {law.law_type && (
+                                <Badge variant="outline" className="capitalize">
+                                    {law.law_type.replace(/_/g, ' ')}
+                                </Badge>
+                            )}
+                        </>
+                    )}
                 </div>
 
-                <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                    <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                        {law.articles?.toLocaleString() ?? 0}
-                    </span> {t.articles} •
-                    <span className="font-semibold text-success-500 ml-1">
-                        {law.score}%
-                    </span> {t.quality}
-                </div>
+                {hasDetailFields && (
+                    <div className="text-sm text-muted-foreground">
+                        <span className="font-semibold text-foreground">
+                            {(law as Law).articles?.toLocaleString() ?? 0}
+                        </span> {t.articles} •
+                        <span className="font-semibold text-foreground ml-1">
+                            {(law as Law).score}%
+                        </span> {t.quality}
+                    </div>
+                )}
 
-                {(law.transitorios ?? 0) > 0 && (
-                    <div className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
-                        + {law.transitorios} {t.transitory}
+                {!hasDetailFields && typeof (law as LawListItem).versions === 'number' && (law as LawListItem).versions > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                        {(law as LawListItem).versions} {t.versions}
+                    </p>
+                )}
+
+                {hasDetailFields && ((law as Law).transitorios ?? 0) > 0 && (
+                    <div className="text-xs text-muted-foreground mt-2">
+                        + {(law as Law).transitorios} {t.transitory}
                     </div>
                 )}
             </Card>
