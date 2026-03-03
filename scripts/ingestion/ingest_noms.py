@@ -40,8 +40,8 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-CATALOG_PATH = PROJECT_ROOT / "data" / "noms" / "discovered_noms.json"
-PDF_DIR = PROJECT_ROOT / "data" / "noms" / "pdfs"
+CATALOG_PATH = PROJECT_ROOT / "data" / "federal" / "noms" / "discovered_noms.json"
+PDF_DIR = PROJECT_ROOT / "data" / "federal" / "noms" / "pdfs"
 DOWNLOAD_DELAY = 1.0  # seconds between downloads
 DEFAULT_PUB_DATE = "2020-01-01"
 REQUEST_TIMEOUT = 60  # seconds — NOM PDFs can be large
@@ -76,6 +76,18 @@ def download_pdf(
         return nom_id, None
 
     pdf_path = output_dir / f"{nom_id}.pdf"
+
+    # Also check nom_number-based filenames (files on disk may use this)
+    if not (pdf_path.exists() and pdf_path.stat().st_size > 0):
+        safe_name = nom.get("nom_number", "").replace("/", "_").replace(" ", "_")
+        if safe_name:
+            for alt in [
+                output_dir / f"{safe_name}.pdf",
+                output_dir / f"{safe_name}.html",
+            ]:
+                if alt.exists() and alt.stat().st_size > 0:
+                    logger.debug("[%s] Found via nom_number: %s", nom_id, alt.name)
+                    return nom_id, alt
 
     if pdf_path.exists() and pdf_path.stat().st_size > 0:
         logger.debug("[%s] PDF already exists, skipping.", nom_id)
@@ -372,6 +384,22 @@ def ingest_batch(
 # ---------------------------------------------------------------------------
 
 
+def _find_nom_pdf(nom: Dict[str, Any], pdf_dir: Path) -> Optional[Path]:
+    """Find a NOM's PDF/HTML file on disk, checking both id and nom_number names."""
+    nom_id = nom.get("id", "unknown")
+    pdf_path = pdf_dir / f"{nom_id}.pdf"
+    if pdf_path.exists() and pdf_path.stat().st_size > 0:
+        return pdf_path
+
+    safe_name = nom.get("nom_number", "").replace("/", "_").replace(" ", "_")
+    if safe_name:
+        for ext in (".pdf", ".html"):
+            alt = pdf_dir / f"{safe_name}{ext}"
+            if alt.exists() and alt.stat().st_size > 0:
+                return alt
+    return None
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -438,8 +466,8 @@ def main() -> None:
             nom_number = nom.get("nom_number", "?")
             secretaria = nom.get("secretaria", "?")
             url = nom.get("url", "?")
-            pdf_path = PDF_DIR / f"{nom.get('id', 'unknown')}.pdf"
-            pdf_exists = "[exists]" if pdf_path.exists() else "[missing]"
+            pdf_path = _find_nom_pdf(nom, PDF_DIR)
+            pdf_exists = "[exists]" if pdf_path else "[missing]"
             print(
                 f"  {i:3d}. {official_id:<40s} "
                 f"{nom_number:<25s} "
@@ -459,9 +487,7 @@ def main() -> None:
             if Law.objects.filter(official_id=build_official_id(nom)[:200]).exists()
         )
         new_count = len(noms) - existing_count
-        pdf_count = sum(
-            1 for nom in noms if (PDF_DIR / f"{nom.get('id', 'unknown')}.pdf").exists()
-        )
+        pdf_count = sum(1 for nom in noms if _find_nom_pdf(nom, PDF_DIR))
         print(
             f"\nSummary: {len(noms)} total, {new_count} new, {existing_count} existing, {pdf_count} PDFs on disk"
         )
@@ -474,11 +500,8 @@ def main() -> None:
         print("\nSkipping downloads, checking existing PDFs...")
         for nom in noms:
             nom_id = nom.get("id", "unknown")
-            pdf_path = PDF_DIR / f"{nom_id}.pdf"
-            if pdf_path.exists() and pdf_path.stat().st_size > 0:
-                pdf_map[nom_id] = pdf_path
-            else:
-                pdf_map[nom_id] = None
+            found = _find_nom_pdf(nom, PDF_DIR)
+            pdf_map[nom_id] = found
         found = sum(1 for p in pdf_map.values() if p is not None)
         print(f"  Found {found}/{len(noms)} existing PDFs.")
     else:

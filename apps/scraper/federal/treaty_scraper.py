@@ -193,7 +193,6 @@ class TreatyScraper:
                 page += 1
                 continue
 
-            empty_streak = 0
             new_count = 0
             for treaty in treaties:
                 name = treaty.get("name", "")
@@ -213,7 +212,10 @@ class TreatyScraper:
             if new_count == 0:
                 empty_streak += 1
                 if empty_streak >= 3:
+                    logger.info("3 consecutive pages with no new treaties, stopping.")
                     break
+            else:
+                empty_streak = 0
 
             page += 1
 
