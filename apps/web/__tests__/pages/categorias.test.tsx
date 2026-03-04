@@ -47,10 +47,10 @@ describe('CategoriesIndexPage (/categorias)', () => {
         render(Page);
 
         // Page title
-        expect(screen.getByRole('heading', { level: 1, name: 'Categorias' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1, name: 'Categorías' })).toBeInTheDocument();
 
         // Subtitle
-        expect(screen.getByText(/Explora la legislacion mexicana por categoria/)).toBeInTheDocument();
+        expect(screen.getByText(/Explora la legislación mexicana por categoría/)).toBeInTheDocument();
 
         // Category names from CATEGORY_META (in Spanish)
         expect(screen.getByText('Civil')).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('CategoriesIndexPage (/categorias)', () => {
         render(Page);
 
         // Should still render the page with hardcoded categories, just no counts
-        expect(screen.getByRole('heading', { level: 1, name: 'Categorias' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1, name: 'Categorías' })).toBeInTheDocument();
         expect(screen.getByText('Civil')).toBeInTheDocument();
         expect(screen.getByText('Penal')).toBeInTheDocument();
     });

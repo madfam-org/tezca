@@ -7,9 +7,9 @@ export function generateMetadata(): Metadata {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
   const canonicalUrl = `${siteUrl}/categorias`;
   return {
-    title: 'Categorias — Tezca',
+    title: 'Categorías — Tezca',
     description:
-      'Explora la legislacion mexicana por categoria: civil, penal, mercantil, fiscal, laboral, administrativo, constitucional.',
+      'Explora la legislación mexicana por categoría: civil, penal, mercantil, fiscal, laboral, administrativo, constitucional.',
     alternates: {
       canonical: canonicalUrl,
       languages: {
@@ -19,9 +19,9 @@ export function generateMetadata(): Metadata {
       },
     },
     openGraph: {
-      title: 'Categorias — Tezca',
+      title: 'Categorías — Tezca',
       description:
-        'Explora la legislacion mexicana por categoria juridica.',
+        'Explora la legislación mexicana por categoría jurídica.',
       type: 'website',
       siteName: 'Tezca',
     },
@@ -106,8 +106,8 @@ const CATEGORY_META: Record<string, CategoryMeta> = {
 
 const content = {
   es: {
-    title: 'Categorias',
-    subtitle: 'Explora la legislacion mexicana por categoria juridica',
+    title: 'Categorías',
+    subtitle: 'Explora la legislación mexicana por categoría jurídica',
     home: 'Inicio',
     viewCategory: 'Ver leyes',
     laws: 'leyes',
@@ -256,7 +256,7 @@ export default async function CategoriesIndexPage({
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Categorias',
+                name: 'Categorías',
                 item: siteUrl + '/categorias',
               },
             ],

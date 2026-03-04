@@ -44,8 +44,12 @@ export function FeaturedLaws() {
 
     useEffect(() => {
         api.getLaws({ sort: 'date_desc', page_size: 4 })
-            .then(res => setLaws(res.results))
-            .catch(console.error)
+            .then(res => {
+                if (res?.results) setLaws(res.results);
+            })
+            .catch(() => {
+                // Silently handle — featured laws section is non-critical
+            })
             .finally(() => setLoading(false));
     }, []);
 

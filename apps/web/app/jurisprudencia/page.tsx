@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Search, Scale, BookOpen, Filter, ChevronRight } from 'lucide-react';
 import { Button, Card, CardContent, Input, Badge } from '@tezca/ui';
-import { LanguageToggle } from '@/components/common/LanguageToggle';
-import { useLang } from '@/contexts/LanguageContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLang } from '@/components/providers/LanguageContext';
 import { API_BASE_URL } from '@/lib/config';
 
 type Lang = 'es' | 'en' | 'nah';

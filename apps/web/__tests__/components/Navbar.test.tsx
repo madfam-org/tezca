@@ -32,6 +32,16 @@ vi.mock('@/components/providers/AuthContext', () => ({
     })),
 }));
 
+// Track Janua signed-in state for tests
+let januaSignedIn = false;
+
+// Mock @janua/nextjs
+vi.mock('@janua/nextjs', () => ({
+    SignedIn: ({ children }: { children: React.ReactNode }) => januaSignedIn ? <>{children}</> : null,
+    SignedOut: ({ children }: { children: React.ReactNode }) => januaSignedIn ? null : <>{children}</>,
+    UserButton: () => <div data-testid="user-button" />,
+}));
+
 // Mock CommandSearch
 vi.mock('@/components/CommandSearch', () => ({
     CommandSearchTrigger: () => <button data-testid="command-search-trigger" aria-label="Buscar leyes y artículos...">Search</button>,
@@ -49,6 +59,7 @@ import { useAuth } from '@/components/providers/AuthContext';
 describe('Navbar', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        januaSignedIn = false;
     });
 
     it('renders brand name', () => {
@@ -102,6 +113,7 @@ describe('Navbar', () => {
     });
 
     it('shows UserButton when authenticated', () => {
+        januaSignedIn = true;
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
             tier: 'essentials',
@@ -114,5 +126,7 @@ describe('Navbar', () => {
         render(<Navbar />);
         // Sign-in button should not be present
         expect(screen.queryByLabelText('Iniciar sesión')).not.toBeInTheDocument();
+        // UserButton should be rendered
+        expect(screen.getByTestId('user-button')).toBeInTheDocument();
     });
 });

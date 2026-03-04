@@ -135,7 +135,7 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
                 <ul
                     id={listboxId}
                     role="listbox"
-                    className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg backdrop-blur-sm max-h-80 overflow-y-auto"
+                    className="absolute z-50 mt-1 w-full max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover shadow-lg backdrop-blur-sm max-h-80 overflow-y-auto"
                 >
                     {suggestions.map((suggestion, index) => (
                         <li

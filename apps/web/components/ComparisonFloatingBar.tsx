@@ -35,7 +35,7 @@ export default function ComparisonFloatingBar() {
     if (selectedLaws.length === 0) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 shadow-lg animate-in slide-in-from-bottom">
+        <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 shadow-lg animate-in slide-in-from-bottom overflow-hidden">
             <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                     <span className="font-semibold text-sm sm:text-base">{t.selected(selectedLaws.length)}</span>
