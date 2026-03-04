@@ -305,4 +305,9 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.generate_coverage_report",
         "schedule": crontab(hour=6, minute=0, day_of_week="monday"),
     },
+    "parser-weekly-run": {
+        "task": "dataops.run_parser_pipeline",
+        "schedule": crontab(hour=5, minute=0, day_of_week="saturday"),
+        "kwargs": {"new_only": True},
+    },
 }

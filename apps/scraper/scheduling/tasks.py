@@ -413,3 +413,31 @@ def replicate_batch(prefix, ingest_command=None):
             }
 
     return {"success": True, "prefix": prefix, "ingest_command": ingest_command}
+
+
+@shared_task(name="dataops.run_parser_pipeline")
+def run_parser_pipeline(new_only=True):
+    """Run the parser V2 pipeline for text extraction and cross-reference detection.
+
+    Args:
+        new_only: If True, only process laws not yet parsed (default).
+    """
+    import subprocess
+
+    cmd = ["python", "manage.py", "run_pipeline", "--skip-scrape", "--workers", "4"]
+    if new_only:
+        cmd.append("--new-only")
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=28800,  # 8 hour max for full corpus
+    )
+
+    if result.returncode != 0:
+        logger.error("Parser pipeline failed: %s", result.stderr[:500])
+        return {"success": False, "error": result.stderr[:500]}
+
+    logger.info("Parser pipeline complete: %s", result.stdout[-200:])
+    return {"success": True, "output": result.stdout[-500:]}

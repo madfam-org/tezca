@@ -70,11 +70,19 @@ class SearchView(APIView):
                 {
                     "multi_match": {
                         "query": query,
-                        "fields": ["text", "tags"],
+                        "fields": [
+                            "law_name^3",
+                            "law_name.keyword^5",
+                            "text^1",
+                            "tags^0.5",
+                        ],
                         "fuzziness": "AUTO",
                     }
                 }
             ]
+
+            # Boost active (vigente) laws in relevance ranking
+            should_clauses = [{"term": {"status": {"value": "vigente", "boost": 1.5}}}]
 
             # Add filter clauses
             filter_clauses = []
@@ -191,7 +199,7 @@ class SearchView(APIView):
                 filter_clauses.append({"term": {"law_type": law_type}})
 
             # Build the full query
-            es_query = {"bool": {"must": must_clauses}}
+            es_query = {"bool": {"must": must_clauses, "should": should_clauses}}
 
             if filter_clauses:
                 es_query["bool"]["filter"] = filter_clauses
@@ -213,7 +221,12 @@ class SearchView(APIView):
             search_kwargs = {
                 "index": INDEX_NAME,
                 "query": es_query,
-                "highlight": {"fields": {"text": {}}},
+                "highlight": {
+                    "fields": {
+                        "text": {"number_of_fragments": 2, "fragment_size": 200},
+                        "law_name": {"number_of_fragments": 1},
+                    }
+                },
                 "from_": offset,
                 "size": page_size,
                 "aggs": {
@@ -245,9 +258,8 @@ class SearchView(APIView):
             results = []
             for hit in hits:
                 source = hit["_source"]
-                highlight = hit.get("highlight", {}).get(
-                    "text", [source["text"][:200]]
-                )[0]
+                hit_highlight = hit.get("highlight", {})
+                highlight = hit_highlight.get("text", [source["text"][:200]])[0]
                 results.append(
                     {
                         "id": hit["_id"],

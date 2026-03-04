@@ -255,6 +255,8 @@ class NomScraper:
                 "Accept-Language": "es-MX,es;q=0.9,en;q=0.5",
             }
         )
+        # DOF has chronic SSL certificate issues — disable verification
+        session.verify = False
         return session
 
     def _rate_limit(self) -> None:
