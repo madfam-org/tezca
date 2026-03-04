@@ -9,8 +9,10 @@ import secrets
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+
+from .middleware.tier_permissions import RequireTier
 
 from .models import APIKey, WebhookSubscription
 from .tasks import deliver_webhook
@@ -45,9 +47,10 @@ def _get_api_key(request):
 @extend_schema(
     tags=["Bulk"],
     summary="Create webhook subscription",
-    description="Subscribe to events (law.updated, law.created, version.created).",
+    description="Subscribe to events (law.updated, law.created, version.created). Requires community tier or above.",
 )
 @api_view(["POST"])
+@permission_classes([RequireTier.of("community")])
 def create_webhook(request):
     """Create a new webhook subscription."""
     api_key, error = _get_api_key(request)

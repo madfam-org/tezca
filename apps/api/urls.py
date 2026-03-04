@@ -67,6 +67,7 @@ from .law_views import (
 from .middleware.janua_auth import JanuaJWTAuthentication
 from .search_views import SearchView
 from .views import IngestionView
+from .billing_views import billing_webhook
 from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 
 
@@ -185,6 +186,8 @@ urlpatterns = [
         newsletter_unsubscribe,
         name="newsletter-unsubscribe",
     ),
+    # ── Billing (server-to-server) ──────────────────────────────────────
+    path("billing/webhook/", billing_webhook, name="billing-webhook"),
     # ── Webhooks (API key required) ──────────────────────────────────────
     path("webhooks/", create_webhook, name="webhook-create"),
     path("webhooks/list/", list_webhooks, name="webhook-list"),

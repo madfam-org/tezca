@@ -78,6 +78,7 @@ class TestConstants:
             "anon",
             "free",
             "essentials",
+            "community",
             "pro",
             "enterprise",
             "madfam",

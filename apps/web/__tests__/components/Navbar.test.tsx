@@ -104,7 +104,7 @@ describe('Navbar', () => {
     it('shows UserButton when authenticated', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
-            tier: 'free',
+            tier: 'essentials',
             loginUrl: '/api/auth/signin',
             userId: 'test-user',
             email: 'test@example.com',

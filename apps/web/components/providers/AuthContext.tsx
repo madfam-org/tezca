@@ -3,7 +3,17 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
 
-export type UserTier = 'anon' | 'free' | 'premium';
+export type UserTier = 'anon' | 'essentials' | 'community' | 'pro' | 'madfam';
+
+/** Normalize legacy/alias tier names from JWT claims to canonical form. */
+const TIER_NORMALIZE: Record<string, UserTier> = {
+    free: 'essentials',
+    premium: 'pro',
+    enterprise: 'pro',
+    internal: 'madfam',
+};
+
+const VALID_TIERS: UserTier[] = ['anon', 'essentials', 'community', 'pro', 'madfam'];
 
 interface AuthState {
     isAuthenticated: boolean;
@@ -46,14 +56,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [client]);
 
     const state = useMemo<AuthState>(() => {
+        function normalizeTier(raw: unknown): UserTier {
+            const str = String(raw || 'essentials');
+            const normalized = TIER_NORMALIZE[str] ?? str;
+            return VALID_TIERS.includes(normalized as UserTier)
+                ? (normalized as UserTier)
+                : 'essentials';
+        }
+
         // If Janua has an authenticated user, use that
         if (januaAuth?.isAuthenticated && januaAuth.user) {
             const claims = (januaAuth.user as unknown as Record<string, unknown>) ?? {};
-            const tier = (claims.tier || claims.plan || 'free') as UserTier;
-            const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
             return {
                 isAuthenticated: true,
-                tier: validTier as UserTier,
+                tier: normalizeTier(claims.tier || claims.plan),
                 loginUrl: DEFAULT_LOGIN_URL,
                 userId: (claims.sub || claims.user_id || null) as string | null,
                 email: (claims.email || null) as string | null,
@@ -69,12 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const jwtClaims = decodeJwtPayload(token);
         if (!jwtClaims) return { ...defaultState, signOut: handleSignOut };
 
-        const tier = (jwtClaims.tier || jwtClaims.plan || 'free') as UserTier;
-        const validTier = ['anon', 'free', 'premium'].includes(tier) ? tier : 'free';
-
         return {
             isAuthenticated: true,
-            tier: validTier as UserTier,
+            tier: normalizeTier(jwtClaims.tier || jwtClaims.plan),
             loginUrl: DEFAULT_LOGIN_URL,
             userId: (jwtClaims.sub || jwtClaims.user_id || null) as string | null,
             email: (jwtClaims.email || null) as string | null,

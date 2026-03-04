@@ -71,6 +71,7 @@ export interface SearchResponse {
     total?: number;
     page?: number;
     page_size?: number;
+    max_page_size?: number;
     total_pages?: number;
     warning?: string;
     facets?: Record<string, FacetBucket[]>;

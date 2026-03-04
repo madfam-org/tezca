@@ -189,6 +189,7 @@ class APIKey(models.Model):
     class Tier(models.TextChoices):
         INTERNAL = "internal", "Internal (MADFAM)"
         FREE = "free", "Free"
+        COMMUNITY = "community", "Community"
         PRO = "pro", "Pro"
         ENTERPRISE = "enterprise", "Enterprise"
 

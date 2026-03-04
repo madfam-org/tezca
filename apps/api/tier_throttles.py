@@ -72,10 +72,10 @@ class TieredRateThrottle(BaseThrottle):
         """Get rate limits, respecting per-key overrides."""
         user = getattr(request, "user", None)
         if user and getattr(user, "is_authenticated", False):
-            # Check for per-key rate_limit_per_hour override
-            # We'd need to look it up, but the APIKeyUser doesn't carry it.
-            # For now, use tier defaults.
-            pass
+            custom_hourly = getattr(user, "rate_limit_per_hour", None)
+            if custom_hourly:
+                default_minute, _ = TIER_RATE_LIMITS.get(tier, TIER_RATE_LIMITS["anon"])
+                return (default_minute, custom_hourly)
         return TIER_RATE_LIMITS.get(tier, TIER_RATE_LIMITS["anon"])
 
     def _check_and_increment(self, key: str, limit: int, window: int) -> bool:

@@ -174,6 +174,9 @@ if not DEBUG:
 JANUA_BASE_URL = os.environ.get("JANUA_BASE_URL", "")
 JANUA_AUDIENCE = os.environ.get("JANUA_AUDIENCE", "tezca-api")
 
+# ── Dhanam Billing ───────────────────────────────────────────────────
+DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
+
 # ── Logging ───────────────────────────────────────────────────────────
 LOGGING = {
     "version": 1,

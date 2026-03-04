@@ -16,14 +16,24 @@ from rest_framework.permissions import BasePermission
 logger = logging.getLogger(__name__)
 
 TIERS_FILE = Path(__file__).parent.parent / "tiers.json"
-TIER_HIERARCHY = {"anon": 0, "free": 1, "essentials": 1, "pro": 2, "madfam": 3}
+TIER_HIERARCHY = {
+    "anon": 0,
+    "free": 1,
+    "essentials": 1,
+    "community": 2,
+    "pro": 3,
+    "premium": 3,
+    "enterprise": 3,
+    "madfam": 4,
+    "internal": 4,
+}
 
-# Normalize legacy/internal tier names
+# Normalize legacy/internal tier names to canonical form
 TIER_NORMALIZE = {
     "anon": "anon",
     "free": "essentials",
     "internal": "madfam",
-    "enterprise": "madfam",
+    "enterprise": "pro",
     "premium": "pro",
 }
 

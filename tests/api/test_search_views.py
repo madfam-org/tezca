@@ -445,8 +445,8 @@ class TestSearchViewPagination:
         assert body["size"] == 20
 
     @patch("apps.api.search_views.es_client")
-    def test_page_size_capped_at_100(self, mock_es):
-        """page_size > 100 is capped at 100."""
+    def test_page_size_capped_at_max_for_tier(self, mock_es):
+        """page_size > tier max is capped (anon max = 25)."""
         mock_es.ping.return_value = True
         mock_es.search.return_value = _build_es_response(
             hits=[],
@@ -464,7 +464,8 @@ class TestSearchViewPagination:
         response = self.client.get(url, {"q": "test", "page_size": "500"})
 
         data = response.json()
-        assert data["page_size"] == 100
+        assert data["page_size"] == 25
+        assert data["max_page_size"] == 25
 
     @patch("apps.api.search_views.es_client")
     def test_negative_page_defaults_to_1(self, mock_es):

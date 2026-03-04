@@ -11,14 +11,20 @@ type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
 const FORMAT_TIERS: Record<ExportFormat, UserTier> = {
     txt: 'anon',
-    pdf: 'free',
-    latex: 'premium',
-    docx: 'premium',
-    epub: 'premium',
-    json: 'premium',
+    pdf: 'essentials',
+    latex: 'pro',
+    docx: 'pro',
+    epub: 'pro',
+    json: 'pro',
 };
 
-const TIER_RANK: Record<UserTier, number> = { anon: 0, free: 1, premium: 2 };
+const TIER_RANK: Record<UserTier, number> = {
+    anon: 0,
+    essentials: 1,
+    community: 2,
+    pro: 3,
+    madfam: 4,
+};
 
 const content = {
     es: {

@@ -4,9 +4,11 @@ from datetime import timedelta
 
 from django.db.models import Avg, Count
 from django.utils import timezone
+from rest_framework import status as http_status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .middleware.tier_permissions import check_feature
 from .models import SearchQuery
 
 
@@ -18,6 +20,16 @@ def search_analytics(request):
     Returns top queries, zero-result queries, average response time,
     and volume by day for the last 30 days.
     """
+    # Feature gate: search_analytics requires community tier or above
+    user_tier = getattr(getattr(request, "user", None), "tier", "anon")
+    if not check_feature(user_tier, "search_analytics"):
+        return Response(
+            {
+                "error": "Search analytics requires community tier or above. "
+                "Upgrade at https://dhanam.madfam.io/checkout?plan=tezca_community&product=tezca"
+            },
+            status=http_status.HTTP_403_FORBIDDEN,
+        )
     days = min(int(request.query_params.get("days", 30)), 90)
     since = timezone.now() - timedelta(days=days)
     qs = SearchQuery.objects.filter(created_at__gte=since)

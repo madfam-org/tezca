@@ -1,8 +1,19 @@
 {
+  "anon": {
+    "search_results_per_query": 25,
+    "api_requests_per_day": 100,
+    "export_formats": ["txt"],
+    "search_analytics": false,
+    "newsletter_access": false,
+    "api_key_access": false,
+    "bulk_download": false,
+    "pdf_export": false,
+    "premium_export": false
+  },
   "essentials": {
     "search_results_per_query": 25,
     "api_requests_per_day": 500,
-    "export_formats": ["json"],
+    "export_formats": ["txt"],
     "search_analytics": false,
     "newsletter_access": true,
     "api_key_access": false,
@@ -10,10 +21,21 @@
     "pdf_export": true,
     "premium_export": false
   },
+  "community": {
+    "search_results_per_query": -1,
+    "api_requests_per_day": -1,
+    "export_formats": ["txt", "pdf"],
+    "search_analytics": true,
+    "newsletter_access": true,
+    "api_key_access": true,
+    "bulk_download": true,
+    "pdf_export": true,
+    "premium_export": false
+  },
   "pro": {
     "search_results_per_query": -1,
     "api_requests_per_day": -1,
-    "export_formats": ["json", "csv", "pdf"],
+    "export_formats": ["txt", "pdf", "latex", "docx", "epub", "json"],
     "search_analytics": true,
     "newsletter_access": true,
     "api_key_access": true,
@@ -24,7 +46,7 @@
   "madfam": {
     "search_results_per_query": -1,
     "api_requests_per_day": -1,
-    "export_formats": ["json", "csv", "pdf", "xml"],
+    "export_formats": ["txt", "pdf", "latex", "docx", "epub", "json"],
     "search_analytics": true,
     "newsletter_access": true,
     "api_key_access": true,

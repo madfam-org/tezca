@@ -148,13 +148,36 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 `TieredRateThrottle` in `apps/api/tier_throttles.py`, sliding window via Redis cache:
 
-| Tier | Per Minute | Per Hour |
-|------|-----------|----------|
-| anon | 10 | 100 |
-| free | 30 | 500 |
-| pro | 60 | 2,000 |
-| enterprise | 120 | 10,000 |
-| internal | 200 | 50,000 |
+| Tier | Aliases | Per Minute | Per Hour |
+|------|---------|-----------|----------|
+| anon | — | 10 | 100 |
+| essentials | `free` | 30 | 500 |
+| community | — | 60 | 2,000 |
+| pro | `premium`, `enterprise` | 60 | 2,000 |
+| madfam | `internal` | 200 | 50,000 |
+
+### Tier-Based Access Control
+
+5-tier hierarchy defined in `apps/api/tier_permissions.py` (single source of truth):
+
+| Tier | Rank | Search page_size | Bulk/Webhooks | Premium Export |
+|------|------|-----------------|---------------|----------------|
+| anon | 0 | 25 | no | no |
+| essentials | 1 | 25 | no | no |
+| community | 2 | 100 | yes | no |
+| pro | 3 | 100 | yes | yes |
+| madfam | 4 | 100 | yes | yes |
+
+- `RequireTier.of("community")` gates `bulk_articles` and `create_webhook`
+- `check_feature(tier, "search_analytics")` gates analytics view
+- Feature flags and limits defined in `apps/api/tiers.json`
+- `normalize_tier()` handles legacy names: `free`→`essentials`, `premium`/`enterprise`→`pro`, `internal`→`madfam`
+
+### Billing
+
+- Checkout URL: `https://dhanam.madfam.io/checkout` (via `apps/web/lib/billing.ts`)
+- Webhook: `POST /api/v1/billing/webhook/` — HMAC-SHA256 signed by Dhanam, upgrades/downgrades API key tiers
+- Secret: `DHANAM_WEBHOOK_SECRET` env var
 
 ### Route Conventions
 
@@ -254,7 +277,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits |
+| `apps/api/tiers.json` | Feature flags and limits per tier (loaded by tier_permissions) |
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
+| `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |

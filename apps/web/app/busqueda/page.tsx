@@ -12,6 +12,8 @@ import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { Pagination } from '@/components/Pagination';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
+import { useAuth } from '@/components/providers/AuthContext';
+import { UpgradeBanner } from '@/components/UpgradeBanner';
 import type { SearchResult, FacetBucket } from "@tezca/lib";
 
 const content = {
@@ -121,7 +123,7 @@ function SearchContent() {
     const [showFilters, setShowFilters] = useState(false);
     const { lang } = useLang();
     const t = content[lang];
-
+    const { tier, userId } = useAuth();
 
     const [query, setQuery] = useState(initialQuery);
     const [filters, setFilters] = useState<SearchFilterState>({
@@ -147,6 +149,7 @@ function SearchContent() {
     const [error, setError] = useState<string | null>(null);
     const [shareCopied, setShareCopied] = useState(false);
     const [facets, setFacets] = useState<Record<string, FacetBucket[]> | undefined>(undefined);
+    const [maxPageSize, setMaxPageSize] = useState<number | null>(null);
 
     const buildSearchParams = (q: string, f: SearchFilterState, page: number) => {
         const params = new URLSearchParams();
@@ -208,6 +211,7 @@ function SearchContent() {
             setTotal(data.total || data.results.length);
             setTotalPages(data.total_pages || Math.ceil((data.total || data.results.length) / PAGE_SIZE));
             setFacets(data.facets);
+            if (data.max_page_size != null) setMaxPageSize(data.max_page_size);
 
             if (data.warning) {
                 setError(data.warning);
@@ -490,6 +494,17 @@ function SearchContent() {
                                         </Link>
                                     ))}
                                 </div>
+
+                                {/* Upgrade banner for limited search results */}
+                                {maxPageSize != null && maxPageSize < 100 && (
+                                    <div className="mt-6">
+                                        <UpgradeBanner
+                                            feature="Resultados ilimitados"
+                                            currentTier={tier === 'anon' ? null : tier === 'essentials' ? 'essentials' : tier}
+                                            userId={userId ?? undefined}
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Pagination */}
                                 {totalPages > 1 && (

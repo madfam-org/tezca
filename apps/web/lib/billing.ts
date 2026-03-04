@@ -8,13 +8,13 @@
 const DHANAM_CHECKOUT_URL =
   process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL || 'https://dhanam.madfam.io/checkout';
 
-export type TezaTier = 'essentials' | 'pro' | 'madfam' | null;
+export type TezaTier = 'essentials' | 'community' | 'pro' | 'madfam' | null;
 
 /**
  * Build a checkout URL for upgrading to a Tezca tier via Dhanam.
  */
 export function getCheckoutUrl(
-  plan: 'pro' | 'madfam' = 'pro',
+  plan: 'community' | 'pro' | 'madfam' = 'pro',
   userId?: string,
   returnUrl?: string,
 ): string {
@@ -28,8 +28,8 @@ export function getCheckoutUrl(
 }
 
 /**
- * Check if a tier has access to a premium feature.
+ * Check if a tier has access to premium features (community+).
  */
 export function isPremiumTier(tier: TezaTier): boolean {
-  return tier === 'pro' || tier === 'madfam';
+  return tier === 'community' || tier === 'pro' || tier === 'madfam';
 }

@@ -62,8 +62,15 @@ class SearchView(APIView):
             category = request.query_params.get("category", None)
             search_status = request.query_params.get("status", "all")
             sort_by = request.query_params.get("sort", "relevance")
+            from .tier_permissions import SEARCH_PAGE_SIZE_LIMITS
+
+            tier = getattr(getattr(request, "user", None), "tier", "anon")
+            max_page_size = SEARCH_PAGE_SIZE_LIMITS.get(tier, 25)
             page = max(1, int(request.query_params.get("page", 1)))
-            page_size = min(max(1, int(request.query_params.get("page_size", 10))), 100)
+            page_size = min(
+                max(1, int(request.query_params.get("page_size", 10))),
+                max_page_size,
+            )
 
             # Build Elasticsearch query
             must_clauses = [
@@ -292,6 +299,7 @@ class SearchView(APIView):
                     "total": total,
                     "page": page,
                     "page_size": page_size,
+                    "max_page_size": max_page_size,
                     "total_pages": total_pages,
                     "facets": facets,
                 }

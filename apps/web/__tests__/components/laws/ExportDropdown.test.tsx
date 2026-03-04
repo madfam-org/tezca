@@ -89,7 +89,7 @@ describe('ExportDropdown', () => {
     it('shows upgrade message when free-tier clicks premium format', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
-            tier: 'free',
+            tier: 'essentials',
             loginUrl: '/auth/login',
             userId: null,
             email: null,
@@ -128,7 +128,7 @@ describe('ExportDropdown', () => {
     it('allows PDF download for free-tier users', async () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
-            tier: 'free',
+            tier: 'essentials',
             loginUrl: '/auth/login',
             userId: null,
             email: null,
@@ -160,7 +160,7 @@ describe('ExportDropdown', () => {
     it('allows all formats for premium users', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
-            tier: 'premium',
+            tier: 'pro',
             loginUrl: '/auth/login',
             userId: null,
             email: null,

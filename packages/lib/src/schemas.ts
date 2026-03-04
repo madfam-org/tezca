@@ -84,6 +84,7 @@ export const SearchResponseSchema = z.object({
     total: z.number().optional(),
     page: z.number().optional(),
     page_size: z.number().optional(),
+    max_page_size: z.number().optional(),
     total_pages: z.number().optional(),
     warning: z.string().optional(),
     facets: z.record(z.string(), z.array(FacetBucketSchema)).optional(),

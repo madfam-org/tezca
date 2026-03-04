@@ -31,6 +31,7 @@ class APIKeyUser:
         self.scopes = api_key.scopes or []
         self.allowed_domains = api_key.allowed_domains or []
         self.api_key_prefix = api_key.prefix
+        self.rate_limit_per_hour = api_key.rate_limit_per_hour  # nullable int
         self.is_authenticated = True
         self.claims = {
             "tier": api_key.tier,

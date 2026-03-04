@@ -10,8 +10,10 @@ import logging
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+
+from .middleware.tier_permissions import RequireTier
 
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
@@ -86,11 +88,12 @@ def _resolve_domain(request) -> list[str] | None:
     summary="Bulk articles feed",
     description=(
         "Cursor-paginated bulk article feed with full law metadata. "
-        "Requires API key with 'bulk' scope. "
+        "Requires API key with 'bulk' scope and community tier or above. "
         "Supports domain/category, tier, state, status, and updated_since filters."
     ),
 )
 @api_view(["GET"])
+@permission_classes([RequireTier.of("community")])
 def bulk_articles(request):
     """Cursor-paginated bulk article endpoint for data consumers."""
     # Auth + scope check
