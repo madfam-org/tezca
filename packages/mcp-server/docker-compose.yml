@@ -1,0 +1,10 @@
+services:
+  mcp:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      TEZCA_API_URL: http://host.docker.internal:8000/api/v1
+      MCP_HOST: "0.0.0.0"
+      MCP_PORT: "8000"
+      LOG_LEVEL: INFO

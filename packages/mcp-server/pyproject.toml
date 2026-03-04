@@ -1,0 +1,52 @@
+[project]
+name = "tezca-mcp"
+version = "0.1.0"
+description = "MCP server for Mexican law — access 35K+ laws and 3.5M+ articles via AI agents"
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.11"
+authors = [{ name = "Tezca", email = "hola@tezca.mx" }]
+keywords = ["mcp", "mexican-law", "legal", "ai", "tezca"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "httpx>=0.28.0",
+    "mcp[cli]>=1.25.0,<2",
+    "uvicorn>=0.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.14",
+    "respx>=0.22",
+]
+
+[project.scripts]
+tezca-mcp = "main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["helpers", "tools"]
+include = ["main.py", "resources.py", "prompts.py"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

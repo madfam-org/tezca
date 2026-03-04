@@ -17,6 +17,7 @@ Tezca (tezca.mx) is Mexico's open law platform. 30,000+ laws and 3.5M+ Elasticse
 | `packages/lib` | TypeScript | `@tezca/lib` -- shared types and utils |
 | `packages/ui` | React, shadcn | `@tezca/ui` -- shared UI components |
 | `packages/api-client` | TypeScript | `@tezca/api-client` -- published SDK |
+| `packages/mcp-server` | Python, FastMCP | `tezca-mcp` -- MCP server for AI agents |
 
 **License:** AGPL-3.0
 
@@ -29,6 +30,7 @@ Tezca (tezca.mx) is Mexico's open law platform. 30,000+ laws and 3.5M+ Elasticse
 - Python 3.11+, Poetry
 - Node 20+, npm (workspaces)
 - Docker and Docker Compose
+- uv (for `packages/mcp-server` only)
 
 ### Infrastructure
 
@@ -85,6 +87,9 @@ cd apps/web && npx vitest run
 
 # Admin (vitest, 51 tests across 8 files)
 cd apps/admin && npx vitest run
+
+# MCP server (pytest + respx, 18 tests)
+cd packages/mcp-server && uv run pytest tests/ -v
 
 # E2E
 cd apps/web && npx playwright test
@@ -243,6 +248,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
+| `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
+| `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
 
 ---
 
