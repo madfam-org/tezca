@@ -236,7 +236,8 @@ type Lang = 'es' | 'en' | 'nah';
 | File | Purpose |
 |------|---------|
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
-| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP |
+| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned) |
+| `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits |
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
 | `apps/api/storage.py` | StorageBackend (local + R2) |

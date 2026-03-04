@@ -40,7 +40,9 @@ TAXONOMY = """\
 DOMAINS = """\
 # Domain-to-Category Mapping
 
-Domains are convenience groupings that map to one or more legal categories:
+Domains are convenience groupings that map to one or more legal categories.
+
+## Generic domains (backward-compatible)
 
 | Domain | Categories |
 |--------|-----------|
@@ -51,8 +53,18 @@ Domains are convenience groupings that map to one or more legal categories:
 | administrative | administrativo |
 | constitutional | constitucional |
 
+## SCIAN 2023-aligned sectors (Secretaría de Economía / INEGI)
+
+| Domain | SCIAN Codes | Categories |
+|--------|-------------|-----------|
+| manufacturing | 31-33 (Industrias manufactureras) | laboral, administrativo, mercantil |
+| commerce | 43+46 (Comercio al por mayor/menor) | mercantil, fiscal, administrativo |
+| foreign_trade | Comercio exterior | fiscal, mercantil, administrativo |
+| financial_services | 52 (Servicios financieros) | fiscal, mercantil |
+| professional_services | 54 (Servicios profesionales) | civil, administrativo, laboral |
+
 Use domain parameters as shortcuts when you want to search across related categories.
-For example, `domain="finance"` searches both fiscal and mercantil law.
+For example, `domain="manufacturing"` searches laboral, administrativo, and mercantil law.
 """
 
 STATES = """\

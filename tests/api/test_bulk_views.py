@@ -259,3 +259,48 @@ class TestDomainFilter:
         ]
         assert len(domain_filter) == 1
         assert set(domain_filter[0]["terms"]["category"]) == {"fiscal", "mercantil"}
+
+    @patch("apps.api.search_views.es_client")
+    def test_search_scian_manufacturing_domain(self, mock_es):
+        """SCIAN 'manufacturing' domain maps to laboral+administrativo+mercantil."""
+        mock_es.ping.return_value = True
+        mock_es.search.return_value = {
+            "hits": {"total": {"value": 0}, "hits": []},
+            "aggregations": {},
+        }
+
+        url = reverse("search")
+        self.client.get(url, {"q": "seguridad industrial", "domain": "manufacturing"})
+
+        call_args = mock_es.search.call_args
+        kwargs = call_args[1]
+        query = kwargs.get("query", kwargs.get("body", {}).get("query", {}))
+        filters = query.get("bool", {}).get("filter", [])
+
+        domain_filter = [
+            f for f in filters if "terms" in f and "category" in f["terms"]
+        ]
+        assert len(domain_filter) == 1
+        assert set(domain_filter[0]["terms"]["category"]) == {
+            "laboral",
+            "administrativo",
+            "mercantil",
+        }
+
+    def test_law_list_domain_manufacturing(self):
+        """?domain=manufacturing filters to laboral+administrativo+mercantil only."""
+        laboral_id = f"fed_lab_{uuid.uuid4().hex[:8]}"
+        Law.objects.create(
+            official_id=laboral_id,
+            name="Ley Federal del Trabajo Test",
+            tier="federal",
+            category="laboral",
+        )
+
+        url = reverse("law-list")
+        response = self.client.get(url, {"domain": "manufacturing"})
+
+        assert response.status_code == 200
+        ids = [r["id"] for r in response.data["results"]]
+        assert laboral_id in ids
+        assert self.penal_id not in ids

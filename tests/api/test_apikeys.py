@@ -7,13 +7,16 @@ Covers:
   - APIKey model creation and validation
   - APIKeyAuthentication backend
   - CombinedAuthentication fallback chain
+  - provision_api_key management command
 """
 
 import uuid
 from datetime import timedelta
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.core.management import call_command
 from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.test import APIRequestFactory
@@ -208,3 +211,60 @@ class TestCombinedAuthentication:
         )
         with pytest.raises(AuthenticationFailed):
             self.auth.authenticate(request)
+
+
+# ── provision_api_key management command ─────────────────────────────
+
+
+@pytest.mark.django_db
+class TestProvisionAPIKeyCommand:
+    def test_provision_creates_key(self):
+        """Command creates an API key and prints the full key."""
+        out = StringIO()
+        call_command(
+            "provision_api_key",
+            name="Test Provision",
+            email="prov@example.com",
+            org="TestOrg",
+            tier="internal",
+            scopes="read,search,bulk",
+            domains="manufacturing,finance",
+            stdout=out,
+        )
+        output = out.getvalue()
+        assert "tzk_" in output
+        assert "Test Provision" in output
+
+        key = APIKey.objects.get(name="Test Provision")
+        assert key.tier == "internal"
+        assert key.organization == "TestOrg"
+        assert key.scopes == ["read", "search", "bulk"]
+        assert set(key.allowed_domains) == {"manufacturing", "finance"}
+
+    def test_provision_invalid_domain_rejected(self):
+        """Command rejects unknown domain names."""
+        out = StringIO()
+        err = StringIO()
+        call_command(
+            "provision_api_key",
+            name="Bad Domain",
+            email="bad@example.com",
+            domains="nonexistent_domain",
+            stdout=out,
+            stderr=err,
+        )
+        assert "Unknown domain" in err.getvalue()
+        assert not APIKey.objects.filter(name="Bad Domain").exists()
+
+    def test_provision_empty_domains_means_all(self):
+        """Empty --domains creates key with no domain restriction."""
+        out = StringIO()
+        call_command(
+            "provision_api_key",
+            name="All Domains",
+            email="all@example.com",
+            domains="",
+            stdout=out,
+        )
+        key = APIKey.objects.get(name="All Domains")
+        assert key.allowed_domains == []

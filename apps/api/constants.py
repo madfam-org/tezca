@@ -1,13 +1,25 @@
 """Shared constants for the API app."""
 
-# Domain-to-category mapping for data consumers (e.g., Dhanam finance feed)
+# Domain-to-category mapping for data consumers.
+# Generic domains (backward-compatible):
+#   finance, criminal, labor, civil, administrative, constitutional
+# SCIAN 2023-aligned sectors (Secretaría de Economía / INEGI):
+#   manufacturing (31-33), commerce (43+46), foreign_trade,
+#   financial_services (52), professional_services (54)
 DOMAIN_MAP = {
+    # Generic (backward-compatible)
     "finance": ["fiscal", "mercantil"],
     "criminal": ["penal"],
     "labor": ["laboral"],
     "civil": ["civil"],
     "administrative": ["administrativo"],
     "constitutional": ["constitucional"],
+    # SCIAN 2023-aligned
+    "manufacturing": ["laboral", "administrativo", "mercantil"],
+    "commerce": ["mercantil", "fiscal", "administrativo"],
+    "foreign_trade": ["fiscal", "mercantil", "administrativo"],
+    "financial_services": ["fiscal", "mercantil"],
+    "professional_services": ["civil", "administrativo", "laboral"],
 }
 
 KNOWN_STATES = {
