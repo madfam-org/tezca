@@ -129,6 +129,21 @@ npm run build:all
 2. **Janua JWT** -- `Authorization: Bearer <token>`
 3. **Anonymous fallback**
 
+### Integration Policy (Zero Touch)
+
+Tezca is a generic multi-tenant platform. The codebase must NEVER contain:
+- Hardcoded references to specific consuming services (Karafiel, Forgesight, PravaraMES, etc.)
+- Client-specific routing, middleware, or business logic
+- Organization-specific webhook filters or API key handling
+
+All integrations happen through standard, client-agnostic mechanisms:
+- **API Keys** (`tzk_*`) — provisioned via `provision_api_key` command, scoped by tier/domains/scopes
+- **Webhooks** — any subscriber can register via `/api/v1/webhooks/`, receives HMAC-signed events
+- **REST API** — standard endpoints, rate-limited by tier
+- **Django signals** — `post_save` on `Law`/`LawVersion` triggers generic `dispatch_webhook_event()`
+
+Consuming services configure themselves to connect to Tezca, not the other way around.
+
 ### Rate Limiting
 
 `TieredRateThrottle` in `apps/api/tier_throttles.py`, sliding window via Redis cache:
