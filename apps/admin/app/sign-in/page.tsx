@@ -23,7 +23,7 @@ export default function SignInPage() {
 }
 
 function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> }) {
-    const { auth, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
     const searchParams = useSearchParams();
     const [ssoError, setSsoError] = useState<string | null>(null);
 
@@ -57,8 +57,40 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         setFormError(null);
         setSubmitting(true);
         try {
-            await auth.signIn({ email, password });
-            router.replace("/");
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                setFormError(
+                    data.error ||
+                        "Error al iniciar sesión. Verifica tus credenciales."
+                );
+                return;
+            }
+
+            // Hydrate Janua SDK localStorage so AdminAuthBridge picks up the tokens
+            if (data.access_token) {
+                localStorage.setItem("janua_access_token", data.access_token);
+                if (data.refresh_token) {
+                    localStorage.setItem(
+                        "janua_refresh_token",
+                        data.refresh_token
+                    );
+                }
+                if (data.expires_at) {
+                    localStorage.setItem(
+                        "janua_token_expires_at",
+                        String(data.expires_at)
+                    );
+                }
+            }
+
+            // Full reload so JanuaProvider + AdminAuthBridge pick up the new session
+            window.location.href = "/";
         } catch (err) {
             setFormError(
                 err instanceof Error

@@ -142,7 +142,13 @@ describe('SignInPage', () => {
 
     it('shows error message on failed email/password sign-in', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-        mockSignIn.mockRejectedValueOnce(new Error('Credenciales inválidas'));
+
+        const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+            new Response(JSON.stringify({ error: 'Credenciales inválidas' }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' },
+            })
+        );
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
         render(<SignInPage />);
@@ -158,11 +164,15 @@ describe('SignInPage', () => {
         await waitFor(() => {
             expect(screen.getByRole('alert')).toHaveTextContent('Credenciales inválidas');
         });
+
+        mockFetch.mockRestore();
     });
 
     it('shows loading state during email/password submission', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-        mockSignIn.mockImplementation(() => new Promise(() => {})); // never resolves
+
+        // fetch that never resolves to keep the form in submitting state
+        const mockFetch = vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
         render(<SignInPage />);
@@ -178,6 +188,8 @@ describe('SignInPage', () => {
         await waitFor(() => {
             expect(screen.getByRole('button', { name: 'Iniciando sesión...' })).toBeDisabled();
         });
+
+        mockFetch.mockRestore();
     });
 
     it('renders fallback message when Janua is not configured', async () => {

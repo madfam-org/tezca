@@ -12,7 +12,10 @@ import { useJanua } from "@janua/nextjs";
 /**
  * AdminAuthBridge — transparent wrapper that wires the Janua SDK's
  * access-token getter into the api.ts fetcher via setTokenSource().
- * Renders children unchanged.
+ *
+ * On mount, checks the local /api/auth/me endpoint (which validates the
+ * janua-session cookie server-side) to hydrate SDK state without making
+ * a direct browser XHR to auth.madfam.io (which fails with CORS).
  */
 export function AdminAuthBridge({ children }: { children: React.ReactNode }) {
     const { client } = useJanua();
@@ -38,6 +41,37 @@ export function AdminAuthBridge({ children }: { children: React.ReactNode }) {
             document.cookie = "janua-sso-tokens=; path=/; max-age=0";
             // Reload so JanuaProvider picks up the new tokens
             window.location.reload();
+            return;
+        }
+
+        // If no SSO bridge cookie, check for an existing server-side session.
+        // This avoids the Janua SDK's built-in /auth/me XHR that fails with CORS.
+        const hasToken = !!localStorage.getItem("janua_access_token");
+        if (!hasToken) {
+            fetch("/api/auth/me")
+                .then((res) => {
+                    if (!res.ok) return;
+                    return res.json();
+                })
+                .then((data) => {
+                    if (data?.authenticated && data.access_token) {
+                        localStorage.setItem("janua_access_token", data.access_token);
+                        if (data.refresh_token) {
+                            localStorage.setItem("janua_refresh_token", data.refresh_token);
+                        }
+                        if (data.expires_at) {
+                            localStorage.setItem(
+                                "janua_token_expires_at",
+                                String(data.expires_at)
+                            );
+                        }
+                        // Reload so JanuaProvider picks up the hydrated tokens
+                        window.location.reload();
+                    }
+                })
+                .catch(() => {
+                    // session check failed — user will see sign-in page
+                });
         }
     }, []);
 
