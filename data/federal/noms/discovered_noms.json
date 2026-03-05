@@ -4128,5 +4128,155 @@
     "url": "https://dof.gob.mx/nota_detalle.php?codigo=5655297&fecha=16/06/2022",
     "status": "vigente",
     "source": "dof_archive"
+  },
+  {
+    "id": "nom_010_segob_2016",
+    "name": "Respuestas a los comentarios recibidos respecto del Proyecto de Norma Oficial Mexicana PROY-NOM-010-SEGOB-2016, Que establece los requisitos básicos para la implementación del Sistema de Comando de Incidentes, publicado el 15 de noviembre de 2018.",
+    "nom_number": "NOM-010-SEGOB-2016",
+    "secretaria": "Secretaría de Gobernación",
+    "date_published": "2019-12-27",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5582966&fecha=27/12/2019",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_001_segob2_2018",
+    "name": "Respuesta a los comentarios del Proyecto de Norma Oficial Mexicana PROY-NOM-001-SEGOB2-2018, Para la determinación, asignación e instalación del número de identificación vehicular, publicado el 3 de enero de 2019.",
+    "nom_number": "NOM-001-SEGOB2-2018",
+    "secretaria": "Secretaría de Economía",
+    "date_published": "2019-11-05",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5577750&fecha=05/11/2019",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_006_segob_2015",
+    "name": "Norma Oficial Mexicana NOM-006-SEGOB-2015. Tsunamis.- Características y especificaciones de prevención, alertamiento y evacuación",
+    "nom_number": "NOM-006-SEGOB-2015",
+    "secretaria": "Secretaría de Gobernación",
+    "date_published": "2017-02-21",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5472483&fecha=21/02/2017",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_008_segob_2015",
+    "name": "Norma Oficial Mexicana NOM-008-SEGOB-2015, Personas con discapacidad.- Acciones de prevención y condiciones de seguridad en materia de protección civil en situación de emergencia o desastre",
+    "nom_number": "NOM-008-SEGOB-2015",
+    "secretaria": "Secretaría de Gobernación",
+    "date_published": "2016-08-12",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5447778&fecha=12/08/2016",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_001_scfi_2018",
+    "name": "Modificación al Transitorio Primero de la Norma Oficial Mexicana NOM-001-SCFI-2018, Aparatos electrónicos-Requisitos de seguridad y métodos de prueba (cancela a la NOM-001-SCFI-1993), publicada el 17 de septiembre de 2019.",
+    "nom_number": "NOM-001-SCFI-2018",
+    "secretaria": "Secretaría de Comercio y Fomento Industrial",
+    "date_published": "2020-05-14",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5593309&fecha=14/05/2020",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_001_scfi_2017",
+    "name": "Respuesta a los comentarios del Proyecto de Norma Oficial Mexicana PROY-NOM-001-SCFI-2017, Aparatos electrónicos-Requisitos de seguridad y métodos de prueba (cancelará a la NOM-001-SCFI-1993), publicado el 19 de diciembre de 2017.",
+    "nom_number": "NOM-001-SCFI-2017",
+    "secretaria": "Secretaría de Comercio y Fomento Industrial",
+    "date_published": "2019-09-02",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5571011&fecha=02/09/2019",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_040_ssa1_1993",
+    "name": "Adición de los numerales 8.2.1, 8.2.2, 9.2.3, 13.20, 13.21, así como de los capítulos 8 y 9, del Apéndice Normativo A y 2, del Apéndice Normativo B y modificación del Capítulo 3, del Apéndice Normativo A y de la Tabla B1, del Apéndice Normativo B, de la Norma Oficial Mexicana NOM-040-SSA1-1993, Productos y servicios. Sal yodada y sal yodada fluorurada. Especificaciones sanitarias, publicada el 23 de septiembre de 2003.",
+    "nom_number": "NOM-040-SSA1-1993",
+    "secretaria": "Secretaría de Salud",
+    "date_published": "2018-07-16",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5531604&fecha=16/07/2018",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_010_scfi_2017",
+    "name": "Proyecto de Norma Oficial Mexicana PROY-NOM-010-SCFI-2017, Instrumentos de medición-Instrumentos para pesar de funcionamiento no automático-Requisitos técnicos y metrológicos, métodos de prueba y de verificación (cancela al PROY-NOM-010-SCFI-2014 y cancelará a la NOM-010-SCFI-1994). (Continúa de la Segunda Sección).",
+    "nom_number": "NOM-010-SCFI-2017",
+    "secretaria": "Secretaría de Comercio y Fomento Industrial",
+    "date_published": "2018-08-01",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5533604&fecha=01/08/2018",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_012_scfi_1994",
+    "name": "Proyecto de Norma Oficial Mexicana PROY-NOM-012-3-SCFI- 2017, Instrumentos de medición-Medidores para agua potable fría y caliente-Parte 3: Formato del reporte de prueba (cancelará a la NOM-012-SCFI-1994).",
+    "nom_number": "NOM-012-SCFI-1994",
+    "secretaria": "Secretaría de Comercio y Fomento Industrial",
+    "date_published": "2018-06-20",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5527061&fecha=20/06/2018",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_001_semarnat_1996",
+    "name": "Respuesta a los comentarios recibidos al Proyecto de Modificación de la Norma Oficial Mexicana NOM-001-SEMARNAT-1996, Que establece los límites máximos permisibles de contaminantes en las descargas de aguas residuales en aguas y bienes nacionales para quedar como Proyecto de Modificación de la Norma Oficial Mexicana PROY-NOM-001-SEMARNAT- 2017, Que establece los límites permisibles de contaminantes en las descargas de aguas residuales en cuerpos receptores propiedad de la nación, publicado el 5 de enero de 2018.",
+    "nom_number": "NOM-001-SEMARNAT-1996",
+    "secretaria": "Secretaría de Medio Ambiente y Recursos Naturales",
+    "date_published": "2022-02-21",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5643329&fecha=21/02/2022",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_001_semarnat_2017",
+    "name": "Proyecto de Modificación de la Norma Oficial Mexicana NOM- 001-SEMARNAT-1996, Que establece los límites máximos permisibles de contaminantes en las descargas de aguas residuales en aguas y bienes nacionales para quedar como proyecto de modificación de la Norma Oficial Mexicana PROY-NOM-001-SEMARNAT-2017, Que establece los límites permisibles de contaminantes en las descargas de aguas residuales en cuerpos receptores propiedad de la nación.",
+    "nom_number": "NOM-001-SEMARNAT-2017",
+    "secretaria": "Secretaría de Medio Ambiente y Recursos Naturales",
+    "date_published": "2018-01-05",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5510140&fecha=05/01/2018",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_004_stps_1999",
+    "name": "Procedimiento Alternativo autorizado por la Secretaría del Trabajo y Previsión Social para la Norma Oficial Mexicana NOM-004-STPS-1999, Sistemas de protección y dispositivos de seguridad en la maquinaria y equipo que se utilice en los centros de trabajo",
+    "nom_number": "NOM-004-STPS-1999",
+    "secretaria": "Secretaría del Trabajo y Previsión Social",
+    "date_published": "2016-10-03",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5455434&fecha=03/10/2016",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_011_tur_2021",
+    "name": "Proyecto de Modificación de la Norma Oficial Mexicana NOM- 011-TUR-2001, Requisitos de seguridad, información y operación que deben cumplir los prestadores de servicios turísticos de Turismo de Aventura para quedar como Proyecto de Norma Oficial Mexicana PROY- NOM-011-TUR-2021, Requisitos mínimos de seguridad, información, operación, instalaciones y equipamiento que deben cumplir las operadoras de servicios turísticos de Turismo de Aventura/ Naturaleza (Cancela al Proyecto de Norma Oficial Mexicana PROY-NOM-011-TUR-2018, publicado el 4 de mayo de 2018 y cancelará la NOM-011-TUR-2001).",
+    "nom_number": "NOM-011-TUR-2021",
+    "secretaria": "",
+    "date_published": "2021-12-14",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5638267&fecha=14/12/2021",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_011_tur_2018",
+    "name": "Proyecto de Modificación de la Norma Oficial Mexicana NOM- 011-TUR-2001, Requisitos de seguridad, información y operación que deben cumplir los prestadores de servicios turísticos de turismo de aventura para quedar como Proyecto de Norma Oficial Mexicana PROY- NOM-011-TUR-2018, Requisitos mínimos de seguridad, información, operación, instalaciones y equipamiento que deben cumplir las operadoras de servicios turísticos de turismo de aventura/naturaleza.",
+    "nom_number": "NOM-011-TUR-2018",
+    "secretaria": "",
+    "date_published": "2018-05-04",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5521669&fecha=04/05/2018",
+    "status": "vigente",
+    "source": "dof_archive"
+  },
+  {
+    "id": "nom_007_tur_2021",
+    "name": "Proyecto de Norma Oficial Mexicana PROY-NOM-007-TUR-2021, De los elementos normativos del seguro de responsabilidad civil que deben contratar los prestadores de servicios turísticos de hospedaje para la protección y seguridad de los turistas o usuarios (cancela al Proyecto de Norma Oficial Mexicana NOM-007-TUR-2018 publicado el 18 de diciembre de 2018 y cancelará la NOM-07-TUR-2002).",
+    "nom_number": "NOM-007-TUR-2021",
+    "secretaria": "",
+    "date_published": "2022-02-25",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5643854&fecha=25/02/2022",
+    "status": "vigente",
+    "source": "dof_archive"
   }
 ]
