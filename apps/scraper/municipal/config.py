@@ -10,8 +10,8 @@ from typing import Any, Dict, List
 MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     # Tier 0 - Capital
     "cdmx": {
-        "name": "Ciudad de Mexico",
-        "state": "Ciudad de Mexico",
+        "name": "Ciudad de México",
+        "state": "Ciudad de México",
         "base_url": "https://data.consejeria.cdmx.gob.mx/",
         "catalog_type": "html",
         "tier": 0,
@@ -40,7 +40,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "monterrey": {
         "name": "Monterrey",
-        "state": "Nuevo Leon",
+        "state": "Nuevo León",
         "base_url": "https://www.monterrey.gob.mx/",
         "catalog_type": "html",
         "tier": 1,
@@ -126,8 +126,8 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "status": "ready",
     },
     "merida": {
-        "name": "Merida",
-        "state": "Yucatan",
+        "name": "Mérida",
+        "state": "Yucatán",
         "base_url": "https://www.merida.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
@@ -140,7 +140,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "status": "ready",
     },
     "cancun": {
-        "name": "Cancun (Benito Juarez)",
+        "name": "Cancún (Benito Juárez)",
         "state": "Quintana Roo",
         "base_url": "https://www.benitojuarez.gob.mx/",
         "catalog_type": "html",
@@ -168,8 +168,8 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "status": "ready",
     },
     "san_luis_potosi": {
-        "name": "San Luis Potosi",
-        "state": "San Luis Potosi",
+        "name": "San Luis Potosí",
+        "state": "San Luis Potosí",
         "base_url": "https://www.slp.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
@@ -210,8 +210,8 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "status": "ready",
     },
     "queretaro": {
-        "name": "Queretaro",
-        "state": "Queretaro",
+        "name": "Querétaro",
+        "state": "Querétaro",
         "base_url": "https://www.municipiodequeretaro.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
@@ -225,7 +225,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "morelia": {
         "name": "Morelia",
-        "state": "Michoacan",
+        "state": "Michoacán",
         "base_url": "https://www.morelia.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
@@ -253,7 +253,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "toluca": {
         "name": "Toluca",
-        "state": "Estado de Mexico",
+        "state": "Estado de México",
         "base_url": "https://www.toluca.gob.mx/",
         "catalog_type": "html",
         "tier": 2,
@@ -266,7 +266,7 @@ MUNICIPALITY_CONFIGS: Dict[str, Dict[str, Any]] = {
         "status": "ready",
     },
     "culiacan": {
-        "name": "Culiacan",
+        "name": "Culiacán",
         "state": "Sinaloa",
         "base_url": "https://culiacan.gob.mx/",
         "catalog_type": "html",
