@@ -10,15 +10,17 @@ import { Button, Card, CardContent, Badge } from "@tezca/ui";
 import { SearchFilters, type SearchFilterState } from '@/components/SearchFilters';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { Pagination } from '@/components/Pagination';
-import { api } from '@/lib/api';
+import { api, APIError } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
-import { UpgradeBanner } from '@/components/UpgradeBanner';
+import { TierGate } from '@/components/TierGate';
 import type { SearchResult, FacetBucket } from "@tezca/lib";
 
 const content = {
     es: {
         searchError: 'Error al buscar',
+        rateLimited: 'Has alcanzado tu límite de búsquedas. Se renueva en',
+        minutes: 'minutos',
         pageTitle: 'Buscar Leyes',
         searchPlaceholder: 'Buscar por artículo, título, contenido...',
         searchButton: 'Buscar',
@@ -46,6 +48,8 @@ const content = {
     },
     en: {
         searchError: 'Search error',
+        rateLimited: 'You\'ve reached your search limit. Renews in',
+        minutes: 'minutes',
         pageTitle: 'Search Laws',
         searchPlaceholder: 'Search by article, title, content...',
         searchButton: 'Search',
@@ -73,6 +77,8 @@ const content = {
     },
     nah: {
         searchError: 'Tlatemoliztli tlahtlac\u014Dlli',
+        rateLimited: '\u014Ctitl\u0101mic in tlatemoliztli. Mopātia ic',
+        minutes: 'minutos',
         pageTitle: 'Tlatemoliztli Tenahuatilli',
         searchPlaceholder: 'Xict\u0113moa ic tlanahuatilli, t\u014Dc\u0101itl, tlamachiliztli...',
         searchButton: 'Tlatemoliztli',
@@ -150,6 +156,7 @@ function SearchContent() {
     const [shareCopied, setShareCopied] = useState(false);
     const [facets, setFacets] = useState<Record<string, FacetBucket[]> | undefined>(undefined);
     const [maxPageSize, setMaxPageSize] = useState<number | null>(null);
+    const [rateLimitRetry, setRateLimitRetry] = useState<number | null>(null);
 
     const buildSearchParams = (q: string, f: SearchFilterState, page: number) => {
         const params = new URLSearchParams();
@@ -217,10 +224,14 @@ function SearchContent() {
                 setError(data.warning);
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : t.searchError);
-            setResults([]);
-            setTotal(0);
-            setTotalPages(0);
+            if (err instanceof APIError && err.status === 429) {
+                setRateLimitRetry(err.retryAfter ?? 300);
+            } else {
+                setError(t.searchError);
+                setResults([]);
+                setTotal(0);
+                setTotalPages(0);
+            }
         } finally {
             setLoading(false);
         }
@@ -252,7 +263,7 @@ function SearchContent() {
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background overflow-x-hidden">
             {/* Search Header */}
             <div className="border-b border-border bg-card">
                 <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
@@ -474,7 +485,7 @@ function SearchContent() {
 
                                                             {result.date && (
                                                                 <div className="mt-3 text-xs text-muted-foreground">
-                                                                    {t.published} {new Date(result.date).toLocaleDateString(t.dateLocale, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                                                    {t.published} {lang === 'nah' ? new Date(result.date).toISOString().slice(0, 10) : new Date(result.date).toLocaleDateString(t.dateLocale, { year: 'numeric', month: 'long', day: 'numeric' })}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -495,13 +506,22 @@ function SearchContent() {
                                     ))}
                                 </div>
 
-                                {/* Upgrade banner for limited search results */}
+                                {/* Tier gate for limited search results */}
                                 {maxPageSize != null && maxPageSize < 100 && (
                                     <div className="mt-6">
-                                        <UpgradeBanner
-                                            feature="Resultados ilimitados"
-                                            currentTier={tier === 'anon' ? null : tier === 'essentials' ? 'essentials' : tier}
-                                            userId={userId ?? undefined}
+                                        <TierGate
+                                            variant="card"
+                                            requiredTier="community"
+                                            feature={lang === 'en'
+                                                ? `You're viewing the first ${maxPageSize} results. With Community or Pro, explore up to 100 per page.`
+                                                : lang === 'nah'
+                                                ? `Ticmotta in achtopa ${maxPageSize} tlanextīliztli. Ica Community ahnozo Pro, xictlapo 100 ipan cē āmoxihuitl.`
+                                                : `Estás viendo los primeros ${maxPageSize} resultados. Con Community o Pro, explora hasta 100 por página.`}
+                                            benefits={lang === 'en'
+                                                ? ['100 results per page', 'Bulk downloads', 'Webhooks for real-time updates']
+                                                : lang === 'nah'
+                                                ? ['100 tlanextīliztli', 'Huēyi tēmōhuiliztli', 'Webhooks']
+                                                : ['100 resultados por página', 'Descargas masivas', 'Webhooks para actualizaciones en tiempo real']}
                                         />
                                     </div>
                                 )}
@@ -520,6 +540,17 @@ function SearchContent() {
                     </main>
                 </div>
             </div>
+
+            {/* Rate limit toast */}
+            {rateLimitRetry != null && (
+                <TierGate
+                    variant="toast"
+                    requiredTier={tier === 'anon' || tier === 'essentials' ? 'community' : 'pro'}
+                    showCountdown
+                    retryAfterSeconds={rateLimitRetry}
+                    onDismiss={() => setRateLimitRetry(null)}
+                />
+            )}
         </div>
     );
 }

@@ -5,13 +5,14 @@ import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell } from 'lucide-react'
 import { Protect } from '@janua/nextjs';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { TierComparison } from '@/components/TierComparison';
 
 const content = {
     es: {
         title: 'Mi cuenta',
         email: 'Correo electrónico',
         tier: 'Plan',
-        tierLabels: { anon: 'Anónimo', free: 'Gratuito', premium: 'Premium' },
+        tierLabels: { anon: 'Anónimo', essentials: 'Gratuito', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Favoritos guardados',
         recentlyViewed: 'Vistos recientemente',
         notes: 'Mis notas',
@@ -19,12 +20,13 @@ const content = {
         preferences: 'Preferencias',
         signOut: 'Cerrar sesión',
         greeting: 'Bienvenido',
+        upgradePlans: 'Planes disponibles',
     },
     en: {
         title: 'My Account',
         email: 'Email',
         tier: 'Plan',
-        tierLabels: { anon: 'Anonymous', free: 'Free', premium: 'Premium' },
+        tierLabels: { anon: 'Anonymous', essentials: 'Free', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Saved Bookmarks',
         recentlyViewed: 'Recently Viewed',
         notes: 'My Notes',
@@ -32,12 +34,13 @@ const content = {
         preferences: 'Preferences',
         signOut: 'Sign Out',
         greeting: 'Welcome',
+        upgradePlans: 'Available plans',
     },
     nah: {
         title: 'Notocaitl',
         email: 'Amatlahcuilōlli',
         tier: 'Tlaxtlahuīlli',
-        tierLabels: { anon: 'Ahmo machtīlli', free: 'Tlanāhuatīlli', premium: 'Premium' },
+        tierLabels: { anon: 'Ahmo machtīlli', essentials: 'Tlanāhuatīlli', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Tlapepenilistli',
         recentlyViewed: 'Ōquittac achto',
         notes: 'Notlahcuilōlhuān',
@@ -45,13 +48,16 @@ const content = {
         preferences: 'Tlanequiliztli',
         signOut: 'Xiquīza',
         greeting: 'Ximopanōlti',
+        upgradePlans: 'Tlaxtlahuīlli',
     },
 };
 
 const TIER_COLORS: Record<string, string> = {
     anon: 'bg-muted text-muted-foreground',
-    free: 'bg-primary/10 text-primary',
-    premium: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    essentials: 'bg-primary/10 text-primary',
+    community: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+    pro: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    madfam: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300',
 };
 
 export default function CuentaPage() {
@@ -63,7 +69,7 @@ export default function CuentaPage() {
     const tierLabel = t.tierLabels[tier] || tier;
 
     return (
-        <Protect redirectUrl="/login">
+        <Protect redirectTo="/login">
             <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
                 <h1 className="text-2xl font-bold mb-8">{t.title}</h1>
 
@@ -81,7 +87,7 @@ export default function CuentaPage() {
 
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">{t.tier}:</span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${TIER_COLORS[tier] || TIER_COLORS.free}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${TIER_COLORS[tier] || TIER_COLORS.essentials}`}>
                             {tierLabel}
                         </span>
                     </div>
@@ -110,6 +116,14 @@ export default function CuentaPage() {
                         label={t.alerts}
                     />
                 </div>
+
+                {/* Tier comparison for upgradeable users */}
+                {(tier === 'anon' || tier === 'essentials' || tier === 'community') && (
+                    <div className="mt-8">
+                        <h2 className="text-lg font-bold mb-4">{t.upgradePlans}</h2>
+                        <TierComparison />
+                    </div>
+                )}
 
                 {/* Sign out */}
                 <div className="mt-8">

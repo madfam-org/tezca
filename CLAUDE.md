@@ -82,7 +82,7 @@ npm run dev:all                     # both concurrently
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
-# Web (vitest, 272 tests across 38 files)
+# Web (vitest, 299 tests across 40 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 72 tests across 10 files)
@@ -219,6 +219,12 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from `@tezca/ui`, not from raw radix or shadcn directly.
 
+### Tier-Gating Components
+
+- **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
+- **`TierComparison`** — Feature comparison table across Essentials/Community/Pro tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
+- **`LinkifiedArticle`** — `crossRefsDisabled` defaults to `true`. Pass `crossRefsDisabled={false}` explicitly to enable per-article cross-reference fetching (avoids N+1 API calls on law detail pages).
+
 ### Colors
 
 Use semantic Tailwind classes, never raw color values:
@@ -288,6 +294,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
+| `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
+| `apps/web/components/TierComparison.tsx` | Tier feature comparison table |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
@@ -323,6 +331,10 @@ type Lang = 'es' | 'en' | 'nah';
 11. **`@janua/*` transpiling:** `@janua/ui` and `@janua/nextjs` must be listed in `transpilePackages` in `next.config.ts`. Without this, Turbopack fails with "Unknown module type" on their TypeScript source.
 
 12. **ES ICU plugin:** The default ES Docker image does not include `analysis-icu`. Use `asciifolding` (built-in) instead of `icu_folding` for accent normalization.
+
+13. **`@types/react` lockfile dedup:** The monorepo can end up with multiple `@types/react` versions (e.g. 19.2.10 in workspaces, 19.2.14 at root), causing Radix component type errors (`Key` type mismatch). Fix by removing nested `node_modules/@types/react` entries from `package-lock.json` and running `npm install`.
+
+14. **`Protect` component:** `@janua/nextjs` `Protect` uses `redirectTo` prop, not `redirectUrl`.
 
 ---
 

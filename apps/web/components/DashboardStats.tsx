@@ -6,7 +6,13 @@ import type { DashboardStats } from '@tezca/lib';
 import { Card, CardContent, Badge } from '@tezca/ui';
 import { BookOpen, Scale, Building2, Calendar, FileText, ArrowRight, Landmark, Briefcase } from 'lucide-react';
 import Link from 'next/link';
-import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
+import { useLang, LOCALE_MAP, type Lang } from '@/components/providers/LanguageContext';
+
+/** Format dates neutrally (YYYY-MM-DD) for Nahuatl, locale-aware for es/en. */
+function formatDate(date: Date, lang: Lang, opts?: Intl.DateTimeFormatOptions): string {
+    if (lang === 'nah') return date.toISOString().slice(0, 10);
+    return date.toLocaleDateString(LOCALE_MAP[lang], opts);
+}
 
 // Shared stats promise — deduplicates /stats/ calls across Hero, DashboardStatsGrid, RecentLawsList
 let _statsPromise: Promise<DashboardStats> | null = null;
@@ -130,7 +136,7 @@ export function DashboardStatsGrid() {
                 />
                 <StatCard
                     label={t.lastUpdate}
-                    value={stats.last_update ? new Date(stats.last_update).toLocaleDateString(locale) : '-'}
+                    value={stats.last_update ? formatDate(new Date(stats.last_update), lang) : '-'}
                     icon={<Calendar aria-hidden="true" className="h-5 w-5 text-orange-500" />}
                 />
             </div>
@@ -205,7 +211,7 @@ export function RecentLawsList() {
                                         {law.tier === 'state' ? t.tierState : t.tierFederal}
                                     </span>
                                     <span>•</span>
-                                    <span>{new Date(law.date).toLocaleDateString(locale, { dateStyle: 'long' })}</span>
+                                    <span>{formatDate(new Date(law.date), lang, { dateStyle: 'long' })}</span>
                                 </div>
                             </div>
                         </div>

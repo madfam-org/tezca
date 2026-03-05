@@ -342,7 +342,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                         </Label>
                         <Select
                             value={filters.state || 'all'}
-                            onValueChange={(value) =>
+                            onValueChange={(value: string) =>
                                 onFiltersChange({ ...filters, state: value === 'all' ? null : value })
                             }
                         >
@@ -395,7 +395,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                     </Label>
                     <Select
                         value={filters.category || 'all'}
-                        onValueChange={(value) =>
+                        onValueChange={(value: string) =>
                             onFiltersChange({ ...filters, category: value === 'all' ? null : value })
                         }
                     >
@@ -422,7 +422,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                     </Label>
                     <Select
                         value={filters.status}
-                        onValueChange={(value) => onFiltersChange({ ...filters, status: value })}
+                        onValueChange={(value: string) => onFiltersChange({ ...filters, status: value })}
                     >
                         <SelectTrigger id="status">
                             <SelectValue />
@@ -447,7 +447,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                     </Label>
                     <Select
                         value={filters.law_type || 'all'}
-                        onValueChange={(value) => onFiltersChange({ ...filters, law_type: value })}
+                        onValueChange={(value: string) => onFiltersChange({ ...filters, law_type: value })}
                     >
                         <SelectTrigger id="law_type">
                             <SelectValue />
@@ -509,7 +509,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                     </Label>
                     <Select
                         value={filters.date_range || 'all'}
-                        onValueChange={(value) => onFiltersChange({ ...filters, date_range: value })}
+                        onValueChange={(value: string) => onFiltersChange({ ...filters, date_range: value })}
                     >
                         <SelectTrigger id="date_range">
                             <SelectValue placeholder={t.anyDate} />
@@ -531,7 +531,7 @@ export function SearchFilters({ filters, onFiltersChange, resultCount, facets }:
                     </Label>
                     <Select
                         value={filters.sort}
-                        onValueChange={(value) => onFiltersChange({ ...filters, sort: value })}
+                        onValueChange={(value: string) => onFiltersChange({ ...filters, sort: value })}
                     >
                         <SelectTrigger id="sort">
                             <SelectValue />

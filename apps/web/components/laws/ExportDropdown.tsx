@@ -6,6 +6,7 @@ import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth, type UserTier } from '@/components/providers/AuthContext';
 import { API_BASE_URL } from '@/lib/config';
 import { getAuthToken } from '@/lib/auth-token';
+import { TierGate } from '@/components/TierGate';
 
 type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
@@ -112,6 +113,8 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState<ExportFormat | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const [showGate, setShowGate] = useState(false);
+    const [rateLimitSecs, setRateLimitSecs] = useState<number | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Close on click outside
@@ -138,11 +141,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
 
         // Check tier access on client side
         if (!canAccess(format)) {
-            if (!isAuthenticated) {
-                setMessage(t.loginRequired);
-            } else {
-                setMessage(t.premiumRequired);
-            }
+            setShowGate(true);
             return;
         }
 
@@ -161,17 +160,12 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
 
             if (res.status === 429) {
                 const data = await res.json().catch(() => ({ retry_after: 300 }));
-                const mins = Math.ceil((data.retry_after || 300) / 60);
-                setMessage(`${t.rateLimited} ${mins} ${t.minutes}`);
+                setRateLimitSecs(data.retry_after || 300);
+                setShowGate(true);
                 return;
             }
             if (res.status === 403) {
-                const data = await res.json().catch(() => ({}));
-                if (data.required_tier === 'free' || !isAuthenticated) {
-                    setMessage(t.loginRequired);
-                } else {
-                    setMessage(t.premiumRequired);
-                }
+                setShowGate(true);
                 return;
             }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -249,18 +243,21 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                         })}
                     </div>
 
-                    {/* Inline message for auth/rate-limit feedback */}
-                    {message && (
-                        <div className="border-t px-3 py-2 text-xs text-muted-foreground">
-                            <p>{message}</p>
-                            {!isAuthenticated && message === t.loginRequired && (
-                                <a
-                                    href={loginUrl}
-                                    className="text-primary underline hover:no-underline mt-1 inline-block"
-                                >
-                                    {lang === 'en' ? 'Sign in' : lang === 'nah' ? 'Xicalaqui' : 'Iniciar sesión'}
-                                </a>
-                            )}
+                    {/* Tier gate for locked formats / rate limits */}
+                    {showGate && (
+                        <div className="border-t p-2">
+                            <TierGate
+                                variant="inline"
+                                requiredTier="pro"
+                                feature={rateLimitSecs != null
+                                    ? undefined
+                                    : (isAuthenticated
+                                        ? (lang === 'en' ? 'LaTeX, DOCX, EPUB, JSON with Pro' : lang === 'nah' ? 'LaTeX, DOCX, EPUB, JSON ica Pro' : 'LaTeX, DOCX, EPUB y JSON con Pro')
+                                        : (lang === 'en' ? 'Create your free account to download PDF' : lang === 'nah' ? 'Xictlālia mocuenta ic PDF' : 'Crea tu cuenta gratuita para descargar en PDF'))}
+                                showCountdown={rateLimitSecs != null}
+                                retryAfterSeconds={rateLimitSecs ?? undefined}
+                                onDismiss={() => { setShowGate(false); setRateLimitSecs(null); }}
+                            />
                         </div>
                     )}
                 </div>

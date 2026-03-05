@@ -140,14 +140,19 @@ export default function LawCard({ law }: LawCardProps) {
                     )}
                 </div>
 
-                {hasDetailFields && (
+                {hasDetailFields && ((law as Law).articles ?? 0) > 0 && (
                     <div className="text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">
-                            {(law as Law).articles?.toLocaleString() ?? 0}
-                        </span> {t.articles} •
-                        <span className="font-semibold text-foreground ml-1">
-                            {(law as Law).score}%
-                        </span> {t.quality}
+                            {(law as Law).articles!.toLocaleString()}
+                        </span> {t.articles}
+                        {(law as Law).score != null && (
+                            <>
+                                {' '}•
+                                <span className="font-semibold text-foreground ml-1">
+                                    {(law as Law).score}%
+                                </span> {t.quality}
+                            </>
+                        )}
                     </div>
                 )}
 

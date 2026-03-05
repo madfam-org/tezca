@@ -72,6 +72,7 @@ describe('LinkifiedArticle', () => {
                 lawId="constitucion"
                 articleId="103"
                 text="De acuerdo con la Ley de Amparo vigente en la materia."
+                crossRefsDisabled={false}
             />
         );
 
@@ -104,6 +105,7 @@ describe('LinkifiedArticle', () => {
                 lawId="test-law"
                 articleId="1"
                 text="En el articulo 27 se establece lo anterior."
+                crossRefsDisabled={false}
             />
         );
 
@@ -150,6 +152,7 @@ describe('LinkifiedArticle', () => {
                 lawId="test"
                 articleId="1"
                 text="ref1 text ref2 more text"
+                crossRefsDisabled={false}
             />
         );
 

@@ -63,7 +63,7 @@ export interface AlertData {
 import { API_BASE_URL } from './config';
 
 class APIError extends Error {
-    constructor(public status: number, message: string) {
+    constructor(public status: number, message: string, public retryAfter?: number) {
         super(message);
         this.name = 'APIError';
     }
@@ -87,6 +87,10 @@ async function fetcher<T>(endpoint: string, options?: RequestInit, schema?: z.Zo
         });
 
         if (!response.ok) {
+            if (response.status === 429) {
+                const body = await response.json().catch(() => ({}));
+                throw new APIError(429, 'rate_limited', body.retry_after ?? 300);
+            }
             throw new APIError(
                 response.status,
                 `API request failed: ${response.statusText}`

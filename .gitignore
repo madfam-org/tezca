@@ -189,3 +189,4 @@ scripts/scraping/*.log
 
 # Judicial metadata
 !data/judicial/probe_results.json
+audit/

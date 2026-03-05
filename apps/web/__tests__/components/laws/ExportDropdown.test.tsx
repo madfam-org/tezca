@@ -17,6 +17,10 @@ vi.mock('@/lib/config', () => ({
     API_BASE_URL: 'http://localhost:8000',
 }));
 
+vi.mock('@/lib/billing', () => ({
+    getCheckoutUrl: vi.fn(() => 'https://checkout.test/'),
+}));
+
 import { ExportDropdown } from '@/components/laws/ExportDropdown';
 import { useAuth } from '@/components/providers/AuthContext';
 
@@ -71,22 +75,23 @@ describe('ExportDropdown', () => {
         expect(screen.getAllByText('Premium')).toHaveLength(4);
     });
 
-    it('shows login message when anon clicks PDF', () => {
+    it('shows tier gate when anon clicks PDF', () => {
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar PDF'));
-        expect(screen.getByText('Inicia sesión para descargar en este formato')).toBeInTheDocument();
-        expect(screen.getByText('Iniciar sesión')).toBeInTheDocument();
+        // TierGate shows "Crea tu cuenta gratuita" for unauthenticated users
+        expect(screen.getByText('Crea tu cuenta gratuita')).toBeInTheDocument();
+        expect(screen.getByText('Empieza gratis')).toBeInTheDocument();
     });
 
-    it('shows login message when anon clicks premium format', () => {
+    it('shows tier gate when anon clicks premium format', () => {
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar LaTeX'));
-        expect(screen.getByText('Inicia sesión para descargar en este formato')).toBeInTheDocument();
+        expect(screen.getByText('Crea tu cuenta gratuita')).toBeInTheDocument();
     });
 
-    it('shows upgrade message when free-tier clicks premium format', () => {
+    it('shows upgrade gate when free-tier clicks premium format', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
             tier: 'essentials',
@@ -99,7 +104,8 @@ describe('ExportDropdown', () => {
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar DOCX'));
-        expect(screen.getByText('Formato Premium — Actualiza tu cuenta')).toBeInTheDocument();
+        // TierGate shows upgrade message for authenticated essentials users
+        expect(screen.getByText('Desbloquea todo con Tezca Pro')).toBeInTheDocument();
     });
 
     it('downloads TXT for anonymous users', async () => {
@@ -176,7 +182,7 @@ describe('ExportDropdown', () => {
         expect(screen.queryByText('Formato Premium — Actualiza tu cuenta')).not.toBeInTheDocument();
     });
 
-    it('shows rate limit message on 429', async () => {
+    it('shows tier gate with countdown on 429', async () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: false,
             tier: 'anon',
@@ -198,12 +204,12 @@ describe('ExportDropdown', () => {
         fireEvent.click(screen.getByText('Descargar TXT'));
 
         await waitFor(() => {
-            expect(screen.getByText(/Has alcanzado el límite/)).toBeInTheDocument();
-            expect(screen.getByText(/10 minutos/)).toBeInTheDocument();
+            // TierGate inline shows countdown text
+            expect(screen.getByText(/Tus consultas se renuevan en/)).toBeInTheDocument();
         });
     });
 
-    it('handles 403 from server for unauthenticated user', async () => {
+    it('shows tier gate on 403 from server for unauthenticated user', async () => {
         const mockFetch = vi.fn().mockResolvedValue({
             ok: false,
             status: 403,
@@ -217,7 +223,8 @@ describe('ExportDropdown', () => {
         fireEvent.click(screen.getByText('Descargar TXT'));
 
         await waitFor(() => {
-            expect(screen.getByText('Inicia sesión para descargar en este formato')).toBeInTheDocument();
+            // TierGate shows account creation CTA for unauthenticated users
+            expect(screen.getByText('Crea tu cuenta gratuita')).toBeInTheDocument();
         });
     });
 });

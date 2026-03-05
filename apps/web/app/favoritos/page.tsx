@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { Heart, Trash2, BookOpen } from 'lucide-react';
 import { useBookmarks } from '@/components/providers/BookmarksContext';
 import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
+import { useAuth } from '@/components/providers/AuthContext';
 import { Card, CardContent } from '@tezca/ui';
+import { TierGate } from '@/components/TierGate';
 
 const content = {
     es: {
@@ -15,6 +17,7 @@ const content = {
         browse: 'Explorar leyes',
         remove: 'Quitar',
         saved: 'Guardado',
+        signupHint: 'Crea tu cuenta para guardar tus leyes favoritas y acceder desde cualquier dispositivo',
     },
     en: {
         title: 'Favorites',
@@ -24,6 +27,7 @@ const content = {
         browse: 'Browse laws',
         remove: 'Remove',
         saved: 'Saved',
+        signupHint: 'Create your account to save your favorite laws and access them from any device',
     },
     nah: {
         title: 'Tlapepenilistli',
@@ -33,6 +37,7 @@ const content = {
         browse: 'Xictlaixmati tenahuatilli',
         remove: 'Xicpōhua',
         saved: 'Ōmopix',
+        signupHint: 'Xictlālia mocuenta ic ticpiyaz motenahuatilli',
     },
 };
 
@@ -40,6 +45,7 @@ export default function FavoritosPage() {
     const { lang } = useLang();
     const t = content[lang];
     const { bookmarks, removeBookmark } = useBookmarks();
+    const { isAuthenticated } = useAuth();
 
     return (
         <div className="min-h-screen bg-background">
@@ -59,6 +65,17 @@ export default function FavoritosPage() {
                         <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
                         <p className="text-lg text-muted-foreground">{t.empty}</p>
                         <p className="mt-2 text-sm text-muted-foreground">{t.emptyHint}</p>
+
+                        {!isAuthenticated && (
+                            <div className="mt-6 max-w-md mx-auto">
+                                <TierGate
+                                    variant="inline"
+                                    requiredTier="essentials"
+                                    feature={t.signupHint}
+                                />
+                            </div>
+                        )}
+
                         <Link
                             href="/busqueda"
                             className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"

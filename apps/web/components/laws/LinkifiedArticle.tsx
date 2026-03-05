@@ -50,7 +50,7 @@ interface LinkifiedArticleProps {
  *
  * Fetches cross-references from API and makes legal references clickable.
  */
-export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6, crossRefsDisabled = false }: LinkifiedArticleProps) {
+export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6, crossRefsDisabled = true }: LinkifiedArticleProps) {
     const { lang } = useLang();
     const t = content[lang];
 

@@ -60,7 +60,7 @@ const jurisdictionConfig = [
         coverageField: 'federal' as const,
         colorClass: 'primary',
         gradient: 'from-primary-500 to-primary-600',
-        href: '/laws?jurisdiction=federal',
+        href: '/leyes?jurisdiction=federal',
     },
     {
         id: 'state' as const,
@@ -71,7 +71,7 @@ const jurisdictionConfig = [
         coverageField: 'state' as const,
         colorClass: 'secondary',
         gradient: 'from-secondary-500 to-secondary-600',
-        href: '/laws?jurisdiction=state',
+        href: '/leyes?jurisdiction=state',
     },
     {
         id: 'municipal' as const,
@@ -82,7 +82,7 @@ const jurisdictionConfig = [
         coverageField: 'municipal' as const,
         colorClass: 'accent',
         gradient: 'from-accent-500 to-accent-600',
-        href: '/laws?jurisdiction=municipal',
+        href: '/leyes?jurisdiction=municipal',
     },
 ];
 

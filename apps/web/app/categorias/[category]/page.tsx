@@ -119,20 +119,20 @@ function getCategoryIcon(slug: string): string {
 const content = {
   es: {
     home: 'Inicio',
-    categories: 'Categorias',
+    categories: 'Categorías',
     lawsFound: 'leyes encontradas',
-    noLaws: 'No se encontraron leyes en esta categoria.',
-    noLawsSub: 'Intenta explorar otras categorias o vuelve al inicio.',
+    noLaws: 'No se encontraron leyes en esta categoría.',
+    noLawsSub: 'Intenta explorar otras categorías o vuelve al inicio.',
     tier: 'Nivel',
     type: 'Tipo',
     viewLaw: 'Ver ley',
-    page: 'Pagina',
+    page: 'Página',
     of: 'de',
     previous: 'Anterior',
     next: 'Siguiente',
     errorTitle: 'Error al cargar las leyes',
-    errorBody: 'No se pudieron obtener las leyes de esta categoria. Intenta de nuevo mas tarde.',
-    backToCategories: 'Volver a categorias',
+    errorBody: 'No se pudieron obtener las leyes de esta categoría. Intenta de nuevo más tarde.',
+    backToCategories: 'Volver a categorías',
   },
   en: {
     home: 'Home',
@@ -337,7 +337,7 @@ export default async function CategoryDetailPage({
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Categorias',
+                name: 'Categorías',
                 item: siteUrl + '/categorias',
               },
               {
