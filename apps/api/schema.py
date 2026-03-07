@@ -220,6 +220,21 @@ class ArticleCrossRefsSchema(serializers.Serializer):
     total_incoming = serializers.IntegerField()
 
 
+class BatchCrossRefsRequestSchema(serializers.Serializer):
+    article_ids = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="List of article IDs (max 200)",
+    )
+
+
+class BatchCrossRefsResponseSchema(serializers.Serializer):
+    references = serializers.DictField(
+        child=ArticleCrossRefsSchema(),
+        help_text="Map of article_id → {outgoing, incoming, total_outgoing, total_incoming}",
+    )
+    article_count = serializers.IntegerField()
+
+
 class RefCountSchema(serializers.Serializer):
     slug = serializers.CharField()
     count = serializers.IntegerField()

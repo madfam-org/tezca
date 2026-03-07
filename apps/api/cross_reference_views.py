@@ -2,13 +2,20 @@
 API views for cross-references.
 """
 
+from collections import defaultdict
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from apps.api.models import CrossReference
-from apps.api.schema import ArticleCrossRefsSchema, LawCrossRefsSchema
+from apps.api.schema import (
+    ArticleCrossRefsSchema,
+    BatchCrossRefsRequestSchema,
+    BatchCrossRefsResponseSchema,
+    LawCrossRefsSchema,
+)
 
 
 @extend_schema(
@@ -73,6 +80,96 @@ def article_cross_references(request, law_id, article_id):
             "total_incoming": len(incoming_data),
         }
     )
+
+
+MAX_BATCH_ARTICLE_IDS = 200
+
+
+@extend_schema(
+    tags=["Cross-References"],
+    summary="Batch article cross-references",
+    description=(
+        "Get cross-references for multiple articles in a single law. "
+        "Accepts up to 200 article IDs per request. "
+        "Returns a map of article_id → {outgoing, incoming}."
+    ),
+    request=BatchCrossRefsRequestSchema,
+    responses={200: BatchCrossRefsResponseSchema},
+)
+@api_view(["POST"])
+def batch_article_cross_references(request, law_id):
+    """
+    Get cross-references for multiple articles in one request.
+
+    Collapses N per-article API calls into a single POST with 2 DB queries.
+
+    Example: POST /api/v1/laws/amparo/articles/references/batch/
+    Body: {"article_ids": ["1", "2", "107"]}
+    """
+    article_ids = request.data.get("article_ids")
+    if not article_ids or not isinstance(article_ids, list):
+        return Response(
+            {"error": "article_ids is required and must be a non-empty list"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    # Coerce to strings, deduplicate
+    article_ids = list({str(aid) for aid in article_ids})
+    if len(article_ids) > MAX_BATCH_ARTICLE_IDS:
+        return Response(
+            {"error": f"Maximum {MAX_BATCH_ARTICLE_IDS} article IDs per request"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # 2 DB queries total
+    outgoing_qs = CrossReference.objects.filter(
+        source_law_slug=law_id, source_article_id__in=article_ids
+    ).order_by("source_article_id", "start_position")
+
+    incoming_qs = CrossReference.objects.filter(
+        target_law_slug=law_id, target_article_num__in=article_ids
+    ).order_by("target_article_num", "-confidence")
+
+    # Group by article ID
+    outgoing_map = defaultdict(list)
+    for ref in outgoing_qs:
+        outgoing_map[ref.source_article_id].append(
+            {
+                "text": ref.reference_text,
+                "targetLawSlug": ref.target_law_slug,
+                "targetArticle": ref.target_article_num,
+                "fraction": ref.fraction,
+                "confidence": ref.confidence,
+                "startPos": ref.start_position,
+                "endPos": ref.end_position,
+                "targetUrl": ref.target_url() if ref.target_law_slug else None,
+            }
+        )
+
+    incoming_map = defaultdict(list)
+    for ref in incoming_qs:
+        incoming_map[ref.target_article_num].append(
+            {
+                "sourceLawSlug": ref.source_law_slug,
+                "sourceArticle": ref.source_article_id,
+                "text": ref.reference_text,
+                "confidence": ref.confidence,
+                "sourceUrl": f"/leyes/{ref.source_law_slug}#article-{ref.source_article_id}",
+            }
+        )
+
+    # Build response with all requested IDs (even if no refs)
+    references = {}
+    for aid in article_ids:
+        out = outgoing_map.get(aid, [])
+        inc = incoming_map.get(aid, [])
+        references[aid] = {
+            "outgoing": out,
+            "incoming": inc,
+            "total_outgoing": len(out),
+            "total_incoming": len(inc),
+        }
+
+    return Response({"references": references, "article_count": len(article_ids)})
 
 
 @extend_schema(

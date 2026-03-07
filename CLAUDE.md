@@ -223,7 +223,7 @@ All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from
 
 - **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
 - **`TierComparison`** — Feature comparison table across Essentials/Community/Pro tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
-- **`LinkifiedArticle`** — `crossRefsDisabled` defaults to `true`. Pass `crossRefsDisabled={false}` explicitly to enable per-article cross-reference fetching (avoids N+1 API calls on law detail pages).
+- **`LinkifiedArticle`** — `crossRefsDisabled` defaults to `true`. Pass `crossRefsDisabled={false}` explicitly to enable per-article cross-reference fetching. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) to load refs for all articles in a single request instead of N+1 individual calls.
 
 ### Colors
 

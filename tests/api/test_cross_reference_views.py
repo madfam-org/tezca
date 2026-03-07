@@ -258,3 +258,157 @@ class TestLawCrossReferences:
             "most_referenced_laws",
             "most_citing_laws",
         }
+
+
+@pytest.mark.django_db
+class TestBatchArticleCrossReferences:
+    """Tests for POST /laws/<law_id>/articles/references/batch/"""
+
+    def setup_method(self):
+        self.client = APIClient()
+        uid = uuid.uuid4().hex[:8]
+        self.law = Law.objects.create(
+            official_id=f"test-batch-{uid}",
+            name=f"Ley Batch {uid}",
+            tier="federal",
+            status="vigente",
+        )
+        self.other_law = Law.objects.create(
+            official_id=f"test-batch-other-{uid}",
+            name=f"Otra Ley Batch {uid}",
+            tier="federal",
+            status="vigente",
+        )
+        # Outgoing: law article 1 → other law article 5
+        CrossReference.objects.create(
+            source_law_slug=self.law.official_id,
+            source_article_id="1",
+            target_law_slug=self.other_law.official_id,
+            target_article_num="5",
+            reference_text="artículo 5 de la Otra Ley",
+            confidence=0.95,
+            start_position=10,
+            end_position=40,
+        )
+        # Outgoing: law article 1 → other law article 10 (earlier position)
+        CrossReference.objects.create(
+            source_law_slug=self.law.official_id,
+            source_article_id="1",
+            target_law_slug=self.other_law.official_id,
+            target_article_num="10",
+            reference_text="artículo 10",
+            confidence=0.80,
+            start_position=5,
+            end_position=15,
+        )
+        # Incoming: other law article 3 → law article 1
+        CrossReference.objects.create(
+            source_law_slug=self.other_law.official_id,
+            source_article_id="3",
+            target_law_slug=self.law.official_id,
+            target_article_num="1",
+            reference_text="artículo 1 de la Ley Batch",
+            confidence=0.88,
+            start_position=5,
+            end_position=35,
+        )
+        # Outgoing: law article 2 → other law article 7
+        CrossReference.objects.create(
+            source_law_slug=self.law.official_id,
+            source_article_id="2",
+            target_law_slug=self.other_law.official_id,
+            target_article_num="7",
+            reference_text="artículo 7",
+            confidence=0.90,
+            start_position=20,
+            end_position=30,
+        )
+        self.url = reverse("batch-article-references", args=[self.law.official_id])
+
+    def test_batch_returns_grouped_references(self):
+        resp = self.client.post(self.url, {"article_ids": ["1", "2"]}, format="json")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["article_count"] == 2
+        assert data["references"]["1"]["total_outgoing"] == 2
+        assert data["references"]["1"]["total_incoming"] == 1
+        assert data["references"]["2"]["total_outgoing"] == 1
+        assert data["references"]["2"]["total_incoming"] == 0
+
+    def test_articles_with_no_refs_included(self):
+        resp = self.client.post(self.url, {"article_ids": ["1", "999"]}, format="json")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "999" in data["references"]
+        assert data["references"]["999"]["total_outgoing"] == 0
+        assert data["references"]["999"]["total_incoming"] == 0
+
+    def test_outgoing_format_matches_single_endpoint(self):
+        resp = self.client.post(self.url, {"article_ids": ["1"]}, format="json")
+        out = resp.json()["references"]["1"]["outgoing"][0]
+        assert "text" in out
+        assert "targetLawSlug" in out
+        assert "targetArticle" in out
+        assert "fraction" in out
+        assert "confidence" in out
+        assert "startPos" in out
+        assert "endPos" in out
+        assert "targetUrl" in out
+
+    def test_incoming_format_matches_single_endpoint(self):
+        resp = self.client.post(self.url, {"article_ids": ["1"]}, format="json")
+        inc = resp.json()["references"]["1"]["incoming"][0]
+        assert "sourceLawSlug" in inc
+        assert "sourceArticle" in inc
+        assert "text" in inc
+        assert "confidence" in inc
+        assert "sourceUrl" in inc
+
+    def test_outgoing_ordered_by_start_position(self):
+        resp = self.client.post(self.url, {"article_ids": ["1"]}, format="json")
+        positions = [r["startPos"] for r in resp.json()["references"]["1"]["outgoing"]]
+        assert positions == sorted(positions)
+
+    def test_deduplicates_article_ids(self):
+        resp = self.client.post(
+            self.url, {"article_ids": ["1", "1", "1"]}, format="json"
+        )
+        assert resp.status_code == 200
+        assert resp.json()["article_count"] == 1
+
+    def test_integer_article_ids_coerced_to_strings(self):
+        resp = self.client.post(self.url, {"article_ids": [1, 2]}, format="json")
+        assert resp.status_code == 200
+        refs = resp.json()["references"]
+        assert "1" in refs
+        assert "2" in refs
+
+    def test_missing_article_ids_returns_400(self):
+        resp = self.client.post(self.url, {}, format="json")
+        assert resp.status_code == 400
+        assert "article_ids" in resp.json()["error"]
+
+    def test_empty_article_ids_returns_400(self):
+        resp = self.client.post(self.url, {"article_ids": []}, format="json")
+        assert resp.status_code == 400
+
+    def test_exceeds_max_returns_400(self):
+        ids = [str(i) for i in range(201)]
+        resp = self.client.post(self.url, {"article_ids": ids}, format="json")
+        assert resp.status_code == 400
+        assert "200" in resp.json()["error"]
+
+    def test_non_list_article_ids_returns_400(self):
+        resp = self.client.post(self.url, {"article_ids": "not-a-list"}, format="json")
+        assert resp.status_code == 400
+
+    def test_unknown_law_returns_empty_refs(self):
+        url = reverse("batch-article-references", args=["nonexistent-law"])
+        resp = self.client.post(url, {"article_ids": ["1"]}, format="json")
+        assert resp.status_code == 200
+        assert resp.json()["references"]["1"]["total_outgoing"] == 0
+        assert resp.json()["references"]["1"]["total_incoming"] == 0
+
+    def test_get_method_not_allowed(self):
+        resp = self.client.get(self.url)
+        assert resp.status_code == 405

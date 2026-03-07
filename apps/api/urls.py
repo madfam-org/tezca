@@ -34,7 +34,11 @@ from .contribution_views import (
     submit_expert_contact,
 )
 from .coverage_views import public_coverage
-from .cross_reference_views import article_cross_references, law_cross_references
+from .cross_reference_views import (
+    article_cross_references,
+    batch_article_cross_references,
+    law_cross_references,
+)
 from .judicial_views import (
     judicial_detail,
     judicial_list,
@@ -130,6 +134,11 @@ urlpatterns = [
     path("laws/<str:law_id>/", LawDetailView.as_view(), name="law-detail"),
     path("laws/<str:law_id>/search/", law_search, name="law-search"),
     path("laws/<str:law_id>/articles/", law_articles, name="law-articles"),
+    path(
+        "laws/<str:law_id>/articles/references/batch/",
+        batch_article_cross_references,
+        name="batch-article-references",
+    ),
     path(
         "laws/<str:law_id>/articles/<str:article_id>/references/",
         article_cross_references,
