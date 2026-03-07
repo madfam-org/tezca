@@ -27,9 +27,9 @@ class Command(BaseCommand):
         parser.add_argument("--org", default="", help="Organization name")
         parser.add_argument(
             "--tier",
-            default="free",
+            default="essentials",
             choices=[c[0] for c in APIKey.Tier.choices],
-            help="Rate-limit tier (default: free)",
+            help="Rate-limit tier (default: essentials)",
         )
         parser.add_argument(
             "--scopes",

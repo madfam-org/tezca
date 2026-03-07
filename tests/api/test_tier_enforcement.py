@@ -47,7 +47,7 @@ class TestCreateWebhookTierGate:
         factory = APIRequestFactory()
         request = factory.post("/api/v1/webhooks/")
         user = MagicMock()
-        user.tier = "free"
+        user.tier = "essentials"
         request.user = user
         assert perm.has_permission(request, None) is False
 

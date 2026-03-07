@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 PLAN_TO_TIER = {
     "tezca_community": "community",
     "tezca_pro": "pro",
-    "tezca_madfam": "internal",
+    "tezca_madfam": "madfam",
 }
 
 # Events that trigger an upgrade
@@ -118,10 +118,10 @@ def billing_webhook(request):
 
     elif event in DOWNGRADE_EVENTS:
         updated = APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
-            tier="free"
+            tier="essentials"
         )
         logger.info("Billing downgrade: user=%s keys_updated=%d", user_id, updated)
-        return Response({"status": "ok", "tier": "free", "keys_updated": updated})
+        return Response({"status": "ok", "tier": "essentials", "keys_updated": updated})
 
     else:
         # Unrecognized event — acknowledge but no-op

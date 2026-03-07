@@ -10,18 +10,21 @@ const content = {
         prevPage: 'Página anterior',
         nextPage: 'Página siguiente',
         lastPage: 'Última página',
+        paginationLabel: 'Paginación',
     },
     en: {
         firstPage: 'First page',
         prevPage: 'Previous page',
         nextPage: 'Next page',
         lastPage: 'Last page',
+        paginationLabel: 'Pagination',
     },
     nah: {
         firstPage: 'Achto āmatl',
         prevPage: 'Achtopa āmatl',
         nextPage: 'Niman āmatl',
         lastPage: 'Tlāmian āmatl',
+        paginationLabel: 'Āmoxihuitl tlanōnōtzaliztli',
     },
 };
 
@@ -77,7 +80,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
     const pageNumbers = getPageNumbers();
 
     return (
-        <div className={`flex items-center justify-center gap-1 ${className}`}>
+        <nav className={`flex items-center justify-center gap-1 ${className}`} aria-label={t.paginationLabel} role="navigation">
             {/* First Page */}
             <Button
                 variant="outline"
@@ -151,6 +154,6 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
             >
                 <ChevronsRight className="h-4 w-4" />
             </Button>
-        </div>
+        </nav>
     );
 }

@@ -18,12 +18,25 @@ DATA_DIR = Path(settings.BASE_DIR) / "data"
 
 
 def _load_json(path):
-    """Load a JSON file, returning empty dict on failure."""
+    """Load a JSON file with local-first + R2 fallback."""
+    path = Path(path)
     try:
-        return json.loads(Path(path).read_text())
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.warning("Could not load %s: %s", path, e)
-        return {}
+        return json.loads(path.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    try:
+        from apps.api.utils.paths import read_data_content
+
+        path_str = str(path)
+        data_idx = path_str.find("/data/")
+        relative = path_str[data_idx + 1 :] if data_idx != -1 else path_str
+        content = read_data_content(relative)
+        if content:
+            return json.loads(content)
+    except (ImportError, json.JSONDecodeError, Exception) as e:
+        logger.warning("R2 fallback failed for %s: %s", path, e)
+    logger.warning("Could not load %s from local or R2", path)
+    return {}
 
 
 class CoverageDashboard:

@@ -51,6 +51,12 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    import('@/lib/sentry').then(({ captureError }) => {
+      captureError(error, { componentStack: errorInfo.componentStack });
+    });
+  }
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {

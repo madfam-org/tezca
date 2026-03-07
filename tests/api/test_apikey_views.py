@@ -48,7 +48,7 @@ class TestCreateAPIKey:
             {
                 "name": "Dhanam Compliance Prod",
                 "owner_email": "dev@dhanam.mx",
-                "tier": "internal",
+                "tier": "madfam",
                 "scopes": ["read", "search", "bulk"],
                 "allowed_domains": ["fiscal", "mercantil"],
             },
@@ -57,7 +57,7 @@ class TestCreateAPIKey:
 
         assert response.status_code == 201
         assert response.data["key"].startswith("tzk_")
-        assert response.data["tier"] == "internal"
+        assert response.data["tier"] == "madfam"
         assert "bulk" in response.data["scopes"]
         assert APIKey.objects.filter(prefix=response.data["prefix"]).exists()
 
@@ -130,7 +130,7 @@ class TestUpdateAPIKey:
             hashed_key=hashed,
             name="Update Me",
             owner_email="update@example.com",
-            tier="free",
+            tier="essentials",
         )
 
     @patch(AUTH_PATCH)

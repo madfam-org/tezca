@@ -46,9 +46,15 @@ interface LinkifiedArticleProps {
 }
 
 /**
- * LinkifiedArticle - Renders article text with clickable cross-references
+ * LinkifiedArticle - Renders article text with clickable cross-references.
  *
  * Fetches cross-references from API and makes legal references clickable.
+ *
+ * N+1 WARNING: When `crossRefsDisabled` is false, each rendered article fires
+ * an individual GET /laws/{lawId}/articles/{articleId}/references/ request.
+ * On a law detail page with hundreds of articles this creates an N+1 problem.
+ * Keep `crossRefsDisabled={true}` (the default) until a batch endpoint
+ * (POST /laws/{lawId}/articles/references/batch/) is available.
  */
 export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6, crossRefsDisabled = true }: LinkifiedArticleProps) {
     const { lang } = useLang();

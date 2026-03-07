@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
                 "janua_user_id": {"type": "string", "default": ""},
                 "tier": {
                     "type": "string",
-                    "enum": ["internal", "free", "pro", "enterprise"],
-                    "default": "free",
+                    "enum": ["essentials", "community", "pro", "madfam"],
+                    "default": "essentials",
                 },
                 "scopes": {
                     "type": "array",
@@ -63,7 +63,7 @@ def create_api_key(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    tier = data.get("tier", "free")
+    tier = data.get("tier", "essentials")
     if tier not in dict(APIKey.Tier.choices):
         return Response(
             {"error": f"Invalid tier: {tier}"},

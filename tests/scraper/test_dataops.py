@@ -513,6 +513,54 @@ class TestHealthMonitor:
         assert summary["down"] == 1
 
 
+# ── _load_json R2 Fallback Tests ─────────────────────────────────────
+
+
+class TestLoadJsonFallback:
+    def test_local_read(self, tmp_path):
+        from apps.scraper.dataops.coverage_dashboard import _load_json
+
+        path = tmp_path / "test.json"
+        path.write_text('{"key": "value"}')
+        result = _load_json(path)
+        assert result == {"key": "value"}
+
+    def test_r2_fallback(self, tmp_path):
+        from apps.scraper.dataops.coverage_dashboard import _load_json
+
+        missing = tmp_path / "data" / "missing.json"
+        with patch(
+            "apps.api.utils.paths.read_data_content",
+            return_value='{"from": "r2"}',
+        ) as mock_r2:
+            result = _load_json(missing)
+        assert result == {"from": "r2"}
+        mock_r2.assert_called_once()
+
+    def test_both_fail(self, tmp_path):
+        from apps.scraper.dataops.coverage_dashboard import _load_json
+
+        missing = tmp_path / "data" / "gone.json"
+        with patch(
+            "apps.api.utils.paths.read_data_content",
+            return_value=None,
+        ):
+            result = _load_json(missing)
+        assert result == {}
+
+    def test_invalid_json_fallback(self, tmp_path):
+        from apps.scraper.dataops.coverage_dashboard import _load_json
+
+        bad = tmp_path / "bad.json"
+        bad.write_text("not json")
+        with patch(
+            "apps.api.utils.paths.read_data_content",
+            return_value='{"fallback": true}',
+        ):
+            result = _load_json(bad)
+        assert result == {"fallback": True}
+
+
 # ── Coverage Dashboard Tests ─────────────────────────────────────────
 
 

@@ -56,7 +56,7 @@ class TieredRateThrottle(BaseThrottle):
     def _get_tier(self, request) -> str:
         user = getattr(request, "user", None)
         if user and getattr(user, "is_authenticated", False):
-            return getattr(user, "tier", "free")
+            return getattr(user, "tier", "essentials")
         return "anon"
 
     def _get_identity(self, request) -> str:

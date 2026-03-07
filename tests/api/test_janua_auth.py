@@ -309,12 +309,14 @@ class TestCombinedAuthTierExtraction:
 
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
-    def test_defaults_to_free_when_no_tier_claims(self, mock_settings, mock_get_jwks):
-        """When no tier-related claims exist, default to 'free'."""
+    def test_defaults_to_essentials_when_no_tier_claims(
+        self, mock_settings, mock_get_jwks
+    ):
+        """When no tier-related claims exist, default to 'essentials'."""
         result = self._authenticate_with_claims(
             mock_settings,
             mock_get_jwks,
             {},
         )
         user, _ = result
-        assert user.tier == "free"
+        assert user.tier == "essentials"

@@ -277,6 +277,7 @@ function SingleArticle({
                 </div>
             </div>
 
+            {/* crossRefsDisabled: avoids N+1 per-article API calls; enable after batch endpoint ships (see LinkifiedArticle docs) */}
             <LinkifiedArticle
                 lawId={lawId}
                 articleId={article.article_id}

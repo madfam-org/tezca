@@ -76,9 +76,9 @@ def _get_user_tier(request) -> tuple[str, str]:
     """
     user = getattr(request, "user", None)
     if user and getattr(user, "is_authenticated", False):
-        tier = normalize_export_tier(getattr(user, "tier", "free"))
+        tier = normalize_export_tier(getattr(user, "tier", "essentials"))
         if tier not in TIER_RANK:
-            tier = "free"
+            tier = "essentials"
         return (tier, getattr(user, "id", ""))
     return ("anon", "")
 

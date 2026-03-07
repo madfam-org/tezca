@@ -97,9 +97,9 @@ class TestAPIKeyModel:
 
     def test_str_representation(self):
         full_key, prefix, hashed = generate_api_key()
-        key = APIKey(prefix=prefix, name="My Key", tier="enterprise")
+        key = APIKey(prefix=prefix, name="My Key", tier="pro")
         assert prefix in str(key)
-        assert "enterprise" in str(key)
+        assert "pro" in str(key)
 
 
 # ── APIKeyAuthentication backend ──────────────────────────────────────
@@ -196,12 +196,12 @@ class TestCombinedAuthentication:
             hashed_key=hashed,
             name="Combined Test",
             owner_email="combined@example.com",
-            tier="enterprise",
+            tier="pro",
             scopes=["read", "bulk"],
         )
         request = self.factory.get("/", HTTP_X_API_KEY=full_key)
         user, token = self.auth.authenticate(request)
-        assert user.tier == "enterprise"
+        assert user.tier == "pro"
         assert user.api_key_prefix == prefix
 
     def test_invalid_api_key_raises_even_with_no_jwt(self):
@@ -226,7 +226,7 @@ class TestProvisionAPIKeyCommand:
             name="Test Provision",
             email="prov@example.com",
             org="TestOrg",
-            tier="internal",
+            tier="madfam",
             scopes="read,search,bulk",
             domains="manufacturing,finance",
             stdout=out,
@@ -236,7 +236,7 @@ class TestProvisionAPIKeyCommand:
         assert "Test Provision" in output
 
         key = APIKey.objects.get(name="Test Provision")
-        assert key.tier == "internal"
+        assert key.tier == "madfam"
         assert key.organization == "TestOrg"
         assert key.scopes == ["read", "search", "bulk"]
         assert set(key.allowed_domains) == {"manufacturing", "finance"}

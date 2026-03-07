@@ -209,7 +209,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - R2 fallback pattern: try local filesystem first → fall back to R2 via `read_data_content()`. Used by:
   - `law_views.py::_load_universe_registry()` — coverage stats (TTL-cached 5 min)
   - All ingestion management commands (`index_laws`, `ingest_state_laws`, etc.)
-  - **Not yet**: `coverage_dashboard.py` — still uses local-only `_load_json()`
+  - `coverage_dashboard.py::_load_json()` — all 7 JSON reads in coverage dashboard
 
 ---
 
@@ -297,6 +297,10 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
 | `apps/web/components/TierComparison.tsx` | Tier feature comparison table |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
+| `apps/web/lib/sentry.ts` | Sentry init + `captureError()` (conditional on `@sentry/nextjs`) |
+| `apps/web/components/ErrorBoundary.tsx` | Class-based error boundary (wraps layout children), reports to Sentry |
+| `apps/web/components/RouteError.tsx` | Shared i18n route error component (used by 11 route `error.tsx` files) |
+| `apps/web/app/global-error.tsx` | Layout-level catch-all (raw styles, Sentry) |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
 

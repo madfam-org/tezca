@@ -226,6 +226,7 @@ function SearchContent() {
         } catch (err) {
             if (err instanceof APIError && err.status === 429) {
                 setRateLimitRetry(err.retryAfter ?? 300);
+                setError(null);
             } else {
                 setError(t.searchError);
                 setResults([]);
@@ -329,7 +330,7 @@ function SearchContent() {
                     </aside>
 
                     {/* Results */}
-                    <main className="flex-1 min-w-0">
+                    <main className="flex-1 min-w-0" aria-live="polite" role="region">
                         {error && (
                             <div className="mb-6 rounded-lg bg-destructive/10 p-4 text-destructive">
                                 {error}

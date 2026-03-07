@@ -71,7 +71,7 @@ class CombinedAuthentication(BaseAuthentication):
                 if not hasattr(user, "tier"):
                     user.tier = user.claims.get(
                         "tezca_tier",
-                        user.claims.get("tier", user.claims.get("plan", "free")),
+                        user.claims.get("tier", user.claims.get("plan", "essentials")),
                     )
                 if not hasattr(user, "scopes"):
                     user.scopes = user.claims.get("scopes", ["read", "search"])

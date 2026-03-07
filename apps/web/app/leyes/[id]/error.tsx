@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/components/providers/LanguageContext';
+import { captureError } from '@/lib/sentry';
 
 const content = {
     es: {
@@ -25,7 +27,7 @@ const content = {
 };
 
 export default function LawDetailError({
-  error: _error,
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -33,6 +35,10 @@ export default function LawDetailError({
 }) {
   const { lang } = useLang();
   const t = content[lang];
+
+  useEffect(() => {
+    captureError(error, { digest: error.digest, route: 'leyes/[id]' });
+  }, [error]);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center p-8 text-center">

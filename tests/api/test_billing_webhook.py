@@ -127,7 +127,7 @@ class TestBillingWebhook:
         request = self._post(data)
         response = billing_webhook(request)
         assert response.status_code == 200
-        assert response.data["tier"] == "free"
+        assert response.data["tier"] == "essentials"
 
     @override_settings(DHANAM_WEBHOOK_SECRET="")
     def test_missing_secret_rejects_all(self):

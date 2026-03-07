@@ -187,11 +187,10 @@ class APIKey(models.Model):
     """API key for programmatic access to Tezca data."""
 
     class Tier(models.TextChoices):
-        INTERNAL = "internal", "Internal (MADFAM)"
-        FREE = "free", "Free"
+        ESSENTIALS = "essentials", "Essentials"
         COMMUNITY = "community", "Community"
         PRO = "pro", "Pro"
-        ENTERPRISE = "enterprise", "Enterprise"
+        MADFAM = "madfam", "MADFAM (Internal)"
 
     prefix = models.CharField(max_length=8, unique=True, db_index=True)
     hashed_key = models.CharField(max_length=128)
@@ -206,7 +205,7 @@ class APIKey(models.Model):
         help_text="Links key to Janua account for tier sync",
     )
     tier = models.CharField(
-        max_length=20, choices=Tier.choices, default=Tier.FREE, db_index=True
+        max_length=20, choices=Tier.choices, default=Tier.ESSENTIALS, db_index=True
     )
     scopes = models.JSONField(
         default=list, help_text='e.g. ["read", "search", "export", "bulk"]'
