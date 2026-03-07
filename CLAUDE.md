@@ -86,7 +86,7 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 316 tests across 43 files)
+# Web (vitest, 402 tests across 50 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 72 tests across 10 files)
@@ -95,9 +95,11 @@ cd apps/admin && npx vitest run
 # MCP server (pytest + respx, 18 tests)
 cd packages/mcp-server && uv run pytest tests/ -v
 
-# E2E (60 tests across 12 specs, 4 browser projects)
+# E2E (84 tests across 15 specs, 4 browser projects)
 cd apps/web && npx playwright test
 cd apps/web && DATA_INTEGRITY_E2E=1 npx playwright test data-integrity.spec.ts  # live API
+cd apps/web && UI_FIDELITY_E2E=1 npx playwright test e2e/ui-data-fidelity.spec.ts e2e/search-data-completeness.spec.ts  # live API
+cd apps/web && AUTH_E2E=1 npx playwright test e2e/annotation-alert-flow.spec.ts  # auth required
 ```
 
 ### Linting and Formatting
