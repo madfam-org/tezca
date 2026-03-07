@@ -102,6 +102,36 @@ export const MOCK_SEARCH_RESULTS = {
     total_pages: 1,
 };
 
+export const MOCK_LAW_GRAPH = {
+    focal_law: 'ley-federal-del-trabajo',
+    nodes: [
+        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: true },
+        { id: 'cpeum', label: 'Constitución Política', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
+        { id: 'ley-seguro-social', label: 'Ley del Seguro Social', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 30, is_focal: false },
+    ],
+    edges: [
+        { id: 'lft->cpeum', source: 'ley-federal-del-trabajo', target: 'cpeum', weight: 23, avg_confidence: 0.87 },
+        { id: 'lft->lss', source: 'ley-federal-del-trabajo', target: 'ley-seguro-social', weight: 12, avg_confidence: 0.75 },
+    ],
+    meta: { total_nodes: 3, total_edges: 2, depth_reached: 1, truncated: false },
+};
+
+export const MOCK_GRAPH_OVERVIEW = {
+    focal_law: null,
+    nodes: [
+        { id: 'cpeum', label: 'Constitución Política', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
+        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: false },
+        { id: 'codigo-civil-jalisco', label: 'Código Civil de Jalisco', tier: 'state', category: 'civil', status: 'vigente', law_type: 'legislative', state: 'Jalisco', ref_count: 15, is_focal: false },
+        { id: 'reglamento-muni-gdl', label: 'Reglamento Municipal GDL', tier: 'municipal', category: 'regulatory', status: 'vigente', law_type: 'regulatory', state: 'Jalisco', ref_count: 5, is_focal: false },
+    ],
+    edges: [
+        { id: 'lft->cpeum', source: 'ley-federal-del-trabajo', target: 'cpeum', weight: 23, avg_confidence: 0.87 },
+        { id: 'ccj->cpeum', source: 'codigo-civil-jalisco', target: 'cpeum', weight: 8, avg_confidence: 0.65 },
+        { id: 'rmg->ccj', source: 'reglamento-muni-gdl', target: 'codigo-civil-jalisco', weight: 3, avg_confidence: 0.55 },
+    ],
+    meta: { total_nodes: 4, total_edges: 3, depth_reached: 1, truncated: false },
+};
+
 /**
  * Setup API route mocking for a page.
  * Call this in beforeEach or at the start of each test.
@@ -169,6 +199,16 @@ export async function mockApiRoutes(page: Page) {
         route.fulfill({ json: { law_id: 'ley-federal-del-trabajo', query: 'test', total: 1, results: [
             { article_id: 'Art. 1', snippet: 'La presente <em>Ley</em> es de observancia general.', score: 5.0 },
         ] } })
+    );
+
+    // Law-specific graph
+    await page.route(new RegExp('/api/v1/laws/[^/]+/graph/'), (route) =>
+        route.fulfill({ json: MOCK_LAW_GRAPH })
+    );
+
+    // Global graph overview
+    await page.route(new RegExp('/api/v1/graph/overview/'), (route) =>
+        route.fulfill({ json: MOCK_GRAPH_OVERVIEW })
     );
 }
 

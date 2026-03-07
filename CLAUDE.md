@@ -82,7 +82,7 @@ npm run dev:all                     # both concurrently
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
-# Web (vitest, 299 tests across 40 files)
+# Web (vitest, 308 tests across 41 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 72 tests across 10 files)
@@ -91,7 +91,7 @@ cd apps/admin && npx vitest run
 # MCP server (pytest + respx, 18 tests)
 cd packages/mcp-server && uv run pytest tests/ -v
 
-# E2E
+# E2E (56 tests across 11 specs, 4 browser projects)
 cd apps/web && npx playwright test
 ```
 
