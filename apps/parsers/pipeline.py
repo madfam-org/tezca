@@ -14,6 +14,8 @@ from typing import Any, Dict, Optional
 
 import requests
 
+from apps.parsers.error_tracker import ErrorTracker
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Minimum characters expected from a valid PDF text extraction.
@@ -90,7 +92,11 @@ class IngestionPipeline:
     """
 
     def __init__(
-        self, data_dir: Path = None, skip_download: bool = False, storage=None
+        self,
+        data_dir: Path = None,
+        skip_download: bool = False,
+        storage=None,
+        error_tracker: ErrorTracker = None,
     ):
         """
         Initialize pipeline.
@@ -99,12 +105,24 @@ class IngestionPipeline:
             data_dir: Base directory for data storage (local backend only)
             skip_download: If True, use existing PDFs
             storage: Optional StorageBackend override (defaults to get_storage_backend())
+            error_tracker: Optional ErrorTracker for persistent error logging
         """
         if data_dir is None:
             data_dir = Path(__file__).parent.parent.parent / "data"
 
         self.data_dir = Path(data_dir)
         self.skip_download = skip_download
+
+        # Error tracking
+        if error_tracker is not None:
+            self.error_tracker = error_tracker
+        else:
+            log_dir = self.data_dir / "logs"
+            log_file = (
+                log_dir
+                / f"pipeline_errors_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            )
+            self.error_tracker = ErrorTracker(log_file=log_file)
 
         # Storage backend (local or R2)
         if storage is not None:
@@ -208,6 +226,13 @@ class IngestionPipeline:
                     result.stages_completed.append("cross_references")
                 except Exception as e:
                     print(f"⚠️  Cross-reference detection failed: {e}")
+                    self.error_tracker.track(
+                        law_id=law_id,
+                        category="PARSE_ERROR",
+                        exception=e,
+                        stage="cross_references",
+                        context={"xml_path": str(xml_path)},
+                    )
 
                 # Success!
                 result.success = True
@@ -220,6 +245,13 @@ class IngestionPipeline:
                         print("✅ Metadata saved to database")
                     except Exception as e:
                         print(f"⚠️  Failed to save to DB: {e}")
+                        self.error_tracker.track(
+                            law_id=law_id,
+                            category="VALIDATION_ERROR",
+                            exception=e,
+                            stage="db_save",
+                            context={"xml_path": str(xml_path)},
+                        )
 
                 # Sync outputs to storage backend (R2 in production)
                 if self.storage:
@@ -229,6 +261,16 @@ class IngestionPipeline:
                         print("✅ Synced to storage backend")
                     except Exception as e:
                         print(f"⚠️  Storage sync failed: {e}")
+                        self.error_tracker.track(
+                            law_id=law_id,
+                            category="UNKNOWN_ERROR",
+                            exception=e,
+                            stage="storage_sync",
+                            context={
+                                "pdf_path": str(pdf_path),
+                                "xml_path": str(xml_path),
+                            },
+                        )
 
                 print(
                     f"\n🎉 Success! {law_id} completed in {result.duration_seconds:.1f}s"
@@ -237,6 +279,12 @@ class IngestionPipeline:
 
             except Exception as e:
                 error_msg = str(e)
+                category = self.error_tracker.categorize_exception(
+                    e,
+                    stage=(
+                        result.stages_completed[-1] if result.stages_completed else None
+                    ),
+                )
 
                 if attempt < max_retries:
                     wait_time = 2**attempt  # Exponential backoff
@@ -249,6 +297,20 @@ class IngestionPipeline:
                         f"Failed after {max_retries + 1} attempts: {error_msg}"
                     )
                     result.duration_seconds = time.time() - start_time
+                    self.error_tracker.track(
+                        law_id=law_id,
+                        category=category,
+                        exception=e,
+                        stage=(
+                            result.stages_completed[-1]
+                            if result.stages_completed
+                            else "init"
+                        ),
+                        context={
+                            "attempt": attempt + 1,
+                            "stages_completed": result.stages_completed,
+                        },
+                    )
                     print(f"❌ Failed: {result.error}")
                     return result
 

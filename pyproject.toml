@@ -69,6 +69,10 @@ isort = "^5.13"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "apps.indigo.settings"
 pythonpath = ["."]
+markers = [
+    "spotcheck: Data integrity spot-check tests",
+    "integration: Integration tests requiring DB/ES",
+]
 
 [tool.isort]
 profile = "black"
