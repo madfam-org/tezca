@@ -1,8 +1,8 @@
 # Leyes Como Código - Strategic Overview & Vision
 
-**Date**: 2026-02-07
+**Date**: 2026-03-07
 **Current Coverage**: 93.9% of Legislative Laws (11,696 of 12,456)
-**Total Laws Processed**: 30,343 (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal)
+**Total Laws Processed**: 35,277 (1,931 federal + 30,907 state + 2,439 municipal)
 **Coverage Source**: `data/universe_registry.json`, pipeline run logs
 
 ---
@@ -303,9 +303,29 @@ tezca/
 - ✅ Version timeline with change_summary
 - ✅ Word-level compare diff
 - ✅ DOF daily monitoring (Celery Beat, 7 AM)
-- 📋 Citation network visualization (graph view)
-- 📋 Embeddings / vector search
+- 🔄 Legal Knowledge Graph (Phase 6 -- graph visualization, NLP, temporal, embeddings)
 - 📋 Legal precedent matching
+
+### Legal Knowledge Graph Initiative
+
+**Research**: `docs/research/Open Source Legal Data Graph.md`
+**Status**: Phase 6.1 (Graph Visualization) in progress
+
+The Legal Knowledge Graph transforms Tezca's existing cross-reference data (33K+ records) into an interactive, explorable network. Rather than deploying a dedicated graph database immediately, the initiative builds incrementally on PostgreSQL and Elasticsearch.
+
+**Technology decisions**:
+- **Visualization**: Sigma.js + Graphology (WebGL, MIT licensed) over D3.js or Cytoscape -- better performance for 300+ node graphs
+- **Graph storage**: PostgreSQL aggregate queries on CrossReference model -- sufficient for 33K edges, NebulaGraph deferred until 500K+ threshold
+- **NLP pipeline**: spaCy 3.7 (already installed) + XLM-RoBERTa for legal entity recognition
+- **Embeddings**: paraphrase-multilingual-mpnet-base-v2 (768-dim) -- EmbeddingGenerator code exists but is dormant
+
+**Existing data assets**:
+- 33,380 CrossReference records (62.8% resolved, confidence 0.075-0.9)
+- ~50K LawVersion records with `valid_from`/`valid_to` (bitemporal foundation)
+- spaCy 3.7 installed in Poetry dependencies
+- Regex-based parser pipeline producing Akoma Ntoso XML
+
+**5-phase roadmap**: Visualization -> Enriched edges + NLP -> Temporal graph -> Embeddings + analytics -> NebulaGraph (if justified). Each phase delivers standalone value.
 
 ---
 
@@ -796,5 +816,5 @@ Vigentes:   ██████████████████░░░  93.
 ---
 
 **Document Version**: 1.3
-**Last Updated**: 2026-02-07
-**Next Review**: 2026-03-07
+**Last Updated**: 2026-03-07
+**Next Review**: 2026-04-07

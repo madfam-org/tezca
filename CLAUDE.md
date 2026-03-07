@@ -182,7 +182,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 ### Route Conventions
 
 - **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Elasticsearch
@@ -288,6 +288,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
+| `apps/api/graph_views.py` | Law graph API (ego graph + global overview for Sigma.js) |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |

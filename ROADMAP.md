@@ -1,7 +1,7 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-02-07
-**Current Status**: 93.9% Legislative Coverage + 18,439 non-legislative (30,343 total laws)
+**Last Updated**: 2026-03-07
+**Current Status**: 35,277 laws, 1,071,445 ES articles, 33,380 cross-references
 **Data Motor**: Pipeline fix complete (state/municipal AKN parsing + unified indexer)
 **DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
 
@@ -13,15 +13,15 @@
 
 ---
 
-## Current Status (Feb 2026)
+## Current Status (Mar 2026)
 
 ### ✅ Achievements
-- **30,343 laws** in database (333 federal + 150 reglamentos + 11,363 state legislative + 18,439 state non-legislative + 208 municipal)
+- **35,277 laws** in database (1,931 federal + 30,907 state + 2,439 municipal)
 - **93.9% legislative coverage** (11,696 of 12,456 leyes vigentes)
 - **98.9% parser accuracy** (world-class quality)
-- **3,480,000+ articles** indexed and searchable
+- **1,071,445 articles** indexed in Elasticsearch
 - **Production-ready** backend infrastructure
-- **Full-stack Testing** (229 web Vitest + 51 admin Vitest + ~201 Pytest + 8 E2E)
+- **Full-stack Testing** (736 backend + 299 web Vitest + 72 admin Vitest)
 
 ### 🔄 In Progress
 - Tezca production deployment
@@ -339,6 +339,44 @@
 
 ---
 
+## Phase 6: Legal Knowledge Graph
+
+**Timeline**: 2026-2027
+**Goal**: Transform 33K+ cross-references into an interactive legal knowledge graph
+**Research**: See `docs/research/Open Source Legal Data Graph.md`
+
+### Phase 6.1: Graph Visualization (Sigma.js + existing data) 🔄 IN PROGRESS
+- Interactive WebGL network graph of law cross-references
+- Per-law ego graph API (`/api/v1/laws/{id}/graph/`)
+- Global overview API (`/api/v1/graph/overview/`)
+- Sigma.js + Graphology frontend with ForceAtlas2 layout
+- Node color by tier, size by reference count, edge width by weight
+- Route: `/grafo/` (Spanish convention)
+
+### Phase 6.2: Enriched Edge Types + NLP
+- Edge type taxonomy (cites, modifies, derogates, defines, supersedes, references)
+- spaCy NER activation for legal entity detection
+- Improved cross-reference resolution (62.8% → 80%+)
+- Abbreviation index from Law.short_name
+
+### Phase 6.3: Temporal Graph
+- Amendment chain API from LawVersion records
+- Point-in-time legal state queries
+- Temporal slider for graph visualization
+
+### Phase 6.4: Embeddings + Graph Analytics
+- Activate dormant EmbeddingGenerator (paraphrase-multilingual-mpnet-base-v2)
+- ES dense_vector field + semantic search endpoint
+- NetworkX centrality + PageRank on cross-reference data
+- Community detection (Louvain) visualization
+
+### Phase 6.5: NebulaGraph (if justified by 6.4 evaluation)
+- Only if PostgreSQL proves insufficient at scale
+- Threshold: 500K+ edges or real-time path-finding requirement
+- Current assessment: 33K edges well within PostgreSQL capacity
+
+---
+
 ## Success Metrics
 
 ### 6-Month Goals (Aug 2026)
@@ -368,13 +406,13 @@
 3. ⭐⭐ CONAMER CNARTyS integration (113K regulations)
 
 ### Medium Priority (3-6 Months)
-4. ⭐⭐ Embeddings / vector search
+4. ⭐⭐ Legal Knowledge Graph — Phase 6.1 (graph visualization)
 5. ⭐⭐ ES search quality tuning (spanish_legal analyzer)
 6. ⭐⭐ Federal Reglamentos expansion (150 → 800)
 
 ### Low Priority (6-12 Months)
 7. ⭐ Tax calculator (Catala — experimental/blocked)
-8. ⭐ Citation network visualization (graph view)
+8. ⭐ Legal Knowledge Graph — Phase 6.4 (embeddings + vector search)
 9. ⭐ GraphQL API / SDK
 
 ### Completed (Phases 1-11) ✅

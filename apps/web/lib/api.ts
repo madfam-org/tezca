@@ -511,6 +511,33 @@ export const api = {
         }>(`/judicial/search/?${searchParams}`);
     },
 
+    // ── Graph ─────────────────────────────────────────────────────────
+
+    getLawGraph: async (
+        lawId: string,
+        opts?: { depth?: number; min_confidence?: number; max_nodes?: number; direction?: string }
+    ): Promise<GraphResponse> => {
+        const params = new URLSearchParams();
+        if (opts?.depth) params.set('depth', String(opts.depth));
+        if (opts?.min_confidence) params.set('min_confidence', String(opts.min_confidence));
+        if (opts?.max_nodes) params.set('max_nodes', String(opts.max_nodes));
+        if (opts?.direction) params.set('direction', opts.direction);
+        const qs = params.toString();
+        return fetcher<GraphResponse>(`/laws/${lawId}/graph/${qs ? `?${qs}` : ''}`);
+    },
+
+    getGraphOverview: async (
+        opts?: { tier?: string; category?: string; min_weight?: number; max_nodes?: number }
+    ): Promise<GraphResponse> => {
+        const params = new URLSearchParams();
+        if (opts?.tier) params.set('tier', opts.tier);
+        if (opts?.category) params.set('category', opts.category);
+        if (opts?.min_weight) params.set('min_weight', String(opts.min_weight));
+        if (opts?.max_nodes) params.set('max_nodes', String(opts.max_nodes));
+        const qs = params.toString();
+        return fetcher<GraphResponse>(`/graph/overview/${qs ? `?${qs}` : ''}`);
+    },
+
     getJudicialStats: async () => {
         return fetcher<{
             total: number;
@@ -521,5 +548,39 @@ export const api = {
     },
 
 };
+
+// ── Graph types ──────────────────────────────────────────────────────
+
+export interface GraphNode {
+    id: string;
+    label: string;
+    tier: string | null;
+    category: string | null;
+    status: string | null;
+    law_type: string | null;
+    state: string | null;
+    ref_count: number;
+    is_focal: boolean;
+}
+
+export interface GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    weight: number;
+    avg_confidence: number;
+}
+
+export interface GraphResponse {
+    focal_law: string | null;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    meta: {
+        total_nodes: number;
+        total_edges: number;
+        depth_reached: number;
+        truncated: boolean;
+    };
+}
 
 export { APIError };

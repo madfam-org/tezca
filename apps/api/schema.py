@@ -383,3 +383,40 @@ class PipelineStatusSchema(serializers.Serializer):
 
 class ErrorSchema(serializers.Serializer):
     error = serializers.CharField()
+
+
+# ── Graph endpoints ─────────────────────────────────────────────────────
+
+
+class GraphNodeSchema(serializers.Serializer):
+    id = serializers.CharField()
+    label = serializers.CharField()
+    tier = serializers.CharField(allow_null=True)
+    category = serializers.CharField(allow_null=True)
+    status = serializers.CharField(allow_null=True)
+    law_type = serializers.CharField(allow_null=True)
+    state = serializers.CharField(allow_null=True)
+    ref_count = serializers.IntegerField()
+    is_focal = serializers.BooleanField()
+
+
+class GraphEdgeSchema(serializers.Serializer):
+    id = serializers.CharField()
+    source = serializers.CharField()
+    target = serializers.CharField()
+    weight = serializers.IntegerField()
+    avg_confidence = serializers.FloatField()
+
+
+class GraphMetaSchema(serializers.Serializer):
+    total_nodes = serializers.IntegerField()
+    total_edges = serializers.IntegerField()
+    depth_reached = serializers.IntegerField()
+    truncated = serializers.BooleanField()
+
+
+class LawGraphResponseSchema(serializers.Serializer):
+    focal_law = serializers.CharField(allow_null=True)
+    nodes = GraphNodeSchema(many=True)
+    edges = GraphEdgeSchema(many=True)
+    meta = GraphMetaSchema()

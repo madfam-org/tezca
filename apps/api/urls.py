@@ -39,6 +39,7 @@ from .cross_reference_views import (
     batch_article_cross_references,
     law_cross_references,
 )
+from .graph_views import graph_overview, law_graph
 from .judicial_views import (
     judicial_detail,
     judicial_list,
@@ -146,6 +147,7 @@ urlpatterns = [
     ),
     path("laws/<str:law_id>/structure/", law_structure, name="law-structure"),
     path("laws/<str:law_id>/references/", law_cross_references, name="law-references"),
+    path("laws/<str:law_id>/graph/", law_graph, name="law-graph"),
     path("laws/<str:law_id>/related/", RelatedLawsView.as_view(), name="law-related"),
     path("laws/<str:law_id>/export/pdf/", export_pdf, name="law-export-pdf"),
     path("laws/<str:law_id>/export/txt/", export_txt, name="law-export-txt"),
@@ -162,6 +164,7 @@ urlpatterns = [
     path("bulk/articles/", bulk_articles, name="bulk-articles"),
     path("changelog/", changelog, name="changelog"),
     path("coverage/", public_coverage, name="public-coverage"),
+    path("graph/overview/", graph_overview, name="graph-overview"),
     # ── Contributions (public submission) ──────────────────────────────
     path("contributions/", submit_contribution, name="contribution-submit"),
     path("contributions/expert/", submit_expert_contact, name="expert-contact"),

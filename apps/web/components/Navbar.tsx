@@ -20,6 +20,7 @@ const content = {
         categories: 'Categorías',
         states: 'Estados',
         compare: 'Comparar',
+        graph: 'Grafo',
         favorites: 'Favoritos',
         openMenu: 'Abrir menú',
         closeMenu: 'Cerrar menú',
@@ -33,6 +34,7 @@ const content = {
         categories: 'Categories',
         states: 'States',
         compare: 'Compare',
+        graph: 'Graph',
         favorites: 'Favorites',
         openMenu: 'Open menu',
         closeMenu: 'Close menu',
@@ -46,6 +48,7 @@ const content = {
         categories: 'Tlamantli',
         states: 'Altepetl',
         compare: 'Tlanānamiquiliztli',
+        graph: 'Grafo',
         favorites: 'Tlapepenilistli',
         openMenu: 'Xictlapo tlahcuilōlli',
         closeMenu: 'Xictlatzacua tlahcuilōlli',
@@ -61,6 +64,7 @@ const NAV_LINKS = [
     { href: '/categorias', key: 'categories' as const },
     { href: '/estados', key: 'states' as const },
     { href: '/comparar', key: 'compare' as const },
+    { href: '/grafo', key: 'graph' as const },
     { href: '/favoritos', key: 'favorites' as const },
 ];
 

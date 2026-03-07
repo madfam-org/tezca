@@ -15,6 +15,7 @@ import { ArticleSearch } from './ArticleSearch';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
 import { RelatedLaws } from './RelatedLaws';
 import { CrossReferencePanel } from './CrossReferencePanel';
+import { LawGraphContainer } from '@/components/graph/LawGraphContainer';
 import { VersionTimeline } from './VersionTimeline';
 import { AnnotationPanel } from './AnnotationPanel';
 import { AlertButton } from './AlertButton';
@@ -227,6 +228,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
                         lawId={lawId}
                     />
                     <CrossReferencePanel lawId={lawId} />
+                    <LawGraphContainer lawId={lawId} />
                     <VersionTimeline versions={data.versions} />
                     <RelatedLaws lawId={lawId} />
                 </main>
