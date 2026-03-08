@@ -57,6 +57,8 @@ jobs:
   test-frontend:
     name: Frontend Tests (Vitest)
     runs-on: ubuntu-latest
+    env:
+      NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     steps:
     - uses: actions/checkout@v4
@@ -69,16 +71,12 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
-      env:
-        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Recover lockfile on integrity failure
       if: failure()
       run: |
         npm cache clean --force
         npm install
-      env:
-        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -125,6 +123,7 @@ jobs:
     continue-on-error: true
     env:
       NEXT_BUILD_STANDALONE: 'false'
+      NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     steps:
     - uses: actions/checkout@v4
@@ -137,16 +136,12 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
-      env:
-        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Recover lockfile on integrity failure
       if: failure()
       run: |
         npm cache clean --force
         npm install
-      env:
-        NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps
