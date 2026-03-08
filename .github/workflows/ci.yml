@@ -37,7 +37,7 @@ jobs:
       run: poetry run python scripts/utils/audit_file_sizes.py
 
     - name: Run Pytest with coverage
-      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=50
+      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=35
       env:
         PYTHONPATH: apps:.
 

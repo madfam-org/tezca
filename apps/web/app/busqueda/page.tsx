@@ -129,7 +129,7 @@ function SearchContent() {
     const [showFilters, setShowFilters] = useState(false);
     const { lang } = useLang();
     const t = content[lang];
-    const { tier, userId } = useAuth();
+    const { tier } = useAuth();
 
     const [query, setQuery] = useState(initialQuery);
     const [filters, setFilters] = useState<SearchFilterState>({
