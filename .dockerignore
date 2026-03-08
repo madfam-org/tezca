@@ -2,8 +2,8 @@
 .git
 .gitignore
 
-# Dependencies (rebuilt in container)
-node_modules
+# Dependencies (rebuilt in container — root only; workspace node_modules needed by COPY)
+/node_modules
 .venv
 __pycache__
 *.pyc
