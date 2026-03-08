@@ -52,10 +52,14 @@ export function NotificationBell() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            fetchNotifications();
+            // Deferred initial fetch (async to satisfy react-compiler)
+            const id = requestAnimationFrame(() => { fetchNotifications(); });
             // Poll every 60s
             const interval = setInterval(fetchNotifications, 60_000);
-            return () => clearInterval(interval);
+            return () => {
+                cancelAnimationFrame(id);
+                clearInterval(interval);
+            };
         }
     }, [isAuthenticated, fetchNotifications]);
 
