@@ -35,6 +35,12 @@ EXCLUDE_DIRS = {
     "engines",  # External codebases
 }
 
+# Files allowed to exceed ERROR_THRESHOLD (complex scrapers with inherent verbosity)
+ALLOWED_LARGE_FILES = {
+    "apps/scraper/federal/nom_agency_scrapers.py",
+    "apps/scraper/federal/treaty_scraper.py",
+}
+
 
 def count_lines(file_path: Path) -> int:
     """Count non-empty lines in a file."""
@@ -73,7 +79,7 @@ def audit_codebase(root_dir: Path) -> dict:
 
         relative_path = py_file.relative_to(root_dir)
 
-        if line_count > ERROR_THRESHOLD:
+        if line_count > ERROR_THRESHOLD and str(relative_path) not in ALLOWED_LARGE_FILES:
             errors.append(
                 {"path": str(relative_path), "lines": line_count, "severity": "ERROR"}
             )

@@ -43,11 +43,15 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
     const t = content[lang];
     const { client } = useJanua();
     const [mode, setMode] = useState<AuthMode>(initialMode);
+    const [prevOpen, setPrevOpen] = useState(open);
 
-    // Reset mode when modal opens
-    useEffect(() => {
-        if (open) setMode(initialMode);
-    }, [open, initialMode]);
+    // Reset mode when modal opens (render-time update, avoids useEffect)
+    if (open && !prevOpen) {
+        setMode(initialMode);
+    }
+    if (open !== prevOpen) {
+        setPrevOpen(open);
+    }
 
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
