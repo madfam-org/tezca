@@ -79,7 +79,10 @@ def audit_codebase(root_dir: Path) -> dict:
 
         relative_path = py_file.relative_to(root_dir)
 
-        if line_count > ERROR_THRESHOLD and str(relative_path) not in ALLOWED_LARGE_FILES:
+        if (
+            line_count > ERROR_THRESHOLD
+            and str(relative_path) not in ALLOWED_LARGE_FILES
+        ):
             errors.append(
                 {"path": str(relative_path), "lines": line_count, "severity": "ERROR"}
             )
