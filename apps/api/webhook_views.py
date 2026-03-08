@@ -13,7 +13,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .middleware.tier_permissions import RequireTier
-
 from .models import APIKey, WebhookSubscription
 from .tasks import deliver_webhook
 

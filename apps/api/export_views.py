@@ -25,8 +25,8 @@ from rest_framework.response import Response
 from .config import INDEX_NAME, es_client
 from .export_throttles import check_export_quota, log_export
 from .models import Law
+from .tier_permissions import EXPORT_HOURLY_LIMITS as TIER_LIMITS
 from .tier_permissions import (
-    EXPORT_HOURLY_LIMITS as TIER_LIMITS,
     EXPORT_TIER_MAP,
     FORMAT_TIERS,
     TIER_RANK,

@@ -30,7 +30,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from apps.scraper.http import government_session
-
 from apps.scraper.municipal.cdmx import CDMXScraper
 
 STATE_LAWS_DIR = PROJECT_ROOT / "data" / "state_laws"

@@ -13,10 +13,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .middleware.tier_permissions import RequireTier
-
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
+from .middleware.tier_permissions import RequireTier
 
 logger = logging.getLogger(__name__)
 

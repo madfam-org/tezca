@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: ["__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

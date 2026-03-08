@@ -2,15 +2,6 @@ from django.urls import path
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from .analytics_views import search_analytics
-from .annotation_views import annotation_detail, annotation_list
-from .notification_views import (
-    alert_delete,
-    alert_list,
-    notification_list,
-    notification_mark_read,
-)
-from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -25,7 +16,10 @@ from .admin_views import (
     system_config,
     system_metrics,
 )
+from .analytics_views import search_analytics
+from .annotation_views import annotation_detail, annotation_list
 from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
+from .billing_views import billing_webhook
 from .bulk_views import bulk_articles
 from .changelog_views import changelog
 from .contribution_views import (
@@ -39,13 +33,6 @@ from .cross_reference_views import (
     batch_article_cross_references,
     law_cross_references,
 )
-from .graph_views import graph_overview, law_graph
-from .judicial_views import (
-    judicial_detail,
-    judicial_list,
-    judicial_search,
-    judicial_stats,
-)
 from .export_views import (
     export_docx,
     export_epub,
@@ -55,7 +42,13 @@ from .export_views import (
     export_quota,
     export_txt,
 )
-from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
+from .graph_views import graph_overview, law_graph
+from .judicial_views import (
+    judicial_detail,
+    judicial_list,
+    judicial_search,
+    judicial_stats,
+)
 from .law_views import (
     LawDetailView,
     LawListView,
@@ -70,9 +63,16 @@ from .law_views import (
     suggest,
 )
 from .middleware.janua_auth import JanuaJWTAuthentication
+from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
+from .notification_views import (
+    alert_delete,
+    alert_list,
+    notification_list,
+    notification_mark_read,
+)
+from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
 from .search_views import SearchView
 from .views import IngestionView
-from .billing_views import billing_webhook
 from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 
 
