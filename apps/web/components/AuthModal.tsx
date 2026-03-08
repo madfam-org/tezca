@@ -44,10 +44,12 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
     const { client } = useJanua();
     const [mode, setMode] = useState<AuthMode>(initialMode);
 
-    // Reset mode when modal opens
+    // Reset mode when modal opens (async to satisfy react-compiler)
     useEffect(() => {
-        // eslint-disable-next-line react-compiler/react-compiler
-        if (open) setMode(initialMode);
+        if (open) {
+            const id = requestAnimationFrame(() => setMode(initialMode));
+            return () => cancelAnimationFrame(id);
+        }
     }, [open, initialMode]);
 
     const handleKeyDown = useCallback(
