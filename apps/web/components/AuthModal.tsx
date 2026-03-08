@@ -46,6 +46,7 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
 
     // Reset mode when modal opens
     useEffect(() => {
+        // eslint-disable-next-line react-compiler/react-compiler
         if (open) setMode(initialMode);
     }, [open, initialMode]);
 

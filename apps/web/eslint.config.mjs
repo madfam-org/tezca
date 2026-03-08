@@ -11,7 +11,6 @@ const eslintConfig = defineConfig([
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
-      "react-compiler/react-compiler": "warn",
     },
   },
   {
