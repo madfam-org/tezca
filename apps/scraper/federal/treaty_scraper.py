@@ -742,8 +742,7 @@ class TreatyScraper:
         candidates = [
             t
             for t in treaties
-            if t.get("url")
-            and not any(t.get(field) for field in _DETAIL_FIELDS)
+            if t.get("url") and not any(t.get(field) for field in _DETAIL_FIELDS)
         ]
 
         if not candidates:
@@ -771,9 +770,16 @@ class TreatyScraper:
                     enriched += 1
 
             if i % 10 == 0:
-                logger.info("Retry progress: %d/%d processed, %d enriched", i, len(candidates), enriched)
+                logger.info(
+                    "Retry progress: %d/%d processed, %d enriched",
+                    i,
+                    len(candidates),
+                    enriched,
+                )
 
-        logger.info("Retry complete: %d/%d treaties enriched.", enriched, len(candidates))
+        logger.info(
+            "Retry complete: %d/%d treaties enriched.", enriched, len(candidates)
+        )
         return enriched
 
     # ------------------------------------------------------------------
@@ -875,9 +881,13 @@ class TreatyScraper:
             with open(output_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, list):
-                logger.info("Loaded %d existing treaties from %s", len(data), output_path)
+                logger.info(
+                    "Loaded %d existing treaties from %s", len(data), output_path
+                )
                 return data
-            logger.warning("Unexpected JSON structure in %s, expected list.", output_path)
+            logger.warning(
+                "Unexpected JSON structure in %s, expected list.", output_path
+            )
             return []
         except (json.JSONDecodeError, OSError) as exc:
             logger.warning("Failed to load %s: %s", output_path, exc)
@@ -936,9 +946,7 @@ class TreatyScraper:
         if retry_failed:
             treaties = self.load_existing(output_file)
             if not treaties:
-                logger.warning(
-                    "No existing data to retry. Run a normal scrape first."
-                )
+                logger.warning("No existing data to retry. Run a normal scrape first.")
                 return {
                     "total_treaties": 0,
                     "details_retried": 0,
@@ -1021,9 +1029,7 @@ class TreatyScraper:
             1 for t in treaties if t.get("treaty_type") == "multilateral"
         )
         with_details = sum(
-            1
-            for t in treaties
-            if any(t.get(field) for field in _DETAIL_FIELDS)
+            1 for t in treaties if any(t.get(field) for field in _DETAIL_FIELDS)
         )
         missing_details = sum(
             1
