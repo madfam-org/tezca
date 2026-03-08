@@ -27,6 +27,7 @@
         "@janua/typescript-sdk": "0.1.1"
     },
     "devDependencies": {
-        "@janua/typescript-sdk": "0.1.1"
+        "@janua/typescript-sdk": "0.1.1",
+        "eslint": "^9"
     }
 }
