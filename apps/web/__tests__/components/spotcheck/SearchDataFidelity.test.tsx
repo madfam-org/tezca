@@ -1,7 +1,5 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import DOMPurify from 'dompurify';
-import { LanguageProvider } from '@/components/providers/LanguageContext';
 import { makeSearchResponse } from '../../fixtures/mockFactories';
 
 /**
