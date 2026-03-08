@@ -3,8 +3,9 @@ node_modules/
 .pnp/
 .pnp.js
 
-# Testing
+# Testing (exclude code coverage output, but not component directories named "coverage")
 coverage/
+!**/components/coverage/
 .pytest_cache/
 htmlcov/
 .coverage
