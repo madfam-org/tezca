@@ -9,7 +9,7 @@ autoscaling: false
 resources:
   requests:
     memory: 256Mi
-    cpu: 100m
+    cpu: 75m
   limits:
     memory: 512Mi
     cpu: 250m
