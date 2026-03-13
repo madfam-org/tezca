@@ -8,6 +8,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from elasticsearch.exceptions import ConnectionError as ESConnectionError
+from elasticsearch.exceptions import ConnectionTimeout
+
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
 from .schema import SEARCH_PARAMETERS, ErrorSchema, SearchResponseSchema
@@ -29,7 +32,9 @@ def _log_search_query(query, filters, result_count, response_time_ms, request):
             response_time_ms=response_time_ms,
             session_id=session_id,
         )
-    except Exception:
+    except (
+        Exception
+    ):  # noqa: broad-except — fire-and-forget analytics logging must not break search
         logger.debug("Failed to log search query", exc_info=True)
 
 
@@ -328,7 +333,7 @@ class SearchView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except Exception:
+        except (ESConnectionError, ConnectionTimeout):
             logger.exception("SearchView failed")
             return Response(
                 {"error": "An internal error occurred while searching."},

@@ -41,7 +41,7 @@ class IngestionManager:
         try:
             with open(STATUS_FILE, "r") as f:
                 return json.load(f)
-        except Exception as e:
+        except (json.JSONDecodeError, FileNotFoundError, PermissionError, OSError) as e:
             return {
                 "status": "error",
                 "message": f"Failed to read status: {str(e)}",
@@ -69,8 +69,9 @@ class IngestionManager:
 
             result = run_ingestion.delay(params)
             return True, f"Ingestion started (task {result.id})"
-        except Exception:
-            # Celery/Redis unavailable — fall back to thread
+        except (
+            Exception
+        ):  # noqa: broad-except — Celery/Redis may be unavailable, fall back to thread
             pass
 
         # Fallback: thread-based execution
@@ -162,7 +163,12 @@ class IngestionManager:
                         with open(results_file, "r") as f:
                             results = json.load(f)
                             status_data["results"] = results
-                    except Exception as e:
+                    except (
+                        json.JSONDecodeError,
+                        FileNotFoundError,
+                        PermissionError,
+                        OSError,
+                    ) as e:
                         status_data["warning"] = f"Could not read results file: {e}"
             else:
                 status_data["status"] = "failed"
@@ -173,7 +179,12 @@ class IngestionManager:
             with open(STATUS_FILE, "w") as f:
                 json.dump(status_data, f)
 
-        except Exception as e:
+        except (
+            subprocess.SubprocessError,
+            FileNotFoundError,
+            PermissionError,
+            OSError,
+        ) as e:
             with open(STATUS_FILE, "w") as f:
                 json.dump(
                     {
@@ -199,5 +210,5 @@ class IngestionManager:
 
             with open(STATUS_FILE, "w") as f:
                 json.dump(data, f)
-        except Exception:
+        except (json.JSONDecodeError, FileNotFoundError, PermissionError, OSError):
             pass

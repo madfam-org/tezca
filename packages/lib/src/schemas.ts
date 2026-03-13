@@ -163,6 +163,42 @@ export const IngestionStatusSchema = z.object({
     warning: z.string().optional(),
 });
 
+// ── Graph ──────────────────────────────────────────────────────────────
+
+export const GraphNodeSchema = z.object({
+    id: z.string(),
+    label: z.string(),
+    tier: z.string().nullable(),
+    category: z.string().nullable(),
+    status: z.string().nullable(),
+    law_type: z.string().nullable(),
+    state: z.string().nullable(),
+    ref_count: z.number(),
+    is_focal: z.boolean(),
+});
+
+export const GraphEdgeSchema = z.object({
+    id: z.string(),
+    source: z.string(),
+    target: z.string(),
+    weight: z.number(),
+    avg_confidence: z.number(),
+});
+
+export const GraphMetaSchema = z.object({
+    total_nodes: z.number(),
+    total_edges: z.number(),
+    depth_reached: z.number(),
+    truncated: z.boolean(),
+});
+
+export const LawGraphResponseSchema = z.object({
+    focal_law: z.string().nullable(),
+    nodes: z.array(GraphNodeSchema),
+    edges: z.array(GraphEdgeSchema),
+    meta: GraphMetaSchema,
+});
+
 // ── Utility ─────────────────────────────────────────────────────────────
 
 /**

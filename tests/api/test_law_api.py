@@ -105,9 +105,22 @@ class TestLawApi:
     # New tests: Ingestion, Search, Structure, LawList, CrossReferences
     # ---------------------------------------------------------------
 
+    @patch(
+        "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission",
+        return_value=True,
+    )
+    @patch("apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate")
     @patch("apps.api.ingestion_manager.IngestionManager.start_ingestion")
-    def test_ingestion_start(self, mock_start):
+    def test_ingestion_start(self, mock_start, mock_auth, _mock_admin):
         """Test POST /ingest/ starts ingestion and returns 202."""
+        from apps.api.middleware.janua_auth import JanuaUser
+
+        admin = JanuaUser({"sub": "admin", "role": "admin"})
+        admin.tier = "madfam"
+        admin.scopes = []
+        admin.allowed_domains = []
+        admin.api_key_prefix = ""
+        mock_auth.return_value = (admin, "fake-token")
         mock_start.return_value = (True, "Job started")
 
         url = reverse("ingest")
@@ -119,9 +132,22 @@ class TestLawApi:
         assert data["message"] == "Job started"
         mock_start.assert_called_once()
 
+    @patch(
+        "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission",
+        return_value=True,
+    )
+    @patch("apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate")
     @patch("apps.api.ingestion_manager.IngestionManager.start_ingestion")
-    def test_ingestion_conflict(self, mock_start):
+    def test_ingestion_conflict(self, mock_start, mock_auth, _mock_admin):
         """Test POST /ingest/ returns 409 when ingestion is already running."""
+        from apps.api.middleware.janua_auth import JanuaUser
+
+        admin = JanuaUser({"sub": "admin", "role": "admin"})
+        admin.tier = "madfam"
+        admin.scopes = []
+        admin.allowed_domains = []
+        admin.api_key_prefix = ""
+        mock_auth.return_value = (admin, "fake-token")
         mock_start.return_value = (False, "Already running")
 
         url = reverse("ingest")

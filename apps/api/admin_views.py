@@ -5,8 +5,11 @@ import os
 from django.conf import settings as django_settings
 from django.db import connection
 from django.db.models import Count, Max
+from django.db.utils import OperationalError
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
+from elasticsearch.exceptions import ConnectionError as ESConnectionError
+from elasticsearch.exceptions import ConnectionTimeout
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -46,7 +49,7 @@ def health_check(request):
     try:
         Law.objects.first()
         services["database"] = "connected"
-    except Exception:
+    except (OperationalError, ConnectionError):
         services["database"] = "error"
 
     # Elasticsearch check
@@ -56,7 +59,7 @@ def health_check(request):
             services["elasticsearch"] = "connected"
         else:
             services["elasticsearch"] = "unreachable"
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, ConnectionError):
         services["elasticsearch"] = "error"
 
     # Redis check (via Django cache or Celery broker)
@@ -68,7 +71,7 @@ def health_check(request):
             services["redis"] = "connected"
         else:
             services["redis"] = "error"
-    except Exception:
+    except (ConnectionError, OSError):
         services["redis"] = "error"
 
     is_healthy = services["database"] == "connected"
@@ -148,7 +151,7 @@ def system_metrics(request):
                 "last_updated": timezone.now().isoformat(),
             }
         )
-    except Exception:
+    except (OperationalError, ConnectionError):
         logger.exception("system_metrics failed")
         return Response(
             {"error": "An internal error occurred while fetching metrics."},
@@ -171,7 +174,7 @@ def job_status(request):
     try:
         status_data = IngestionManager.get_status()
         return Response(status_data)
-    except Exception:
+    except (json.JSONDecodeError, FileNotFoundError, OSError):
         logger.exception("job_status failed")
         return Response(
             {
@@ -227,8 +230,9 @@ def list_jobs(request):
                         "errors": log.errors,
                     }
                 )
-        except Exception:
-            # AcquisitionLog not available — fall back to current status
+        except (
+            Exception
+        ):  # noqa: broad-except — import may fail if dataops app is not installed
             pass
 
         # Always include current ingestion status as first entry if no logs
@@ -237,7 +241,7 @@ def list_jobs(request):
             jobs = [{"id": "current", **current}]
 
         return Response({"jobs": jobs})
-    except Exception:
+    except (OperationalError, json.JSONDecodeError, FileNotFoundError, OSError):
         logger.exception("list_jobs failed")
         return Response(
             {"error": "An internal error occurred while listing jobs."},
@@ -267,7 +271,7 @@ def system_config(request):
             es_status = "connected"
         else:
             es_status = "unreachable"
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, ConnectionError):
         es_status = "unavailable"
 
     # Database status
@@ -275,7 +279,7 @@ def system_config(request):
     try:
         connection.ensure_connection()
         db_status = "connected"
-    except Exception:
+    except (OperationalError, ConnectionError):
         db_status = "error"
 
     # Latest version date
@@ -334,7 +338,7 @@ def pipeline_status(request):
             data = json.load(f)
 
         return Response(data)
-    except Exception:
+    except (json.JSONDecodeError, FileNotFoundError, OSError):
         logger.exception("pipeline_status failed")
         return Response(
             {"error": "An internal error occurred while fetching pipeline status."},

@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 # Map Dhanam plan IDs to Tezca tier names
 PLAN_TO_TIER = {
+    "tezca_essentials": "essentials",
     "tezca_community": "community",
     "tezca_pro": "pro",
     "tezca_madfam": "madfam",

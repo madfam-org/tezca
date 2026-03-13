@@ -145,6 +145,21 @@ class TestBillingWebhook:
         assert response.status_code == 400
 
     @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_essentials_plan_mapping(self, mock_qs):
+        """tezca_essentials plan maps to essentials tier."""
+        mock_qs.filter.return_value.update.return_value = 1
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_essentials",
+            "user_id": "usr_ess",
+        }
+        request = self._post(data)
+        response = billing_webhook(request)
+        assert response.status_code == 200
+        assert response.data["tier"] == "essentials"
+
+    @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
     def test_unknown_event_ignored(self):
         data = {
             "event": "invoice.paid",

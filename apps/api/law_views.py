@@ -35,6 +35,9 @@ def _natural_sort_key(text: str):
     return [int(p) if p.isdigit() else p.lower() for p in parts]
 
 
+from elasticsearch.exceptions import ConnectionError as ESConnectionError
+from elasticsearch.exceptions import ConnectionTimeout, NotFoundError
+
 from .config import ES_HOST, INDEX_NAME, es_client
 
 logger = logging.getLogger(__name__)
@@ -72,7 +75,7 @@ class LawDetailView(APIView):
                 article_count = count_res.get("count", 0)
             else:
                 es_degraded = True
-        except Exception:
+        except (ESConnectionError, ConnectionTimeout, NotFoundError):
             logger.warning("ES unavailable for law detail %s", law_id, exc_info=True)
             es_degraded = True
 
@@ -292,7 +295,7 @@ class RelatedLawsView(APIView):
                             "score": round(bucket["doc_count"], 1),
                         }
                     )
-        except Exception:
+        except (ESConnectionError, ConnectionTimeout, NotFoundError):
             logger.warning("ES unavailable for related laws %s", law_id, exc_info=True)
 
         # Fallback: if ES returned nothing, use DB same-category same-tier laws
@@ -411,7 +414,7 @@ def law_search(request, law_id):
                 "results": results,
             }
         )
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, NotFoundError):
         logger.exception("law_search failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while searching."},
@@ -490,7 +493,7 @@ def law_articles(request, law_id):
         response["Cache-Control"] = "public, max-age=3600"
         return response
 
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, NotFoundError):
         logger.exception("law_articles failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while retrieving articles."},
@@ -561,7 +564,7 @@ def law_structure(request, law_id):
         response["Cache-Control"] = "public, max-age=3600"
         return response
 
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, NotFoundError):
         logger.exception("law_structure failed for %s", law_id)
         return Response(
             {"error": "An internal error occurred while retrieving structure."},
@@ -645,7 +648,7 @@ def suggest(request):
                 response = Response({"suggestions": suggestions})
                 response["Cache-Control"] = "public, max-age=300"
                 return response
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout, NotFoundError):
         logger.warning("ES suggest failed, falling back to DB", exc_info=True)
 
     # Fallback to DB
@@ -753,7 +756,7 @@ def law_stats(request):
             total_articles = count_res.get("count", 0)
         else:
             es_degraded = True
-    except Exception:
+    except (ESConnectionError, ConnectionTimeout):
         logger.warning("ES unavailable for law_stats", exc_info=True)
         es_degraded = True
 

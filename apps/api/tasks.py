@@ -158,7 +158,7 @@ def run_ingestion(self, params=None):
                 try:
                     with open(results_file, "r") as f:
                         status_data["results"] = json.load(f)
-                except Exception as e:
+                except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
                     status_data["warning"] = f"Could not read results file: {e}"
         else:
             status_data["status"] = "failed"
@@ -167,7 +167,7 @@ def run_ingestion(self, params=None):
         _write_status(status_data)
         return status_data
 
-    except Exception as e:
+    except (subprocess.SubprocessError, FileNotFoundError, OSError) as e:
         error_status = {
             "status": "error",
             "message": f"Execution error: {str(e)}",
@@ -471,7 +471,7 @@ def run_full_pipeline(self, params=None):
                 "duration": _format_duration(phase_duration),
                 "output_tail": output_tail,
             }
-        except Exception as e:
+        except (subprocess.SubprocessError, FileNotFoundError, OSError) as e:
             phase_duration = time.time() - phase_start
             result = {
                 "phase": phase_name,
@@ -542,7 +542,9 @@ def _create_acquisition_log(operation, params):
             operation=operation,
             parameters=params or {},
         )
-    except Exception:
+    except (
+        Exception
+    ):  # noqa: broad-except — import may fail if dataops app is not installed
         return None
 
 
@@ -559,7 +561,9 @@ def _finish_acquisition_log(log_entry, succeeded, failed, total):
         log_entry.failed = failed
         log_entry.ingested = succeeded
         log_entry.finish(error_summary=error_summary)
-    except Exception:
+    except (
+        Exception
+    ):  # noqa: broad-except — best-effort logging, must not break pipeline
         pass
 
 

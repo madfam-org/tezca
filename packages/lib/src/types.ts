@@ -172,3 +172,38 @@ export interface IngestionStatus {
     results?: IngestionResults;
     warning?: string;
 }
+
+// Graph Types
+export interface GraphNode {
+    id: string;
+    label: string;
+    tier: string | null;
+    category: string | null;
+    status: string | null;
+    law_type: string | null;
+    state: string | null;
+    ref_count: number;
+    is_focal: boolean;
+}
+
+export interface GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    weight: number;
+    avg_confidence: number;
+}
+
+export interface GraphMeta {
+    total_nodes: number;
+    total_edges: number;
+    depth_reached: number;
+    truncated: boolean;
+}
+
+export interface LawGraphResponse {
+    focal_law: string | null;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    meta: GraphMeta;
+}

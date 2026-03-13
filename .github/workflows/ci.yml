@@ -70,9 +70,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+      run: npm ci --legacy-peer-deps
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -131,9 +129,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+      run: npm ci --legacy-peer-deps
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps

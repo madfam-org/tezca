@@ -1,12 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { defaultAuthState } from '../../helpers/auth-mock';
 
 vi.mock('@/components/providers/AuthContext', () => ({
-    useAuth: vi.fn(() => ({
-        isAuthenticated: false,
-        tier: 'anon',
-        loginUrl: '/auth/login',
-    })),
+    useAuth: vi.fn(() => defaultAuthState),
 }));
 
 import { LawHeader } from '@/components/laws/LawHeader';

@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 
+from django.conf import settings
 from django.db.models import Avg, Count
 from django.utils import timezone
 from rest_framework import status as http_status
@@ -26,7 +27,7 @@ def search_analytics(request):
         return Response(
             {
                 "error": "Search analytics requires community tier or above. "
-                "Upgrade at https://dhanam.madfam.io/checkout?plan=tezca_community&product=tezca"
+                f"Upgrade at {settings.DHANAM_CHECKOUT_URL}?plan=tezca_community&product=tezca"
             },
             status=http_status.HTTP_403_FORBIDDEN,
         )

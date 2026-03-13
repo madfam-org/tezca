@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -219,7 +220,10 @@ class APIKey(models.Model):
     expires_at = models.DateTimeField(null=True, blank=True)
     last_used_at = models.DateTimeField(null=True, blank=True)
     rate_limit_per_hour = models.IntegerField(
-        null=True, blank=True, help_text="Override tier default rate limit"
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(100_000)],
+        help_text="Override tier default rate limit (1–100,000)",
     )
 
     class Meta:

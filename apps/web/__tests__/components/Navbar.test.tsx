@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { defaultAuthState, mockAuth } from '../helpers/auth-mock';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -21,15 +22,7 @@ vi.mock('@/components/providers/LanguageContext', () => ({
 
 // Mock AuthContext
 vi.mock('@/components/providers/AuthContext', () => ({
-    useAuth: vi.fn(() => ({
-        isAuthenticated: false,
-        tier: 'anon' as const,
-        loginUrl: '/api/auth/signin',
-        userId: null,
-        email: null,
-        name: null,
-        signOut: vi.fn(),
-    })),
+    useAuth: vi.fn(() => defaultAuthState),
 }));
 
 // Track Janua signed-in state for tests
@@ -114,15 +107,13 @@ describe('Navbar', () => {
 
     it('shows UserButton when authenticated', () => {
         januaSignedIn = true;
-        vi.mocked(useAuth).mockReturnValue({
+        vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'essentials',
-            loginUrl: '/api/auth/signin',
             userId: 'test-user',
             email: 'test@example.com',
             name: 'Test User',
-            signOut: vi.fn(),
-        });
+        }));
         render(<Navbar />);
         // Sign-in button should not be present
         expect(screen.queryByLabelText('Iniciar sesión')).not.toBeInTheDocument();

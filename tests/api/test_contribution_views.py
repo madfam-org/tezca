@@ -180,22 +180,30 @@ class TestListContributions:
 
     def _auth_get(self, url, **kwargs):
         """
-        GET request bypassing Janua auth.
+        GET request bypassing Janua auth and admin permission.
 
         The admin-contributions endpoint is protected by _protected() which
-        applies JanuaJWTAuthentication + IsAuthenticated. We patch the
-        authentication to bypass it in tests.
+        applies JanuaJWTAuthentication + IsAuthenticated + IsTezcaAdmin.
+        We patch both authentication and admin permission in tests.
         """
         from unittest.mock import patch
 
-        from django.contrib.auth.models import AnonymousUser
+        from apps.api.middleware.janua_auth import JanuaUser
 
-        class FakeUser:
-            is_authenticated = True
+        admin_user = JanuaUser(
+            {"sub": "test-admin", "email": "admin@test.com", "role": "admin"}
+        )
+        admin_user.tier = "madfam"
+        admin_user.scopes = ["read", "search"]
+        admin_user.allowed_domains = []
+        admin_user.api_key_prefix = ""
 
         with patch(
-            "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate",
-            return_value=(FakeUser(), "fake-token"),
+            "apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate",
+            return_value=(admin_user, "fake-token"),
+        ), patch(
+            "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission",
+            return_value=True,
         ):
             return self.client.get(url, **kwargs)
 

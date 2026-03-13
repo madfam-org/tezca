@@ -8,12 +8,35 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.api.middleware.janua_auth import JanuaUser
+
 
 @pytest.mark.django_db
 class TestPipelineStatusAPI:
     def setup_method(self):
         self.client = APIClient()
         self.url = reverse("admin-pipeline-status")
+        admin_user = JanuaUser(
+            {"sub": "test-admin", "email": "admin@test.com", "role": "admin"}
+        )
+        admin_user.tier = "madfam"
+        admin_user.scopes = ["read", "search"]
+        admin_user.allowed_domains = []
+        admin_user.api_key_prefix = ""
+        self._auth_patcher = patch(
+            "apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate",
+            return_value=(admin_user, "fake-token"),
+        )
+        self._admin_patcher = patch(
+            "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission",
+            return_value=True,
+        )
+        self._auth_patcher.start()
+        self._admin_patcher.start()
+
+    def teardown_method(self):
+        self._admin_patcher.stop()
+        self._auth_patcher.stop()
 
     def test_pipeline_status_idle(self):
         """GET returns idle when no status file exists."""

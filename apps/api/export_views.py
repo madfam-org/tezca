@@ -1,11 +1,12 @@
 """
 Export views for downloading laws in multiple formats.
 
-Tier system:
-  - anon:    TXT only, 10/hour by IP
-  - free:    TXT + PDF, 30/hour by user_id
-  - premium: All 6 formats, 100/hour by user_id
+Tier system (see tier_permissions.py for canonical definitions):
+  - anon:       TXT only
+  - essentials: TXT + PDF
+  - pro:        All 6 formats
 
+Rate limits and hourly quotas are defined in tier_permissions.EXPORT_HOURLY_LIMITS.
 Formats: txt, pdf, latex, docx, epub, json
 """
 

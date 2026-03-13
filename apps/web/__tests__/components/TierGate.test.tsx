@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { defaultAuthState, mockAuth } from '../helpers/auth-mock';
 
 // Mock next/link
 vi.mock('next/link', () => ({
@@ -16,14 +17,7 @@ vi.mock('@/components/providers/LanguageContext', () => ({
 }));
 
 // Mock AuthContext
-const mockUseAuth = vi.fn(() => ({
-    isAuthenticated: false,
-    tier: 'anon' as const,
-    userId: null,
-    email: null,
-    name: null,
-    signOut: vi.fn(),
-}));
+const mockUseAuth = vi.fn(() => defaultAuthState);
 
 vi.mock('@/components/providers/AuthContext', () => ({
     useAuth: (...args: any[]) => mockUseAuth(...args),
@@ -79,14 +73,7 @@ describe('TierGate', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.useFakeTimers();
-        mockUseAuth.mockReturnValue({
-            isAuthenticated: false,
-            tier: 'anon' as const,
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        mockUseAuth.mockReturnValue(defaultAuthState);
         (useLang as ReturnType<typeof vi.fn>).mockReturnValue({
             lang: 'es',
             setLang: vi.fn(),
@@ -112,14 +99,13 @@ describe('TierGate', () => {
     // 2. Inline variant for authenticated essentials users
     // ---------------------------------------------------------------
     it('renders inline variant with upgrade text for authenticated essentials user', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'essentials' as const,
+            tier: 'essentials',
             userId: 'user-123',
             email: 'user@example.com',
             name: 'Test User',
-            signOut: vi.fn(),
-        });
+        }));
 
         render(<TierGate variant="inline" requiredTier="pro" />);
 
@@ -132,14 +118,11 @@ describe('TierGate', () => {
     // 3. Card variant with benefits list
     // ---------------------------------------------------------------
     it('renders card variant with benefits list', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'essentials' as const,
+            tier: 'essentials',
             userId: 'user-456',
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
 
         const benefits = [
             'Acceso a API avanzada',
@@ -236,14 +219,11 @@ describe('TierGate', () => {
     // 8. Subtitle when no feature text
     // ---------------------------------------------------------------
     it('shows subtitle when no feature text provided', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'essentials' as const,
+            tier: 'essentials',
             userId: 'user-789',
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
 
         render(
             <TierGate variant="card" requiredTier="community" />,
@@ -272,14 +252,11 @@ describe('TierGate', () => {
     // 10. Checkout URL for authenticated users
     // ---------------------------------------------------------------
     it('links to checkout URL for authenticated users', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'essentials' as const,
+            tier: 'essentials',
             userId: 'user-abc',
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
 
         render(<TierGate variant="inline" requiredTier="pro" />);
 
@@ -317,14 +294,11 @@ describe('TierGate', () => {
     });
 
     it('shows current tier badge in card variant', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'essentials' as const,
+            tier: 'essentials',
             userId: 'user-tier',
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
 
         render(<TierGate variant="card" requiredTier="pro" />);
 
@@ -360,14 +334,11 @@ describe('TierGate', () => {
     });
 
     it('for essentials requiredTier authenticated user, checkout uses community plan', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'anon' as const,
+            tier: 'anon',
             userId: 'user-ess',
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
 
         render(<TierGate variant="inline" requiredTier="essentials" />);
 

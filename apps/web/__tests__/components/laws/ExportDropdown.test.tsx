@@ -1,16 +1,13 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { defaultAuthState, mockAuth } from '../../helpers/auth-mock';
 
 vi.mock('@/components/providers/LanguageContext', () => ({
     useLang: vi.fn(() => ({ lang: 'es', setLang: vi.fn() })),
 }));
 
 vi.mock('@/components/providers/AuthContext', () => ({
-    useAuth: vi.fn(() => ({
-        isAuthenticated: false,
-        tier: 'anon' as const,
-        loginUrl: '/auth/login',
-    })),
+    useAuth: vi.fn(() => defaultAuthState),
 }));
 
 vi.mock('@/lib/config', () => ({
@@ -27,15 +24,7 @@ import { useAuth } from '@/components/providers/AuthContext';
 describe('ExportDropdown', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(useAuth).mockReturnValue({
-            isAuthenticated: false,
-            tier: 'anon',
-            loginUrl: '/auth/login',
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        vi.mocked(useAuth).mockReturnValue(defaultAuthState);
     });
 
     it('renders the download button', () => {
@@ -92,15 +81,10 @@ describe('ExportDropdown', () => {
     });
 
     it('shows upgrade gate when free-tier clicks premium format', () => {
-        vi.mocked(useAuth).mockReturnValue({
+        vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'essentials',
-            loginUrl: '/auth/login',
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar DOCX'));
@@ -132,15 +116,10 @@ describe('ExportDropdown', () => {
     });
 
     it('allows PDF download for free-tier users', async () => {
-        vi.mocked(useAuth).mockReturnValue({
+        vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'essentials',
-            loginUrl: '/auth/login',
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         const mockBlob = new Blob(['pdf'], { type: 'application/pdf' });
         const mockFetch = vi.fn().mockResolvedValue({
             ok: true,
@@ -164,15 +143,10 @@ describe('ExportDropdown', () => {
     });
 
     it('allows all formats for premium users', () => {
-        vi.mocked(useAuth).mockReturnValue({
+        vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'pro',
-            loginUrl: '/auth/login',
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         // No lock icons should be visible — all formats accessible
@@ -183,15 +157,7 @@ describe('ExportDropdown', () => {
     });
 
     it('shows tier gate with countdown on 429', async () => {
-        vi.mocked(useAuth).mockReturnValue({
-            isAuthenticated: false,
-            tier: 'anon',
-            loginUrl: '/auth/login',
-            userId: null,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        vi.mocked(useAuth).mockReturnValue(defaultAuthState);
         const mockFetch = vi.fn().mockResolvedValue({
             ok: false,
             status: 429,

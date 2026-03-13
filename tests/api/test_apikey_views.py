@@ -18,13 +18,18 @@ from rest_framework.test import APIClient
 from apps.api.middleware.janua_auth import JanuaUser
 from apps.api.models import APIKey
 
-AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
+AUTH_PATCH = "apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate"
 
 
 def _admin_user():
     """Create a mock admin JanuaUser."""
     user = JanuaUser(
-        {"sub": "admin-user-1", "email": "admin@madfam.io", "tier": "premium"}
+        {
+            "sub": "admin-user-1",
+            "email": "admin@madfam.io",
+            "tier": "premium",
+            "role": "admin",
+        }
     )
     user.tier = "premium"
     user.scopes = ["read", "search"]

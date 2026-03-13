@@ -11,6 +11,7 @@ import logging
 from functools import lru_cache
 from pathlib import Path
 
+from django.conf import settings
 from rest_framework.permissions import BasePermission
 
 logger = logging.getLogger(__name__)
@@ -99,8 +100,9 @@ class RequireTier(BasePermission):
             return True
 
         # Set detail message for the 403 response
+        checkout = settings.DHANAM_CHECKOUT_URL
         self.message = (
             f"This feature requires {self.min_tier} tier or above. "
-            f"Upgrade at https://dhanam.madfam.io/checkout?plan=tezca_{self.min_tier}&product=tezca"
+            f"Upgrade at {checkout}?plan=tezca_{self.min_tier}&product=tezca"
         )
         return False

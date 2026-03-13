@@ -1,18 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mockAuth } from '../helpers/auth-mock';
 
 const mockUseLang = vi.fn(() => ({ lang: 'es' as const, setLang: vi.fn() }));
 vi.mock('@/components/providers/LanguageContext', () => ({
     useLang: (...args: any[]) => mockUseLang(...args),
 }));
 
-const mockUseAuth = vi.fn(() => ({
+const mockUseAuth = vi.fn(() => mockAuth({
     tier: 'essentials',
     userId: 'user-123',
     isAuthenticated: true,
-    email: null,
-    name: null,
-    signOut: vi.fn(),
 }));
 vi.mock('@/components/providers/AuthContext', () => ({
     useAuth: (...args: any[]) => mockUseAuth(...args),
@@ -60,14 +58,11 @@ describe('TierComparison', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockUseLang.mockReturnValue({ lang: 'es' as const, setLang: vi.fn() });
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             tier: 'essentials',
             userId: 'user-123',
             isAuthenticated: true,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
     });
 
     it('renders compact mode with 3 tier columns', () => {
@@ -106,14 +101,11 @@ describe('TierComparison', () => {
     });
 
     it('highlights current tier with ring styling in compact mode', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             tier: 'community',
             userId: 'user-123',
             isAuthenticated: true,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         const { container } = render(<TierComparison compact />);
         const highlighted = container.querySelector('.ring-1.ring-primary\\/30');
         expect(highlighted).toBeTruthy();
@@ -121,14 +113,11 @@ describe('TierComparison', () => {
     });
 
     it('shows "Tu plan" badge for current tier', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             tier: 'community',
             userId: 'user-123',
             isAuthenticated: true,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         render(<TierComparison />);
         const currentBadges = screen.getAllByText('Tu plan');
         // Appears in both desktop table header and mobile card
@@ -136,14 +125,11 @@ describe('TierComparison', () => {
     });
 
     it('shows upgrade buttons for higher tiers only', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             tier: 'essentials',
             userId: 'user-123',
             isAuthenticated: true,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         render(<TierComparison />);
         // Essentials is current tier, so upgrade buttons appear for community and pro
         // Desktop tfoot: 2 buttons + Mobile cards: 2 buttons = 4 total
@@ -152,14 +138,11 @@ describe('TierComparison', () => {
     });
 
     it('hides upgrade button for current and lower tiers (isDowngrade)', () => {
-        mockUseAuth.mockReturnValue({
+        mockUseAuth.mockReturnValue(mockAuth({
             tier: 'pro',
             userId: 'user-123',
             isAuthenticated: true,
-            email: null,
-            name: null,
-            signOut: vi.fn(),
-        });
+        }));
         render(<TierComparison />);
         // All tiers are at or below pro rank, so no upgrade buttons should render
         const upgradeButtons = screen.queryAllByText('Mejora tu plan');

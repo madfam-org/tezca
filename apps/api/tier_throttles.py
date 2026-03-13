@@ -68,14 +68,19 @@ class TieredRateThrottle(BaseThrottle):
             return f"user:{getattr(user, 'id', '')}"
         return f"ip:{_get_client_ip(request)}"
 
+    MAX_RATE_LIMIT_PER_HOUR = 100_000
+
     def _get_limits(self, request, tier: str) -> tuple[int, int]:
-        """Get rate limits, respecting per-key overrides."""
+        """Get rate limits, respecting per-key overrides (capped)."""
         user = getattr(request, "user", None)
         if user and getattr(user, "is_authenticated", False):
             custom_hourly = getattr(user, "rate_limit_per_hour", None)
-            if custom_hourly:
+            if isinstance(custom_hourly, int) and custom_hourly > 0:
                 default_minute, _ = TIER_RATE_LIMITS.get(tier, TIER_RATE_LIMITS["anon"])
-                return (default_minute, custom_hourly)
+                return (
+                    default_minute,
+                    min(custom_hourly, self.MAX_RATE_LIMIT_PER_HOUR),
+                )
         return TIER_RATE_LIMITS.get(tier, TIER_RATE_LIMITS["anon"])
 
     def _check_and_increment(self, key: str, limit: int, window: int) -> bool:

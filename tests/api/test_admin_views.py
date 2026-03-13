@@ -2,15 +2,46 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django.urls import reverse
+from elasticsearch.exceptions import ConnectionError as ESConnectionError
 from rest_framework.test import APIClient
 
+from apps.api.middleware.janua_auth import JanuaUser
 from apps.api.models import Law
+
+# Shared admin user for test auth bypass
+_ADMIN_CLAIMS = {"sub": "test-admin", "email": "admin@test.com", "role": "admin"}
+
+
+def _start_admin_patches(test_instance):
+    """Bypass JanuaJWT auth + IsTezcaAdmin for admin view tests."""
+    admin_user = JanuaUser(_ADMIN_CLAIMS)
+    admin_user.tier = "madfam"
+    admin_user.scopes = ["read", "search"]
+    admin_user.allowed_domains = []
+    admin_user.api_key_prefix = ""
+
+    test_instance._auth_patcher = patch(
+        "apps.api.middleware.janua_auth.JanuaJWTAuthentication.authenticate",
+        return_value=(admin_user, "fake-token"),
+    )
+    test_instance._admin_patcher = patch(
+        "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission",
+        return_value=True,
+    )
+    test_instance._auth_patcher.start()
+    test_instance._admin_patcher.start()
+
+
+def _stop_admin_patches(test_instance):
+    test_instance._admin_patcher.stop()
+    test_instance._auth_patcher.stop()
 
 
 @pytest.mark.django_db
 class TestAdminViews:
     def setup_method(self):
         self.client = APIClient()
+        _start_admin_patches(self)
 
         # Create some test data for metrics
         Law.objects.create(
@@ -25,6 +56,9 @@ class TestAdminViews:
             tier="municipal",
             category="reglamento",
         )
+
+    def teardown_method(self):
+        _stop_admin_patches(self)
 
     def test_health_check(self):
         """Test health check endpoint returns 200 and healthy status."""
@@ -140,8 +174,8 @@ class TestAdminViews:
         # Mock database connection check (succeeds)
         mock_connection.ensure_connection.return_value = None
 
-        # Mock Elasticsearch ping to raise an exception
-        mock_es.ping.side_effect = Exception("Connection refused")
+        # Mock Elasticsearch ping to raise a connection error
+        mock_es.ping.side_effect = ESConnectionError("Connection refused")
 
         url = reverse("admin-config")
         response = self.client.get(url)
@@ -283,6 +317,10 @@ class TestAdminViews:
 class TestRoadmapEndpoint:
     def setup_method(self):
         self.client = APIClient()
+        _start_admin_patches(self)
+
+    def teardown_method(self):
+        _stop_admin_patches(self)
 
     def test_roadmap_get_empty(self):
         """Test GET /admin/roadmap/ with no items."""

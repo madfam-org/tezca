@@ -52,3 +52,21 @@ class TestPerKeyRateOverride:
         request = self._make_request(tier="community", rate_limit_per_hour=3000)
         limits = self.throttle._get_limits(request, "community")
         assert limits == (60, 3000)
+
+    def test_override_capped_at_max(self):
+        """Custom rate_limit_per_hour cannot exceed MAX_RATE_LIMIT_PER_HOUR."""
+        request = self._make_request(tier="pro", rate_limit_per_hour=999_999)
+        limits = self.throttle._get_limits(request, "pro")
+        assert limits == (60, 100_000)
+
+    def test_override_at_max_boundary(self):
+        """Exactly MAX_RATE_LIMIT_PER_HOUR passes through unchanged."""
+        request = self._make_request(tier="pro", rate_limit_per_hour=100_000)
+        limits = self.throttle._get_limits(request, "pro")
+        assert limits == (60, 100_000)
+
+    def test_override_below_max_not_capped(self):
+        """Values below the cap pass through unchanged."""
+        request = self._make_request(tier="pro", rate_limit_per_hour=50_000)
+        limits = self.throttle._get_limits(request, "pro")
+        assert limits == (60, 50_000)

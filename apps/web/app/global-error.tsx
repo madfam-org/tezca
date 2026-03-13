@@ -15,13 +15,16 @@ export default function GlobalError({
     });
   }, [error]);
 
+  // This component renders outside the theme provider (<html> + <body>
+  // without providers), so CSS custom properties like bg-background are
+  // undefined. Raw Tailwind color classes are intentional here.
   return (
     <html lang="es">
       <body className="flex min-h-screen items-center justify-center bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 p-8">
         <div className="text-center max-w-md">
-          <h2 className="text-2xl font-semibold mb-2">Algo salio mal</h2>
+          <h2 className="text-2xl font-semibold mb-2">Algo salió mal</h2>
           <p className="text-sm text-gray-500 mb-6">
-            Ocurrio un error inesperado. Intenta recargar la pagina.
+            Ocurrió un error inesperado. Intenta recargar la página.
           </p>
           {error?.digest && (
             <p className="text-xs text-gray-400 font-mono mb-4">{error.digest}</p>

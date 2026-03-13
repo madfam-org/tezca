@@ -151,6 +151,16 @@ else:
         }
     }
 
+if not DEBUG and DATABASES["default"]["ENGINE"].endswith("sqlite3"):
+    import warnings
+
+    warnings.warn(
+        "SQLite is not recommended for production. "
+        "Set DATABASE_URL or DB_ENGINE=django.db.backends.postgresql",
+        RuntimeWarning,
+        stacklevel=1,
+    )
+
 LANGUAGE_CODE = "es-mx"
 TIME_ZONE = "America/Mexico_City"
 USE_I18N = True
@@ -174,8 +184,16 @@ if not DEBUG:
 JANUA_BASE_URL = os.environ.get("JANUA_BASE_URL", "")
 JANUA_AUDIENCE = os.environ.get("JANUA_AUDIENCE", "tezca-api")
 
+# ── Admin Access ─────────────────────────────────────────────────────
+TEZCA_ADMIN_USER_IDS = set(
+    filter(None, os.environ.get("TEZCA_ADMIN_USER_IDS", "").split(","))
+)
+
 # ── Dhanam Billing ───────────────────────────────────────────────────
 DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
+DHANAM_CHECKOUT_URL = os.environ.get(
+    "DHANAM_CHECKOUT_URL", "https://dhanam.madfam.io/checkout"
+)
 
 # ── Logging ───────────────────────────────────────────────────────────
 LOGGING = {

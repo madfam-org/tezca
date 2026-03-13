@@ -1,7 +1,7 @@
 from django.urls import path
-from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from .middleware.admin_permission import IsTezcaAdmin
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -77,9 +77,14 @@ from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_w
 
 
 def _protected(view_func):
-    """Apply Janua JWT authentication to an admin view."""
-    view_func = authentication_classes([JanuaJWTAuthentication])(view_func)
-    view_func = permission_classes([IsAuthenticated])(view_func)
+    """Apply Janua JWT authentication and admin check to an admin view.
+
+    Sets class-level attributes on the WrappedAPIView created by @api_view,
+    so DRF's dispatch actually enforces them.  The rest_framework.decorators
+    helpers only set func-level attrs, which DRF ignores.
+    """
+    view_func.cls.authentication_classes = [JanuaJWTAuthentication]
+    view_func.cls.permission_classes = [IsAuthenticated, IsTezcaAdmin]
     return view_func
 
 

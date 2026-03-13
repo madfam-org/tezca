@@ -70,6 +70,8 @@ npm run dev:all                     # both concurrently
 | `DB_ENGINE` | sqlite3 | Set to `django.db.backends.postgresql` for Postgres |
 | `INTERNAL_API_URL` | falls back to `NEXT_PUBLIC_API_URL` | Server-side API URL for SSR inside Docker (e.g. `http://api:8000/api/v1`) |
 | `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Redis for Celery tasks |
+| `TEZCA_ADMIN_USER_IDS` | `""` | Comma-separated Janua user IDs allowed admin access |
+| `DHANAM_CHECKOUT_URL` | `https://dhanam.madfam.io/checkout` | Billing checkout URL (used by tier gates) |
 
 ---
 
@@ -78,7 +80,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 782 tests)
+# Backend (pytest + django, 889 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -136,6 +138,8 @@ npm run build:all
 2. **Janua JWT** -- `Authorization: Bearer <token>`
 3. **Anonymous fallback**
 
+Admin endpoints use `_protected()` in `apps/api/urls.py`, which sets `JanuaJWTAuthentication` + `IsAuthenticated` + `IsTezcaAdmin` directly on the view class. `IsTezcaAdmin` (in `apps/api/middleware/admin_permission.py`) checks JWT `role == "admin"` claim OR user ID in `TEZCA_ADMIN_USER_IDS` env var.
+
 ### Integration Policy (Zero Touch)
 
 Tezca is a generic multi-tenant platform. The codebase must NEVER contain:
@@ -182,9 +186,10 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 ### Billing
 
-- Checkout URL: `https://dhanam.madfam.io/checkout` (via `apps/web/lib/billing.ts`)
+- Checkout URL: `settings.DHANAM_CHECKOUT_URL` (env `DHANAM_CHECKOUT_URL`, default `https://dhanam.madfam.io/checkout`)
 - Webhook: `POST /api/v1/billing/webhook/` — HMAC-SHA256 signed by Dhanam, upgrades/downgrades API key tiers
 - Secret: `DHANAM_WEBHOOK_SECRET` env var
+- Plan mappings: `tezca_essentials`, `tezca_community`, `tezca_pro`, `tezca_madfam` → corresponding tiers
 
 ### Route Conventions
 
@@ -289,10 +294,12 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
 | `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
+| `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits |
 | `apps/api/tiers.json` | Feature flags and limits per tier (loaded by tier_permissions) |
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
+| `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/graph_views.py` | Law graph API (ego graph + global overview for Sigma.js) |
@@ -350,6 +357,12 @@ type Lang = 'es' | 'en' | 'nah';
 13. **`@types/react` lockfile dedup:** The monorepo can end up with multiple `@types/react` versions (e.g. 19.2.10 in workspaces, 19.2.14 at root), causing Radix component type errors (`Key` type mismatch). Fix by removing nested `node_modules/@types/react` entries from `package-lock.json` and running `npm install`.
 
 14. **`Protect` component:** `@janua/nextjs` `Protect` uses `redirectTo` prop, not `redirectUrl`.
+
+15. **`_protected()` sets class attrs directly:** DRF's `authentication_classes`/`permission_classes` decorators from `rest_framework.decorators` set attributes on the function, not on the `WrappedAPIView` class, so they have no effect when applied after `@api_view`. `_protected()` in `urls.py` works around this by setting `view_func.cls.authentication_classes` and `view_func.cls.permission_classes` directly.
+
+16. **Admin endpoint test pattern:** Tests for `_protected()` endpoints must patch both `JanuaJWTAuthentication.authenticate` (returns `(admin_user, "fake-token")`) and `IsTezcaAdmin.has_permission` (returns `True`). Patching `CombinedAuthentication.authenticate` has no effect on admin endpoints. See `_start_admin_patches()` in `tests/api/test_admin_views.py` for the canonical pattern.
+
+17. **`APIKey.rate_limit_per_hour` is capped:** Custom per-key rate limit overrides are capped at 100,000/hour in `TieredRateThrottle._get_limits()`. Model validators enforce 1–100,000 range.
 
 ---
 
