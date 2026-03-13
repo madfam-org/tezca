@@ -182,6 +182,8 @@ class TestIndexLawsCommand:
                     limit=None,
                     create_indices=False,
                     tier="all",
+                    reindex=False,
+                    migrate_alias=False,
                 )
 
                 # Verify bulk called

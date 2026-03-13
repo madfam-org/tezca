@@ -33,6 +33,13 @@ services:
       # Error tracking
       - SENTRY_DSN=${SENTRY_DSN:-}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-development}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,6 +76,13 @@ services:
       - R2_ENDPOINT_URL=${R2_ENDPOINT_URL:-}
       - SENTRY_DSN=${SENTRY_DSN:-}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-development}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
@@ -99,6 +113,13 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - SENTRY_DSN=${SENTRY_DSN:-}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-development}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          memory: 128M
     depends_on:
       postgres:
         condition: service_healthy
@@ -118,6 +139,13 @@ services:
       - INTERNAL_API_URL=http://api:8000/api/v1
       - NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY:-}
       - JANUA_SECRET_KEY=${JANUA_SECRET_KEY:-}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     depends_on:
       - api
       - elasticsearch
@@ -135,6 +163,13 @@ services:
       - INTERNAL_API_URL=http://api:8000/api/v1
       - NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY:-}
       - JANUA_SECRET_KEY=${JANUA_SECRET_KEY:-}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     depends_on:
       - api
 
@@ -150,6 +185,13 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-leyes_mx}"]
       interval: 5s
@@ -164,6 +206,13 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          memory: 128M
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -190,6 +239,13 @@ services:
         hard: -1
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 3G
+        reservations:
+          memory: 2G
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s

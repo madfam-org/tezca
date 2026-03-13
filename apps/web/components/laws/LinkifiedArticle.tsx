@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/components/providers/LanguageContext';
 import { API_BASE_URL } from '@/lib/config';
+import type { CrossReferenceData } from '@/lib/api';
 
 const content = {
     es: {
@@ -28,13 +29,13 @@ const content = {
 
 interface CrossReference {
     text: string;
-    targetLawSlug?: string;
-    targetArticle?: string;
-    fraction?: string;
+    targetLawSlug?: string | null;
+    targetArticle?: string | null;
+    fraction?: string | null;
     confidence: number;
     startPos: number;
     endPos: number;
-    targetUrl?: string;
+    targetUrl?: string | null;
 }
 
 interface LinkifiedArticleProps {
@@ -43,44 +44,71 @@ interface LinkifiedArticleProps {
     text: string;
     minConfidence?: number;
     crossRefsDisabled?: boolean;
+    /** Pre-fetched outgoing cross-references from the batch endpoint.
+     *  When provided, the per-article fetch is skipped entirely. */
+    preloadedRefs?: CrossReferenceData[];
 }
 
 /**
  * LinkifiedArticle - Renders article text with clickable cross-references.
  *
- * Fetches cross-references from API and makes legal references clickable.
+ * Supports two data-loading strategies:
  *
- * N+1 WARNING: When `crossRefsDisabled` is false, each rendered article fires
- * an individual GET /laws/{lawId}/articles/{articleId}/references/ request.
- * On a law detail page with hundreds of articles this creates an N+1 problem.
- * Keep `crossRefsDisabled={true}` (the default) until a batch endpoint
- * (POST /laws/{lawId}/articles/references/batch/) is available.
+ * 1. **Batch (preferred):** Parent passes `preloadedRefs` from the batch
+ *    endpoint. No per-article network request is made.
+ *
+ * 2. **Per-article (legacy fallback):** When `preloadedRefs` is not provided
+ *    and `crossRefsDisabled` is false, fires an individual GET request.
+ *    This causes N+1 on pages with many articles; avoid when possible.
  */
-export function LinkifiedArticle({ lawId, articleId, text: rawText, minConfidence = 0.6, crossRefsDisabled = true }: LinkifiedArticleProps) {
+export function LinkifiedArticle({
+    lawId,
+    articleId,
+    text: rawText,
+    minConfidence = 0.6,
+    crossRefsDisabled = true,
+    preloadedRefs,
+}: LinkifiedArticleProps) {
     const { lang } = useLang();
     const t = content[lang];
 
-    // Strip leading "Artículo N." from body since the heading already shows it
+    // Strip leading "Articulo N." from body since the heading already shows it
     const text = rawText.replace(/^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w]*\.?\s*/i, '').trim();
 
-    const [allReferences, setAllReferences] = useState<CrossReference[]>([]);
-    const [loading, setLoading] = useState(!crossRefsDisabled);
+    const hasPreloaded = preloadedRefs !== undefined;
+
+    // When no preloaded data and fetch is enabled, start in loading state
+    const shouldFetch = !hasPreloaded && !crossRefsDisabled;
+    const [fetchedReferences, setFetchedReferences] = useState<CrossReference[]>([]);
+    const [loading, setLoading] = useState(shouldFetch);
 
     useEffect(() => {
+        // Skip fetch entirely when preloaded data is available
+        if (hasPreloaded) return;
         if (crossRefsDisabled) return;
 
+        let cancelled = false;
         const apiUrl = API_BASE_URL;
 
         fetch(`${apiUrl}/laws/${lawId}/articles/${articleId}/references/`)
             .then(r => r.ok ? r.json() : { outgoing: [] })
             .then(data => {
-                setAllReferences(data.outgoing || []);
-                setLoading(false);
+                if (!cancelled) {
+                    setFetchedReferences(data.outgoing || []);
+                    setLoading(false);
+                }
             })
             .catch(() => {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             });
-    }, [lawId, articleId, crossRefsDisabled]);
+
+        return () => { cancelled = true; };
+    }, [lawId, articleId, crossRefsDisabled, hasPreloaded]);
+
+    // Merge sources: preloaded takes priority over fetched
+    const allReferences: CrossReference[] = hasPreloaded
+        ? (preloadedRefs as CrossReference[])
+        : fetchedReferences;
 
     // Filter by confidence threshold
     const references = allReferences.filter(ref => ref.confidence >= minConfidence);

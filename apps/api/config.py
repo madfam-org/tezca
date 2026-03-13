@@ -10,6 +10,10 @@ logger = logging.getLogger(__name__)
 ES_HOST = os.getenv("ES_HOST", "http://elasticsearch:9200")
 INDEX_NAME = "articles"
 
+# Alias-based index versioning (INDEX_NAME still works — ES resolves aliases on reads)
+INDEX_ALIAS = "articles"
+INDEX_PREFIX = "articles_v"
+
 # ES client configuration for production resilience
 ES_TIMEOUT = int(os.getenv("ES_TIMEOUT", "30"))
 ES_MAX_RETRIES = int(os.getenv("ES_MAX_RETRIES", "3"))

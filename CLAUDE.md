@@ -200,9 +200,11 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 ### Elasticsearch
 
 - Singleton client in `apps/api/config.py` (`es_client`)
-- Index name: `articles` (constant `INDEX_NAME`)
+- Index name: `articles` (constant `INDEX_NAME`), also aliased via `INDEX_ALIAS`
 - ES 8.17, timeout 30s, 3 retries, 10 connections per node
 - Always use `es_client` from config, never instantiate a new client
+- **Alias strategy**: `articles` is an alias pointing to a versioned concrete index (`articles_v{timestamp}`). Zero-downtime reindex via `index_laws --reindex` creates a new versioned index, indexes into it, then atomically swaps the alias. One-time migration from concrete to alias via `manage_es_alias --migrate` or `index_laws --migrate-alias`
+- **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
 
 ### Celery
 
@@ -235,7 +237,7 @@ All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from
 
 - **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
 - **`TierComparison`** — Feature comparison table across Essentials/Community/Pro tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
-- **`LinkifiedArticle`** — `crossRefsDisabled` defaults to `true`. Pass `crossRefsDisabled={false}` explicitly to enable per-article cross-reference fetching. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) to load refs for all articles in a single request instead of N+1 individual calls.
+- **`LinkifiedArticle`** — Cross-references are loaded in batch by `ArticleViewer` via `useBatchCrossRefs` hook (eliminates N+1). Individual articles receive refs via `preloadedRefs` prop. The `crossRefsDisabled` prop defaults to `false` when batch refs are available. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) for custom integrations.
 
 ### Colors
 
@@ -321,6 +323,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality) with ErrorTracker |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
+| `apps/api/es_index_manager.py` | ES alias management (zero-downtime reindex) |
+| `apps/api/management/commands/manage_es_alias.py` | CLI for ES alias status/migrate/rollback/cleanup |
+| `apps/web/hooks/useBatchCrossRefs.ts` | Batch cross-reference fetching hook (eliminates N+1) |
 
 ---
 
@@ -368,8 +373,14 @@ type Lang = 'es' | 'en' | 'nah';
 
 ## CI/CD
 
-- Python CI runs `poetry run black --check` and `poetry run pytest`
-- Node CI runs `npm run lint:all` and `npm run build:all`
+- Python CI runs `poetry run black --check` and `poetry run pytest` (matrix: Python 3.11 + 3.12)
+- Node CI runs `npm run lint:all` and `npm run build:all` (matrix: Node 20 + 22)
+- E2E tests run against `docker-compose.e2e.yml` stack (blocking gate, Playwright with 2 CI retries)
+- Security audits are blocking: `pip-audit` (Python) and `npm audit --audit-level=high` (Node). Use `--ignore-vuln PYSEC-YYYY-NNNNN` in CI to allowlist triaged CVEs
+- CodeQL/SAST runs on push/PR to main and weekly (Monday 6am UTC) for Python + JavaScript/TypeScript
+- MCP server tests run in CI via `uv sync && uv run pytest`
+- MCP server publishes to PyPI on `mcp-v*` tags via OIDC trusted publisher
 - Deploy workflows push digest commits that can race with subsequent pushes -- use `git pull --rebase` before pushing
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
 - WeasyPrint and other optional deps are similarly skipped in CI
+- Docker Compose services have resource limits (cpu/memory) to prevent runaway containers

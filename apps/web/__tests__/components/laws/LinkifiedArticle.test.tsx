@@ -163,4 +163,85 @@ describe('LinkifiedArticle', () => {
             expect(countSpan?.textContent).toBe('2');
         });
     });
+
+    describe('preloadedRefs', () => {
+        it('renders links from preloadedRefs without making a fetch call', () => {
+            const preloaded = [
+                {
+                    text: 'Ley Federal',
+                    targetLawSlug: 'ley-federal',
+                    targetArticle: '10',
+                    fraction: null,
+                    confidence: 0.9,
+                    startPos: 14,
+                    endPos: 25,
+                    targetUrl: '/leyes/ley-federal#article-10',
+                },
+            ];
+
+            renderWithLang(
+                <LinkifiedArticle
+                    lawId="test"
+                    articleId="1"
+                    text="De acuerdo a Ley Federal se establece."
+                    preloadedRefs={preloaded}
+                    crossRefsDisabled={false}
+                />
+            );
+
+            // Should NOT call fetch since preloaded data is provided
+            expect(mockFetch).not.toHaveBeenCalled();
+
+            const link = screen.getByRole('link', { name: 'Ley Federal' });
+            expect(link).toHaveAttribute('href', '/leyes/ley-federal#article-10');
+        });
+
+        it('renders plain text with empty preloadedRefs (no fetch)', () => {
+            renderWithLang(
+                <LinkifiedArticle
+                    lawId="test"
+                    articleId="1"
+                    text="Sin referencias cruzadas."
+                    preloadedRefs={[]}
+                    crossRefsDisabled={false}
+                />
+            );
+
+            expect(mockFetch).not.toHaveBeenCalled();
+            expect(screen.getByText('Sin referencias cruzadas.')).toBeInTheDocument();
+        });
+
+        it('falls back to per-article fetch when preloadedRefs is not provided and crossRefsDisabled is false', async () => {
+            mockFetch.mockResolvedValue({
+                ok: true,
+                json: () => Promise.resolve({
+                    outgoing: [
+                        {
+                            text: 'articulo 5',
+                            targetLawSlug: null,
+                            targetArticle: '5',
+                            confidence: 0.8,
+                            startPos: 0,
+                            endPos: 10,
+                            targetUrl: null,
+                        },
+                    ],
+                }),
+            });
+
+            renderWithLang(
+                <LinkifiedArticle
+                    lawId="test"
+                    articleId="1"
+                    text="articulo 5 de esta ley."
+                    crossRefsDisabled={false}
+                />
+            );
+
+            // Should call fetch since no preloadedRefs
+            await waitFor(() => {
+                expect(mockFetch).toHaveBeenCalledTimes(1);
+            });
+        });
+    });
 });

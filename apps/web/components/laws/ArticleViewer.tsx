@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Article } from "@tezca/lib";
 import { Link as LinkIcon, Check, Quote, BookOpen } from 'lucide-react';
 import { Card } from "@tezca/ui";
@@ -8,6 +8,8 @@ import { cn } from "@tezca/lib";
 import { useInView } from 'react-intersection-observer';
 import { LinkifiedArticle } from './LinkifiedArticle';
 import { useLang, LOCALE_MAP, type Lang } from '@/components/providers/LanguageContext';
+import { useBatchCrossRefs, type BatchCrossRefs } from '@/hooks/useBatchCrossRefs';
+import type { CrossReferenceData } from '@/lib/api';
 
 const content = {
     es: {
@@ -67,13 +69,22 @@ export function ArticleViewer({
 }: ArticleViewerProps) {
     const { lang } = useLang();
     const t = content[lang];
-    const articleRefs = useRef<Record<string, HTMLElement | null>>({});
+    const articleDomRefs = useRef<Record<string, HTMLElement | null>>({});
     const scrollingRef = useRef(false);
 
+    // Collect all article IDs once (stable reference via useMemo)
+    const articleIds = useMemo(
+        () => articles.map(a => a.article_id),
+        [articles]
+    );
+
+    // Batch-fetch cross-references for every article in one POST request
+    const { refs: batchRefs } = useBatchCrossRefs(lawId, articleIds);
+
     useEffect(() => {
-        if (activeArticle && articleRefs.current[activeArticle] && !scrollingRef.current) {
+        if (activeArticle && articleDomRefs.current[activeArticle] && !scrollingRef.current) {
             scrollingRef.current = true;
-            articleRefs.current[activeArticle]?.scrollIntoView({
+            articleDomRefs.current[activeArticle]?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start',
             });
@@ -100,9 +111,10 @@ export function ArticleViewer({
                         tier={tier}
                         isActive={activeArticle === article.article_id}
                         setRef={(el) => {
-                            articleRefs.current[article.article_id] = el;
+                            articleDomRefs.current[article.article_id] = el;
                         }}
                         lang={lang}
+                        batchRefs={batchRefs}
                     />
                 ))
             )}
@@ -164,6 +176,7 @@ function SingleArticle({
     isActive,
     setRef,
     lang,
+    batchRefs,
 }: {
     article: Article;
     lawId: string;
@@ -173,6 +186,7 @@ function SingleArticle({
     isActive: boolean;
     setRef: (el: HTMLElement | null) => void;
     lang: Lang;
+    batchRefs: Map<string, BatchCrossRefs>;
 }) {
     const t = content[lang];
     const locale = LOCALE_MAP[lang];
@@ -277,12 +291,12 @@ function SingleArticle({
                 </div>
             </div>
 
-            {/* crossRefsDisabled: avoids N+1 per-article API calls; enable after batch endpoint ships (see LinkifiedArticle docs) */}
             <LinkifiedArticle
                 lawId={lawId}
                 articleId={article.article_id}
                 text={article.text}
-                crossRefsDisabled
+                crossRefsDisabled={false}
+                preloadedRefs={batchRefs.get(article.article_id)?.outgoing as CrossReferenceData[] | undefined}
             />
         </article>
     );

@@ -17,6 +17,13 @@ services:
       - POSTGRES_DB=leyes_mx_test
       - POSTGRES_USER=leyes_mx
       - POSTGRES_PASSWORD=test_pw
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U leyes_mx"]
       interval: 3s
@@ -25,6 +32,13 @@ services:
 
   redis:
     image: redis:7-alpine
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          memory: 64M
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
@@ -45,6 +59,13 @@ services:
       memlock:
         soft: -1
         hard: -1
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          memory: 384M
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
       interval: 5s
@@ -73,6 +94,13 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - ES_HOST=http://elasticsearch:9200
       - STORAGE_BACKEND=local
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,6 +117,13 @@ services:
       dockerfile: apps/web/Dockerfile
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     depends_on:
       - api
     ports:

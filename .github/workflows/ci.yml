@@ -8,8 +8,13 @@ on:
 
 jobs:
   test-backend:
-    name: Backend Tests (Python)
+    name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v4
@@ -17,7 +22,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ matrix.python-version }}
 
     - name: Install Poetry
       run: |
@@ -37,26 +42,31 @@ jobs:
       run: poetry run python scripts/utils/audit_file_sizes.py
 
     - name: Run Pytest with coverage
-      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=35
+      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=44
       env:
         PYTHONPATH: apps:.
 
     - name: Security audit (pip-audit)
       run: |
         pip install pip-audit
-        pip-audit --ignore-vuln PYSEC-2024-* || true
-      continue-on-error: true
+        pip-audit --ignore-vuln PYSEC-2024-62613
 
     - name: Upload backend coverage
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: backend-coverage
+        name: backend-coverage-py${{ matrix.python-version }}
         path: coverage.xml
 
   test-frontend:
-    name: Frontend Tests (Vitest)
+    name: Frontend Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22']
+
     env:
       NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
 
@@ -66,7 +76,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
     - name: Install dependencies
@@ -97,27 +107,48 @@ jobs:
       working-directory: packages/api-client
 
     - name: Security audit (npm)
-      run: npm audit --production || true
-      continue-on-error: true
+      run: npm audit --production --audit-level=high
 
     - name: Upload frontend coverage
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: frontend-coverage
+        name: frontend-coverage-node${{ matrix.node-version }}
         path: apps/web/coverage/
+
+  test-mcp:
+    name: MCP Server Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install dependencies
+      working-directory: packages/mcp-server
+      run: uv sync --all-extras
+
+    - name: Run MCP tests
+      working-directory: packages/mcp-server
+      run: uv run pytest tests/ -v
 
   test-e2e:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: [test-frontend, test-backend]
-    # E2E roadmap: Phase 1 (current) = mocked API routes, advisory-only.
-    # Phase 2 = docker-compose.e2e.yml with seeded DB + ES, still advisory.
-    # Phase 3 = blocking gate once integration E2E is stable.
-    continue-on-error: true
+    # E2E Phase 3 (active): docker-compose.e2e.yml with seeded DB + ES, blocking gate.
+    # Playwright retries (2 in CI) handle transient flakes.
     env:
-      NEXT_BUILD_STANDALONE: 'false'
       NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
 
     steps:
     - uses: actions/checkout@v4
@@ -135,9 +166,14 @@ jobs:
       run: npx playwright install chromium --with-deps
       working-directory: apps/web
 
-    - name: Build web for E2E
-      run: npx next build --webpack
-      working-directory: apps/web
+    - name: Start E2E infrastructure
+      run: docker compose -f docker-compose.e2e.yml up -d --build
+      timeout-minutes: 10
+
+    - name: Wait for services
+      run: |
+        timeout 120 bash -c 'until curl -fs http://localhost:8000/api/v1/stats/; do sleep 2; done'
+        timeout 60 bash -c 'until curl -fs http://localhost:3000; do sleep 2; done'
 
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
@@ -149,6 +185,10 @@ jobs:
       with:
         name: playwright-report
         path: apps/web/playwright-report/
+
+    - name: Stop E2E infrastructure
+      if: always()
+      run: docker compose -f docker-compose.e2e.yml down -v
 
   publish-sdk:
     name: Publish @tezca/api-client

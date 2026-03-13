@@ -300,6 +300,41 @@ export const api = {
     },
 
     /**
+     * Get cross-references for multiple articles in a single request.
+     *
+     * Collapses N per-article API calls into one POST per chunk.
+     * The batch endpoint accepts up to 200 article IDs; larger arrays
+     * are automatically chunked and the results merged.
+     */
+    getBatchArticleReferences: async (
+        lawId: string,
+        articleIds: string[]
+    ): Promise<Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }>> => {
+        if (articleIds.length === 0) return {};
+
+        const CHUNK_SIZE = 200;
+        const chunks: string[][] = [];
+        for (let i = 0; i < articleIds.length; i += CHUNK_SIZE) {
+            chunks.push(articleIds.slice(i, i + CHUNK_SIZE));
+        }
+
+        const results = await Promise.all(
+            chunks.map(chunk =>
+                fetcher<{ references: Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }> }>(
+                    `/laws/${lawId}/articles/references/batch/`,
+                    { method: 'POST', body: JSON.stringify({ article_ids: chunk }) }
+                )
+            )
+        );
+
+        const merged: Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }> = {};
+        for (const result of results) {
+            Object.assign(merged, result.references);
+        }
+        return merged;
+    },
+
+    /**
      * Get cross-reference statistics for a law
      */
     getLawReferences: async (lawId: string): Promise<{
@@ -581,6 +616,27 @@ export interface GraphResponse {
         depth_reached: number;
         truncated: boolean;
     };
+}
+
+// ── Cross-reference types ────────────────────────────────────────────
+
+export interface CrossReferenceData {
+    text: string;
+    targetLawSlug: string | null;
+    targetArticle: string | null;
+    fraction: string | null;
+    confidence: number;
+    startPos: number;
+    endPos: number;
+    targetUrl: string | null;
+}
+
+export interface IncomingCrossReference {
+    sourceLawSlug: string;
+    sourceArticle: string;
+    text: string;
+    confidence: number;
+    sourceUrl: string;
 }
 
 export { APIError };
