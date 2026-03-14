@@ -79,14 +79,16 @@ After authentication, every request gets a tier that controls feature access and
 
 ### Tier Hierarchy
 
-| Tier | Rank | Description |
-|------|------|-------------|
-| `anon` | 0 | Unauthenticated requests. Most restrictive limits. |
-| `essentials` | 1 | Free tier (default for authenticated users). Matches the open-source self-hosted build. |
-| `pro` | 2 | Paid tier. Unlocks search analytics, API keys, bulk download, premium exports. |
-| `madfam` | 3 | Internal/operator tier. All features enabled, no limits. |
+| Tier | Rank | Audience | Description |
+|------|------|----------|-------------|
+| `anon` | 0 | Unauthenticated | Most restrictive limits. TXT export only. |
+| `community` | 1 | Self-hosters | Free. Generous resource access (1K search/page, bulk download, API keys). |
+| `essentials` | 2 | Individual researchers | Entry paid. PDF/JSON export, 50 results/page. |
+| `academic` | 3 | Academic institutions | Mid paid. LaTeX export, search analytics, bulk download. |
+| `institutional` | 4 | Government/enterprise | Top paid. DOCX/EPUB export, webhooks, graph API. |
+| `madfam` | 5 | Internal MADFAM | All features enabled, highest limits. |
 
-Legacy tier names are normalized automatically: `free` maps to `essentials`, `premium` maps to `pro`, `internal` and `enterprise` map to `madfam`.
+Legacy tier names are normalized automatically: `free` → `essentials`, `pro`/`premium`/`enterprise` → `academic`, `internal` → `madfam`.
 
 ### JWT Claim Extraction
 
@@ -95,23 +97,29 @@ Legacy tier names are normalized automatically: `free` maps to `essentials`, `pr
 1. `tezca_tier` -- product-specific claim set by Dhanam via Janua webhook. Preferred.
 2. `tier` -- generic cross-product claim.
 3. `plan` -- legacy claim name.
-4. Falls back to `"free"` if none are present.
+4. Falls back to `"essentials"` if none are present.
 
-The product-specific `tezca_tier` claim allows a user to have different tiers across MADFAM products (e.g., `pro` on Tezca but `essentials` on Yantra4D).
+The product-specific `tezca_tier` claim allows a user to have different tiers across MADFAM products (e.g., `academic` on Tezca but `essentials` on Yantra4D).
+
+In self-hosted mode (`TEZCA_DEPLOYMENT=self-hosted`), the effective tier is capped at `academic` via `get_effective_tier()`.
 
 ### Feature Gating
 
-Use `RequireTier` as a DRF permission class to gate endpoints:
+Use `RequireTier` for monotonic rank-based gating and `RequireFeature` for feature-flag-based gating (supports non-monotonic features like bulk_download):
 
 ```python
-from apps.api.middleware.tier_permissions import RequireTier
+from apps.api.middleware.tier_permissions import RequireTier, RequireFeature
 
-@permission_classes([RequireTier.of("pro")])
-def premium_endpoint(request):
+# Rank-based: academic (rank 3) and above
+@permission_classes([RequireTier.of("academic")])
+def analytics_endpoint(request):
+    ...
+
+# Feature-based: only tiers with bulk_download=true in tiers.json
+@permission_classes([RequireFeature.of("bulk_download")])
+def bulk_endpoint(request):
     ...
 ```
-
-Only `pro` and above features are gated. Essentials-level features are identical to the open-source self-hosted build and require no permission check beyond authentication.
 
 For individual feature flags, use `check_feature()`:
 

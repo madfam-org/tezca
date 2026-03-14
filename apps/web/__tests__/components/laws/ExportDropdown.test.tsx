@@ -52,16 +52,22 @@ describe('ExportDropdown', () => {
         expect(buttons).toHaveLength(7);
     });
 
-    it('shows Cuenta badge on PDF', () => {
+    it('shows Cuenta badge on PDF and JSON', () => {
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
-        expect(screen.getByText('Cuenta')).toBeInTheDocument();
+        expect(screen.getAllByText('Cuenta')).toHaveLength(2);
     });
 
-    it('shows Premium badges on premium formats', () => {
+    it('shows Academic badge on LaTeX', () => {
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));
-        expect(screen.getAllByText('Premium')).toHaveLength(4);
+        expect(screen.getAllByText('Academic')).toHaveLength(1);
+    });
+
+    it('shows Institutional badges on DOCX and EPUB', () => {
+        render(<ExportDropdown lawId="cpeum" />);
+        fireEvent.click(screen.getByRole('button', { expanded: false }));
+        expect(screen.getAllByText('Institutional')).toHaveLength(2);
     });
 
     it('shows tier gate when anon clicks PDF', () => {
@@ -80,7 +86,7 @@ describe('ExportDropdown', () => {
         expect(screen.getByText('Crea tu cuenta gratuita')).toBeInTheDocument();
     });
 
-    it('shows upgrade gate when free-tier clicks premium format', () => {
+    it('shows upgrade gate when essentials-tier clicks institutional format', () => {
         vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'essentials',
@@ -89,7 +95,7 @@ describe('ExportDropdown', () => {
         fireEvent.click(screen.getByRole('button', { expanded: false }));
         fireEvent.click(screen.getByText('Descargar DOCX'));
         // TierGate shows upgrade message for authenticated essentials users
-        expect(screen.getByText('Desbloquea todo con Tezca Pro')).toBeInTheDocument();
+        expect(screen.getByText('Acceso completo con Institutional')).toBeInTheDocument();
     });
 
     it('downloads TXT for anonymous users', async () => {
@@ -142,10 +148,10 @@ describe('ExportDropdown', () => {
         });
     });
 
-    it('allows all formats for premium users', () => {
+    it('allows all formats for institutional users', () => {
         vi.mocked(useAuth).mockReturnValue(mockAuth({
             isAuthenticated: true,
-            tier: 'pro',
+            tier: 'institutional',
         }));
         render(<ExportDropdown lawId="cpeum" />);
         fireEvent.click(screen.getByRole('button', { expanded: false }));

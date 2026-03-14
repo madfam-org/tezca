@@ -9,24 +9,27 @@ import { useAuth, type UserTier } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
 
 type TierGateVariant = 'inline' | 'overlay' | 'card' | 'toast';
-type RequiredTier = 'essentials' | 'community' | 'pro';
+type RequiredTier = 'community' | 'essentials' | 'academic' | 'institutional';
 
 const content = {
     es: {
         unlockTitle: {
-            essentials: 'Crea tu cuenta gratuita',
-            community: 'Desbloquea más con Community',
-            pro: 'Desbloquea todo con Tezca Pro',
+            community: 'Crea tu cuenta gratuita',
+            essentials: 'Desbloquea más con Essentials',
+            academic: 'Desbloquea todo con Academic',
+            institutional: 'Acceso completo con Institutional',
         },
         unlockSubtitle: {
-            essentials: 'Accede a más formatos de descarga y funciones avanzadas',
-            community: 'Búsqueda avanzada, acceso a API y descargas masivas',
-            pro: 'Todos los formatos, análisis avanzado y soporte prioritario',
+            community: 'Accede a PDF, JSON y funciones básicas',
+            essentials: 'Búsqueda avanzada, más formatos de descarga',
+            academic: 'LaTeX, análisis avanzado y descarga masiva',
+            institutional: 'Todos los formatos, webhooks y API de grafo',
         },
         cta: {
-            essentials: 'Empieza gratis',
-            community: 'Mejora tu plan',
-            pro: 'Mejora a Pro',
+            community: 'Empieza gratis',
+            essentials: 'Mejora a Essentials',
+            academic: 'Mejora a Academic',
+            institutional: 'Mejora a Institutional',
         },
         rateLimited: 'Tus consultas se renuevan en',
         minutes: 'min',
@@ -38,19 +41,22 @@ const content = {
     },
     en: {
         unlockTitle: {
-            essentials: 'Create your free account',
-            community: 'Unlock more with Community',
-            pro: 'Unlock everything with Tezca Pro',
+            community: 'Create your free account',
+            essentials: 'Unlock more with Essentials',
+            academic: 'Unlock everything with Academic',
+            institutional: 'Full access with Institutional',
         },
         unlockSubtitle: {
-            essentials: 'Access more download formats and advanced features',
-            community: 'Advanced search, API access, and bulk downloads',
-            pro: 'All formats, advanced analytics, and priority support',
+            community: 'Access PDF, JSON, and basic features',
+            essentials: 'Advanced search and more download formats',
+            academic: 'LaTeX, advanced analytics, and bulk downloads',
+            institutional: 'All formats, webhooks, and graph API',
         },
         cta: {
-            essentials: 'Start free',
-            community: 'Upgrade plan',
-            pro: 'Upgrade to Pro',
+            community: 'Start free',
+            essentials: 'Upgrade to Essentials',
+            academic: 'Upgrade to Academic',
+            institutional: 'Upgrade to Institutional',
         },
         rateLimited: 'Your requests renew in',
         minutes: 'min',
@@ -62,19 +68,22 @@ const content = {
     },
     nah: {
         unlockTitle: {
-            essentials: 'Xictlālia mocuenta',
-            community: 'Xictlapo achi ica Community',
-            pro: 'Xictlapo mochi ica Tezca Pro',
+            community: 'Xictlālia mocuenta',
+            essentials: 'Xictlapo achi ica Essentials',
+            academic: 'Xictlapo mochi ica Academic',
+            institutional: 'Mochi ica Institutional',
         },
         unlockSubtitle: {
-            essentials: 'Xicāci achi tēmōhuiliztli ihuan tlachīhualiztli',
-            community: 'Tlatemoliztli huēyi, API, ihuan mīec tēmōhuiliztli',
-            pro: 'Mochi tlahtōlli, tlanextīliztli ihuan tēpalēhuiliztli',
+            community: 'Xicāci PDF, JSON ihuan tlachīhualiztli',
+            essentials: 'Tlatemoliztli huēyi ihuan achi tēmōhuiliztli',
+            academic: 'LaTeX, tlanextīliztli ihuan mīec tēmōhuiliztli',
+            institutional: 'Mochi tlahtōlli, webhooks ihuan tlanextīliztli',
         },
         cta: {
-            essentials: 'Xipēhua',
-            community: 'Xicmelahua mocuenta',
-            pro: 'Xicmelahua ic Pro',
+            community: 'Xipēhua',
+            essentials: 'Xicmelahua ic Essentials',
+            academic: 'Xicmelahua ic Academic',
+            institutional: 'Xicmelahua ic Institutional',
         },
         rateLimited: 'Motlatemoliztli mopātia ic',
         minutes: 'min',
@@ -88,9 +97,10 @@ const content = {
 
 const TIER_DISPLAY: Record<string, string> = {
     anon: 'Anónimo',
-    essentials: 'Essentials',
     community: 'Community',
-    pro: 'Pro',
+    essentials: 'Essentials',
+    academic: 'Academic',
+    institutional: 'Institutional',
     madfam: 'MADFAM',
 };
 
@@ -143,13 +153,13 @@ export function TierGate({
         onDismiss?.();
     };
 
-    const targetTier = !isAuthenticated ? 'essentials' : requiredTier;
+    const targetTier = !isAuthenticated ? 'community' : requiredTier;
     const checkoutUrl = isAuthenticated
-        ? getCheckoutUrl(requiredTier === 'essentials' ? 'community' : requiredTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined)
+        ? getCheckoutUrl(requiredTier === 'community' ? 'essentials' : requiredTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined)
         : '/login';
-    const ctaLabel = t.cta[targetTier as keyof typeof t.cta] ?? t.cta.pro;
-    const title = t.unlockTitle[targetTier as keyof typeof t.unlockTitle] ?? t.unlockTitle.pro;
-    const subtitle = t.unlockSubtitle[targetTier as keyof typeof t.unlockSubtitle] ?? t.unlockSubtitle.pro;
+    const ctaLabel = t.cta[targetTier as keyof typeof t.cta] ?? t.cta.academic;
+    const title = t.unlockTitle[targetTier as keyof typeof t.unlockTitle] ?? t.unlockTitle.academic;
+    const subtitle = t.unlockSubtitle[targetTier as keyof typeof t.unlockSubtitle] ?? t.unlockSubtitle.academic;
 
     const countdownDisplay = countdown > 0
         ? `${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`

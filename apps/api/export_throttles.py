@@ -2,7 +2,7 @@
 Custom throttle classes for export endpoints.
 
 Uses ExportLog for persistent, auditable quota tracking instead of cache.
-Three tiers: anon (10/hr by IP), free (30/hr by user), premium (100/hr by user).
+Limits per tier defined in tier_permissions.EXPORT_HOURLY_LIMITS.
 """
 
 from datetime import timedelta

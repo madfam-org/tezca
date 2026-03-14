@@ -50,10 +50,11 @@ const content = {
     tiers: {
       title: 'Niveles de Acceso',
       rows: [
-        { tier: 'Anónimo', perMin: '10', perHour: '100', exports: 'No' },
-        { tier: 'Gratuito', perMin: '30', perHour: '500', exports: 'TXT, JSON' },
-        { tier: 'Pro', perMin: '60', perHour: '2,000', exports: 'Todos' },
-        { tier: 'Enterprise', perMin: '120', perHour: '10,000', exports: 'Todos' },
+        { tier: 'Anónimo', perMin: '10', perHour: '100', exports: 'TXT' },
+        { tier: 'Community', perMin: '1,000', perHour: '100,000', exports: 'TXT, PDF, JSON' },
+        { tier: 'Essentials', perMin: '30', perHour: '500', exports: 'TXT, PDF, JSON' },
+        { tier: 'Academic', perMin: '60', perHour: '2,000', exports: '+ LaTeX' },
+        { tier: 'Institutional', perMin: '200', perHour: '50,000', exports: 'Todos' },
       ],
       headers: ['Nivel', 'Por minuto', 'Por hora', 'Exportación'],
     },
@@ -173,10 +174,11 @@ data.results.slice(0, 5).forEach(r =>
     tiers: {
       title: 'Access Tiers',
       rows: [
-        { tier: 'Anonymous', perMin: '10', perHour: '100', exports: 'No' },
-        { tier: 'Free', perMin: '30', perHour: '500', exports: 'TXT, JSON' },
-        { tier: 'Pro', perMin: '60', perHour: '2,000', exports: 'All' },
-        { tier: 'Enterprise', perMin: '120', perHour: '10,000', exports: 'All' },
+        { tier: 'Anonymous', perMin: '10', perHour: '100', exports: 'TXT' },
+        { tier: 'Community', perMin: '1,000', perHour: '100,000', exports: 'TXT, PDF, JSON' },
+        { tier: 'Essentials', perMin: '30', perHour: '500', exports: 'TXT, PDF, JSON' },
+        { tier: 'Academic', perMin: '60', perHour: '2,000', exports: '+ LaTeX' },
+        { tier: 'Institutional', perMin: '200', perHour: '50,000', exports: 'All' },
       ],
       headers: ['Tier', 'Per minute', 'Per hour', 'Export'],
     },
@@ -296,10 +298,11 @@ data.results.slice(0, 5).forEach(r =>
     tiers: {
       title: 'Tlamantli tēnōnōtzaliztli',
       rows: [
-        { tier: 'Ahmo tēnōnōtz', perMin: '10', perHour: '100', exports: 'Ahmo' },
-        { tier: 'Ahmo tlaxtlahualli', perMin: '30', perHour: '500', exports: 'TXT, JSON' },
-        { tier: 'Pro', perMin: '60', perHour: '2,000', exports: 'Mochi' },
-        { tier: 'Enterprise', perMin: '120', perHour: '10,000', exports: 'Mochi' },
+        { tier: 'Ahmo tēnōnōtz', perMin: '10', perHour: '100', exports: 'TXT' },
+        { tier: 'Community', perMin: '1,000', perHour: '100,000', exports: 'TXT, PDF, JSON' },
+        { tier: 'Essentials', perMin: '30', perHour: '500', exports: 'TXT, PDF, JSON' },
+        { tier: 'Academic', perMin: '60', perHour: '2,000', exports: '+ LaTeX' },
+        { tier: 'Institutional', perMin: '200', perHour: '50,000', exports: 'Mochi' },
       ],
       headers: ['Tlamantli', 'Ic minuto', 'Ic hora', 'Exportación'],
     },

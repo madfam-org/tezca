@@ -70,7 +70,7 @@ export default function FavoritosPage() {
                             <div className="mt-6 max-w-md mx-auto">
                                 <TierGate
                                     variant="inline"
-                                    requiredTier="essentials"
+                                    requiredTier="community"
                                     feature={t.signupHint}
                                 />
                             </div>

@@ -79,7 +79,7 @@ describe('AlertButton', () => {
     // 3. Shows watch button when authenticated and not watching
     // ---------------------------------------------------------------
     it('shows watch button when authenticated and not watching', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(<AlertButton lawId="cpeum" />);
 
         await waitFor(() => {
@@ -91,7 +91,7 @@ describe('AlertButton', () => {
     // 4. Creates alert on click
     // ---------------------------------------------------------------
     it('creates alert when watch button is clicked', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(<AlertButton lawId="cpeum" />);
 
         await waitFor(() => {
@@ -114,7 +114,7 @@ describe('AlertButton', () => {
     it('shows "Alerta guardada" briefly after creating alert', async () => {
         vi.useFakeTimers({ shouldAdvanceTime: true });
 
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(<AlertButton lawId="cpeum" />);
 
         await waitFor(() => {
@@ -142,7 +142,7 @@ describe('AlertButton', () => {
     // 6. Shows watching state when alert already exists
     // ---------------------------------------------------------------
     it('shows "Dejar de seguir" when alert already exists for law', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAlerts.mockResolvedValue({
             alerts: [{ id: 42, law_id: 'cpeum', alert_type: 'law_updated' }],
         });
@@ -158,7 +158,7 @@ describe('AlertButton', () => {
     // 7. Deletes alert on unwatch
     // ---------------------------------------------------------------
     it('deletes alert when unwatch is clicked', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAlerts.mockResolvedValue({
             alerts: [{ id: 42, law_id: 'cpeum', alert_type: 'law_updated' }],
         });
@@ -180,7 +180,7 @@ describe('AlertButton', () => {
     // 8. After unwatching, shows watch button again
     // ---------------------------------------------------------------
     it('shows watch button again after unwatching', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAlerts.mockResolvedValue({
             alerts: [{ id: 42, law_id: 'cpeum', alert_type: 'law_updated' }],
         });

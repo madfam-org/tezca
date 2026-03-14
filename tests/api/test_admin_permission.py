@@ -82,7 +82,7 @@ class TestAdminEndpointAccess:
     def test_non_admin_gets_403_on_metrics(self, mock_auth):
         """A regular authenticated user cannot access admin endpoints."""
         user = JanuaUser({"sub": "regular-user", "email": "user@example.com"})
-        user.tier = "pro"
+        user.tier = "academic"
         user.scopes = ["read", "search"]
         user.allowed_domains = []
         user.api_key_prefix = ""

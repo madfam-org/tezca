@@ -73,7 +73,7 @@ describe('NotificationBell', () => {
     // 3. Shows unread badge
     // ---------------------------------------------------------------
     it('shows unread badge with count', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetNotifications.mockResolvedValue({
             total: 3,
             unread: 3,
@@ -95,7 +95,7 @@ describe('NotificationBell', () => {
     // 4. Shows "9+" for more than 9 unread
     // ---------------------------------------------------------------
     it('shows "9+" when unread count exceeds 9', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetNotifications.mockResolvedValue({
             total: 15,
             unread: 15,
@@ -120,7 +120,7 @@ describe('NotificationBell', () => {
     // 5. Opens dropdown on click
     // ---------------------------------------------------------------
     it('opens dropdown on click', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
 
         render(<NotificationBell />);
 
@@ -137,7 +137,7 @@ describe('NotificationBell', () => {
     // 6. Shows empty state
     // ---------------------------------------------------------------
     it('shows empty state message in dropdown', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
 
         render(<NotificationBell />);
 
@@ -153,7 +153,7 @@ describe('NotificationBell', () => {
     // 7. Shows notification items
     // ---------------------------------------------------------------
     it('shows notification items in dropdown', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetNotifications.mockResolvedValue({
             total: 1,
             unread: 1,
@@ -180,7 +180,7 @@ describe('NotificationBell', () => {
     // 8. Shows mark-all-read button when unread > 0
     // ---------------------------------------------------------------
     it('shows mark-all-read button when there are unread notifications', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetNotifications.mockResolvedValue({
             total: 1,
             unread: 1,
@@ -204,7 +204,7 @@ describe('NotificationBell', () => {
     // 9. Mark all read calls API
     // ---------------------------------------------------------------
     it('calls markNotificationsRead when mark-all-read is clicked', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetNotifications.mockResolvedValue({
             total: 1,
             unread: 1,
@@ -232,7 +232,7 @@ describe('NotificationBell', () => {
     // 10. Does not show unread badge when unread is 0
     // ---------------------------------------------------------------
     it('does not show unread badge when count is 0', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
 
         render(<NotificationBell />);
 
@@ -248,7 +248,7 @@ describe('NotificationBell', () => {
     // 11. English label when lang is 'en'
     // ---------------------------------------------------------------
     it('shows English labels when lang is en', () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         (useLang as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'en', setLang: vi.fn() });
 
         render(<NotificationBell />);
@@ -263,7 +263,7 @@ describe('NotificationBell', () => {
     // 12. Does not fetch when token is null
     // ---------------------------------------------------------------
     it('does not fetch notifications when token is null', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAuthToken.mockReturnValue(null as any);
 
         render(<NotificationBell />);

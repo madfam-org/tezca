@@ -27,11 +27,11 @@ def _admin_user():
         {
             "sub": "admin-user-1",
             "email": "admin@madfam.io",
-            "tier": "premium",
+            "tier": "academic",
             "role": "admin",
         }
     )
-    user.tier = "premium"
+    user.tier = "academic"
     user.scopes = ["read", "search"]
     user.allowed_domains = []
     user.api_key_prefix = ""
@@ -143,19 +143,19 @@ class TestUpdateAPIKey:
         mock_auth.return_value = (_admin_user(), "fake-token")
 
         url = reverse("admin-apikey-update", args=[self.prefix])
-        response = self.client.patch(url, {"tier": "pro"}, format="json")
+        response = self.client.patch(url, {"tier": "academic"}, format="json")
 
         assert response.status_code == 200
-        assert response.data["tier"] == "pro"
+        assert response.data["tier"] == "academic"
         self.api_key.refresh_from_db()
-        assert self.api_key.tier == "pro"
+        assert self.api_key.tier == "academic"
 
     @patch(AUTH_PATCH)
     def test_update_nonexistent_key(self, mock_auth):
         mock_auth.return_value = (_admin_user(), "fake-token")
 
         url = reverse("admin-apikey-update", args=["ZZZZZZZZ"])
-        response = self.client.patch(url, {"tier": "pro"}, format="json")
+        response = self.client.patch(url, {"tier": "academic"}, format="json")
 
         assert response.status_code == 404
 

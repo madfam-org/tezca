@@ -39,7 +39,7 @@ class TestWebhookTestEndpoint:
             hashed_key=hashed,
             name="Test Ping Key",
             owner_email="ping@example.com",
-            tier="pro",
+            tier="institutional",
             scopes=["read", "search"],
         )
         self.user = _make_api_key_user(self.api_key)
@@ -102,7 +102,7 @@ class TestWebhookTestEndpoint:
             hashed_key=hashed2,
             name="Other Key",
             owner_email="other@example.com",
-            tier="pro",
+            tier="institutional",
         )
         other_user = _make_api_key_user(other_key)
         mock_auth.return_value = (other_user, "fake-key")
@@ -125,7 +125,7 @@ class TestWebhookDeleteEdgeCases:
             hashed_key=hashed,
             name="Delete Test Key",
             owner_email="delete@example.com",
-            tier="pro",
+            tier="institutional",
         )
         self.user = _make_api_key_user(self.api_key)
 
@@ -178,7 +178,7 @@ class TestWebhookListEdgeCases:
             hashed_key=hashed,
             name="List Test Key",
             owner_email="list@example.com",
-            tier="pro",
+            tier="institutional",
         )
         self.user = _make_api_key_user(self.api_key)
 
@@ -252,9 +252,9 @@ class TestWebhookAuthRequirements:
     def test_create_webhook_jwt_only_returns_403(self, mock_auth):
         """JWT user without api_key_prefix gets 403 (webhooks require API key)."""
         jwt_user = JanuaUser(
-            {"sub": "user-123", "email": "user@test.com", "tier": "pro"}
+            {"sub": "user-123", "email": "user@test.com", "tier": "institutional"}
         )
-        jwt_user.tier = "pro"
+        jwt_user.tier = "institutional"
         jwt_user.scopes = ["read", "search"]
         jwt_user.allowed_domains = []
         jwt_user.api_key_prefix = ""  # No API key
@@ -298,7 +298,7 @@ class TestCreateWebhookValidation:
             hashed_key=hashed,
             name="Validation Key",
             owner_email="val@example.com",
-            tier="pro",
+            tier="institutional",
         )
         self.user = _make_api_key_user(self.api_key)
 

@@ -17,7 +17,7 @@ JANUA_AUTH_PATCH = "apps.api.middleware.janua_auth.JanuaJWTAuthentication.authen
 ADMIN_PERM_PATCH = "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permission"
 
 
-def _make_admin(user_id="admin-user", tier="community"):
+def _make_admin(user_id="admin-user", tier="academic"):
     user = JanuaUser({"sub": user_id, "email": f"{user_id}@test.com", "role": "admin"})
     user.tier = tier
     user.scopes = ["read", "search"]
@@ -38,7 +38,7 @@ class TestSearchAnalytics:
     @patch(JANUA_AUTH_PATCH)
     def test_analytics_with_data(self, mock_auth, _mock_admin):
         """GET returns analytics aggregations when data exists."""
-        admin = _make_admin(tier="community")
+        admin = _make_admin(tier="academic")
         mock_auth.return_value = (admin, "fake-token")
 
         now = timezone.now()
@@ -69,7 +69,7 @@ class TestSearchAnalytics:
     @patch(JANUA_AUTH_PATCH)
     def test_analytics_empty(self, mock_auth, _mock_admin):
         """GET returns zero totals when no search data exists."""
-        admin = _make_admin(tier="community")
+        admin = _make_admin(tier="academic")
         mock_auth.return_value = (admin, "fake-token")
 
         response = self.client.get(self.url)
@@ -91,7 +91,18 @@ class TestSearchAnalytics:
         response = self.client.get(self.url)
 
         assert response.status_code == 403
-        assert "community" in response.json()["error"].lower()
+        assert "academic" in response.json()["error"].lower()
+
+    @patch(ADMIN_PERM_PATCH, return_value=True)
+    @patch(JANUA_AUTH_PATCH)
+    def test_analytics_community_tier_forbidden(self, mock_auth, _mock_admin):
+        """GET with community tier returns 403 (feature gate)."""
+        admin = _make_admin(tier="community")
+        mock_auth.return_value = (admin, "fake-token")
+
+        response = self.client.get(self.url)
+
+        assert response.status_code == 403
 
     @patch(ADMIN_PERM_PATCH, return_value=True)
     @patch(JANUA_AUTH_PATCH)
@@ -106,9 +117,9 @@ class TestSearchAnalytics:
 
     @patch(ADMIN_PERM_PATCH, return_value=True)
     @patch(JANUA_AUTH_PATCH)
-    def test_analytics_community_tier_allowed(self, mock_auth, _mock_admin):
-        """GET with community tier returns 200 (feature gate passes)."""
-        admin = _make_admin(tier="community")
+    def test_analytics_academic_tier_allowed(self, mock_auth, _mock_admin):
+        """GET with academic tier returns 200 (feature gate passes)."""
+        admin = _make_admin(tier="academic")
         mock_auth.return_value = (admin, "fake-token")
 
         response = self.client.get(self.url)
@@ -119,7 +130,7 @@ class TestSearchAnalytics:
     @patch(JANUA_AUTH_PATCH)
     def test_analytics_days_param_capped(self, mock_auth, _mock_admin):
         """GET ?days=365 is capped at 90 days."""
-        admin = _make_admin(tier="community")
+        admin = _make_admin(tier="academic")
         mock_auth.return_value = (admin, "fake-token")
 
         response = self.client.get(self.url, {"days": 365})
@@ -131,7 +142,7 @@ class TestSearchAnalytics:
     @patch(JANUA_AUTH_PATCH)
     def test_analytics_custom_days(self, mock_auth, _mock_admin):
         """GET ?days=7 filters to last 7 days only."""
-        admin = _make_admin(tier="community")
+        admin = _make_admin(tier="academic")
         mock_auth.return_value = (admin, "fake-token")
 
         # Create a query from 20 days ago (should be excluded with days=7)

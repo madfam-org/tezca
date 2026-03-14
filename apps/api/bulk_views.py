@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
-from .middleware.tier_permissions import RequireTier
+from .middleware.tier_permissions import RequireFeature
 
 logger = logging.getLogger(__name__)
 
@@ -87,12 +87,12 @@ def _resolve_domain(request) -> list[str] | None:
     summary="Bulk articles feed",
     description=(
         "Cursor-paginated bulk article feed with full law metadata. "
-        "Requires API key with 'bulk' scope and community tier or above. "
+        "Requires API key with 'bulk' scope and a tier with bulk_download access. "
         "Supports domain/category, tier, state, status, and updated_since filters."
     ),
 )
 @api_view(["GET"])
-@permission_classes([RequireTier.of("community")])
+@permission_classes([RequireFeature.of("bulk_download")])
 def bulk_articles(request):
     """Cursor-paginated bulk article endpoint for data consumers."""
     # Auth + scope check

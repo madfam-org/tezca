@@ -12,19 +12,20 @@ type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
 const FORMAT_TIERS: Record<ExportFormat, UserTier> = {
     txt: 'anon',
-    pdf: 'essentials',
-    latex: 'pro',
-    docx: 'pro',
-    epub: 'pro',
-    json: 'pro',
+    pdf: 'community',
+    json: 'community',
+    latex: 'academic',
+    docx: 'institutional',
+    epub: 'institutional',
 };
 
 const TIER_RANK: Record<UserTier, number> = {
     anon: 0,
-    essentials: 1,
-    community: 2,
-    pro: 3,
-    madfam: 4,
+    community: 1,
+    essentials: 2,
+    academic: 3,
+    institutional: 4,
+    madfam: 5,
 };
 
 const content = {
@@ -33,11 +34,13 @@ const content = {
         downloading: 'Descargando...',
         error: 'Error al descargar',
         loginRequired: 'Inicia sesión para descargar en este formato',
-        premiumRequired: 'Formato Premium — Actualiza tu cuenta',
+        academicRequired: 'Formato Academic — Actualiza tu cuenta',
+        institutionalRequired: 'Formato Institutional — Actualiza tu cuenta',
         rateLimited: 'Has alcanzado el límite. Intenta de nuevo en',
         minutes: 'minutos',
         accountBadge: 'Cuenta',
-        premiumBadge: 'Premium',
+        academicBadge: 'Academic',
+        institutionalBadge: 'Institutional',
         formats: {
             txt: { label: 'Descargar TXT', desc: 'Texto plano' },
             pdf: { label: 'Descargar PDF', desc: 'Documento formateado' },
@@ -52,11 +55,13 @@ const content = {
         downloading: 'Downloading...',
         error: 'Download error',
         loginRequired: 'Sign in to download in this format',
-        premiumRequired: 'Premium format — Upgrade your account',
+        academicRequired: 'Academic format — Upgrade your account',
+        institutionalRequired: 'Institutional format — Upgrade your account',
         rateLimited: 'Rate limit reached. Try again in',
         minutes: 'minutes',
         accountBadge: 'Account',
-        premiumBadge: 'Premium',
+        academicBadge: 'Academic',
+        institutionalBadge: 'Institutional',
         formats: {
             txt: { label: 'Download TXT', desc: 'Plain text' },
             pdf: { label: 'Download PDF', desc: 'Formatted document' },
@@ -71,11 +76,13 @@ const content = {
         downloading: 'Motēmoa...',
         error: 'Tlahtlacōlli',
         loginRequired: 'Xicalaqui ic tictēmōz inin tlahtōlli',
-        premiumRequired: 'Premium tlahtōlli — Xiccuēpa mocuenta',
+        academicRequired: 'Academic tlahtōlli — Xiccuēpa mocuenta',
+        institutionalRequired: 'Institutional tlahtōlli — Xiccuēpa mocuenta',
         rateLimited: 'Otitlāmic in tlanāhuatīlli. Xicchiya',
         minutes: 'minutos',
         accountBadge: 'Cuenta',
-        premiumBadge: 'Premium',
+        academicBadge: 'Academic',
+        institutionalBadge: 'Institutional',
         formats: {
             txt: { label: 'Xictēmōhui TXT', desc: 'Āmatl zan tlahtolli' },
             pdf: { label: 'Xictēmōhui PDF', desc: 'Āmatl tlachīhualli' },
@@ -90,16 +97,16 @@ const content = {
 interface FormatConfig {
     format: ExportFormat;
     icon: React.ReactNode;
-    tierBadge: 'account' | 'premium' | null;
+    tierBadge: 'account' | 'academic' | 'institutional' | null;
 }
 
 const FORMAT_LIST: FormatConfig[] = [
     { format: 'txt', icon: <FileText className="h-4 w-4 text-primary" />, tierBadge: null },
     { format: 'pdf', icon: <FileDown className="h-4 w-4 text-destructive" />, tierBadge: 'account' },
-    { format: 'latex', icon: <Code className="h-4 w-4 text-purple-500" />, tierBadge: 'premium' },
-    { format: 'docx', icon: <FileSpreadsheet className="h-4 w-4 text-foreground" />, tierBadge: 'premium' },
-    { format: 'epub', icon: <BookOpen className="h-4 w-4 text-orange-500" />, tierBadge: 'premium' },
-    { format: 'json', icon: <Braces className="h-4 w-4 text-muted-foreground" />, tierBadge: 'premium' },
+    { format: 'json', icon: <Braces className="h-4 w-4 text-muted-foreground" />, tierBadge: 'account' },
+    { format: 'latex', icon: <Code className="h-4 w-4 text-purple-500" />, tierBadge: 'academic' },
+    { format: 'docx', icon: <FileSpreadsheet className="h-4 w-4 text-foreground" />, tierBadge: 'institutional' },
+    { format: 'epub', icon: <BookOpen className="h-4 w-4 text-orange-500" />, tierBadge: 'institutional' },
 ];
 
 interface ExportDropdownProps {
@@ -114,6 +121,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
     const [loading, setLoading] = useState<ExportFormat | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const [showGate, setShowGate] = useState(false);
+    const [gateRequiredTier, setGateRequiredTier] = useState<'academic' | 'institutional'>('academic');
     const [rateLimitSecs, setRateLimitSecs] = useState<number | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -141,6 +149,8 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
 
         // Check tier access on client side
         if (!canAccess(format)) {
+            const requiredTier = FORMAT_TIERS[format];
+            setGateRequiredTier(TIER_RANK[requiredTier] >= TIER_RANK['institutional'] ? 'institutional' : 'academic');
             setShowGate(true);
             return;
         }
@@ -230,9 +240,14 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                                                     {t.accountBadge}
                                                 </span>
                                             )}
-                                            {tierBadge === 'premium' && (
+                                            {tierBadge === 'academic' && (
                                                 <span className="text-xs leading-none bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 px-1.5 py-0.5 rounded">
-                                                    {t.premiumBadge}
+                                                    {t.academicBadge}
+                                                </span>
+                                            )}
+                                            {tierBadge === 'institutional' && (
+                                                <span className="text-xs leading-none bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 px-1.5 py-0.5 rounded">
+                                                    {t.institutionalBadge}
                                                 </span>
                                             )}
                                         </div>
@@ -248,11 +263,11 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                         <div className="border-t p-2">
                             <TierGate
                                 variant="inline"
-                                requiredTier="pro"
+                                requiredTier={gateRequiredTier}
                                 feature={rateLimitSecs != null
                                     ? undefined
                                     : (isAuthenticated
-                                        ? (lang === 'en' ? 'LaTeX, DOCX, EPUB, JSON with Pro' : lang === 'nah' ? 'LaTeX, DOCX, EPUB, JSON ica Pro' : 'LaTeX, DOCX, EPUB y JSON con Pro')
+                                        ? (lang === 'en' ? `Requires ${gateRequiredTier} tier` : lang === 'nah' ? `Monequi ${gateRequiredTier}` : `Requiere plan ${gateRequiredTier}`)
                                         : (lang === 'en' ? 'Create your free account to download PDF' : lang === 'nah' ? 'Xictlālia mocuenta ic PDF' : 'Crea tu cuenta gratuita para descargar en PDF'))}
                                 showCountdown={rateLimitSecs != null}
                                 retryAfterSeconds={rateLimitSecs ?? undefined}

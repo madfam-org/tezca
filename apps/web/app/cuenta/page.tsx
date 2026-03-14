@@ -12,7 +12,7 @@ const content = {
         title: 'Mi cuenta',
         email: 'Correo electrónico',
         tier: 'Plan',
-        tierLabels: { anon: 'Anónimo', essentials: 'Gratuito', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Anónimo', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Favoritos guardados',
         recentlyViewed: 'Vistos recientemente',
         notes: 'Mis notas',
@@ -26,7 +26,7 @@ const content = {
         title: 'My Account',
         email: 'Email',
         tier: 'Plan',
-        tierLabels: { anon: 'Anonymous', essentials: 'Free', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Anonymous', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Saved Bookmarks',
         recentlyViewed: 'Recently Viewed',
         notes: 'My Notes',
@@ -40,7 +40,7 @@ const content = {
         title: 'Notocaitl',
         email: 'Amatlahcuilōlli',
         tier: 'Tlaxtlahuīlli',
-        tierLabels: { anon: 'Ahmo machtīlli', essentials: 'Tlanāhuatīlli', community: 'Community', pro: 'Pro', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Ahmo machtīlli', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Tlapepenilistli',
         recentlyViewed: 'Ōquittac achto',
         notes: 'Notlahcuilōlhuān',
@@ -54,9 +54,10 @@ const content = {
 
 const TIER_COLORS: Record<string, string> = {
     anon: 'bg-muted text-muted-foreground',
-    essentials: 'bg-primary/10 text-primary',
     community: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
-    pro: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    essentials: 'bg-primary/10 text-primary',
+    academic: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    institutional: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     madfam: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300',
 };
 

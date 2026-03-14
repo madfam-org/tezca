@@ -88,7 +88,7 @@ describe('AnnotationPanel', () => {
     // 2. Renders panel when open
     // ---------------------------------------------------------------
     it('renders panel with title when open', () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -109,7 +109,7 @@ describe('AnnotationPanel', () => {
     // 4. Shows empty state when authenticated with no annotations
     // ---------------------------------------------------------------
     it('shows empty state when no annotations exist', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -123,7 +123,7 @@ describe('AnnotationPanel', () => {
     // 5. Renders annotations list
     // ---------------------------------------------------------------
     it('renders annotations when they exist', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAnnotations.mockResolvedValue({
             annotations: [
                 {
@@ -148,7 +148,7 @@ describe('AnnotationPanel', () => {
     // 6. Shows add note button
     // ---------------------------------------------------------------
     it('shows add note button when authenticated', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -162,7 +162,7 @@ describe('AnnotationPanel', () => {
     // 7. Clicking add note shows form
     // ---------------------------------------------------------------
     it('shows create form when add note is clicked', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -179,7 +179,7 @@ describe('AnnotationPanel', () => {
     // 8. Close button calls onClose
     // ---------------------------------------------------------------
     it('close button calls onClose', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -192,7 +192,7 @@ describe('AnnotationPanel', () => {
     // 9. Delete button removes annotation
     // ---------------------------------------------------------------
     it('delete button calls API and removes annotation', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAnnotations.mockResolvedValue({
             annotations: [
                 {
@@ -222,7 +222,7 @@ describe('AnnotationPanel', () => {
     // 10. Edit button shows edit form
     // ---------------------------------------------------------------
     it('edit button shows edit form with current text', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         mockGetAnnotations.mockResolvedValue({
             annotations: [
                 {
@@ -253,7 +253,7 @@ describe('AnnotationPanel', () => {
     // 11. Has dialog role with aria-modal
     // ---------------------------------------------------------------
     it('has dialog role with aria-modal', () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -267,7 +267,7 @@ describe('AnnotationPanel', () => {
     // 12. Cancel button hides create form
     // ---------------------------------------------------------------
     it('cancel button hides the create form', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );
@@ -287,7 +287,7 @@ describe('AnnotationPanel', () => {
     // 13. Color picker buttons present
     // ---------------------------------------------------------------
     it('shows color picker buttons in create form', async () => {
-        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+        mockUseAuth.mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
         render(
             <AnnotationPanel lawId="cpeum" open={true} onClose={onClose} />,
         );

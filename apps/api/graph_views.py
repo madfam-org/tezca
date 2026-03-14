@@ -9,8 +9,10 @@ from collections import defaultdict
 from django.db.models import Avg, Count, F, Q, Value
 from django.db.models.functions import Coalesce
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+
+from apps.api.middleware.tier_permissions import RequireFeature
 
 from apps.api.models import CrossReference, Law
 from apps.api.schema import LawGraphResponseSchema
@@ -208,6 +210,7 @@ def _build_graph(focal_law_slug, depth, min_confidence, max_nodes, direction):
     responses={200: LawGraphResponseSchema},
 )
 @api_view(["GET"])
+@permission_classes([RequireFeature.of("graph_api")])
 def law_graph(request, law_id):
     """Per-law ego graph for Sigma.js visualization."""
     depth = min(int(request.query_params.get("depth", 1)), 3)
@@ -253,6 +256,7 @@ def law_graph(request, law_id):
     responses={200: LawGraphResponseSchema},
 )
 @api_view(["GET"])
+@permission_classes([RequireFeature.of("graph_api")])
 def graph_overview(request):
     """Global law network for the universe map page."""
     tier = request.query_params.get("tier")

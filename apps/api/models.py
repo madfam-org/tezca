@@ -188,9 +188,10 @@ class APIKey(models.Model):
     """API key for programmatic access to Tezca data."""
 
     class Tier(models.TextChoices):
-        ESSENTIALS = "essentials", "Essentials"
         COMMUNITY = "community", "Community"
-        PRO = "pro", "Pro"
+        ESSENTIALS = "essentials", "Essentials"
+        ACADEMIC = "academic", "Academic"
+        INSTITUTIONAL = "institutional", "Institutional"
         MADFAM = "madfam", "MADFAM (Internal)"
 
     prefix = models.CharField(max_length=8, unique=True, db_index=True)

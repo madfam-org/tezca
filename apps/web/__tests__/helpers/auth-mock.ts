@@ -11,11 +11,11 @@
  *   vi.mocked(useAuth).mockReturnValue(defaultAuthState);
  *
  *   // Override specific fields:
- *   vi.mocked(useAuth).mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'pro' }));
+ *   vi.mocked(useAuth).mockReturnValue(mockAuth({ isAuthenticated: true, tier: 'academic' }));
  */
 import { vi } from 'vitest';
 
-export type UserTier = 'anon' | 'essentials' | 'community' | 'pro' | 'madfam';
+export type UserTier = 'anon' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
 export interface AuthState {
     isAuthenticated: boolean;

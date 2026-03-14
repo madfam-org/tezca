@@ -77,14 +77,14 @@ class TestGetTier:
 
         assert self.throttle._get_tier(request) == "anon"
 
-    def test_authenticated_with_pro_tier(self):
+    def test_authenticated_with_academic_tier(self):
         request = self.factory.get("/")
         user = MagicMock()
         user.is_authenticated = True
-        user.tier = "pro"
+        user.tier = "academic"
         request.user = user
 
-        assert self.throttle._get_tier(request) == "pro"
+        assert self.throttle._get_tier(request) == "academic"
 
     def test_authenticated_with_madfam_tier(self):
         request = self.factory.get("/")
@@ -148,7 +148,7 @@ class TestGetLimits:
         self.factory = APIRequestFactory()
         self.throttle = TieredRateThrottle()
 
-    def _make_request(self, tier="pro", rate_limit_per_hour=None):
+    def _make_request(self, tier="academic", rate_limit_per_hour=None):
         request = self.factory.get("/")
         user = MagicMock()
         user.is_authenticated = True
@@ -172,11 +172,11 @@ class TestGetLimits:
     def test_community_limits(self):
         request = self._make_request(tier="community")
         limits = self.throttle._get_limits(request, "community")
-        assert limits == (60, 2_000)
+        assert limits == (1_000, 100_000)
 
-    def test_pro_limits(self):
-        request = self._make_request(tier="pro")
-        limits = self.throttle._get_limits(request, "pro")
+    def test_academic_limits(self):
+        request = self._make_request(tier="academic")
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_madfam_limits(self):
@@ -186,23 +186,23 @@ class TestGetLimits:
         assert len(limits) == 2
 
     def test_custom_hourly_override(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=5000)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=5000)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 5000)
 
     def test_custom_override_capped_at_max(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=999_999)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=999_999)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 100_000)
 
     def test_none_override_uses_default(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=None)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=None)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_zero_override_uses_default(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=0)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=0)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_unknown_tier_falls_back_to_anon(self):
@@ -211,13 +211,13 @@ class TestGetLimits:
         assert limits == (10, 100)
 
     def test_negative_override_uses_default(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=-5)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=-5)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_override_at_max_boundary(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=100_000)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=100_000)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 100_000)
 
 
@@ -322,7 +322,7 @@ class TestAllowRequestIntegration:
         request = self.factory.get("/")
         user = MagicMock()
         user.is_authenticated = True
-        user.tier = "pro"
+        user.tier = "academic"
         user.api_key_prefix = "inttest1"
         user.rate_limit_per_hour = None
         request.user = user

@@ -512,17 +512,17 @@ function SearchContent() {
                                     <div className="mt-6">
                                         <TierGate
                                             variant="card"
-                                            requiredTier="community"
+                                            requiredTier="academic"
                                             feature={lang === 'en'
-                                                ? `You're viewing the first ${maxPageSize} results. With Community or Pro, explore up to 100 per page.`
+                                                ? `You're viewing the first ${maxPageSize} results. With Academic, explore up to 100 per page.`
                                                 : lang === 'nah'
-                                                ? `Ticmotta in achtopa ${maxPageSize} tlanextīliztli. Ica Community ahnozo Pro, xictlapo 100 ipan cē āmoxihuitl.`
-                                                : `Estás viendo los primeros ${maxPageSize} resultados. Con Community o Pro, explora hasta 100 por página.`}
+                                                ? `Ticmotta in achtopa ${maxPageSize} tlanextīliztli. Ica Academic, xictlapo 100 ipan cē āmoxihuitl.`
+                                                : `Estás viendo los primeros ${maxPageSize} resultados. Con Academic, explora hasta 100 por página.`}
                                             benefits={lang === 'en'
-                                                ? ['100 results per page', 'Bulk downloads', 'Webhooks for real-time updates']
+                                                ? ['100 results per page', 'LaTeX export', 'Search analytics']
                                                 : lang === 'nah'
-                                                ? ['100 tlanextīliztli', 'Huēyi tēmōhuiliztli', 'Webhooks']
-                                                : ['100 resultados por página', 'Descargas masivas', 'Webhooks para actualizaciones en tiempo real']}
+                                                ? ['100 tlanextīliztli', 'LaTeX tēmōhuiliztli', 'Tlanextīliztli tlaixmatiliztli']
+                                                : ['100 resultados por página', 'Exportar LaTeX', 'Análisis de búsqueda']}
                                         />
                                     </div>
                                 )}
@@ -546,7 +546,7 @@ function SearchContent() {
             {rateLimitRetry != null && (
                 <TierGate
                     variant="toast"
-                    requiredTier={tier === 'anon' || tier === 'essentials' ? 'community' : 'pro'}
+                    requiredTier={tier === 'anon' ? 'community' : 'academic'}
                     showCountdown
                     retryAfterSeconds={rateLimitRetry}
                     onDismiss={() => setRateLimitRetry(null)}

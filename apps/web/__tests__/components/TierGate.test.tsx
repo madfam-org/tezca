@@ -88,7 +88,7 @@ describe('TierGate', () => {
     // 1. Inline variant for anonymous users
     // ---------------------------------------------------------------
     it('renders inline variant with title and CTA for anon users', () => {
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
         // Anon users get targetTier = 'essentials', so title/CTA are essentials-level
         expect(screen.getByText('Crea tu cuenta gratuita')).toBeDefined();
@@ -107,11 +107,11 @@ describe('TierGate', () => {
             name: 'Test User',
         }));
 
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
-        // Authenticated users get targetTier = requiredTier (pro)
-        expect(screen.getByText('Desbloquea todo con Tezca Pro')).toBeDefined();
-        expect(screen.getByText('Mejora a Pro')).toBeDefined();
+        // Authenticated users get targetTier = requiredTier (academic)
+        expect(screen.getByText('Desbloquea todo con Academic')).toBeDefined();
+        expect(screen.getByText('Mejora a Academic')).toBeDefined();
     });
 
     // ---------------------------------------------------------------
@@ -138,7 +138,7 @@ describe('TierGate', () => {
             />,
         );
 
-        expect(screen.getByText('Desbloquea más con Community')).toBeDefined();
+        expect(screen.getByText('Crea tu cuenta gratuita')).toBeDefined();
         for (const benefit of benefits) {
             expect(screen.getByText(benefit)).toBeDefined();
         }
@@ -162,7 +162,7 @@ describe('TierGate', () => {
         render(
             <TierGate
                 variant="inline"
-                requiredTier="pro"
+                requiredTier="academic"
                 showCountdown
                 retryAfterSeconds={125}
             />,
@@ -189,7 +189,7 @@ describe('TierGate', () => {
         render(
             <TierGate
                 variant="toast"
-                requiredTier="pro"
+                requiredTier="academic"
                 onDismiss={onDismiss}
             />,
         );
@@ -232,7 +232,7 @@ describe('TierGate', () => {
         // community subtitle in Spanish
         expect(
             screen.getByText(
-                'Búsqueda avanzada, acceso a API y descargas masivas',
+                'Accede a PDF, JSON y funciones básicas',
             ),
         ).toBeDefined();
     });
@@ -241,7 +241,7 @@ describe('TierGate', () => {
     // 9. Login link for unauthenticated users
     // ---------------------------------------------------------------
     it('links to /login for unauthenticated users', () => {
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
         const ctaLink = screen.getByText('Empieza gratis').closest('a');
         expect(ctaLink).toBeDefined();
@@ -258,13 +258,13 @@ describe('TierGate', () => {
             userId: 'user-abc',
         }));
 
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
-        const ctaLink = screen.getByText('Mejora a Pro').closest('a');
+        const ctaLink = screen.getByText('Mejora a Academic').closest('a');
         expect(ctaLink).toBeDefined();
-        // getCheckoutUrl is called with ('pro', 'user-abc', window.location.href)
+        // getCheckoutUrl is called with ('academic', 'user-abc', window.location.href)
         expect(ctaLink?.getAttribute('href')).toContain('dhanam.madfam.io/checkout');
-        expect(ctaLink?.getAttribute('href')).toContain('tezca_pro');
+        expect(ctaLink?.getAttribute('href')).toContain('tezca_academic');
     });
 
     // ---------------------------------------------------------------
@@ -273,7 +273,7 @@ describe('TierGate', () => {
 
     it('dismisses toast and renders nothing after dismiss', () => {
         const { container } = render(
-            <TierGate variant="toast" requiredTier="pro" />,
+            <TierGate variant="toast" requiredTier="academic" />,
         );
 
         expect(container.innerHTML).not.toBe('');
@@ -300,11 +300,11 @@ describe('TierGate', () => {
             userId: 'user-tier',
         }));
 
-        render(<TierGate variant="card" requiredTier="pro" />);
+        render(<TierGate variant="card" requiredTier="academic" />);
 
         // Shows current plan label and tier display names
         expect(screen.getByText(/Tu plan actual.*Essentials/)).toBeDefined();
-        expect(screen.getByText('Pro')).toBeDefined();
+        expect(screen.getByText('Academic')).toBeDefined();
     });
 
     it('renders in English when lang is en', () => {
@@ -313,7 +313,7 @@ describe('TierGate', () => {
             setLang: vi.fn(),
         });
 
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
         // Anon -> essentials target
         expect(screen.getByText('Create your free account')).toBeDefined();
@@ -326,14 +326,14 @@ describe('TierGate', () => {
             setLang: vi.fn(),
         });
 
-        render(<TierGate variant="inline" requiredTier="pro" />);
+        render(<TierGate variant="inline" requiredTier="academic" />);
 
         // Anon -> essentials target
         expect(screen.getByText('Xictlālia mocuenta')).toBeDefined();
         expect(screen.getByText('Xipēhua')).toBeDefined();
     });
 
-    it('for essentials requiredTier authenticated user, checkout uses community plan', () => {
+    it('for essentials requiredTier authenticated user, checkout uses essentials plan', () => {
         mockUseAuth.mockReturnValue(mockAuth({
             isAuthenticated: true,
             tier: 'anon',
@@ -343,9 +343,9 @@ describe('TierGate', () => {
         render(<TierGate variant="inline" requiredTier="essentials" />);
 
         // When requiredTier is essentials and user is authenticated,
-        // getCheckoutUrl receives 'community' (not 'essentials')
+        // getCheckoutUrl receives 'essentials'
         expect(getCheckoutUrl).toHaveBeenCalledWith(
-            'community',
+            'essentials',
             'user-ess',
             expect.any(String),
         );
@@ -355,7 +355,7 @@ describe('TierGate', () => {
         render(
             <TierGate
                 variant="inline"
-                requiredTier="pro"
+                requiredTier="academic"
                 showCountdown
                 retryAfterSeconds={2}
             />,
@@ -381,7 +381,7 @@ describe('TierGate', () => {
         const { container } = render(
             <TierGate
                 variant="inline"
-                requiredTier="pro"
+                requiredTier="academic"
                 className="custom-test-class"
             />,
         );

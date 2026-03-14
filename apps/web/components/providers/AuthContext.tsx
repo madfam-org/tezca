@@ -3,17 +3,18 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
 
-export type UserTier = 'anon' | 'essentials' | 'community' | 'pro' | 'madfam';
+export type UserTier = 'anon' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
 /** Normalize legacy/alias tier names from JWT claims to canonical form. */
 const TIER_NORMALIZE: Record<string, UserTier> = {
     free: 'essentials',
-    premium: 'pro',
-    enterprise: 'pro',
+    premium: 'academic',
+    enterprise: 'academic',
+    pro: 'academic',
     internal: 'madfam',
 };
 
-const VALID_TIERS: UserTier[] = ['anon', 'essentials', 'community', 'pro', 'madfam'];
+const VALID_TIERS: UserTier[] = ['anon', 'community', 'essentials', 'academic', 'institutional', 'madfam'];
 
 interface AuthState {
     isAuthenticated: boolean;

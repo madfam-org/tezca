@@ -11,6 +11,7 @@ from rest_framework.authentication import BaseAuthentication
 
 from .apikey_auth import APIKeyAuthentication
 from .janua_auth import JanuaJWTAuthentication
+from .tier_permissions import get_effective_tier
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,9 @@ class CombinedAuthentication(BaseAuthentication):
         try:
             result = APIKeyAuthentication().authenticate(request)
             if result is not None:
-                return result
+                user, token = result
+                user.tier = get_effective_tier(getattr(user, "tier", "anon"))
+                return (user, token)
         except Exception:
             # If API key was provided but invalid, let it raise
             # Check if there was actually an API key header
@@ -79,6 +82,7 @@ class CombinedAuthentication(BaseAuthentication):
                     user.allowed_domains = []
                 if not hasattr(user, "api_key_prefix"):
                     user.api_key_prefix = ""
+                user.tier = get_effective_tier(user.tier)
                 return (user, token)
         except Exception:
             # If JWT was provided but invalid, let it raise

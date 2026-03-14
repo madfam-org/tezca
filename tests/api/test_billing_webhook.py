@@ -72,13 +72,13 @@ class TestBillingWebhook:
         mock_qs.filter.return_value.update.return_value = 2
         data = {
             "event": "subscription.activated",
-            "plan": "tezca_pro",
+            "plan": "tezca_academic",
             "user_id": "usr_123",
         }
         request = self._post(data)
         response = billing_webhook(request)
         assert response.status_code == 200
-        assert response.data["tier"] == "pro"
+        assert response.data["tier"] == "academic"
         assert response.data["keys_updated"] == 2
         mock_qs.filter.assert_called_once_with(janua_user_id="usr_123", is_active=True)
 
@@ -98,7 +98,11 @@ class TestBillingWebhook:
 
     @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
     def test_invalid_signature_returns_403(self):
-        data = {"event": "subscription.activated", "plan": "tezca_pro", "user_id": "x"}
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_academic",
+            "user_id": "x",
+        }
         request = self._post(data, sig="sha256=invalid")
         response = billing_webhook(request)
         assert response.status_code == 403
@@ -117,21 +121,25 @@ class TestBillingWebhook:
 
     @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
     @patch("apps.api.billing_views.APIKey.objects")
-    def test_cancelled_downgrades_to_free(self, mock_qs):
+    def test_cancelled_downgrades_to_community(self, mock_qs):
         mock_qs.filter.return_value.update.return_value = 1
         data = {
             "event": "subscription.cancelled",
-            "plan": "tezca_pro",
+            "plan": "tezca_academic",
             "user_id": "usr_123",
         }
         request = self._post(data)
         response = billing_webhook(request)
         assert response.status_code == 200
-        assert response.data["tier"] == "essentials"
+        assert response.data["tier"] == "community"
 
     @override_settings(DHANAM_WEBHOOK_SECRET="")
     def test_missing_secret_rejects_all(self):
-        data = {"event": "subscription.activated", "plan": "tezca_pro", "user_id": "x"}
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_academic",
+            "user_id": "x",
+        }
         request = self._post(data, sig="sha256=anything")
         response = billing_webhook(request)
         assert response.status_code == 500
@@ -163,10 +171,40 @@ class TestBillingWebhook:
     def test_unknown_event_ignored(self):
         data = {
             "event": "invoice.paid",
-            "plan": "tezca_pro",
+            "plan": "tezca_academic",
             "user_id": "usr_123",
         }
         request = self._post(data)
         response = billing_webhook(request)
         assert response.status_code == 200
         assert response.data["status"] == "ignored"
+
+    @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_institutional_plan_mapping(self, mock_qs):
+        """tezca_institutional plan maps to institutional tier."""
+        mock_qs.filter.return_value.update.return_value = 1
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_institutional",
+            "user_id": "usr_inst",
+        }
+        request = self._post(data)
+        response = billing_webhook(request)
+        assert response.status_code == 200
+        assert response.data["tier"] == "institutional"
+
+    @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_legacy_pro_plan_maps_to_academic(self, mock_qs):
+        """Legacy tezca_pro plan maps to academic tier."""
+        mock_qs.filter.return_value.update.return_value = 1
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_pro",
+            "user_id": "usr_legacy",
+        }
+        request = self._post(data)
+        response = billing_webhook(request)
+        assert response.status_code == 200
+        assert response.data["tier"] == "academic"

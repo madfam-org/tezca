@@ -14,6 +14,7 @@ from apps.api.tier_permissions import (
     EXPORT_TIER_MAP,
     FORMAT_TIERS,
     RATE_LIMITS,
+    SEARCH_PAGE_SIZE_LIMITS,
     TIER_RANK,
     has_tier_access,
     normalize_export_tier,
@@ -24,15 +25,19 @@ class TestNormalizeExportTier:
     @pytest.mark.parametrize(
         "input_tier,expected",
         [
-            ("internal", "premium"),
-            ("pro", "premium"),
-            ("enterprise", "premium"),
-            ("madfam", "premium"),
-            ("essentials", "free"),
-            # Pass-through for already-normalized tiers
+            # Each canonical tier maps to itself
             ("anon", "anon"),
-            ("free", "free"),
-            ("premium", "premium"),
+            ("community", "community"),
+            ("essentials", "essentials"),
+            ("academic", "academic"),
+            ("institutional", "institutional"),
+            ("madfam", "madfam"),
+            # Legacy names
+            ("pro", "academic"),
+            ("premium", "academic"),
+            ("enterprise", "academic"),
+            ("free", "essentials"),
+            ("internal", "madfam"),
             # Unknown tiers pass through unchanged
             ("unknown", "unknown"),
         ],
@@ -47,21 +52,34 @@ class TestHasTierAccess:
         [
             # Same tier always has access
             ("anon", "anon", True),
-            ("free", "free", True),
-            ("premium", "premium", True),
-            ("internal", "internal", True),
+            ("community", "community", True),
+            ("essentials", "essentials", True),
+            ("academic", "academic", True),
+            ("institutional", "institutional", True),
+            ("madfam", "madfam", True),
             # Higher tier has access to lower
-            ("free", "anon", True),
-            ("premium", "anon", True),
-            ("internal", "anon", True),
-            ("pro", "free", True),
-            ("enterprise", "premium", True),
+            ("community", "anon", True),
+            ("essentials", "anon", True),
+            ("essentials", "community", True),
+            ("academic", "anon", True),
+            ("academic", "community", True),
+            ("academic", "essentials", True),
+            ("institutional", "academic", True),
+            ("madfam", "anon", True),
+            ("madfam", "institutional", True),
+            # Legacy aliases
+            ("pro", "essentials", True),
+            ("enterprise", "academic", True),
+            ("internal", "madfam", True),
             # Lower tier denied access to higher
-            ("anon", "free", False),
-            ("anon", "premium", False),
-            ("free", "premium", False),
+            ("anon", "community", False),
+            ("anon", "essentials", False),
+            ("anon", "academic", False),
+            ("community", "essentials", False),
+            ("essentials", "academic", False),
+            ("academic", "institutional", False),
             # Unknown tier defaults to rank 0
-            ("unknown", "free", False),
+            ("unknown", "community", False),
         ],
     )
     def test_access(self, user_tier, required_tier, expected):
@@ -73,14 +91,25 @@ class TestConstants:
         expected_formats = {"txt", "pdf", "latex", "docx", "epub", "json"}
         assert set(FORMAT_TIERS.keys()) == expected_formats
 
+    def test_format_tier_values(self):
+        assert FORMAT_TIERS["pdf"] == "community"
+        assert FORMAT_TIERS["json"] == "community"
+        assert FORMAT_TIERS["latex"] == "academic"
+        assert FORMAT_TIERS["docx"] == "institutional"
+        assert FORMAT_TIERS["epub"] == "institutional"
+
     def test_all_rate_limit_tiers_present(self):
+        # Canonical tiers + legacy aliases
         expected = {
             "anon",
             "free",
             "essentials",
             "community",
+            "academic",
             "pro",
+            "premium",
             "enterprise",
+            "institutional",
             "madfam",
             "internal",
         }
@@ -92,10 +121,40 @@ class TestConstants:
             assert len(limits) == 2, f"{tier} should have (per_minute, per_hour)"
 
     def test_export_hourly_limits_cover_export_tiers(self):
-        export_tiers = {"anon", "free", "premium"}
-        assert set(EXPORT_HOURLY_LIMITS.keys()) == export_tiers
+        # Canonical tiers + legacy aliases
+        expected = {
+            "anon",
+            "community",
+            "essentials",
+            "academic",
+            "institutional",
+            "madfam",
+            "free",
+            "pro",
+            "premium",
+            "enterprise",
+            "internal",
+        }
+        assert set(EXPORT_HOURLY_LIMITS.keys()) == expected
+
+    def test_export_hourly_limit_values(self):
+        assert EXPORT_HOURLY_LIMITS["community"] == 1000
+        assert EXPORT_HOURLY_LIMITS["essentials"] == 30
+        assert EXPORT_HOURLY_LIMITS["academic"] == 60
+        assert EXPORT_HOURLY_LIMITS["institutional"] == 200
+        assert EXPORT_HOURLY_LIMITS["madfam"] == 200
 
     def test_tier_rank_ordering(self):
-        assert TIER_RANK["anon"] < TIER_RANK["free"]
-        assert TIER_RANK["free"] < TIER_RANK["premium"]
-        assert TIER_RANK["premium"] < TIER_RANK["internal"]
+        assert TIER_RANK["anon"] < TIER_RANK["community"]
+        assert TIER_RANK["community"] < TIER_RANK["essentials"]
+        assert TIER_RANK["essentials"] < TIER_RANK["academic"]
+        assert TIER_RANK["academic"] < TIER_RANK["institutional"]
+        assert TIER_RANK["institutional"] < TIER_RANK["madfam"]
+
+    def test_search_page_size_limits(self):
+        assert SEARCH_PAGE_SIZE_LIMITS["anon"] == 25
+        assert SEARCH_PAGE_SIZE_LIMITS["community"] == 1000
+        assert SEARCH_PAGE_SIZE_LIMITS["essentials"] == 50
+        assert SEARCH_PAGE_SIZE_LIMITS["academic"] == 100
+        assert SEARCH_PAGE_SIZE_LIMITS["institutional"] == 1000
+        assert SEARCH_PAGE_SIZE_LIMITS["madfam"] == 1000

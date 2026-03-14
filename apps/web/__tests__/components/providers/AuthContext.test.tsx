@@ -103,7 +103,7 @@ describe('AuthContext', () => {
                 sub: 'user-123',
                 email: 'user@tezca.mx',
                 name: 'Test User',
-                tier: 'pro',
+                tier: 'academic',
             },
             isLoading: false,
         });
@@ -115,7 +115,7 @@ describe('AuthContext', () => {
         );
 
         expect(screen.getByTestId('authenticated').textContent).toBe('true');
-        expect(screen.getByTestId('tier').textContent).toBe('pro');
+        expect(screen.getByTestId('tier').textContent).toBe('academic');
         expect(screen.getByTestId('userId').textContent).toBe('user-123');
         expect(screen.getByTestId('email').textContent).toBe('user@tezca.mx');
         expect(screen.getByTestId('name').textContent).toBe('Test User');
@@ -141,9 +141,9 @@ describe('AuthContext', () => {
     });
 
     // ---------------------------------------------------------------
-    // 5. Tier normalization: 'premium' -> 'pro'
+    // 5. Tier normalization: 'premium' -> 'academic'
     // ---------------------------------------------------------------
-    it('normalizes "premium" tier to "pro"', () => {
+    it('normalizes "premium" tier to "academic"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
             user: { sub: 'u2', tier: 'premium' },
@@ -156,13 +156,13 @@ describe('AuthContext', () => {
             </AuthProvider>,
         );
 
-        expect(screen.getByTestId('tier').textContent).toBe('pro');
+        expect(screen.getByTestId('tier').textContent).toBe('academic');
     });
 
     // ---------------------------------------------------------------
-    // 6. Tier normalization: 'enterprise' -> 'pro'
+    // 6. Tier normalization: 'enterprise' -> 'academic'
     // ---------------------------------------------------------------
-    it('normalizes "enterprise" tier to "pro"', () => {
+    it('normalizes "enterprise" tier to "academic"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
             user: { sub: 'u3', tier: 'enterprise' },
@@ -175,7 +175,7 @@ describe('AuthContext', () => {
             </AuthProvider>,
         );
 
-        expect(screen.getByTestId('tier').textContent).toBe('pro');
+        expect(screen.getByTestId('tier').textContent).toBe('academic');
     });
 
     // ---------------------------------------------------------------
@@ -246,7 +246,7 @@ describe('AuthContext', () => {
         const token = makeJwt({
             sub: 'ls-user',
             email: 'ls@tezca.mx',
-            tier: 'pro',
+            tier: 'academic',
         });
         localStorage.setItem('janua_token', token);
 
@@ -257,7 +257,7 @@ describe('AuthContext', () => {
         );
 
         expect(screen.getByTestId('authenticated').textContent).toBe('true');
-        expect(screen.getByTestId('tier').textContent).toBe('pro');
+        expect(screen.getByTestId('tier').textContent).toBe('academic');
     });
 
     // ---------------------------------------------------------------
@@ -301,7 +301,7 @@ describe('AuthContext', () => {
     it('reads full_name claim when name is not present', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u6', full_name: 'Full Name User', tier: 'pro' },
+            user: { sub: 'u6', full_name: 'Full Name User', tier: 'academic' },
             isLoading: false,
         });
 

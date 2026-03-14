@@ -12,7 +12,7 @@ from apps.api.models import UserPreference
 AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
 
 
-def _make_user(user_id="test-user-1", tier="pro"):
+def _make_user(user_id="test-user-1", tier="academic"):
     user = JanuaUser({"sub": user_id, "email": f"{user_id}@test.com", "tier": tier})
     user.tier = tier
     user.scopes = ["read", "search"]

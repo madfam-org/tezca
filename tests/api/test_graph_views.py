@@ -1,11 +1,14 @@
 """Tests for graph API endpoints."""
 
 import uuid
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.api.middleware.apikey_auth import APIKeyUser
+from apps.api.middleware.janua_auth import JanuaUser
 from apps.api.models import CrossReference, Law
 
 
@@ -35,6 +38,18 @@ def _make_ref(
     )
 
 
+AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
+
+
+def _make_user(tier="community"):
+    user = JanuaUser({"sub": "graph-user", "email": "graph@test.com", "tier": tier})
+    user.tier = tier
+    user.scopes = ["read", "search"]
+    user.allowed_domains = []
+    user.api_key_prefix = ""
+    return user
+
+
 @pytest.mark.django_db
 class TestLawGraph:
     """Tests for GET /laws/<law_id>/graph/"""
@@ -50,6 +65,14 @@ class TestLawGraph:
         _make_ref("graph-a", "graph-c")
         _make_ref("graph-b", "graph-c", article="1")
         _make_ref("graph-b", "graph-c", article="2")
+        # Authenticate as institutional tier (graph_api=true in tiers.json)
+        self._auth_patcher = patch(AUTH_PATCH)
+        mock_auth = self._auth_patcher.start()
+        user = _make_user(tier="institutional")
+        mock_auth.return_value = (user, "fake-token")
+
+    def teardown_method(self):
+        self._auth_patcher.stop()
 
     def test_law_graph_returns_nodes_and_edges(self):
         url = reverse("law-graph", args=["graph-a"])
@@ -177,6 +200,14 @@ class TestGraphOverview:
             _make_ref("overview-fed-a", "overview-fed-b", article=str(i))
         for i in range(3):
             _make_ref("overview-fed-b", "overview-state-c", article=str(i + 10))
+        # Authenticate as institutional tier (graph_api=true in tiers.json)
+        self._auth_patcher = patch(AUTH_PATCH)
+        mock_auth = self._auth_patcher.start()
+        user = _make_user(tier="institutional")
+        mock_auth.return_value = (user, "fake-token")
+
+    def teardown_method(self):
+        self._auth_patcher.stop()
 
     def test_overview_returns_global_graph(self):
         url = reverse("graph-overview")
@@ -213,3 +244,37 @@ class TestGraphOverview:
         # Only the 4-ref edge qualifies
         for e in data["edges"]:
             assert e["weight"] >= 5
+
+
+@pytest.mark.django_db
+class TestGraphTierGating:
+    """Tests for tier-based access control on graph endpoints."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.law = _make_law("tier-test-law")
+
+    def test_anonymous_gets_403_on_law_graph(self):
+        """Anonymous users should be denied access to the graph API."""
+        url = reverse("law-graph", args=["tier-test-law"])
+        resp = self.client.get(url)
+        # Without authentication the endpoint should deny access
+        assert resp.status_code in (401, 403)
+
+    @patch(AUTH_PATCH)
+    def test_community_gets_403_on_law_graph(self, mock_auth):
+        """Community tier should be denied access to the graph API."""
+        user = _make_user(tier="community")
+        mock_auth.return_value = (user, "fake-token")
+        url = reverse("law-graph", args=["tier-test-law"])
+        resp = self.client.get(url)
+        assert resp.status_code == 403
+
+    @patch(AUTH_PATCH)
+    def test_institutional_passes_law_graph(self, mock_auth):
+        """Institutional tier should have access to the graph API."""
+        user = _make_user(tier="institutional")
+        mock_auth.return_value = (user, "fake-token")
+        url = reverse("law-graph", args=["tier-test-law"])
+        resp = self.client.get(url)
+        assert resp.status_code == 200
