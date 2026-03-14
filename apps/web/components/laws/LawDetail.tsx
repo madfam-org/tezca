@@ -32,6 +32,7 @@ const content = {
         backToSearch: 'Volver al buscador',
         showToc: 'Índice de contenidos',
         hideToc: 'Ocultar índice',
+        articlesDegraded: 'Los artículos no están disponibles temporalmente.',
     },
     en: {
         loadLawError: 'Could not load the law',
@@ -42,6 +43,7 @@ const content = {
         backToSearch: 'Back to search',
         showToc: 'Table of contents',
         hideToc: 'Hide contents',
+        articlesDegraded: 'Articles are temporarily unavailable.',
     },
     nah: {
         loadLawError: 'Ahmo huelītic in tenahuatilli',
@@ -52,6 +54,7 @@ const content = {
         backToSearch: 'Xicmocuepa tlatemoliztli',
         showToc: 'Tlatecpantli',
         hideToc: 'Xictlātia tlatecpantli',
+        articlesDegraded: 'Tlanahuatilli ahmo moaxītia zanyēnō.',
     },
 };
 
@@ -70,6 +73,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
     const [fontSize, setFontSize] = useState<FontSize>('text-base');
     const [showToc, setShowToc] = useState(false);
     const [annotationOpen, setAnnotationOpen] = useState(false);
+    const [articlesDegraded, setArticlesDegraded] = useState(false);
 
     useEffect(() => {
         async function fetchLaw() {
@@ -92,6 +96,9 @@ export function LawDetail({ lawId }: LawDetailProps) {
                     last_verified: raw.last_verified as string | null | undefined,
                 };
                 const allVersions = (lawData.versions ?? []) as LawVersion[];
+                if (articlesData.degraded) {
+                    setArticlesDegraded(true);
+                }
                 setData({
                     law,
                     version: (lawData.version as LawVersion | undefined) || allVersions[0] || ({} as LawVersion),
@@ -194,6 +201,11 @@ export function LawDetail({ lawId }: LawDetailProps) {
                             <FontSizeControl onChange={setFontSize} />
                         </div>
                     </div>
+                    {articlesDegraded && (
+                        <div className="mb-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                            {t.articlesDegraded}
+                        </div>
+                    )}
                     <div className="mb-4">
                         <ArticleSearch
                             lawId={lawId}

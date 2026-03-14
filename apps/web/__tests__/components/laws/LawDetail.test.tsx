@@ -390,6 +390,37 @@ describe('LawDetail data flow', () => {
         });
     });
 
+    it('shows degraded banner when articles API returns degraded', async () => {
+        const lawData = makeLawApiResponse();
+        const articlesData = makeArticlesApiResponse(0, { degraded: true });
+        vi.mocked(api.getLawDetail).mockResolvedValue(lawData);
+        vi.mocked(api.getLawArticles).mockResolvedValue(articlesData);
+
+        await act(async () => {
+            renderWithLang(<LawDetail lawId="cpeum" />);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Los artículos no están disponibles temporalmente.')).toBeInTheDocument();
+        });
+    });
+
+    it('does not show degraded banner when articles are available', async () => {
+        const lawData = makeLawApiResponse();
+        const articlesData = makeArticlesApiResponse(5);
+        vi.mocked(api.getLawDetail).mockResolvedValue(lawData);
+        vi.mocked(api.getLawArticles).mockResolvedValue(articlesData);
+
+        await act(async () => {
+            renderWithLang(<LawDetail lawId="cpeum" />);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('article-viewer')).toBeInTheDocument();
+        });
+        expect(screen.queryByText('Los artículos no están disponibles temporalmente.')).not.toBeInTheDocument();
+    });
+
     it('handles concurrent law and articles fetch', async () => {
         const lawData = makeLawApiResponse();
         const articlesData = makeArticlesApiResponse(10);

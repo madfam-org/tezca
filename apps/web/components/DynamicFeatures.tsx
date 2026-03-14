@@ -74,11 +74,16 @@ export function DynamicFeatures() {
     const coverage = stats?.coverage?.leyes_vigentes;
     const totalArticles = stats?.total_articles ?? 0;
 
+    const clampedPct = coverage ? Math.min(coverage.percentage ?? 0, 100) : 0;
+    const displayUniverse = coverage
+        ? Math.max(coverage.count, coverage.universe ?? 0)
+        : 0;
+
     const coverageLabel = coverage
         ? t.coverageDesc(
             coverage.count.toLocaleString(locale),
-            coverage.universe?.toLocaleString(locale) ?? '0',
-            coverage.percentage ?? 0
+            displayUniverse.toLocaleString(locale),
+            clampedPct
           )
         : t.coverageDescFallback((stats?.total_laws ?? 0).toLocaleString(locale));
 
@@ -87,7 +92,7 @@ export function DynamicFeatures() {
             <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-3">
                 <Feature
                     icon="✨"
-                    title={coverage ? t.coverageWithPct(coverage.percentage ?? 0) : t.coverageFallback}
+                    title={coverage ? t.coverageWithPct(clampedPct) : t.coverageFallback}
                     description={coverageLabel}
                 />
                 <Feature

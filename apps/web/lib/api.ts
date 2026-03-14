@@ -167,8 +167,8 @@ export const api = {
     /**
      * Get list of states
      */
-    getStates: async (): Promise<{ states: string[] }> => {
-        return fetcher<{ states: string[] }>('/states/');
+    getStates: async (options?: RequestInit): Promise<{ states: string[] }> => {
+        return fetcher<{ states: string[] }>('/states/', options);
     },
 
     /**

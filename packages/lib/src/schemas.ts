@@ -57,6 +57,7 @@ export const LawArticleResponseSchema = z.object({
     law_name: z.string(),
     total: z.number(),
     articles: z.array(LawArticleSchema),
+    degraded: z.boolean().optional(),
 });
 
 // ── Search ──────────────────────────────────────────────────────────────

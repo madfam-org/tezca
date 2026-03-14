@@ -67,12 +67,15 @@ export function StatesGrid() {
     const fetchStates = useCallback(async () => {
         setLoading(true);
         setError(false);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
         try {
-            const data = await api.getStates();
+            const data = await api.getStates({ signal: controller.signal });
             setStates(data.states);
         } catch {
             setError(true);
         } finally {
+            clearTimeout(timeout);
             setLoading(false);
         }
     }, []);

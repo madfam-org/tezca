@@ -65,6 +65,7 @@ export interface MockArticlesApiResponse {
     law_name: string;
     total: number;
     articles: MockArticle[];
+    degraded?: boolean;
 }
 
 export interface MockSearchResult {

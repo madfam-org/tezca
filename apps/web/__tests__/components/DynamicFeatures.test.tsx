@@ -176,7 +176,46 @@ describe('DynamicFeatures', () => {
     });
 
     // ---------------------------------------------------------------
-    // 11. Feature icons present
+    // 11. Coverage percentage clamped to 100
+    // ---------------------------------------------------------------
+    it('clamps coverage percentage to 100 when count exceeds universe', async () => {
+        const overageStats = {
+            ...MOCK_STATS,
+            coverage: {
+                ...MOCK_STATS.coverage,
+                leyes_vigentes: { count: 50000, universe: 45000, percentage: 111 },
+            },
+        };
+        mockGetStats.mockResolvedValue(overageStats);
+        render(<DynamicFeatures />);
+
+        await waitFor(() => {
+            expect(screen.getByText('100% Cobertura Legislativa')).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 12. Display universe uses Math.max
+    // ---------------------------------------------------------------
+    it('displays count as universe when count exceeds universe', async () => {
+        const overageStats = {
+            ...MOCK_STATS,
+            coverage: {
+                ...MOCK_STATS.coverage,
+                leyes_vigentes: { count: 50000, universe: 45000, percentage: 111 },
+            },
+        };
+        mockGetStats.mockResolvedValue(overageStats);
+        render(<DynamicFeatures />);
+
+        await waitFor(() => {
+            // displayUniverse = Math.max(50000, 45000) = 50000
+            expect(screen.getByText(/50,000 de 50,000 leyes vigentes.*100%/)).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 13. Feature icons present
     // ---------------------------------------------------------------
     it('renders feature icons', async () => {
         mockGetStats.mockResolvedValue(MOCK_STATS);

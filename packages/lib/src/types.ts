@@ -137,6 +137,7 @@ export interface LawArticleResponse {
     law_name: string;
     total: number;
     articles: LawArticle[];
+    degraded?: boolean;
 }
 
 // Related Laws

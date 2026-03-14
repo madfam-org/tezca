@@ -177,7 +177,9 @@ function CategoryCard({
           </p>
           {count !== null && (
             <p className="text-xs text-muted-foreground">
-              {count.toLocaleString()} {lawsLabel}
+              {count.toLocaleString()} {count === 1
+              ? (lang === 'es' ? 'ley' : lang === 'en' ? 'law' : 'tenahuatilli')
+              : lawsLabel}
             </p>
           )}
           <span className="mt-auto inline-flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
@@ -228,14 +230,12 @@ export default async function CategoriesIndexPage({
   // Build counts map from API data
   const countsMap = new Map(apiCategories.map((c) => [c.category, c.count]));
 
-  // Merge: known categories first (preserve order), then any API-only categories
+  // Only show the 7 curated legal domain categories
   const knownKeys = Object.keys(CATEGORY_META);
-  const allSlugs = [
-    ...knownKeys,
-    ...apiCategories
-      .map((c) => c.category)
-      .filter((slug) => !knownKeys.includes(slug)),
-  ];
+  const allSlugs = knownKeys;
+
+  // Build counts map from API data (includes all DB categories)
+  // Unknown categories can still be accessed via direct URL
 
   return (
     <div className="min-h-screen bg-background">

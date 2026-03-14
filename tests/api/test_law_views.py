@@ -472,14 +472,19 @@ class TestLawArticlesEdgeCases:
         assert article_ids == sorted(article_ids)
 
     @patch("apps.api.law_views.es_client")
-    def test_es_connection_error_returns_500(self, mock_es):
+    def test_es_connection_error_returns_degraded(self, mock_es):
+        """law_articles returns 200 with degraded=True when ES is down."""
         mock_es.count.side_effect = ConnectionTimeout("timeout")
 
         url = reverse("law-articles", args=[self.law.official_id])
         response = self.client.get(url)
 
-        assert response.status_code == 500
-        assert "error" in response.json()
+        assert response.status_code == 200
+        data = response.json()
+        assert data["degraded"] is True
+        assert data["articles"] == []
+        assert data["total"] == 0
+        assert data["law_id"] == self.law.official_id
 
 
 # ---------------------------------------------------------------------------

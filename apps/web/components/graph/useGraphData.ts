@@ -53,9 +53,10 @@ export function useGraphData(opts: UseGraphDataOptions) {
                             max_nodes: opts.max_nodes,
                         });
                         setIsShowcase(false);
-                    } catch (overviewErr) {
-                        // Fallback to showcase for unauthenticated users (403)
-                        if (overviewErr instanceof Error && overviewErr.message.includes('403')) {
+                    } catch (overviewErr: unknown) {
+                        // Fallback to showcase for unauthenticated/unauthorized users (401/403)
+                        const status = (overviewErr as { status?: number })?.status;
+                        if (status === 401 || status === 403) {
                             data = await api.getGraphShowcase();
                             setIsShowcase(true);
                         } else {

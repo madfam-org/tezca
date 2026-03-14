@@ -261,7 +261,7 @@ export function LawGraphContainer({ lawId, mode = 'embedded' }: LawGraphContaine
                             {layoutRunning && (
                                 <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-card/90 backdrop-blur-sm px-3 py-1.5 text-xs text-muted-foreground shadow-sm border">
                                     <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                    Simulando...
+                                    {lang === 'es' ? 'Simulando...' : lang === 'en' ? 'Simulating...' : 'Motēmoa...'}
                                 </div>
                             )}
                         </>

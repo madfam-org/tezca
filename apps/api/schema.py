@@ -55,6 +55,7 @@ class LawArticlesSchema(serializers.Serializer):
     law_name = serializers.CharField()
     total = serializers.IntegerField()
     articles = ArticleSchema(many=True)
+    degraded = serializers.BooleanField(required=False)
 
 
 class StructureNodeSchema(serializers.Serializer):
