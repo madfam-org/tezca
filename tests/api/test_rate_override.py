@@ -15,7 +15,7 @@ class TestPerKeyRateOverride:
         self.factory = APIRequestFactory()
         self.throttle = TieredRateThrottle()
 
-    def _make_request(self, tier="pro", rate_limit_per_hour=None):
+    def _make_request(self, tier="academic", rate_limit_per_hour=None):
         request = self.factory.get("/api/v1/test/")
         user = MagicMock()
         user.is_authenticated = True
@@ -26,20 +26,20 @@ class TestPerKeyRateOverride:
         return request
 
     def test_override_applies_custom_hourly_limit(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=5000)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=5000)
+        limits = self.throttle._get_limits(request, "academic")
         # per-minute stays at tier default (60), hourly overridden to 5000
         assert limits == (60, 5000)
 
     def test_none_falls_back_to_tier_default(self):
-        request = self._make_request(tier="pro", rate_limit_per_hour=None)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=None)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_zero_falls_back_to_tier_default(self):
         # 0 is falsy, so it should fall back
-        request = self._make_request(tier="pro", rate_limit_per_hour=0)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=0)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 2_000)
 
     def test_anon_request_uses_anon_limits(self):
@@ -51,22 +51,22 @@ class TestPerKeyRateOverride:
     def test_override_with_community_tier(self):
         request = self._make_request(tier="community", rate_limit_per_hour=3000)
         limits = self.throttle._get_limits(request, "community")
-        assert limits == (60, 3000)
+        assert limits == (1_000, 3_000)
 
     def test_override_capped_at_max(self):
         """Custom rate_limit_per_hour cannot exceed MAX_RATE_LIMIT_PER_HOUR."""
-        request = self._make_request(tier="pro", rate_limit_per_hour=999_999)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=999_999)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 100_000)
 
     def test_override_at_max_boundary(self):
         """Exactly MAX_RATE_LIMIT_PER_HOUR passes through unchanged."""
-        request = self._make_request(tier="pro", rate_limit_per_hour=100_000)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=100_000)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 100_000)
 
     def test_override_below_max_not_capped(self):
         """Values below the cap pass through unchanged."""
-        request = self._make_request(tier="pro", rate_limit_per_hour=50_000)
-        limits = self.throttle._get_limits(request, "pro")
+        request = self._make_request(tier="academic", rate_limit_per_hour=50_000)
+        limits = self.throttle._get_limits(request, "academic")
         assert limits == (60, 50_000)

@@ -167,8 +167,8 @@ export const api = {
     /**
      * Get list of states
      */
-    getStates: async (): Promise<{ states: string[] }> => {
-        return fetcher<{ states: string[] }>('/states/');
+    getStates: async (options?: RequestInit): Promise<{ states: string[] }> => {
+        return fetcher<{ states: string[] }>('/states/', options);
     },
 
     /**
@@ -297,6 +297,41 @@ export const api = {
      */
     getCategories: async (): Promise<CategoryItem[]> => {
         return fetcher<CategoryItem[]>('/categories/');
+    },
+
+    /**
+     * Get cross-references for multiple articles in a single request.
+     *
+     * Collapses N per-article API calls into one POST per chunk.
+     * The batch endpoint accepts up to 200 article IDs; larger arrays
+     * are automatically chunked and the results merged.
+     */
+    getBatchArticleReferences: async (
+        lawId: string,
+        articleIds: string[]
+    ): Promise<Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }>> => {
+        if (articleIds.length === 0) return {};
+
+        const CHUNK_SIZE = 200;
+        const chunks: string[][] = [];
+        for (let i = 0; i < articleIds.length; i += CHUNK_SIZE) {
+            chunks.push(articleIds.slice(i, i + CHUNK_SIZE));
+        }
+
+        const results = await Promise.all(
+            chunks.map(chunk =>
+                fetcher<{ references: Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }> }>(
+                    `/laws/${lawId}/articles/references/batch/`,
+                    { method: 'POST', body: JSON.stringify({ article_ids: chunk }) }
+                )
+            )
+        );
+
+        const merged: Record<string, { outgoing: CrossReferenceData[]; incoming: IncomingCrossReference[] }> = {};
+        for (const result of results) {
+            Object.assign(merged, result.references);
+        }
+        return merged;
     },
 
     /**
@@ -538,6 +573,10 @@ export const api = {
         return fetcher<GraphResponse>(`/graph/overview/${qs ? `?${qs}` : ''}`);
     },
 
+    getGraphShowcase: async (): Promise<GraphResponse> => {
+        return fetcher<GraphResponse>('/graph/showcase/');
+    },
+
     getJudicialStats: async () => {
         return fetcher<{
             total: number;
@@ -561,6 +600,7 @@ export interface GraphNode {
     state: string | null;
     ref_count: number;
     is_focal: boolean;
+    short_name?: string | null;
 }
 
 export interface GraphEdge {
@@ -581,6 +621,27 @@ export interface GraphResponse {
         depth_reached: number;
         truncated: boolean;
     };
+}
+
+// ── Cross-reference types ────────────────────────────────────────────
+
+export interface CrossReferenceData {
+    text: string;
+    targetLawSlug: string | null;
+    targetArticle: string | null;
+    fraction: string | null;
+    confidence: number;
+    startPos: number;
+    endPos: number;
+    targetUrl: string | null;
+}
+
+export interface IncomingCrossReference {
+    sourceLawSlug: string;
+    sourceArticle: string;
+    text: string;
+    confidence: number;
+    sourceUrl: string;
 }
 
 export { APIError };

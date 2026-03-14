@@ -32,7 +32,13 @@ logger = logging.getLogger(__name__)
                 "janua_user_id": {"type": "string", "default": ""},
                 "tier": {
                     "type": "string",
-                    "enum": ["essentials", "community", "pro", "madfam"],
+                    "enum": [
+                        "community",
+                        "essentials",
+                        "academic",
+                        "institutional",
+                        "madfam",
+                    ],
                     "default": "essentials",
                 },
                 "scopes": {

@@ -137,6 +137,18 @@ describe('FeaturedLaws', () => {
         });
     });
 
+    it('formats raw ID names as readable titles', async () => {
+        mockGetLaws.mockResolvedValue({
+            results: [
+                { id: 'mx-fed-lgec', name: 'mx-fed-lgec', tier: 'federal', versions: 1 },
+            ],
+        });
+        render(<FeaturedLaws />);
+        await waitFor(() => {
+            expect(screen.getByText('Lgec')).toBeInTheDocument();
+        });
+    });
+
     it('renders section title', async () => {
         mockGetLaws.mockResolvedValue({
             results: [{ id: 'law-1', name: 'Test', tier: 'federal', versions: 1 }],

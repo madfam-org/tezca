@@ -27,7 +27,7 @@ from apps.api.models import APIKey, Law, LawVersion
 AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
 
 
-def _make_api_key_user(tier="pro", scopes=None, allowed_domains=None):
+def _make_api_key_user(tier="community", scopes=None, allowed_domains=None):
     """Create a mock APIKeyUser."""
     if scopes is None:
         scopes = ["read", "search", "bulk"]

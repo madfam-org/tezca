@@ -40,7 +40,7 @@ class TestWebhookCRUD:
             hashed_key=hashed,
             name="Webhook Test Key",
             owner_email="webhook@example.com",
-            tier="pro",
+            tier="institutional",
             scopes=["read", "search"],
         )
         self.user = _make_api_key_user(self.api_key)

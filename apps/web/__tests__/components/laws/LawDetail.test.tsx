@@ -1,4 +1,4 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LawDetail } from '@/components/laws/LawDetail';
 import { LanguageProvider } from '@/components/providers/LanguageContext';
@@ -388,6 +388,57 @@ describe('LawDetail data flow', () => {
             const toc = screen.getByTestId('toc');
             expect(toc).toHaveAttribute('data-article-count', '25');
         });
+    });
+
+    it('shows degraded banner when articles API returns degraded', async () => {
+        const lawData = makeLawApiResponse();
+        const articlesData = makeArticlesApiResponse(0, { degraded: true });
+        vi.mocked(api.getLawDetail).mockResolvedValue(lawData);
+        vi.mocked(api.getLawArticles).mockResolvedValue(articlesData);
+
+        await act(async () => {
+            renderWithLang(<LawDetail lawId="cpeum" />);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Los artículos no están disponibles temporalmente.')).toBeInTheDocument();
+        });
+    });
+
+    it('dismisses degraded banner when X button is clicked', async () => {
+        const lawData = makeLawApiResponse();
+        const articlesData = makeArticlesApiResponse(0, { degraded: true });
+        vi.mocked(api.getLawDetail).mockResolvedValue(lawData);
+        vi.mocked(api.getLawArticles).mockResolvedValue(articlesData);
+
+        await act(async () => {
+            renderWithLang(<LawDetail lawId="cpeum" />);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Los artículos no están disponibles temporalmente.')).toBeInTheDocument();
+        });
+
+        const dismissBtn = screen.getByLabelText('Cerrar');
+        fireEvent.click(dismissBtn);
+
+        expect(screen.queryByText('Los artículos no están disponibles temporalmente.')).not.toBeInTheDocument();
+    });
+
+    it('does not show degraded banner when articles are available', async () => {
+        const lawData = makeLawApiResponse();
+        const articlesData = makeArticlesApiResponse(5);
+        vi.mocked(api.getLawDetail).mockResolvedValue(lawData);
+        vi.mocked(api.getLawArticles).mockResolvedValue(articlesData);
+
+        await act(async () => {
+            renderWithLang(<LawDetail lawId="cpeum" />);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('article-viewer')).toBeInTheDocument();
+        });
+        expect(screen.queryByText('Los artículos no están disponibles temporalmente.')).not.toBeInTheDocument();
     });
 
     it('handles concurrent law and articles fetch', async () => {

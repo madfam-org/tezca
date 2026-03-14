@@ -16,6 +16,12 @@ from django.core.management.base import BaseCommand
 from elasticsearch import Elasticsearch, helpers
 from lxml import etree
 
+from apps.api.es_index_manager import (
+    create_versioned_index,
+    ensure_alias_exists,
+    get_current_index,
+    swap_alias,
+)
 from apps.api.models import Law
 from apps.api.utils.paths import ES_HOST, read_data_content
 
@@ -51,6 +57,16 @@ class Command(BaseCommand):
             choices=["federal", "state", "municipal", "all"],
             default="all",
             help="Filter by law tier (default: all)",
+        )
+        parser.add_argument(
+            "--reindex",
+            action="store_true",
+            help="Create new versioned index, bulk index into it, then swap alias",
+        )
+        parser.add_argument(
+            "--migrate-alias",
+            action="store_true",
+            help="One-time migration: convert concrete 'articles' index to alias",
         )
 
     def _create_indices(self, es):
@@ -436,6 +452,8 @@ class Command(BaseCommand):
         return len(actions)
 
     def handle(self, *args, **options):
+        global INDEX_ARTICLES
+
         # Connect ES
         if not options["dry_run"]:
             es = Elasticsearch([ES_HOST])
@@ -444,11 +462,64 @@ class Command(BaseCommand):
                 return
             self.stdout.write(f"Connected to Elasticsearch at {ES_HOST}")
 
+            # One-time migration from concrete index to alias
+            if options["migrate_alias"]:
+                self.stdout.write("Migrating concrete index to alias...")
+                migrated = ensure_alias_exists(es)
+                if migrated:
+                    self.stdout.write(self.style.SUCCESS("Migration complete"))
+                else:
+                    self.stdout.write(
+                        "No migration needed (alias already exists or no index found)"
+                    )
+                return
+
+            # Reindex mode: create new versioned index and swap alias after indexing
+            reindex_new_index = None
+            reindex_old_index = None
+            if options["reindex"]:
+                reindex_old_index = get_current_index(es)
+                # Get mappings/settings from current articles index for the new versioned index
+                articles_settings = None
+                articles_mappings = None
+                if es.indices.exists(index=INDEX_ARTICLES) or (
+                    reindex_old_index and es.indices.exists(index=reindex_old_index)
+                ):
+                    source_index = reindex_old_index or INDEX_ARTICLES
+                    info = es.indices.get(index=source_index)
+                    idx_info = info[source_index]
+                    articles_mappings = idx_info.get("mappings")
+                    raw_settings = idx_info.get("settings", {}).get("index", {})
+                    # Strip read-only settings
+                    for key in [
+                        "creation_date",
+                        "uuid",
+                        "version",
+                        "provided_name",
+                        "number_of_replicas",
+                        "number_of_shards",
+                    ]:
+                        raw_settings.pop(key, None)
+                    articles_settings = raw_settings if raw_settings else None
+
+                reindex_new_index = create_versioned_index(
+                    es,
+                    mappings=articles_mappings,
+                    settings=articles_settings,
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(f"Created versioned index: {reindex_new_index}")
+                )
+                # Override INDEX_ARTICLES so all indexing goes to the new index
+                INDEX_ARTICLES = reindex_new_index
+
             # Create indices if requested
             if options["create_indices"]:
                 self._create_indices(es)
         else:
             es = None
+            reindex_new_index = None
+            reindex_old_index = None
 
         # Select Laws
         if options["law_id"]:
@@ -497,4 +568,14 @@ class Command(BaseCommand):
         )
         if skipped:
             self.stdout.write(f"Skipped {skipped} laws (no file found)")
+
+        # Swap alias to new versioned index after successful indexing
+        if reindex_new_index and not options["dry_run"]:
+            swap_alias(es, old_index=reindex_old_index, new_index=reindex_new_index)
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Swapped alias: {reindex_old_index or '(none)'} -> {reindex_new_index}"
+                )
+            )
+
         self.stdout.write("=" * 60)

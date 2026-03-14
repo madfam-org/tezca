@@ -189,6 +189,9 @@ TEZCA_ADMIN_USER_IDS = set(
     filter(None, os.environ.get("TEZCA_ADMIN_USER_IDS", "").split(","))
 )
 
+# ── Deployment Mode ──────────────────────────────────────────────────
+TEZCA_DEPLOYMENT = os.environ.get("TEZCA_DEPLOYMENT", "self-hosted")
+
 # ── Dhanam Billing ───────────────────────────────────────────────────
 DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
 DHANAM_CHECKOUT_URL = os.environ.get(

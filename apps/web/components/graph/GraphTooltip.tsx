@@ -2,6 +2,7 @@
 
 import type { GraphNode } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
+import { getCategoryColor, CATEGORY_LABELS } from './graphConstants';
 
 const content = {
     es: {
@@ -29,6 +30,9 @@ export function GraphTooltip({ node, position }: GraphTooltipProps) {
 
     if (!node || !position) return null;
 
+    const catColor = getCategoryColor(node.category);
+    const catLabel = node.category ? (CATEGORY_LABELS[node.category]?.[lang] ?? node.category) : null;
+
     return (
         <div
             className="pointer-events-none fixed z-50 rounded-md border bg-popover px-3 py-2 text-sm shadow-md"
@@ -41,9 +45,13 @@ export function GraphTooltip({ node, position }: GraphTooltipProps) {
                         {node.tier}
                     </span>
                 )}
-                {node.category && (
-                    <span className="inline-flex items-center rounded-full bg-muted px-1.5 py-0.5">
-                        {node.category}
+                {catLabel && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5">
+                        <span
+                            className="inline-block w-2 h-2 rounded-full"
+                            style={{ backgroundColor: catColor }}
+                        />
+                        {catLabel}
                     </span>
                 )}
                 <span>{node.ref_count} {t.refs}</span>

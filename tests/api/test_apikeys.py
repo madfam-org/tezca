@@ -69,12 +69,12 @@ class TestAPIKeyModel:
             hashed_key=hashed,
             name="Test Key",
             owner_email="test@example.com",
-            tier="pro",
+            tier="academic",
             scopes=["read", "search", "bulk"],
             allowed_domains=["fiscal", "mercantil"],
         )
         assert key.prefix == prefix
-        assert key.tier == "pro"
+        assert key.tier == "academic"
         assert key.is_active is True
         assert "read" in key.scopes
 
@@ -97,9 +97,9 @@ class TestAPIKeyModel:
 
     def test_str_representation(self):
         full_key, prefix, hashed = generate_api_key()
-        key = APIKey(prefix=prefix, name="My Key", tier="pro")
+        key = APIKey(prefix=prefix, name="My Key", tier="academic")
         assert prefix in str(key)
-        assert "pro" in str(key)
+        assert "academic" in str(key)
 
 
 # ── APIKeyAuthentication backend ──────────────────────────────────────
@@ -117,7 +117,7 @@ class TestAPIKeyAuthentication:
             hashed_key=self.hashed,
             name="Auth Test Key",
             owner_email="auth@example.com",
-            tier="pro",
+            tier="academic",
             scopes=["read", "search"],
         )
 
@@ -126,7 +126,7 @@ class TestAPIKeyAuthentication:
         request = self.factory.get("/", HTTP_X_API_KEY=self.full_key)
         user, token = self.auth.authenticate(request)
         assert isinstance(user, APIKeyUser)
-        assert user.tier == "pro"
+        assert user.tier == "academic"
         assert user.api_key_prefix == self.prefix
         assert user.is_authenticated is True
 
@@ -134,7 +134,7 @@ class TestAPIKeyAuthentication:
         """Authorization: ApiKey header authenticates correctly."""
         request = self.factory.get("/", HTTP_AUTHORIZATION=f"ApiKey {self.full_key}")
         user, token = self.auth.authenticate(request)
-        assert user.tier == "pro"
+        assert user.tier == "academic"
 
     def test_no_header_returns_none(self):
         """Request without API key header returns None (pass-through)."""
@@ -196,12 +196,12 @@ class TestCombinedAuthentication:
             hashed_key=hashed,
             name="Combined Test",
             owner_email="combined@example.com",
-            tier="pro",
+            tier="academic",
             scopes=["read", "bulk"],
         )
         request = self.factory.get("/", HTTP_X_API_KEY=full_key)
         user, token = self.auth.authenticate(request)
-        assert user.tier == "pro"
+        assert user.tier == "academic"
         assert user.api_key_prefix == prefix
 
     def test_invalid_api_key_raises_even_with_no_jwt(self):

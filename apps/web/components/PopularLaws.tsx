@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
+import { API_BASE_URL } from '@/lib/config';
 
 const content = {
     es: {
@@ -33,6 +35,28 @@ const popularLaws = [
 export function PopularLaws() {
     const { lang } = useLang();
     const t = content[lang];
+    const [availableLaws, setAvailableLaws] = useState(popularLaws);
+
+    useEffect(() => {
+        const ids = popularLaws.map((l) => l.id).join(',');
+        fetch(`${API_BASE_URL}/laws/exists/?ids=${ids}`)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .then((data: { existing: string[] }) => {
+                const existingSet = new Set(data.existing);
+                const filtered = popularLaws.filter((l) => existingSet.has(l.id));
+                if (filtered.length > 0) {
+                    setAvailableLaws(filtered);
+                }
+                // If 0 exist, keep all badges (graceful degradation)
+            })
+            .catch(() => {
+                // API unreachable — keep all badges as fallback
+            });
+    }, []);
+
+    if (availableLaws.length === 0) {
+        return null;
+    }
 
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-16">
@@ -46,7 +70,7 @@ export function PopularLaws() {
             </div>
 
             <div className="flex flex-wrap justify-center gap-3">
-                {popularLaws.map((law) => (
+                {availableLaws.map((law) => (
                     <Link key={law.id} href={law.href}>
                         <Badge
                             variant="secondary"

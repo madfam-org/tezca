@@ -55,6 +55,7 @@ class LawArticlesSchema(serializers.Serializer):
     law_name = serializers.CharField()
     total = serializers.IntegerField()
     articles = ArticleSchema(many=True)
+    degraded = serializers.BooleanField(required=False)
 
 
 class StructureNodeSchema(serializers.Serializer):
@@ -398,6 +399,7 @@ class GraphNodeSchema(serializers.Serializer):
     state = serializers.CharField(allow_null=True)
     ref_count = serializers.IntegerField()
     is_focal = serializers.BooleanField()
+    short_name = serializers.CharField(allow_null=True, required=False)
 
 
 class GraphEdgeSchema(serializers.Serializer):

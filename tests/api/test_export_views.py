@@ -146,7 +146,7 @@ class TestExportPdfAnonymous:
 
         assert response.status_code == 403
         assert "Authentication required" in response.data["error"]
-        assert response.data["required_tier"] == "free"
+        assert response.data["required_tier"] == "community"
 
 
 @pytest.mark.django_db
@@ -212,8 +212,8 @@ class TestExportTierAccess:
         response = self.client.get(url)
 
         assert response.status_code == 403
-        assert response.data["your_tier"] == "free"
-        assert response.data["required_tier"] == "premium"
+        assert response.data["your_tier"] == "essentials"
+        assert response.data["required_tier"] == "academic"
 
     @patch("apps.api.export_views.es_client")
     @patch(AUTH_PATCH_TARGET)
@@ -374,20 +374,18 @@ class TestExportQuotaEndpoint:
 
     @patch(AUTH_PATCH_TARGET)
     def test_quota_endpoint_premium(self, mock_auth):
-        """Premium user sees all formats available."""
+        """Premium (normalized to academic) user sees academic-available formats."""
         _make_tier_auth(mock_auth, "premium", user_id="premium-user")
 
         url = reverse("law-export-quota", args=[self.law_id])
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.data["tier"] == "premium"
-        assert response.data["limit"] == 100
+        assert response.data["tier"] == "academic"
+        assert response.data["limit"] == 60
         assert set(response.data["formats_available"]) == {
             "txt",
             "pdf",
-            "latex",
-            "docx",
-            "epub",
             "json",
+            "latex",
         }

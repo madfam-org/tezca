@@ -64,21 +64,27 @@ export function StatesGrid() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const fetchStates = useCallback(async () => {
+    const fetchStates = useCallback(async (signal?: AbortSignal) => {
         setLoading(true);
         setError(false);
         try {
-            const data = await api.getStates();
+            const data = await api.getStates({ signal });
             setStates(data.states);
         } catch {
-            setError(true);
+            if (!signal?.aborted) setError(true);
         } finally {
-            setLoading(false);
+            if (!signal?.aborted) setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchStates();
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        fetchStates(controller.signal);
+        return () => {
+            clearTimeout(timeout);
+            controller.abort();
+        };
     }, [fetchStates]);
 
     return (
@@ -123,7 +129,7 @@ export function StatesGrid() {
                     <div className="text-center py-16">
                         <p className="text-destructive mb-4">{t.loadError}</p>
                         <button
-                            onClick={fetchStates}
+                            onClick={() => fetchStates()}
                             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                         >
                             {t.retry}

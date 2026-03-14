@@ -72,6 +72,7 @@ npm run dev:all                     # both concurrently
 | `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Redis for Celery tasks |
 | `TEZCA_ADMIN_USER_IDS` | `""` | Comma-separated Janua user IDs allowed admin access |
 | `DHANAM_CHECKOUT_URL` | `https://dhanam.madfam.io/checkout` | Billing checkout URL (used by tier gates) |
+| `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
 
 ---
 
@@ -162,34 +163,41 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 | Tier | Aliases | Per Minute | Per Hour |
 |------|---------|-----------|----------|
 | anon | — | 10 | 100 |
+| community | — | 1,000 | 100,000 |
 | essentials | `free` | 30 | 500 |
-| community | — | 60 | 2,000 |
-| pro | `premium`, `enterprise` | 60 | 2,000 |
+| academic | `pro`, `premium` | 60 | 2,000 |
+| institutional | `enterprise` | 200 | 50,000 |
 | madfam | `internal` | 200 | 50,000 |
 
 ### Tier-Based Access Control
 
-5-tier hierarchy defined in `apps/api/tier_permissions.py` (single source of truth):
+6-tier hierarchy defined in `apps/api/tier_permissions.py` (single source of truth):
 
-| Tier | Rank | Search page_size | Bulk/Webhooks | Premium Export |
-|------|------|-----------------|---------------|----------------|
-| anon | 0 | 25 | no | no |
-| essentials | 1 | 25 | no | no |
-| community | 2 | 100 | yes | no |
-| pro | 3 | 100 | yes | yes |
-| madfam | 4 | 100 | yes | yes |
+| Tier | Rank | Audience | Search page_size | Key Features |
+|------|------|----------|-----------------|--------------|
+| anon | 0 | Unauthenticated | 25 | TXT export only |
+| community | 1 | Self-hosters | 1,000 | PDF/JSON export, bulk download, API keys |
+| essentials | 2 | Individual researchers | 50 | PDF/JSON export, API keys |
+| academic | 3 | Academic institutions | 100 | LaTeX export, bulk download, search analytics |
+| institutional | 4 | Government/enterprise | 1,000 | DOCX/EPUB export, webhooks, graph API |
+| madfam | 5 | Internal MADFAM | 1,000 | All features |
 
-- `RequireTier.of("community")` gates `bulk_articles` and `create_webhook`
+- `RequireFeature.of("bulk_download")` gates `bulk_articles` (non-monotonic: community has it, essentials doesn't)
+- `RequireFeature.of("webhooks")` gates `create_webhook` (institutional+ only)
+- `RequireFeature.of("graph_api")` gates graph endpoints (institutional+ only). Public showcase endpoint (`/api/v1/graph/showcase/`) is unauthenticated (top 50 nodes, min_weight=5)
+- `RequireTier.of("academic")` for rank-based gating (monotonic features)
 - `check_feature(tier, "search_analytics")` gates analytics view
 - Feature flags and limits defined in `apps/api/tiers.json`
-- `normalize_tier()` handles legacy names: `free`→`essentials`, `premium`/`enterprise`→`pro`, `internal`→`madfam`
+- `normalize_tier()` handles legacy names: `free`→`essentials`, `premium`/`enterprise`/`pro`→`academic`, `internal`→`madfam`
+- `get_effective_tier()` caps tier at academic in self-hosted mode (`TEZCA_DEPLOYMENT=self-hosted`)
 
 ### Billing
 
 - Checkout URL: `settings.DHANAM_CHECKOUT_URL` (env `DHANAM_CHECKOUT_URL`, default `https://dhanam.madfam.io/checkout`)
 - Webhook: `POST /api/v1/billing/webhook/` — HMAC-SHA256 signed by Dhanam, upgrades/downgrades API key tiers
 - Secret: `DHANAM_WEBHOOK_SECRET` env var
-- Plan mappings: `tezca_essentials`, `tezca_community`, `tezca_pro`, `tezca_madfam` → corresponding tiers
+- Plan mappings: `tezca_community`, `tezca_essentials`, `tezca_academic`, `tezca_institutional`, `tezca_madfam` → corresponding tiers (legacy `tezca_pro`→`academic`)
+- Downgrade fallback: `community` (free tier for authenticated users)
 
 ### Route Conventions
 
@@ -200,9 +208,12 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 ### Elasticsearch
 
 - Singleton client in `apps/api/config.py` (`es_client`)
-- Index name: `articles` (constant `INDEX_NAME`)
+- Index name: `articles` (constant `INDEX_NAME`), also aliased via `INDEX_ALIAS`
 - ES 8.17, timeout 30s, 3 retries, 10 connections per node
 - Always use `es_client` from config, never instantiate a new client
+- **Alias strategy**: `articles` is an alias pointing to a versioned concrete index (`articles_v{timestamp}`). Zero-downtime reindex via `index_laws --reindex` creates a new versioned index, indexes into it, then atomically swaps the alias. One-time migration from concrete to alias via `manage_es_alias --migrate` or `index_laws --migrate-alias`
+- **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
+- **Graceful degradation**: When ES is unavailable, `law_articles` and `law_stats` return HTTP 200 with `degraded: true` and empty/partial data instead of 500. Frontend shows an "articles unavailable" banner via `articlesDegraded` state in `LawDetail.tsx`.
 
 ### Celery
 
@@ -234,8 +245,8 @@ All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from
 ### Tier-Gating Components
 
 - **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
-- **`TierComparison`** — Feature comparison table across Essentials/Community/Pro tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
-- **`LinkifiedArticle`** — `crossRefsDisabled` defaults to `true`. Pass `crossRefsDisabled={false}` explicitly to enable per-article cross-reference fetching. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) to load refs for all articles in a single request instead of N+1 individual calls.
+- **`TierComparison`** — Feature comparison table across Community/Essentials/Academic/Institutional tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
+- **`LinkifiedArticle`** — Cross-references are loaded in batch by `ArticleViewer` via `useBatchCrossRefs` hook (eliminates N+1). Individual articles receive refs via `preloadedRefs` prop. The `crossRefsDisabled` prop defaults to `false` when batch refs are available. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) for custom integrations.
 
 ### Colors
 
@@ -295,14 +306,15 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
-| `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits |
+| `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits. Re-exports `RequireTier`, `RequireFeature`, `check_feature`, `get_effective_tier` from middleware |
+| `apps/api/middleware/tier_permissions.py` | `RequireTier` (rank-based), `RequireFeature` (feature-flag-based), `get_effective_tier()` (self-hosted cap) |
 | `apps/api/tiers.json` | Feature flags and limits per tier (loaded by tier_permissions) |
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
 | `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
-| `apps/api/graph_views.py` | Law graph API (ego graph + global overview for Sigma.js) |
+| `apps/api/graph_views.py` | Law graph API (ego graph + global overview + public showcase for Sigma.js) |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
@@ -321,6 +333,14 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality) with ErrorTracker |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
+| `apps/api/es_index_manager.py` | ES alias management (zero-downtime reindex) |
+| `apps/api/management/commands/manage_es_alias.py` | CLI for ES alias status/migrate/rollback/cleanup |
+| `apps/web/hooks/useBatchCrossRefs.ts` | Batch cross-reference fetching hook (eliminates N+1) |
+| `apps/web/components/graph/graphConstants.ts` | Graph color modes, category/tier colors, sizing helpers |
+| `apps/web/components/graph/GraphSearch.tsx` | Node search with autocomplete and camera animation |
+| `apps/web/components/graph/GraphFilters.tsx` | Category filter pills for graph visualization |
+| `apps/web/components/graph/GraphStats.tsx` | Collapsible graph statistics panel |
+| `apps/web/components/graph/useGraphExport.ts` | PNG export via Sigma canvas compositing |
 
 ---
 
@@ -368,8 +388,14 @@ type Lang = 'es' | 'en' | 'nah';
 
 ## CI/CD
 
-- Python CI runs `poetry run black --check` and `poetry run pytest`
-- Node CI runs `npm run lint:all` and `npm run build:all`
+- Python CI runs `poetry run black --check` and `poetry run pytest` (matrix: Python 3.11 + 3.12)
+- Node CI runs `npm run lint:all` and `npm run build:all` (matrix: Node 20 + 22)
+- E2E tests run against `docker-compose.e2e.yml` stack (blocking gate, Playwright with 2 CI retries)
+- Security audits are blocking: `pip-audit` (Python) and `npm audit --audit-level=high` (Node). Use `--ignore-vuln PYSEC-YYYY-NNNNN` in CI to allowlist triaged CVEs
+- CodeQL/SAST runs on push/PR to main and weekly (Monday 6am UTC) for Python + JavaScript/TypeScript
+- MCP server tests run in CI via `uv sync && uv run pytest`
+- MCP server publishes to PyPI on `mcp-v*` tags via OIDC trusted publisher
 - Deploy workflows push digest commits that can race with subsequent pushes -- use `git pull --rebase` before pushing
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
 - WeasyPrint and other optional deps are similarly skipped in CI
+- Docker Compose services have resource limits (cpu/memory) to prevent runaway containers

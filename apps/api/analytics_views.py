@@ -26,8 +26,8 @@ def search_analytics(request):
     if not check_feature(user_tier, "search_analytics"):
         return Response(
             {
-                "error": "Search analytics requires community tier or above. "
-                f"Upgrade at {settings.DHANAM_CHECKOUT_URL}?plan=tezca_community&product=tezca"
+                "error": "Search analytics requires academic tier or above. "
+                f"Upgrade at {settings.DHANAM_CHECKOUT_URL}?plan=tezca_academic&product=tezca"
             },
             status=http_status.HTTP_403_FORBIDDEN,
         )

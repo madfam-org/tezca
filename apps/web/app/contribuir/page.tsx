@@ -23,7 +23,7 @@ const content = {
     cards: {
       expert: {
         title: 'Contacto de experto',
-        desc: 'Eres abogado, acad\u00e9mico o especialista en derecho mexicano? Tu conocimiento puede ayudar a verificar, clasificar y enriquecer el acervo legislativo.',
+        desc: '\u00bfEres abogado, acad\u00e9mico o especialista en derecho mexicano? Tu conocimiento puede ayudar a verificar, clasificar y enriquecer el acervo legislativo.',
         cta: 'Ofrecer experiencia',
       },
       data: {

@@ -125,6 +125,41 @@ describe('CategoriesIndexPage (/categorias)', () => {
         expect(screen.getByText('Constitucional')).toBeInTheDocument();
     });
 
+    it('does not render unknown API-only categories', async () => {
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve([
+                ...mockCategories,
+                { category: 'Ley_organica', count: 10, label: 'Ley_organica' },
+                { category: 'Codigo', count: 5, label: 'Codigo' },
+            ]),
+        });
+
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
+        render(Page);
+
+        // Only 7 curated categories should render, not raw DB types
+        const cards = screen.getAllByTestId('card');
+        expect(cards.length).toBe(7);
+        expect(screen.queryByText('Ley_organica')).not.toBeInTheDocument();
+        expect(screen.queryByText('Codigo')).not.toBeInTheDocument();
+    });
+
+    it('displays singular form for count=1', async () => {
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve([
+                { category: 'civil', count: 1, label: 'Civil' },
+            ]),
+        });
+
+        const Page = await CategoriesIndexPage({ searchParams: Promise.resolve({}) });
+        render(Page);
+
+        // Should show "1 ley" not "1 leyes"
+        expect(screen.getByText(/^1 ley$/)).toBeInTheDocument();
+    });
+
     it('renders breadcrumb navigation', async () => {
         mockFetch.mockResolvedValue({
             ok: true,

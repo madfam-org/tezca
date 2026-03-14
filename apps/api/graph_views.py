@@ -9,13 +9,25 @@ from collections import defaultdict
 from django.db.models import Avg, Count, F, Q, Value
 from django.db.models.functions import Coalesce
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from apps.api.middleware.tier_permissions import RequireFeature
 from apps.api.models import CrossReference, Law
 from apps.api.schema import LawGraphResponseSchema
 
 # ── Helpers ──────────────────────────────────────────────────────────────
+
+_LAW_FIELDS = (
+    "official_id",
+    "name",
+    "short_name",
+    "tier",
+    "category",
+    "status",
+    "law_type",
+    "state",
+)
 
 
 def _aggregate_edges(queryset, source_field, target_field):
@@ -29,6 +41,45 @@ def _aggregate_edges(queryset, source_field, target_field):
         .filter(weight__gte=1)
         .order_by("-weight")
     )
+
+
+def _enrich_nodes(slugs, ref_counts, focal_slug=None):
+    """Build enriched node dicts from a set of law slugs."""
+    laws = Law.objects.filter(official_id__in=list(slugs)).values(*_LAW_FIELDS)
+    law_map = {law["official_id"]: law for law in laws}
+
+    nodes = []
+    for slug in slugs:
+        law = law_map.get(slug, {})
+        nodes.append(
+            {
+                "id": slug,
+                "label": law.get("name", slug),
+                "short_name": law.get("short_name"),
+                "tier": law.get("tier"),
+                "category": law.get("category"),
+                "status": law.get("status"),
+                "law_type": law.get("law_type"),
+                "state": law.get("state"),
+                "ref_count": ref_counts.get(slug, 0),
+                "is_focal": slug == focal_slug,
+            }
+        )
+    return nodes
+
+
+def _format_edges(edges_list):
+    """Format edges for the response payload."""
+    return [
+        {
+            "id": f"{e['source']}->{e['target']}",
+            "source": e["source"],
+            "target": e["target"],
+            "weight": e["weight"],
+            "avg_confidence": round(e["avg_confidence"], 3),
+        }
+        for e in edges_list
+    ]
 
 
 def _build_graph(focal_law_slug, depth, min_confidence, max_nodes, direction):
@@ -132,39 +183,8 @@ def _build_graph(focal_law_slug, depth, min_confidence, max_nodes, direction):
         ref_counts[e["source"]] += e["weight"]
         ref_counts[e["target"]] += e["weight"]
 
-    # Enrich nodes from Law model
-    laws = Law.objects.filter(official_id__in=list(visited_slugs)).values(
-        "official_id", "name", "tier", "category", "status", "law_type", "state"
-    )
-    law_map = {law["official_id"]: law for law in laws}
-
-    nodes = []
-    for slug in visited_slugs:
-        law = law_map.get(slug, {})
-        nodes.append(
-            {
-                "id": slug,
-                "label": law.get("name", slug),
-                "tier": law.get("tier"),
-                "category": law.get("category"),
-                "status": law.get("status"),
-                "law_type": law.get("law_type"),
-                "state": law.get("state"),
-                "ref_count": ref_counts.get(slug, 0),
-                "is_focal": slug == focal_law_slug,
-            }
-        )
-
-    edges_out = [
-        {
-            "id": f"{e['source']}->{e['target']}",
-            "source": e["source"],
-            "target": e["target"],
-            "weight": e["weight"],
-            "avg_confidence": round(e["avg_confidence"], 3),
-        }
-        for e in final_edges
-    ]
+    nodes = _enrich_nodes(visited_slugs, ref_counts, focal_slug=focal_law_slug)
+    edges_out = _format_edges(final_edges)
 
     depth_reached = min(depth, current_depth + 1) if all_edges else 0
 
@@ -178,88 +198,8 @@ def _build_graph(focal_law_slug, depth, min_confidence, max_nodes, direction):
     return nodes, edges_out, meta
 
 
-# ── Endpoints ────────────────────────────────────────────────────────────
-
-
-@extend_schema(
-    tags=["Graph"],
-    summary="Get law ego graph",
-    description=(
-        "Returns nodes and edges for the cross-reference network around a focal law. "
-        "Supports BFS expansion up to depth 3."
-    ),
-    parameters=[
-        OpenApiParameter("depth", int, description="BFS hops (1-3, default 1)"),
-        OpenApiParameter(
-            "min_confidence",
-            float,
-            description="Minimum edge confidence (default 0.5)",
-        ),
-        OpenApiParameter(
-            "max_nodes", int, description="Maximum nodes (default 150, max 500)"
-        ),
-        OpenApiParameter(
-            "direction",
-            str,
-            description="Edge direction: both, outgoing, incoming",
-            enum=["both", "outgoing", "incoming"],
-        ),
-    ],
-    responses={200: LawGraphResponseSchema},
-)
-@api_view(["GET"])
-def law_graph(request, law_id):
-    """Per-law ego graph for Sigma.js visualization."""
-    depth = min(int(request.query_params.get("depth", 1)), 3)
-    min_confidence = float(request.query_params.get("min_confidence", 0.5))
-    max_nodes = min(int(request.query_params.get("max_nodes", 150)), 500)
-    direction = request.query_params.get("direction", "both")
-    if direction not in ("both", "outgoing", "incoming"):
-        direction = "both"
-
-    nodes, edges, meta = _build_graph(
-        law_id, depth, min_confidence, max_nodes, direction
-    )
-
-    return Response(
-        {
-            "focal_law": law_id,
-            "nodes": nodes,
-            "edges": edges,
-            "meta": meta,
-        }
-    )
-
-
-@extend_schema(
-    tags=["Graph"],
-    summary="Get global graph overview",
-    description=(
-        "Returns the global law cross-reference network, optionally filtered by "
-        "tier or category. Uses a single aggregate query."
-    ),
-    parameters=[
-        OpenApiParameter(
-            "tier", str, description="Filter by tier (federal, state, municipal)"
-        ),
-        OpenApiParameter("category", str, description="Filter by legal domain"),
-        OpenApiParameter(
-            "min_weight", int, description="Minimum edge weight (default 3)"
-        ),
-        OpenApiParameter(
-            "max_nodes", int, description="Maximum nodes (default 300, max 500)"
-        ),
-    ],
-    responses={200: LawGraphResponseSchema},
-)
-@api_view(["GET"])
-def graph_overview(request):
-    """Global law network for the universe map page."""
-    tier = request.query_params.get("tier")
-    category = request.query_params.get("category")
-    min_weight = int(request.query_params.get("min_weight", 3))
-    max_nodes = min(int(request.query_params.get("max_nodes", 300)), 500)
-
+def _build_overview(tier=None, category=None, min_weight=3, max_nodes=300):
+    """Build the global graph overview. Used by both authenticated and showcase endpoints."""
     qs = CrossReference.objects.exclude(target_law_slug__isnull=True)
 
     # Apply tier/category filters via Law joins
@@ -315,48 +255,136 @@ def graph_overview(request):
             ref_counts[e["target"]] += e["weight"]
         truncated = True
 
-    # Enrich nodes
-    laws = Law.objects.filter(official_id__in=list(all_slugs)).values(
-        "official_id", "name", "tier", "category", "status", "law_type", "state"
+    nodes = _enrich_nodes(all_slugs, ref_counts)
+    edges_out = _format_edges(edges_list)
+
+    meta = {
+        "total_nodes": len(nodes),
+        "total_edges": len(edges_out),
+        "depth_reached": 0,
+        "truncated": truncated,
+    }
+
+    return nodes, edges_out, meta
+
+
+# ── Endpoints ────────────────────────────────────────────────────────────
+
+
+@extend_schema(
+    tags=["Graph"],
+    summary="Get law ego graph",
+    description=(
+        "Returns nodes and edges for the cross-reference network around a focal law. "
+        "Supports BFS expansion up to depth 3."
+    ),
+    parameters=[
+        OpenApiParameter("depth", int, description="BFS hops (1-3, default 1)"),
+        OpenApiParameter(
+            "min_confidence",
+            float,
+            description="Minimum edge confidence (default 0.5)",
+        ),
+        OpenApiParameter(
+            "max_nodes", int, description="Maximum nodes (default 150, max 500)"
+        ),
+        OpenApiParameter(
+            "direction",
+            str,
+            description="Edge direction: both, outgoing, incoming",
+            enum=["both", "outgoing", "incoming"],
+        ),
+    ],
+    responses={200: LawGraphResponseSchema},
+)
+@api_view(["GET"])
+@permission_classes([RequireFeature.of("graph_api")])
+def law_graph(request, law_id):
+    """Per-law ego graph for Sigma.js visualization."""
+    depth = min(int(request.query_params.get("depth", 1)), 3)
+    min_confidence = float(request.query_params.get("min_confidence", 0.5))
+    max_nodes = min(int(request.query_params.get("max_nodes", 150)), 500)
+    direction = request.query_params.get("direction", "both")
+    if direction not in ("both", "outgoing", "incoming"):
+        direction = "both"
+
+    nodes, edges, meta = _build_graph(
+        law_id, depth, min_confidence, max_nodes, direction
     )
-    law_map = {law["official_id"]: law for law in laws}
 
-    nodes = [
+    return Response(
         {
-            "id": slug,
-            "label": law_map.get(slug, {}).get("name", slug),
-            "tier": law_map.get(slug, {}).get("tier"),
-            "category": law_map.get(slug, {}).get("category"),
-            "status": law_map.get(slug, {}).get("status"),
-            "law_type": law_map.get(slug, {}).get("law_type"),
-            "state": law_map.get(slug, {}).get("state"),
-            "ref_count": ref_counts.get(slug, 0),
-            "is_focal": False,
+            "focal_law": law_id,
+            "nodes": nodes,
+            "edges": edges,
+            "meta": meta,
         }
-        for slug in all_slugs
-    ]
+    )
 
-    edges_out = [
-        {
-            "id": f"{e['source']}->{e['target']}",
-            "source": e["source"],
-            "target": e["target"],
-            "weight": e["weight"],
-            "avg_confidence": round(e["avg_confidence"], 3),
-        }
-        for e in edges_list
-    ]
+
+@extend_schema(
+    tags=["Graph"],
+    summary="Get global graph overview",
+    description=(
+        "Returns the global law cross-reference network, optionally filtered by "
+        "tier or category. Uses a single aggregate query."
+    ),
+    parameters=[
+        OpenApiParameter(
+            "tier", str, description="Filter by tier (federal, state, municipal)"
+        ),
+        OpenApiParameter("category", str, description="Filter by legal domain"),
+        OpenApiParameter(
+            "min_weight", int, description="Minimum edge weight (default 3)"
+        ),
+        OpenApiParameter(
+            "max_nodes", int, description="Maximum nodes (default 300, max 500)"
+        ),
+    ],
+    responses={200: LawGraphResponseSchema},
+)
+@api_view(["GET"])
+@permission_classes([RequireFeature.of("graph_api")])
+def graph_overview(request):
+    """Global law network for the universe map page."""
+    tier = request.query_params.get("tier")
+    category = request.query_params.get("category")
+    min_weight = int(request.query_params.get("min_weight", 3))
+    max_nodes = min(int(request.query_params.get("max_nodes", 300)), 500)
+
+    nodes, edges, meta = _build_overview(tier, category, min_weight, max_nodes)
 
     return Response(
         {
             "focal_law": None,
             "nodes": nodes,
-            "edges": edges_out,
-            "meta": {
-                "total_nodes": len(nodes),
-                "total_edges": len(edges_out),
-                "depth_reached": 0,
-                "truncated": truncated,
-            },
+            "edges": edges,
+            "meta": meta,
+        }
+    )
+
+
+@extend_schema(
+    tags=["Graph"],
+    summary="Public graph showcase",
+    description=(
+        "Returns a curated subset of the global law network for unauthenticated users. "
+        "Top 50 most-connected nodes with min_weight=5."
+    ),
+    responses={200: LawGraphResponseSchema},
+)
+@api_view(["GET"])
+def graph_public_showcase(request):
+    """Public showcase graph — no auth required. Capped at 50 nodes."""
+    nodes, edges, meta = _build_overview(
+        tier=None, category=None, min_weight=5, max_nodes=50
+    )
+
+    return Response(
+        {
+            "focal_law": None,
+            "nodes": nodes,
+            "edges": edges,
+            "meta": meta,
         }
     )

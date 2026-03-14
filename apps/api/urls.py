@@ -1,7 +1,6 @@
 from django.urls import path
 from rest_framework.permissions import IsAuthenticated
 
-from .middleware.admin_permission import IsTezcaAdmin
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -42,7 +41,7 @@ from .export_views import (
     export_quota,
     export_txt,
 )
-from .graph_views import graph_overview, law_graph
+from .graph_views import graph_overview, graph_public_showcase, law_graph
 from .judicial_views import (
     judicial_detail,
     judicial_list,
@@ -58,10 +57,12 @@ from .law_views import (
     law_search,
     law_stats,
     law_structure,
+    laws_exist,
     municipalities_list,
     states_list,
     suggest,
 )
+from .middleware.admin_permission import IsTezcaAdmin
 from .middleware.janua_auth import JanuaJWTAuthentication
 from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
 from .notification_views import (
@@ -136,6 +137,7 @@ urlpatterns = [
     # ── Public endpoints (no auth) ────────────────────────────────────
     path("search/", SearchView.as_view(), name="search"),
     path("stats/", law_stats, name="law-stats"),
+    path("laws/exists/", laws_exist, name="laws-exist"),
     path("laws/", LawListView.as_view(), name="law-list"),
     path("laws/<str:law_id>/", LawDetailView.as_view(), name="law-detail"),
     path("laws/<str:law_id>/search/", law_search, name="law-search"),
@@ -170,6 +172,7 @@ urlpatterns = [
     path("changelog/", changelog, name="changelog"),
     path("coverage/", public_coverage, name="public-coverage"),
     path("graph/overview/", graph_overview, name="graph-overview"),
+    path("graph/showcase/", graph_public_showcase, name="graph-showcase"),
     # ── Contributions (public submission) ──────────────────────────────
     path("contributions/", submit_contribution, name="contribution-submit"),
     path("contributions/expert/", submit_expert_contact, name="expert-contact"),

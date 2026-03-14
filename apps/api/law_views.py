@@ -431,15 +431,15 @@ def law_search(request, law_id):
 @api_view(["GET"])
 def law_articles(request, law_id):
     """Get all articles for a law from Elasticsearch."""
+    # Verify law exists (raises 404 before ES is involved)
+    law = get_object_or_404(Law, official_id=law_id)
+
+    # Pagination params
+    page = max(1, int(request.query_params.get("page", 1)))
+    page_size = min(max(1, int(request.query_params.get("page_size", 500))), 1000)
+    offset = (page - 1) * page_size
+
     try:
-        # Verify law exists
-        law = get_object_or_404(Law, official_id=law_id)
-
-        # Pagination params
-        page = max(1, int(request.query_params.get("page", 1)))
-        page_size = min(max(1, int(request.query_params.get("page_size", 500))), 1000)
-        offset = (page - 1) * page_size
-
         # Query Elasticsearch
         es = es_client
 
@@ -494,10 +494,17 @@ def law_articles(request, law_id):
         return response
 
     except (ESConnectionError, ConnectionTimeout, NotFoundError):
-        logger.exception("law_articles failed for %s", law_id)
+        logger.warning("ES unavailable for law_articles %s", law_id)
         return Response(
-            {"error": "An internal error occurred while retrieving articles."},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            {
+                "law_id": law_id,
+                "law_name": law.name,
+                "total": 0,
+                "page": page,
+                "page_size": page_size,
+                "articles": [],
+                "degraded": True,
+            }
         )
 
 
@@ -606,6 +613,21 @@ def municipalities_list(request):
         .order_by("state", "municipality")
     )
     return Response(list(municipalities))
+
+
+@api_view(["GET"])
+def laws_exist(request):
+    """Return which of the given law IDs exist in the database."""
+    raw = request.query_params.get("ids", "")
+    ids = [i.strip() for i in raw.split(",") if i.strip()][:20]
+    if not ids:
+        return Response({"existing": []})
+    existing = list(
+        Law.objects.filter(official_id__in=ids).values_list("official_id", flat=True)
+    )
+    response = Response({"existing": existing})
+    response["Cache-Control"] = "public, max-age=3600"
+    return response
 
 
 @api_view(["GET"])
@@ -867,10 +889,7 @@ def law_stats(request):
         "recent_laws": recent_laws,
     }
 
-    if coverage is not None:
-        response_data["coverage"] = coverage
-
-    if es_degraded:
-        response_data["degraded"] = True
+    response_data["coverage"] = coverage
+    response_data["degraded"] = es_degraded
 
     return Response(response_data)

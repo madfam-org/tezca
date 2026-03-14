@@ -11,9 +11,10 @@ const content = {
     es: {
         title: 'Compara los planes de Tezca',
         subtitle: 'Elige el plan que mejor se adapte a tus necesidades',
-        essentials: 'Essentials',
         community: 'Community',
-        pro: 'Pro',
+        essentials: 'Essentials',
+        academic: 'Academic',
+        institutional: 'Institutional',
         free: 'Gratis',
         current: 'Tu plan',
         popular: 'Popular',
@@ -22,20 +23,23 @@ const content = {
         features: {
             search_results: 'Resultados por página',
             export_txt: 'Descargar TXT',
-            export_pdf: 'Descargar PDF',
-            export_premium: 'LaTeX, DOCX, EPUB, JSON',
+            export_pdf: 'Descargar PDF/JSON',
+            export_latex: 'Descargar LaTeX',
+            export_premium: 'DOCX, EPUB',
             api_access: 'Acceso API',
             bulk_download: 'Descarga masiva',
             webhooks: 'Webhooks',
             analytics: 'Análisis de búsqueda',
+            graph_api: 'API de grafo',
         },
     },
     en: {
         title: 'Compare Tezca plans',
         subtitle: 'Choose the plan that best fits your needs',
-        essentials: 'Essentials',
         community: 'Community',
-        pro: 'Pro',
+        essentials: 'Essentials',
+        academic: 'Academic',
+        institutional: 'Institutional',
         free: 'Free',
         current: 'Your plan',
         popular: 'Popular',
@@ -44,20 +48,23 @@ const content = {
         features: {
             search_results: 'Results per page',
             export_txt: 'Download TXT',
-            export_pdf: 'Download PDF',
-            export_premium: 'LaTeX, DOCX, EPUB, JSON',
+            export_pdf: 'Download PDF/JSON',
+            export_latex: 'Download LaTeX',
+            export_premium: 'DOCX, EPUB',
             api_access: 'API access',
             bulk_download: 'Bulk download',
             webhooks: 'Webhooks',
             analytics: 'Search analytics',
+            graph_api: 'Graph API',
         },
     },
     nah: {
         title: 'Xicnānamiqui Tezca tlaxtlahuīlli',
         subtitle: 'Xicpēpena in tlaxtlahuīlli',
-        essentials: 'Essentials',
         community: 'Community',
-        pro: 'Pro',
+        essentials: 'Essentials',
+        academic: 'Academic',
+        institutional: 'Institutional',
         free: 'Tlanāhuatīlli',
         current: 'Mocuenta',
         popular: 'Popular',
@@ -66,12 +73,14 @@ const content = {
         features: {
             search_results: 'Tlanextīliztli',
             export_txt: 'Xictēmōhui TXT',
-            export_pdf: 'Xictēmōhui PDF',
-            export_premium: 'LaTeX, DOCX, EPUB, JSON',
+            export_pdf: 'Xictēmōhui PDF/JSON',
+            export_latex: 'Xictēmōhui LaTeX',
+            export_premium: 'DOCX, EPUB',
             api_access: 'API',
             bulk_download: 'Huēyi tēmōhuiliztli',
             webhooks: 'Webhooks',
             analytics: 'Tlanextīliztli tlaixmatiliztli',
+            graph_api: 'API tlanextīliztli',
         },
     },
 };
@@ -80,20 +89,23 @@ type FeatureKey = keyof typeof content.en.features;
 
 interface FeatureRow {
     key: FeatureKey;
-    essentials: string | boolean;
     community: string | boolean;
-    pro: string | boolean;
+    essentials: string | boolean;
+    academic: string | boolean;
+    institutional: string | boolean;
 }
 
 const FEATURES: FeatureRow[] = [
-    { key: 'search_results', essentials: '25', community: '100', pro: '100' },
-    { key: 'export_txt', essentials: true, community: true, pro: true },
-    { key: 'export_pdf', essentials: true, community: true, pro: true },
-    { key: 'export_premium', essentials: false, community: false, pro: true },
-    { key: 'api_access', essentials: true, community: true, pro: true },
-    { key: 'bulk_download', essentials: false, community: true, pro: true },
-    { key: 'webhooks', essentials: false, community: true, pro: true },
-    { key: 'analytics', essentials: false, community: false, pro: true },
+    { key: 'search_results', community: '1,000', essentials: '50', academic: '100', institutional: '1,000' },
+    { key: 'export_txt', community: true, essentials: true, academic: true, institutional: true },
+    { key: 'export_pdf', community: true, essentials: true, academic: true, institutional: true },
+    { key: 'export_latex', community: false, essentials: false, academic: true, institutional: true },
+    { key: 'export_premium', community: false, essentials: false, academic: false, institutional: true },
+    { key: 'api_access', community: true, essentials: true, academic: true, institutional: true },
+    { key: 'bulk_download', community: true, essentials: false, academic: true, institutional: true },
+    { key: 'webhooks', community: false, essentials: false, academic: false, institutional: true },
+    { key: 'analytics', community: false, essentials: false, academic: true, institutional: true },
+    { key: 'graph_api', community: false, essentials: false, academic: false, institutional: true },
 ];
 
 interface TierComparisonProps {
@@ -106,17 +118,17 @@ export function TierComparison({ className = '', compact = false }: TierComparis
     const { tier, userId, isAuthenticated } = useAuth();
     const t = content[lang];
 
-    const tiers = ['essentials', 'community', 'pro'] as const;
+    const tiers = ['community', 'essentials', 'academic', 'institutional'] as const;
 
-    const getCheckoutHref = (targetTier: 'essentials' | 'community' | 'pro') => {
+    const getCheckoutHref = (targetTier: typeof tiers[number]) => {
         if (!isAuthenticated) return '/login';
-        if (targetTier === 'essentials') return '/cuenta';
+        if (targetTier === 'community') return '/cuenta';
         return getCheckoutUrl(targetTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined);
     };
 
     const isCurrent = (planTier: string) => tier === planTier;
     const isDowngrade = (planTier: string) => {
-        const rank: Record<string, number> = { anon: 0, essentials: 1, community: 2, pro: 3, madfam: 4 };
+        const rank: Record<string, number> = { anon: 0, community: 1, essentials: 2, academic: 3, institutional: 4, madfam: 5 };
         return (rank[planTier] ?? 0) <= (rank[tier] ?? 0);
     };
 
@@ -128,7 +140,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
 
     if (compact) {
         return (
-            <div className={`grid grid-cols-3 gap-2 text-center text-xs ${className}`}>
+            <div className={`grid grid-cols-4 gap-2 text-center text-xs ${className}`}>
                 {tiers.map((planTier) => (
                     <div
                         key={planTier}
@@ -151,17 +163,17 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                 <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            <th className="text-left pb-4 pr-4 w-1/3" />
+                            <th className="text-left pb-4 pr-4 w-1/5" />
                             {tiers.map((planTier) => (
-                                <th key={planTier} className="pb-4 text-center w-[22%]">
+                                <th key={planTier} className="pb-4 text-center w-[20%]">
                                     <div className="space-y-1">
                                         <div className="font-bold text-base">
                                             {t[planTier]}
                                         </div>
-                                        {planTier === 'essentials' && (
+                                        {planTier === 'community' && (
                                             <Badge variant="secondary" className="text-xs">{t.free}</Badge>
                                         )}
-                                        {planTier === 'community' && (
+                                        {planTier === 'academic' && (
                                             <Badge className="text-xs bg-primary text-primary-foreground">{t.popular}</Badge>
                                         )}
                                         {isCurrent(planTier) && (
@@ -195,7 +207,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                                         <Link href={getCheckoutHref(planTier)}>
                                             <Button
                                                 size="sm"
-                                                variant={planTier === 'community' ? 'default' : 'outline'}
+                                                variant={planTier === 'academic' ? 'default' : 'outline'}
                                                 className="gap-1"
                                             >
                                                 <Sparkles className="h-3 w-3" />
@@ -213,7 +225,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
             {/* Mobile stacked cards */}
             <div className="sm:hidden space-y-3">
                 {tiers.map((planTier) => {
-                    const isHighlighted = planTier === 'community';
+                    const isHighlighted = planTier === 'academic';
                     return (
                         <Card
                             key={planTier}
@@ -223,7 +235,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <span className="font-bold">{t[planTier]}</span>
-                                        {planTier === 'essentials' && (
+                                        {planTier === 'community' && (
                                             <Badge variant="secondary" className="text-xs">{t.free}</Badge>
                                         )}
                                         {isHighlighted && (

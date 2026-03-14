@@ -35,6 +35,17 @@ const TIER_LABELS: Record<Lang, Record<string, string>> = {
     nah: { federal: 'Federal', state: 'Altepetl', municipal: 'Calpulli' },
 };
 
+/** Strip mx-fed-/mx-est- prefix and titlecase if name looks like a raw ID */
+function formatLawName(name: string, id: string): string {
+    if (!name || name === id || /^mx-/.test(name)) {
+        return name
+            .replace(/^mx-(?:fed|est|mun)-/, '')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+    }
+    return name;
+}
+
 export function FeaturedLaws() {
     const { lang } = useLang();
     const t = content[lang];
@@ -92,7 +103,7 @@ export function FeaturedLaws() {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <h3 className="font-medium text-sm leading-tight line-clamp-2">
-                                            {law.name}
+                                            {formatLawName(law.name, law.id)}
                                         </h3>
                                         <div className="flex items-center gap-2 mt-2">
                                             <Badge variant="secondary" className="text-xs">

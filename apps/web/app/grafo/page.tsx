@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function GrafoPage() {
-    return (
-        <div className="container mx-auto px-4 sm:px-6 py-8">
-            <LawGraphContainer />
-        </div>
-    );
+    return <LawGraphContainer mode="fullscreen" />;
 }
