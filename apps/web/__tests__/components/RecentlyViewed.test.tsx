@@ -149,7 +149,18 @@ describe('RecentlyViewed', () => {
     });
 
     // ---------------------------------------------------------------
-    // 10. recordLawView adds an entry
+    // 10. Formats raw ID names as readable titles
+    // ---------------------------------------------------------------
+    it('formats raw ID names as readable titles', () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([
+            { id: 'mx-fed-lgec', name: 'mx-fed-lgec', tier: 'federal', viewedAt: '2026-03-01T12:00:00Z' },
+        ]));
+        render(<RecentlyViewed />);
+        expect(screen.getByText('Lgec')).toBeInTheDocument();
+    });
+
+    // ---------------------------------------------------------------
+    // 11. recordLawView adds an entry
     // ---------------------------------------------------------------
     it('recordLawView adds an entry to localStorage', () => {
         recordLawView({ id: 'cpeum', name: 'Constitucion', tier: 'federal' });

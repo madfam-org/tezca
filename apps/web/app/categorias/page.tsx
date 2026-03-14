@@ -234,9 +234,6 @@ export default async function CategoriesIndexPage({
   const knownKeys = Object.keys(CATEGORY_META);
   const allSlugs = knownKeys;
 
-  // Build counts map from API data (includes all DB categories)
-  // Unknown categories can still be accessed via direct URL
-
   return (
     <div className="min-h-screen bg-background">
       {/* JSON-LD BreadcrumbList */}

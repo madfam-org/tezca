@@ -213,6 +213,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Always use `es_client` from config, never instantiate a new client
 - **Alias strategy**: `articles` is an alias pointing to a versioned concrete index (`articles_v{timestamp}`). Zero-downtime reindex via `index_laws --reindex` creates a new versioned index, indexes into it, then atomically swaps the alias. One-time migration from concrete to alias via `manage_es_alias --migrate` or `index_laws --migrate-alias`
 - **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
+- **Graceful degradation**: When ES is unavailable, `law_articles` and `law_stats` return HTTP 200 with `degraded: true` and empty/partial data instead of 500. Frontend shows an "articles unavailable" banner via `articlesDegraded` state in `LawDetail.tsx`.
 
 ### Celery
 

@@ -69,6 +69,17 @@ function subscribe(callback: () => void): () => void {
     return () => window.removeEventListener('storage', handler);
 }
 
+/** Strip mx-fed-/mx-est- prefix and titlecase if name looks like a raw ID */
+function formatLawName(name: string, id: string): string {
+    if (!name || name === id || /^mx-/.test(name)) {
+        return name
+            .replace(/^mx-(?:fed|est|mun)-/, '')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+    }
+    return name;
+}
+
 export function RecentlyViewed() {
     const { lang } = useLang();
     const t = content[lang];
@@ -100,7 +111,7 @@ export function RecentlyViewed() {
                                 {tierLabel(item.tier)}
                             </Badge>
                             <p className="text-sm font-medium line-clamp-2 text-foreground">
-                                {item.name}
+                                {formatLawName(item.name, item.id)}
                             </p>
                             <div className="mt-2 flex items-center text-xs text-muted-foreground">
                                 <ChevronRight className="h-3 w-3" />

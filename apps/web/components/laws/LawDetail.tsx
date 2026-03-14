@@ -20,7 +20,7 @@ import { VersionTimeline } from './VersionTimeline';
 import { AnnotationPanel } from './AnnotationPanel';
 import { AlertButton } from './AlertButton';
 import { recordLawView } from '@/components/RecentlyViewed';
-import { List, MessageSquare } from 'lucide-react';
+import { List, MessageSquare, X } from 'lucide-react';
 
 const content = {
     es: {
@@ -202,8 +202,15 @@ export function LawDetail({ lawId }: LawDetailProps) {
                         </div>
                     </div>
                     {articlesDegraded && (
-                        <div className="mb-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                            {t.articlesDegraded}
+                        <div className="mb-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive flex items-center justify-between">
+                            <span>{t.articlesDegraded}</span>
+                            <button
+                                onClick={() => setArticlesDegraded(false)}
+                                className="ml-2 p-0.5 rounded hover:bg-destructive/20 transition-colors"
+                                aria-label={lang === 'es' ? 'Cerrar' : lang === 'en' ? 'Dismiss' : 'Xictlātia'}
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
                         </div>
                     )}
                     <div className="mb-4">
