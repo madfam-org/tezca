@@ -167,7 +167,7 @@ export function TierGate({
 
     if (variant === 'toast') {
         return (
-            <div className={`fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-5 fade-in duration-300 ${className}`}>
+            <div className={`fixed bottom-4 right-4 z-50 max-w-[min(24rem,calc(100vw-2rem))] animate-in slide-in-from-bottom-5 fade-in duration-300 ${className}`}>
                 <Card className="border-primary/20 shadow-lg">
                     <CardContent className="p-4">
                         <div className="flex items-start gap-3">
@@ -209,7 +209,7 @@ export function TierGate({
                             </div>
                             <button
                                 onClick={handleDismiss}
-                                className="text-muted-foreground hover:text-foreground shrink-0"
+                                className="text-muted-foreground hover:text-foreground shrink-0 p-1.5"
                                 aria-label={t.dismiss}
                             >
                                 <X className="h-4 w-4" />

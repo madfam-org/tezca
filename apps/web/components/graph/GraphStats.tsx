@@ -65,7 +65,7 @@ export function GraphStats({ data, floating }: GraphStatsProps) {
     }, [data]);
 
     const wrapperClass = floating
-        ? 'absolute top-3 right-3 z-10 rounded-lg border bg-card/90 backdrop-blur-sm shadow-md text-xs'
+        ? 'absolute top-3 right-3 z-10 rounded-lg border bg-card/90 backdrop-blur-sm shadow-md text-xs max-w-[calc(100vw-2rem)]'
         : 'rounded-lg border bg-card p-3 text-xs';
 
     return (

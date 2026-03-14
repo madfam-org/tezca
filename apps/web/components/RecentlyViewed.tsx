@@ -103,9 +103,9 @@ export function RecentlyViewed() {
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{t.title}</h2>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin snap-x snap-mandatory">
                 {items.slice(0, 6).map((item) => (
-                    <Link key={item.id} href={`/leyes/${item.id}`} className="flex-shrink-0 w-56">
+                    <Link key={item.id} href={`/leyes/${item.id}`} className="flex-shrink-0 w-56 snap-start">
                         <Card className="p-3 h-full hover:shadow-md hover:border-primary/30 transition-all">
                             <Badge variant="outline" className="text-xs mb-1.5">
                                 {tierLabel(item.tier)}

@@ -67,7 +67,7 @@ export function GraphSearch({ nodes, onFocus, onClear }: GraphSearchProps) {
     }, [filtered, selectedIndex, handleSelect, handleClear]);
 
     return (
-        <div className="absolute top-3 right-3 z-10 w-64">
+        <div className="absolute top-3 right-3 z-10 w-64 max-w-[calc(100vw-2rem)]">
             <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
                 <input

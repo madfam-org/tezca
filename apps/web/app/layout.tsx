@@ -49,6 +49,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "hsl(var(--primary))" },
     { media: "(prefers-color-scheme: dark)", color: "hsl(var(--primary))" },

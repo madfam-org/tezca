@@ -114,7 +114,7 @@ export function KeyboardShortcuts({
             {/* Floating hint button */}
             <button
                 onClick={() => setShowPanel((prev) => !prev)}
-                className="fixed bottom-20 right-4 z-30 rounded-full bg-card border shadow-lg p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="fixed bottom-20 right-4 z-30 rounded-full bg-card border shadow-lg p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hidden lg:inline-flex"
                 aria-label={t.toggle}
                 title={t.toggle}
             >
@@ -123,7 +123,7 @@ export function KeyboardShortcuts({
 
             {/* Shortcuts panel */}
             {showPanel && (
-                <div className="fixed bottom-32 right-4 z-30 w-64 rounded-lg border bg-card shadow-xl p-4">
+                <div className="fixed bottom-32 right-4 z-30 w-64 max-w-[calc(100vw-2rem)] rounded-lg border bg-card shadow-xl p-4">
                     <div className="flex items-center justify-between mb-3">
                         <h4 className="text-sm font-semibold">{t.title}</h4>
                         <button

@@ -20,7 +20,7 @@ export default function GlobalError({
   // undefined. Raw Tailwind color classes are intentional here.
   return (
     <html lang="es">
-      <body className="flex min-h-screen items-center justify-center bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 p-8">
+      <body className="flex min-h-screen items-center justify-center bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 px-4 py-8 sm:p-8">
         <div className="text-center max-w-md">
           <h2 className="text-2xl font-semibold mb-2">Algo salió mal</h2>
           <p className="text-sm text-gray-500 mb-6">

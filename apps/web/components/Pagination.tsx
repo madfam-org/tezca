@@ -87,7 +87,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 size="icon"
                 onClick={() => onPageChange(1)}
                 disabled={currentPage === 1}
-                className="h-8 w-8"
+                className="h-9 w-9"
                 title={t.firstPage}
             >
                 <ChevronsLeft className="h-4 w-4" />
@@ -99,7 +99,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 size="icon"
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="h-8 w-8"
+                className="h-9 w-9"
                 title={t.prevPage}
             >
                 <ChevronLeft className="h-4 w-4" />
@@ -123,7 +123,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                             variant={currentPage === page ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => onPageChange(page)}
-                            className="h-8 min-w-[2rem]"
+                            className="h-9 min-w-[2.25rem]"
                         >
                             {page}
                         </Button>
@@ -137,7 +137,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 size="icon"
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="h-8 w-8"
+                className="h-9 w-9"
                 title={t.nextPage}
             >
                 <ChevronRight className="h-4 w-4" />
@@ -149,7 +149,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 size="icon"
                 onClick={() => onPageChange(totalPages)}
                 disabled={currentPage === totalPages}
-                className="h-8 w-8"
+                className="h-9 w-9"
                 title={t.lastPage}
             >
                 <ChevronsRight className="h-4 w-4" />

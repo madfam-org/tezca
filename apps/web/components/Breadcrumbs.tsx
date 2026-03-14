@@ -42,7 +42,7 @@ export function Breadcrumbs({ lawName }: BreadcrumbsProps) {
                                 {item.label}
                             </Link>
                         ) : (
-                            <span className="text-foreground font-medium truncate max-w-[300px]" aria-current="page">
+                            <span className="text-foreground font-medium truncate max-w-[min(300px,60vw)]" aria-current="page">
                                 {item.label}
                             </span>
                         )}

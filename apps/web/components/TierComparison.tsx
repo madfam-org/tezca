@@ -148,7 +148,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                     >
                         <div className="font-bold mb-0.5">{t[planTier]}</div>
                         {isCurrent(planTier) && (
-                            <Badge variant="outline" className="text-[10px] px-1 py-0 mb-0.5">{t.current}</Badge>
+                            <Badge variant="outline" className="text-xs px-1.5 py-0 mb-0.5">{t.current}</Badge>
                         )}
                     </div>
                 ))}
