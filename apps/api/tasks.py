@@ -591,6 +591,20 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
     if not subscription.is_active:
         return
 
+    # Defense-in-depth: re-validate URL at delivery time in case DNS changed
+    try:
+        from .utils.url_validation import UnsafeURLError, validate_webhook_url
+
+        validate_webhook_url(subscription.url)
+    except UnsafeURLError:
+        logger.warning(
+            "SSRF check failed at delivery: sub=%d url=%s",
+            subscription.pk,
+            subscription.url,
+        )
+        WebhookSubscription.objects.filter(pk=subscription.pk).update(is_active=False)
+        return
+
     body = json.dumps(
         {
             "event": event,

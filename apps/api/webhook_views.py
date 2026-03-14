@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from .middleware.tier_permissions import RequireFeature
 from .models import APIKey, WebhookSubscription
 from .tasks import deliver_webhook
+from .utils.url_validation import UnsafeURLError, validate_webhook_url
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,11 @@ def create_webhook(request):
         return Response(
             {"error": "url is required"}, status=status.HTTP_400_BAD_REQUEST
         )
+
+    try:
+        validate_webhook_url(url)
+    except UnsafeURLError as exc:
+        return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
     if not events:
         return Response(

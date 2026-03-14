@@ -81,7 +81,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 889 tests)
+# Backend (pytest + django, 1138 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -150,7 +150,7 @@ Tezca is a generic multi-tenant platform. The codebase must NEVER contain:
 
 All integrations happen through standard, client-agnostic mechanisms:
 - **API Keys** (`tzk_*`) — provisioned via `provision_api_key` command, scoped by tier/domains/scopes
-- **Webhooks** — any subscriber can register via `/api/v1/webhooks/`, receives HMAC-signed events
+- **Webhooks** — any subscriber can register via `/api/v1/webhooks/`, receives HMAC-signed events. SSRF-protected: URLs validated against private/reserved IPs at creation and delivery time
 - **REST API** — standard endpoints, rate-limited by tier
 - **Django signals** — `post_save` on `Law`/`LawVersion` triggers generic `dispatch_webhook_event()`
 
@@ -312,6 +312,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
 | `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
+| `apps/api/utils/url_validation.py` | Webhook SSRF protection — validates URLs against private/reserved IPs |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/graph_views.py` | Law graph API (ego graph + global overview + public showcase for Sigma.js) |
@@ -360,7 +361,7 @@ type Lang = 'es' | 'en' | 'nah';
    - boto3: `poetry install -E r2`
    - python-docx, ebooklib, jinja2: `poetry install -E export`
 
-6. **Black version:** Always use `poetry run black` (not system black) to match the version pinned in `poetry.lock` (24.x).
+6. **Black version:** Always use `poetry run black` (not system black) to match the version pinned in `poetry.lock` (26.x).
 
 7. **Poetry lockfile:** Always run `poetry lock` after changing `pyproject.toml` deps before committing.
 
@@ -391,7 +392,7 @@ type Lang = 'es' | 'en' | 'nah';
 - Python CI runs `poetry run black --check` and `poetry run pytest` (matrix: Python 3.11 + 3.12)
 - Node CI runs `npm run lint:all` and `npm run build:all` (matrix: Node 20 + 22)
 - E2E tests run against `docker-compose.e2e.yml` stack (blocking gate, Playwright with 2 CI retries)
-- Security audits are blocking: `pip-audit` (Python) and `npm audit --audit-level=high` (Node). Use `--ignore-vuln PYSEC-YYYY-NNNNN` in CI to allowlist triaged CVEs
+- Security audits are blocking: `pip-audit` (runs inside Poetry venv) and `npm audit --audit-level=high` (Node)
 - CodeQL/SAST runs on push/PR to main and weekly (Monday 6am UTC) for Python + JavaScript/TypeScript
 - MCP server tests run in CI via `uv sync && uv run pytest`
 - MCP server publishes to PyPI on `mcp-v*` tags via OIDC trusted publisher

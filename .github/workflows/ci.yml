@@ -48,8 +48,8 @@ jobs:
 
     - name: Security audit (pip-audit)
       run: |
-        pip install pip-audit
-        pip-audit --ignore-vuln PYSEC-2024-62613
+        poetry run pip install pip-audit
+        poetry run pip-audit
 
     - name: Upload backend coverage
       uses: actions/upload-artifact@v4

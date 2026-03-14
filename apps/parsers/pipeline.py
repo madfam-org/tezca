@@ -374,7 +374,8 @@ class IngestionPipeline:
                 print(f"   📷 Extracted via OCR ({len(full_text):,} chars)")
             else:
                 print(
-                    "   ⚠️  OCR did not improve extraction, " "keeping pdfplumber result"
+                    "   ⚠️  OCR did not improve extraction, "
+                    "keeping pdfplumber result"
                 )
 
         # Save extracted text
@@ -405,7 +406,8 @@ class IngestionPipeline:
             from pdf2image import convert_from_path
         except ImportError:
             print(
-                "   ⚠️  pdf2image not installed — " "install with: pip install pdf2image"
+                "   ⚠️  pdf2image not installed — "
+                "install with: pip install pdf2image"
             )
             return ""
 

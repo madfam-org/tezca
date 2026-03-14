@@ -4,12 +4,11 @@ import math
 import time
 
 from drf_spectacular.utils import extend_schema
+from elasticsearch.exceptions import ConnectionError as ESConnectionError
+from elasticsearch.exceptions import ConnectionTimeout
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from elasticsearch.exceptions import ConnectionError as ESConnectionError
-from elasticsearch.exceptions import ConnectionTimeout
 
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP

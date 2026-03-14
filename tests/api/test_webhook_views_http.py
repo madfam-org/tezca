@@ -19,6 +19,7 @@ from apps.api.apikeys import generate_api_key
 from apps.api.middleware.apikey_auth import APIKeyUser
 from apps.api.middleware.janua_auth import JanuaUser
 from apps.api.models import APIKey, WebhookSubscription
+from apps.api.utils.url_validation import UnsafeURLError
 
 AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
 
@@ -347,6 +348,47 @@ class TestCreateWebhookValidation:
         data = response.json()
         assert data["domain_filter"] == ["fiscal", "laboral"]
         assert data["is_active"] is True
+
+    @patch(
+        "apps.api.webhook_views.validate_webhook_url",
+        side_effect=UnsafeURLError(
+            "Webhook URL resolves to private/reserved IP: 127.0.0.1"
+        ),
+    )
+    @patch(AUTH_PATCH)
+    def test_create_webhook_rejects_private_url(self, mock_auth, mock_validate):
+        """Creating a webhook with a private IP URL returns 400."""
+        mock_auth.return_value = (self.user, "fake-key")
+
+        url = reverse("webhook-create")
+        response = self.client.post(
+            url,
+            {"url": "https://internal.corp/hook", "events": ["law.updated"]},
+            format="json",
+        )
+
+        assert response.status_code == 400
+        assert "private" in response.json()["error"].lower()
+
+    @patch(
+        "apps.api.webhook_views.validate_webhook_url",
+        side_effect=UnsafeURLError(
+            "Webhook URL resolves to private/reserved IP: 127.0.0.1"
+        ),
+    )
+    @patch(AUTH_PATCH)
+    def test_create_webhook_rejects_localhost(self, mock_auth, mock_validate):
+        """Creating a webhook targeting localhost returns 400."""
+        mock_auth.return_value = (self.user, "fake-key")
+
+        url = reverse("webhook-create")
+        response = self.client.post(
+            url,
+            {"url": "https://localhost/hook", "events": ["law.updated"]},
+            format="json",
+        )
+
+        assert response.status_code == 400
 
     @patch(AUTH_PATCH)
     def test_create_generates_64char_secret(self, mock_auth):
