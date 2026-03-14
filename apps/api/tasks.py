@@ -9,6 +9,7 @@ import logging
 import subprocess
 import time
 from pathlib import Path
+from urllib.parse import urlparse as _urlparse
 
 import requests as http_requests
 from celery import shared_task
@@ -627,6 +628,13 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
         "X-Tezca-Signature": f"sha256={signature}",
         "User-Agent": "Tezca-Webhooks/1.0",
     }
+
+    # Explicit scheme guard (CodeQL-recognized SSRF barrier)
+    if _urlparse(validated_url).scheme not in ("https", "http"):
+        logger.warning(
+            "Webhook URL scheme rejected at delivery: sub=%d", subscription.pk
+        )
+        return
 
     try:
         resp = http_requests.post(

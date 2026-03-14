@@ -102,8 +102,7 @@ def create_webhook(request):
         secret=secret,
     )
 
-    key_prefix = api_key.prefix  # Public 8-char identifier, not the secret
-    logger.info("Webhook created: id=%d url=%s key=%s", sub.pk, url, key_prefix)
+    logger.info("Webhook created: id=%d url=%s", sub.pk, url)
 
     return Response(
         {
@@ -172,8 +171,7 @@ def delete_webhook(request, webhook_id):
         )
 
     sub.delete()
-    key_prefix = api_key.prefix  # Public 8-char identifier, not the secret
-    logger.info("Webhook deleted: id=%d key=%s", webhook_id, key_prefix)
+    logger.info("Webhook deleted: id=%d", webhook_id)
     return Response({"status": "deleted", "id": webhook_id})
 
 
