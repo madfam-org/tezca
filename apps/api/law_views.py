@@ -616,6 +616,21 @@ def municipalities_list(request):
 
 
 @api_view(["GET"])
+def laws_exist(request):
+    """Return which of the given law IDs exist in the database."""
+    raw = request.query_params.get("ids", "")
+    ids = [i.strip() for i in raw.split(",") if i.strip()][:20]
+    if not ids:
+        return Response({"existing": []})
+    existing = list(
+        Law.objects.filter(official_id__in=ids).values_list("official_id", flat=True)
+    )
+    response = Response({"existing": existing})
+    response["Cache-Control"] = "public, max-age=3600"
+    return response
+
+
+@api_view(["GET"])
 def suggest(request):
     """Lightweight law-name autocomplete using ES completion suggester with DB fallback."""
     q = request.query_params.get("q", "").strip()

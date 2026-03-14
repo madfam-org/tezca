@@ -730,6 +730,71 @@ class TestSuggestWithES:
         assert len(suggestions) == 1
         assert suggestions[0]["id"] == "cpeum"
 
+
+# ---------------------------------------------------------------------------
+# laws_exist — batch existence check
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+class TestLawsExist:
+    """Tests for GET /laws/exists/?ids=..."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.url = reverse("laws-exist")
+
+    def test_returns_existing_ids(self):
+        law1 = _create_law(official_id="cpeum", name="Constitucion")
+        law2 = _create_law(official_id="ccf", name="Codigo Civil Federal")
+
+        response = self.client.get(self.url, {"ids": "cpeum,ccf,nonexistent"})
+        assert response.status_code == 200
+        data = response.json()
+        existing = set(data["existing"])
+        assert "cpeum" in existing
+        assert "ccf" in existing
+        assert "nonexistent" not in existing
+
+    def test_empty_ids_returns_empty(self):
+        response = self.client.get(self.url, {"ids": ""})
+        assert response.status_code == 200
+        assert response.json()["existing"] == []
+
+    def test_no_ids_param_returns_empty(self):
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+        assert response.json()["existing"] == []
+
+    def test_limits_to_20_ids(self):
+        """Only the first 20 IDs are checked."""
+        ids = [f"law_{i}" for i in range(25)]
+        for lid in ids[:21]:
+            _create_law(official_id=lid)
+
+        response = self.client.get(self.url, {"ids": ",".join(ids)})
+        assert response.status_code == 200
+        assert len(response.json()["existing"]) <= 20
+
+    def test_whitespace_in_ids_handled(self):
+        _create_law(official_id="cpeum")
+        response = self.client.get(self.url, {"ids": " cpeum , , ccf "})
+        assert response.status_code == 200
+        assert "cpeum" in response.json()["existing"]
+
+    def test_cache_header_set(self):
+        response = self.client.get(self.url, {"ids": "cpeum"})
+        assert "max-age=3600" in response.get("Cache-Control", "")
+
+
+@pytest.mark.django_db
+class TestSuggestESFailure:
+    """Suggest endpoint fallback when ES is unavailable."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.url = reverse("law-suggest")
+
     @patch("apps.api.law_views.es_client")
     def test_suggest_es_failure_falls_back_to_db(self, mock_es):
         """When ES fails, fallback to DB icontains search."""

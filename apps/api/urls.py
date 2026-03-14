@@ -57,6 +57,7 @@ from .law_views import (
     law_search,
     law_stats,
     law_structure,
+    laws_exist,
     municipalities_list,
     states_list,
     suggest,
@@ -136,6 +137,7 @@ urlpatterns = [
     # ── Public endpoints (no auth) ────────────────────────────────────
     path("search/", SearchView.as_view(), name="search"),
     path("stats/", law_stats, name="law-stats"),
+    path("laws/exists/", laws_exist, name="laws-exist"),
     path("laws/", LawListView.as_view(), name="law-list"),
     path("laws/<str:law_id>/", LawDetailView.as_view(), name="law-detail"),
     path("laws/<str:law_id>/search/", law_search, name="law-search"),
