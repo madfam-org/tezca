@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           rm -f package-lock.json
-          npm install
+          npm install --legacy-peer-deps
 
       - name: Build
         working-directory: packages/${{ steps.meta.outputs.package }}
