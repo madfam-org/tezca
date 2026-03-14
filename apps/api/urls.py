@@ -1,7 +1,6 @@
 from django.urls import path
 from rest_framework.permissions import IsAuthenticated
 
-from .middleware.admin_permission import IsTezcaAdmin
 from .admin_views import (
     coverage_dashboard,
     coverage_summary,
@@ -42,7 +41,7 @@ from .export_views import (
     export_quota,
     export_txt,
 )
-from .graph_views import graph_overview, law_graph
+from .graph_views import graph_overview, graph_public_showcase, law_graph
 from .judicial_views import (
     judicial_detail,
     judicial_list,
@@ -62,6 +61,7 @@ from .law_views import (
     states_list,
     suggest,
 )
+from .middleware.admin_permission import IsTezcaAdmin
 from .middleware.janua_auth import JanuaJWTAuthentication
 from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
 from .notification_views import (
@@ -170,6 +170,7 @@ urlpatterns = [
     path("changelog/", changelog, name="changelog"),
     path("coverage/", public_coverage, name="public-coverage"),
     path("graph/overview/", graph_overview, name="graph-overview"),
+    path("graph/showcase/", graph_public_showcase, name="graph-showcase"),
     # ── Contributions (public submission) ──────────────────────────────
     path("contributions/", submit_contribution, name="contribution-submit"),
     path("contributions/expert/", submit_expert_contact, name="expert-contact"),

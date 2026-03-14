@@ -573,6 +573,10 @@ export const api = {
         return fetcher<GraphResponse>(`/graph/overview/${qs ? `?${qs}` : ''}`);
     },
 
+    getGraphShowcase: async (): Promise<GraphResponse> => {
+        return fetcher<GraphResponse>('/graph/showcase/');
+    },
+
     getJudicialStats: async () => {
         return fetcher<{
             total: number;
@@ -596,6 +600,7 @@ export interface GraphNode {
     state: string | null;
     ref_count: number;
     is_focal: boolean;
+    short_name?: string | null;
 }
 
 export interface GraphEdge {

@@ -16,6 +16,7 @@ vi.mock('@/components/providers/LanguageContext', () => ({
 // Mock the api module
 const mockGetLawGraph = vi.fn();
 const mockGetGraphOverview = vi.fn();
+const mockGetGraphShowcase = vi.fn();
 vi.mock('@/lib/api', async () => {
     const actual = await vi.importActual<Record<string, unknown>>('@/lib/api');
     const actualApi = actual.api as Record<string, unknown>;
@@ -25,6 +26,7 @@ vi.mock('@/lib/api', async () => {
             ...actualApi,
             getLawGraph: (...args: unknown[]) => mockGetLawGraph(...args),
             getGraphOverview: (...args: unknown[]) => mockGetGraphOverview(...args),
+            getGraphShowcase: (...args: unknown[]) => mockGetGraphShowcase(...args),
         },
     };
 });
@@ -36,21 +38,29 @@ vi.mock('sigma', () => ({
         off: vi.fn(),
         kill: vi.fn(),
         refresh: vi.fn(),
+        getCamera: vi.fn(() => ({ ratio: 1, animate: vi.fn(), animatedReset: vi.fn() })),
         getNodeDisplayData: vi.fn(() => ({ x: 0, y: 0 })),
         viewportToFramedGraph: vi.fn(() => ({ x: 0, y: 0 })),
         framedGraphToViewport: vi.fn(() => ({ x: 0, y: 0 })),
+        getCanvases: vi.fn(() => ({})),
     })),
 }));
 
-vi.mock('graphology-layout-forceatlas2', () => ({
-    default: { assign: vi.fn() },
-    assign: vi.fn(),
+vi.mock('graphology-layout-forceatlas2/worker', () => ({
+    default: vi.fn().mockImplementation(() => ({
+        start: vi.fn(),
+        stop: vi.fn(),
+        kill: vi.fn(),
+        isRunning: vi.fn(() => false),
+    })),
 }));
 
 import { LawGraphContainer } from '@/components/graph/LawGraphContainer';
 import { GraphControls } from '@/components/graph/GraphControls';
 import { GraphLegend } from '@/components/graph/GraphLegend';
 import { GraphTooltip } from '@/components/graph/GraphTooltip';
+import { GraphSearch } from '@/components/graph/GraphSearch';
+import { GraphStats } from '@/components/graph/GraphStats';
 
 const MOCK_GRAPH: GraphResponse = {
     focal_law: 'amparo',
@@ -69,6 +79,7 @@ describe('LawGraphContainer', () => {
         vi.clearAllMocks();
         mockGetLawGraph.mockResolvedValue(MOCK_GRAPH);
         mockGetGraphOverview.mockResolvedValue({ ...MOCK_GRAPH, focal_law: null });
+        mockGetGraphShowcase.mockResolvedValue({ ...MOCK_GRAPH, focal_law: null });
     });
 
     it('shows loading state initially', () => {
@@ -122,32 +133,78 @@ describe('GraphControls', () => {
         expect(screen.getByText('Dirección:')).toBeDefined();
     });
 
-    it('calls callbacks on depth change', () => {
-        const onDepthChange = vi.fn();
+    it('renders layout toggle when onToggleLayout provided', () => {
         render(
             <GraphControls
                 depth={1}
                 direction="both"
                 minConfidence={0.5}
                 isFullscreen={false}
-                onDepthChange={onDepthChange}
+                layoutRunning={false}
+                onDepthChange={vi.fn()}
                 onDirectionChange={vi.fn()}
                 onConfidenceChange={vi.fn()}
                 onToggleFullscreen={vi.fn()}
+                onToggleLayout={vi.fn()}
             />
         );
-        const select = screen.getAllByRole('combobox')[0];
-        select.dispatchEvent(new Event('change', { bubbles: true }));
+        expect(screen.getByRole('button', { name: 'Reanudar simulación' })).toBeDefined();
+    });
+
+    it('renders export button when onExportPNG provided', () => {
+        render(
+            <GraphControls
+                depth={1}
+                direction="both"
+                minConfidence={0.5}
+                isFullscreen={false}
+                onDepthChange={vi.fn()}
+                onDirectionChange={vi.fn()}
+                onConfidenceChange={vi.fn()}
+                onToggleFullscreen={vi.fn()}
+                onExportPNG={vi.fn()}
+            />
+        );
+        expect(screen.getByRole('button', { name: 'Exportar PNG' })).toBeDefined();
     });
 });
 
 describe('GraphLegend', () => {
-    it('renders tier color labels', () => {
-        render(<GraphLegend />);
-        expect(screen.getByText('Leyenda:')).toBeDefined();
+    it('renders category colors by default', () => {
+        render(
+            <GraphLegend
+                colorMode="category"
+                onColorModeChange={vi.fn()}
+                categories={['fiscal', 'laboral', 'penal']}
+            />
+        );
+        expect(screen.getByText('Color por:')).toBeDefined();
+        expect(screen.getByText('Fiscal')).toBeDefined();
+        expect(screen.getByText('Laboral')).toBeDefined();
+        expect(screen.getByText('Penal')).toBeDefined();
+    });
+
+    it('renders tier colors when in tier mode', () => {
+        render(
+            <GraphLegend
+                colorMode="tier"
+                onColorModeChange={vi.fn()}
+            />
+        );
         expect(screen.getByText('Federal')).toBeDefined();
         expect(screen.getByText('Estatal')).toBeDefined();
         expect(screen.getByText('Municipal')).toBeDefined();
+    });
+
+    it('shows color mode toggle buttons', () => {
+        render(
+            <GraphLegend
+                colorMode="category"
+                onColorModeChange={vi.fn()}
+            />
+        );
+        expect(screen.getByText('Categoría')).toBeDefined();
+        expect(screen.getByText('Nivel')).toBeDefined();
     });
 });
 
@@ -157,10 +214,32 @@ describe('GraphTooltip', () => {
         expect(container.innerHTML).toBe('');
     });
 
-    it('renders node info when provided', () => {
+    it('renders node info with category color dot', () => {
         const node = MOCK_GRAPH.nodes[0];
         render(<GraphTooltip node={node} position={{ x: 100, y: 100 }} />);
         expect(screen.getByText('Ley de Amparo')).toBeDefined();
         expect(screen.getByText('Clic para ver')).toBeDefined();
+        // Category label should appear with color dot
+        expect(screen.getByText('Judicial')).toBeDefined();
+    });
+});
+
+describe('GraphSearch', () => {
+    const nodes = [
+        { id: 'cpeum', label: 'Constitución Política' },
+        { id: 'lft', label: 'Ley Federal del Trabajo' },
+        { id: 'cff', label: 'Código Fiscal de la Federación' },
+    ];
+
+    it('renders search input with placeholder', () => {
+        render(<GraphSearch nodes={nodes} onFocus={vi.fn()} onClear={vi.fn()} />);
+        expect(screen.getByPlaceholderText('Buscar ley...')).toBeDefined();
+    });
+});
+
+describe('GraphStats', () => {
+    it('renders collapsible stats panel', () => {
+        render(<GraphStats data={MOCK_GRAPH} />);
+        expect(screen.getByText('Estadísticas')).toBeDefined();
     });
 });

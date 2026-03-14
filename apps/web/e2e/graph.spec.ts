@@ -1,38 +1,45 @@
 import { test, expect, MOCK_LAW_GRAPH, MOCK_GRAPH_OVERVIEW } from './fixtures';
 
 test.describe('Graph overview page (/grafo)', () => {
-    test('renders overview title', async ({ page }) => {
+    test('renders overview title in fullscreen mode', async ({ page }) => {
         await page.goto('/grafo');
+        // In fullscreen mode, the page uses LawGraphContainer mode="fullscreen"
         await expect(page.getByText('Red de leyes').first()).toBeVisible();
     });
 
     test('renders graph canvas container', async ({ page }) => {
         await page.goto('/grafo');
-        // Wait for data to load (stats line appears when graph is ready)
-        await expect(page.getByText(/4 nodos/)).toBeVisible();
-        // Sigma renders inside a .h-[400px] container
-        await expect(page.locator('.h-\\[400px\\]').first()).toBeVisible();
+        // Wait for data to load
+        await expect(page.locator('section')).toBeVisible();
+        // Sigma renders inside the graph container
+        const graphContainer = page.locator('[style*="cursor"]');
+        await expect(graphContainer.first()).toBeVisible();
     });
 
-    test('renders legend with tier labels and descriptions', async ({ page }) => {
+    test('renders legend with category labels by default', async ({ page }) => {
         await page.goto('/grafo');
-        await expect(page.getByText('Leyenda:').first()).toBeVisible();
-        await expect(page.getByText('Federal').first()).toBeVisible();
-        await expect(page.getByText('Estatal').first()).toBeVisible();
-        await expect(page.getByText('Municipal').first()).toBeVisible();
+        await expect(page.getByText('Color por:').first()).toBeVisible();
+        // Category mode is the default
+        await expect(page.getByText('Categoría').first()).toBeVisible();
+        await expect(page.getByText('Nivel').first()).toBeVisible();
     });
 
-    test('shows stats line with counts', async ({ page }) => {
+    test('shows search input in fullscreen mode', async ({ page }) => {
         await page.goto('/grafo');
-        await expect(page.getByText(/4 nodos/)).toBeVisible();
-        await expect(page.getByText(/3 aristas/)).toBeVisible();
+        await expect(page.getByPlaceholder('Buscar ley...')).toBeVisible();
+    });
+
+    test('shows stats panel in fullscreen mode', async ({ page }) => {
+        await page.goto('/grafo');
+        await expect(page.getByText('Estadísticas')).toBeVisible();
     });
 
     test('does NOT show controls on overview', async ({ page }) => {
         await page.goto('/grafo');
-        await expect(page.getByText(/4 nodos/)).toBeVisible();
+        // Wait for graph to render
+        await expect(page.locator('section')).toBeVisible();
         // No depth/direction/confidence controls on overview
-        const section = page.locator('section').filter({ hasText: 'Red de leyes' });
+        const section = page.locator('section');
         await expect(section.locator('select')).toHaveCount(0);
         await expect(section.locator('input[type="range"]')).toHaveCount(0);
     });
@@ -45,8 +52,6 @@ test.describe('Graph overview page (/grafo)', () => {
         });
         await page.goto('/grafo');
         await expect(page.getByText('Cargando grafo...')).toBeVisible();
-        // Then data loads
-        await expect(page.getByText(/4 nodos/)).toBeVisible();
     });
 
     test('shows error state on API failure', async ({ page }) => {
@@ -55,8 +60,6 @@ test.describe('Graph overview page (/grafo)', () => {
         );
         await page.goto('/grafo');
         await expect(page.getByText('No se pudo cargar el grafo')).toBeVisible();
-        // Legend still renders below the error
-        await expect(page.getByText('Leyenda:').first()).toBeVisible();
     });
 
     test('shows empty state when no nodes', async ({ page }) => {
@@ -141,6 +144,20 @@ test.describe('Law-specific graph (/leyes/{lawId})', () => {
         const section = page.locator('section').filter({ hasText: 'Grafo de referencias' });
         await expect(section.getByText(/3 nodos/)).toBeVisible();
         await expect(section.getByRole('button', { name: 'Pantalla completa' })).toBeVisible();
+    });
+
+    test('export PNG button is present', async ({ page }) => {
+        await page.goto('/leyes/ley-federal-del-trabajo');
+        const section = page.locator('section').filter({ hasText: 'Grafo de referencias' });
+        await expect(section.getByText(/3 nodos/)).toBeVisible();
+        await expect(section.getByRole('button', { name: 'Exportar PNG' })).toBeVisible();
+    });
+
+    test('reset view button is present', async ({ page }) => {
+        await page.goto('/leyes/ley-federal-del-trabajo');
+        const section = page.locator('section').filter({ hasText: 'Grafo de referencias' });
+        await expect(section.getByText(/3 nodos/)).toBeVisible();
+        await expect(section.getByRole('button', { name: 'Restablecer vista' })).toBeVisible();
     });
 });
 
@@ -233,5 +250,16 @@ test.describe('Graph navigation integration', () => {
         await page.goto('/leyes/ley-federal-del-trabajo');
         const section = page.locator('section').filter({ hasText: 'Grafo de referencias' });
         await expect(section).toBeVisible();
+    });
+});
+
+test.describe('Graph color mode', () => {
+    test('legend shows category/tier toggle', async ({ page }) => {
+        await page.goto('/leyes/ley-federal-del-trabajo');
+        const section = page.locator('section').filter({ hasText: 'Grafo de referencias' });
+        await expect(section.getByText(/3 nodos/)).toBeVisible();
+        await expect(section.getByText('Color por:')).toBeVisible();
+        await expect(section.getByText('Categoría')).toBeVisible();
+        await expect(section.getByText('Nivel')).toBeVisible();
     });
 });

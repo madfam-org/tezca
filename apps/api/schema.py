@@ -398,6 +398,7 @@ class GraphNodeSchema(serializers.Serializer):
     state = serializers.CharField(allow_null=True)
     ref_count = serializers.IntegerField()
     is_focal = serializers.BooleanField()
+    short_name = serializers.CharField(allow_null=True, required=False)
 
 
 class GraphEdgeSchema(serializers.Serializer):

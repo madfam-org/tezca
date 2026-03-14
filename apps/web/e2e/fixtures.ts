@@ -105,9 +105,9 @@ export const MOCK_SEARCH_RESULTS = {
 export const MOCK_LAW_GRAPH = {
     focal_law: 'ley-federal-del-trabajo',
     nodes: [
-        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: true },
-        { id: 'cpeum', label: 'Constitución Política', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
-        { id: 'ley-seguro-social', label: 'Ley del Seguro Social', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 30, is_focal: false },
+        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', short_name: 'LFT', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: true },
+        { id: 'cpeum', label: 'Constitución Política', short_name: 'CPEUM', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
+        { id: 'ley-seguro-social', label: 'Ley del Seguro Social', short_name: 'LSS', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 30, is_focal: false },
     ],
     edges: [
         { id: 'lft->cpeum', source: 'ley-federal-del-trabajo', target: 'cpeum', weight: 23, avg_confidence: 0.87 },
@@ -119,10 +119,10 @@ export const MOCK_LAW_GRAPH = {
 export const MOCK_GRAPH_OVERVIEW = {
     focal_law: null,
     nodes: [
-        { id: 'cpeum', label: 'Constitución Política', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
-        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: false },
-        { id: 'codigo-civil-jalisco', label: 'Código Civil de Jalisco', tier: 'state', category: 'civil', status: 'vigente', law_type: 'legislative', state: 'Jalisco', ref_count: 15, is_focal: false },
-        { id: 'reglamento-muni-gdl', label: 'Reglamento Municipal GDL', tier: 'municipal', category: 'regulatory', status: 'vigente', law_type: 'regulatory', state: 'Jalisco', ref_count: 5, is_focal: false },
+        { id: 'cpeum', label: 'Constitución Política', short_name: 'CPEUM', tier: 'federal', category: 'constitutional', status: 'vigente', law_type: 'legislative', state: null, ref_count: 120, is_focal: false },
+        { id: 'ley-federal-del-trabajo', label: 'Ley Federal del Trabajo', short_name: 'LFT', tier: 'federal', category: 'laboral', status: 'vigente', law_type: 'legislative', state: null, ref_count: 45, is_focal: false },
+        { id: 'codigo-civil-jalisco', label: 'Código Civil de Jalisco', short_name: null, tier: 'state', category: 'civil', status: 'vigente', law_type: 'legislative', state: 'Jalisco', ref_count: 15, is_focal: false },
+        { id: 'reglamento-muni-gdl', label: 'Reglamento Municipal GDL', short_name: null, tier: 'municipal', category: 'regulatory', status: 'vigente', law_type: 'regulatory', state: 'Jalisco', ref_count: 5, is_focal: false },
     ],
     edges: [
         { id: 'lft->cpeum', source: 'ley-federal-del-trabajo', target: 'cpeum', weight: 23, avg_confidence: 0.87 },
@@ -208,6 +208,11 @@ export async function mockApiRoutes(page: Page) {
 
     // Global graph overview
     await page.route(new RegExp('/api/v1/graph/overview/'), (route) =>
+        route.fulfill({ json: MOCK_GRAPH_OVERVIEW })
+    );
+
+    // Graph showcase (public, no auth)
+    await page.route(new RegExp('/api/v1/graph/showcase/'), (route) =>
         route.fulfill({ json: MOCK_GRAPH_OVERVIEW })
     );
 }

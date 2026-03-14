@@ -184,7 +184,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 - `RequireFeature.of("bulk_download")` gates `bulk_articles` (non-monotonic: community has it, essentials doesn't)
 - `RequireFeature.of("webhooks")` gates `create_webhook` (institutional+ only)
-- `RequireFeature.of("graph_api")` gates graph endpoints (institutional+ only)
+- `RequireFeature.of("graph_api")` gates graph endpoints (institutional+ only). Public showcase endpoint (`/api/v1/graph/showcase/`) is unauthenticated (top 50 nodes, min_weight=5)
 - `RequireTier.of("academic")` for rank-based gating (monotonic features)
 - `check_feature(tier, "search_analytics")` gates analytics view
 - Feature flags and limits defined in `apps/api/tiers.json`
@@ -313,7 +313,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
-| `apps/api/graph_views.py` | Law graph API (ego graph + global overview for Sigma.js) |
+| `apps/api/graph_views.py` | Law graph API (ego graph + global overview + public showcase for Sigma.js) |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
@@ -335,6 +335,11 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/es_index_manager.py` | ES alias management (zero-downtime reindex) |
 | `apps/api/management/commands/manage_es_alias.py` | CLI for ES alias status/migrate/rollback/cleanup |
 | `apps/web/hooks/useBatchCrossRefs.ts` | Batch cross-reference fetching hook (eliminates N+1) |
+| `apps/web/components/graph/graphConstants.ts` | Graph color modes, category/tier colors, sizing helpers |
+| `apps/web/components/graph/GraphSearch.tsx` | Node search with autocomplete and camera animation |
+| `apps/web/components/graph/GraphFilters.tsx` | Category filter pills for graph visualization |
+| `apps/web/components/graph/GraphStats.tsx` | Collapsible graph statistics panel |
+| `apps/web/components/graph/useGraphExport.ts` | PNG export via Sigma canvas compositing |
 
 ---
 

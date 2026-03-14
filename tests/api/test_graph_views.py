@@ -278,3 +278,54 @@ class TestGraphTierGating:
         url = reverse("law-graph", args=["tier-test-law"])
         resp = self.client.get(url)
         assert resp.status_code == 200
+
+
+@pytest.mark.django_db
+class TestGraphPublicShowcase:
+    """Tests for GET /graph/showcase/ — public, no auth required."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        # Create a small network
+        self.law_a = _make_law("showcase-a", category="fiscal")
+        self.law_b = _make_law("showcase-b", category="laboral")
+        self.law_c = _make_law("showcase-c", category="penal")
+        # Create enough refs to pass min_weight=5
+        for i in range(6):
+            _make_ref("showcase-a", "showcase-b", article=str(i))
+        for i in range(5):
+            _make_ref("showcase-b", "showcase-c", article=str(i + 10))
+
+    def test_anonymous_can_access_showcase(self):
+        """Showcase endpoint should be publicly accessible."""
+        url = reverse("graph-showcase")
+        resp = self.client.get(url)
+        assert resp.status_code == 200
+
+    def test_showcase_response_shape(self):
+        """Showcase should return standard graph response shape with short_name."""
+        url = reverse("graph-showcase")
+        resp = self.client.get(url)
+        data = resp.json()
+        assert "nodes" in data
+        assert "edges" in data
+        assert "meta" in data
+        assert data["focal_law"] is None
+        # Nodes should have short_name field
+        if data["nodes"]:
+            assert "short_name" in data["nodes"][0]
+
+    def test_showcase_caps_at_50_nodes(self):
+        """Showcase should return at most 50 nodes."""
+        url = reverse("graph-showcase")
+        resp = self.client.get(url)
+        data = resp.json()
+        assert data["meta"]["total_nodes"] <= 50
+
+    def test_showcase_uses_min_weight_5(self):
+        """All edges in showcase should have weight >= 5."""
+        url = reverse("graph-showcase")
+        resp = self.client.get(url)
+        data = resp.json()
+        for edge in data["edges"]:
+            assert edge["weight"] >= 5
