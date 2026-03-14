@@ -33,8 +33,9 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
-        working-directory: packages/${{ steps.meta.outputs.package }}
-        run: npm install
+        run: |
+          rm -f package-lock.json
+          npm install
 
       - name: Build
         working-directory: packages/${{ steps.meta.outputs.package }}
