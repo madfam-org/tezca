@@ -26,5 +26,10 @@ def generate_api_key() -> tuple[str, str, str]:
 
 
 def hash_key(full_key: str) -> str:
-    """SHA-256 hash of the full API key."""
-    return hashlib.sha256(full_key.encode()).hexdigest()
+    """SHA-256 hash of the full API key.
+
+    API keys are 36+ random bytes from secrets.token_urlsafe — high entropy
+    makes brute-force infeasible without salting/iteration (unlike passwords).
+    This is the standard approach used by GitHub, Stripe, and AWS.
+    """
+    return hashlib.sha256(full_key.encode()).hexdigest()  # noqa: S324

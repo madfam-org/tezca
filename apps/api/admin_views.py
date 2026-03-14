@@ -174,8 +174,8 @@ def job_status(request):
     try:
         status_data = IngestionManager.get_status()
         return Response(status_data)
-    except (json.JSONDecodeError, FileNotFoundError, OSError):
-        logger.exception("job_status failed")
+    except (json.JSONDecodeError, FileNotFoundError, OSError) as exc:
+        logger.warning("job_status failed: %s", exc)
         return Response(
             {
                 "status": "error",

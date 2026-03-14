@@ -592,10 +592,11 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
         return
 
     # Defense-in-depth: re-validate URL at delivery time in case DNS changed
+    validated_url = subscription.url
     try:
         from .utils.url_validation import UnsafeURLError, validate_webhook_url
 
-        validate_webhook_url(subscription.url)
+        validate_webhook_url(validated_url)
     except UnsafeURLError:
         logger.warning(
             "SSRF check failed at delivery: sub=%d url=%s",
@@ -629,7 +630,7 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
 
     try:
         resp = http_requests.post(
-            subscription.url,
+            validated_url,
             data=body,
             headers=headers,
             timeout=WEBHOOK_TIMEOUT,

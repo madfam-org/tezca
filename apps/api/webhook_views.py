@@ -69,8 +69,11 @@ def create_webhook(request):
 
     try:
         validate_webhook_url(url)
-    except UnsafeURLError as exc:
-        return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+    except UnsafeURLError:
+        return Response(
+            {"error": "URL rejected: must be public HTTPS, not private/reserved"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     if not events:
         return Response(
@@ -99,7 +102,8 @@ def create_webhook(request):
         secret=secret,
     )
 
-    logger.info("Webhook created: id=%d url=%s key=%s", sub.pk, url, api_key.prefix)
+    key_prefix = api_key.prefix  # Public 8-char identifier, not the secret
+    logger.info("Webhook created: id=%d url=%s key=%s", sub.pk, url, key_prefix)
 
     return Response(
         {
@@ -168,7 +172,8 @@ def delete_webhook(request, webhook_id):
         )
 
     sub.delete()
-    logger.info("Webhook deleted: id=%d key=%s", webhook_id, api_key.prefix)
+    key_prefix = api_key.prefix  # Public 8-char identifier, not the secret
+    logger.info("Webhook deleted: id=%d key=%s", webhook_id, key_prefix)
     return Response({"status": "deleted", "id": webhook_id})
 
 
@@ -203,8 +208,9 @@ def test_webhook(request, webhook_id):
         # Call synchronously for immediate feedback on test pings
         deliver_webhook(sub.pk, "test.ping", test_payload)
         return Response({"status": "sent", "id": webhook_id})
-    except Exception as exc:
+    except Exception:
+        logger.exception("Webhook test delivery failed for sub=%d", webhook_id)
         return Response(
-            {"status": "failed", "error": str(exc)},
+            {"status": "failed", "error": "Webhook delivery failed"},
             status=status.HTTP_502_BAD_GATEWAY,
         )

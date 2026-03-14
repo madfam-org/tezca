@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 import threading
@@ -6,6 +7,8 @@ import time
 from pathlib import Path
 
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 # Paths
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -42,9 +45,10 @@ class IngestionManager:
             with open(STATUS_FILE, "r") as f:
                 return json.load(f)
         except (json.JSONDecodeError, FileNotFoundError, PermissionError, OSError) as e:
+            logger.warning("Failed to read ingestion status: %s", e)
             return {
                 "status": "error",
-                "message": f"Failed to read status: {str(e)}",
+                "message": "Failed to read ingestion status",
                 "timestamp": timezone.now().isoformat(),
             }
 

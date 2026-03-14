@@ -59,8 +59,8 @@ def _get_public_key(token):
     """Extract the correct public key from JWKS based on the token's kid."""
     try:
         unverified_header = jwt.get_unverified_header(token)
-    except jwt.DecodeError as exc:
-        raise AuthenticationFailed(f"Invalid token header: {exc}")
+    except jwt.DecodeError:
+        raise AuthenticationFailed("Invalid token format")
 
     kid = unverified_header.get("kid")
     if not kid:
@@ -136,8 +136,8 @@ class JanuaJWTAuthentication(BaseAuthentication):
             raise AuthenticationFailed("Invalid token audience")
         except jwt.InvalidIssuerError:
             raise AuthenticationFailed("Invalid token issuer")
-        except jwt.PyJWTError as exc:
-            raise AuthenticationFailed(f"Token validation failed: {exc}")
+        except jwt.PyJWTError:
+            raise AuthenticationFailed("Token validation failed")
 
         return (JanuaUser(claims), token)
 

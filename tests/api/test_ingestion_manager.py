@@ -56,7 +56,7 @@ class TestGetStatus:
                 result = IngestionManager.get_status()
 
         assert result["status"] == "error"
-        assert "Failed to read status" in result["message"]
+        assert "Failed to read ingestion status" in result["message"]
 
     def test_handles_permission_error(self, tmp_path):
         status_file = tmp_path / "ingestion_status.json"

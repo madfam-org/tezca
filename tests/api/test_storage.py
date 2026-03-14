@@ -192,8 +192,11 @@ class TestR2StorageBackend:
         mock_boto_client.return_value = MagicMock()
         backend = R2StorageBackend()
         url = backend.url("federal/cpeum.xml")
-        assert "test.r2.cloudflarestorage.com" in url
-        assert "federal/cpeum.xml" in url
+        from urllib.parse import urlparse
+
+        parsed = urlparse(url)
+        assert parsed.netloc == "test.r2.cloudflarestorage.com"
+        assert "federal/cpeum.xml" in parsed.path
 
     def test_missing_endpoint_raises(self):
         with patch.dict(os.environ, {}, clear=True):

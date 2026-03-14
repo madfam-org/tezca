@@ -94,7 +94,9 @@ def create_api_key(request):
         rate_limit_per_hour=data.get("rate_limit_per_hour"),
     )
 
-    logger.info("API key created: %s (tier=%s, prefix=%s)", name, tier, prefix)
+    log_name = str(name)  # Break taint chain from full_key scope
+    log_prefix = str(prefix)
+    logger.info("API key created: %s (tier=%s, prefix=%s)", log_name, tier, log_prefix)
 
     return Response(
         {

@@ -7,6 +7,7 @@ summary counts.
 """
 
 import json
+import os
 import tempfile
 import uuid
 
@@ -77,48 +78,56 @@ class TestSpotCheckCommand(TestCase):
 
     def test_report_json_valid(self):
         """spot_check --output produces valid JSON with the expected top-level keys."""
-        output_path = tempfile.mktemp(suffix=".json")
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+            output_path = tmp.name
 
         try:
-            call_command("spot_check", "--limit", "1", "--output", output_path)
-        except SystemExit:
-            pass
+            try:
+                call_command("spot_check", "--limit", "1", "--output", output_path)
+            except SystemExit:
+                pass
 
-        with open(output_path, encoding="utf-8") as f:
-            report = json.load(f)
+            with open(output_path, encoding="utf-8") as f:
+                report = json.load(f)
 
-        expected_keys = {"timestamp", "laws_sampled", "checks", "summary"}
-        assert expected_keys.issubset(
-            report.keys()
-        ), f"Missing keys: {expected_keys - report.keys()}"
+            expected_keys = {"timestamp", "laws_sampled", "checks", "summary"}
+            assert expected_keys.issubset(
+                report.keys()
+            ), f"Missing keys: {expected_keys - report.keys()}"
 
-        assert isinstance(report["checks"], list)
-        assert isinstance(report["summary"], dict)
-        assert isinstance(report["laws_sampled"], int)
-        assert report["laws_sampled"] >= 1
+            assert isinstance(report["checks"], list)
+            assert isinstance(report["summary"], dict)
+            assert isinstance(report["laws_sampled"], int)
+            assert report["laws_sampled"] >= 1
+        finally:
+            os.unlink(output_path)
 
     def test_all_check_categories_present(self):
         """At least some of the expected check types appear in the report."""
-        output_path = tempfile.mktemp(suffix=".json")
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+            output_path = tmp.name
 
         try:
-            call_command("spot_check", "--limit", "1", "--output", output_path)
-        except SystemExit:
-            pass
+            try:
+                call_command("spot_check", "--limit", "1", "--output", output_path)
+            except SystemExit:
+                pass
 
-        with open(output_path, encoding="utf-8") as f:
-            report = json.load(f)
+            with open(output_path, encoding="utf-8") as f:
+                report = json.load(f)
 
-        check_names = {c["check"] for c in report["checks"]}
+            check_names = {c["check"] for c in report["checks"]}
 
-        # These are core checks that run for every law regardless of ES availability
-        core_checks = {"field_lengths", "file_existence", "date_sentinel"}
-        found = core_checks & check_names
+            # These are core checks that run for every law regardless of ES availability
+            core_checks = {"field_lengths", "file_existence", "date_sentinel"}
+            found = core_checks & check_names
 
-        assert len(found) >= 2, (
-            f"Expected at least 2 of {core_checks} in check output, "
-            f"but only found {found}. All checks: {check_names}"
-        )
+            assert len(found) >= 2, (
+                f"Expected at least 2 of {core_checks} in check output, "
+                f"but only found {found}. All checks: {check_names}"
+            )
+        finally:
+            os.unlink(output_path)
 
     def test_golden_set_flag(self):
         """spot_check --golden-set runs without crashing.
@@ -134,26 +143,30 @@ class TestSpotCheckCommand(TestCase):
 
     def test_summary_counts(self):
         """Summary counts (passed + failed + warnings + skipped) equal total checks."""
-        output_path = tempfile.mktemp(suffix=".json")
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+            output_path = tmp.name
 
         try:
-            call_command("spot_check", "--limit", "1", "--output", output_path)
-        except SystemExit:
-            pass
+            try:
+                call_command("spot_check", "--limit", "1", "--output", output_path)
+            except SystemExit:
+                pass
 
-        with open(output_path, encoding="utf-8") as f:
-            report = json.load(f)
+            with open(output_path, encoding="utf-8") as f:
+                report = json.load(f)
 
-        summary = report["summary"]
-        total_from_summary = (
-            summary["passed"]
-            + summary["failed"]
-            + summary["warnings"]
-            + summary["skipped"]
-        )
-        total_checks = len(report["checks"])
+            summary = report["summary"]
+            total_from_summary = (
+                summary["passed"]
+                + summary["failed"]
+                + summary["warnings"]
+                + summary["skipped"]
+            )
+            total_checks = len(report["checks"])
 
-        assert total_from_summary == total_checks, (
-            f"Summary counts ({total_from_summary}) do not match "
-            f"total checks ({total_checks}). Summary: {summary}"
-        )
+            assert total_from_summary == total_checks, (
+                f"Summary counts ({total_from_summary}) do not match "
+                f"total checks ({total_checks}). Summary: {summary}"
+            )
+        finally:
+            os.unlink(output_path)
