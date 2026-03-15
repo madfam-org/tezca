@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -68,6 +69,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Navbar } from "@/components/Navbar";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { BackToTop } from "@/components/BackToTop";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 const januaConfig = {
   baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || 'https://auth.madfam.io',
@@ -102,12 +104,16 @@ export default function RootLayout({
                 <AuthProvider>
                   <BookmarksProvider>
                     <ComparisonProvider>
-                      <ReadingProgressBar />
-                      <Navbar />
-                      <main id="main-content" className="flex-1">{children}</main>
-                      <Footer />
-                      <ComparisonFloatingBar />
-                      <BackToTop />
+                      <Suspense fallback={null}>
+                        <PostHogProvider>
+                          <ReadingProgressBar />
+                          <Navbar />
+                          <main id="main-content" className="flex-1">{children}</main>
+                          <Footer />
+                          <ComparisonFloatingBar />
+                          <BackToTop />
+                        </PostHogProvider>
+                      </Suspense>
                     </ComparisonProvider>
                   </BookmarksProvider>
                 </AuthProvider>

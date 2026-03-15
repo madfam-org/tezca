@@ -7,3 +7,6 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         import apps.api.signals  # noqa: F401
+        from apps.api.posthog_analytics import init_posthog
+
+        init_posthog()
