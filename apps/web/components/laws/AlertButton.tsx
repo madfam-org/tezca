@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 import { getAuthToken } from '@/lib/auth-token';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const content = {
     es: {
@@ -73,6 +74,7 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
                 await api.deleteAlert(token, alertId);
                 setWatching(false);
                 setAlertId(null);
+                trackEvent('alert.deleted', { law_id: lawId });
             } catch (err) {
                 console.error(err);
             }
@@ -85,6 +87,7 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
                 setWatching(true);
                 setAlertId(alert.id);
                 setJustSaved(true);
+                trackEvent('alert.created', { law_id: lawId });
                 setTimeout(() => setJustSaved(false), 2000);
             } catch (err) {
                 console.error(err);

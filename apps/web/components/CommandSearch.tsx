@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Search, X, ArrowRight, FileText, Loader2 } from 'lucide-react';
 import { Badge } from '@tezca/ui';
 import { api } from '@/lib/api';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { useLang, type Lang } from '@/components/providers/LanguageContext';
 
 const content = {
@@ -62,6 +63,7 @@ export function CommandSearchTrigger() {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 setOpen(true);
+                trackEvent('cmdk.opened');
             }
         };
         document.addEventListener('keydown', handleKeyDown);
@@ -166,8 +168,10 @@ function CommandSearchDialog({ onClose }: { onClose: () => void }) {
             case 'Enter':
                 e.preventDefault();
                 if (activeIndex >= 0 && activeIndex < suggestions.length) {
+                    trackEvent('cmdk.selected', { query, law_id: suggestions[activeIndex].id });
                     navigate(`/leyes/${suggestions[activeIndex].id}`);
                 } else if (query.trim()) {
+                    trackEvent('cmdk.selected', { query });
                     navigate(`/busqueda?q=${encodeURIComponent(query)}`);
                 }
                 break;

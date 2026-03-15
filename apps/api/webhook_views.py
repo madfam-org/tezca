@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from . import posthog_analytics
 from .middleware.tier_permissions import RequireFeature
 from .models import APIKey, WebhookSubscription
 from .tasks import deliver_webhook
@@ -103,6 +104,11 @@ def create_webhook(request):
     )
 
     logger.info("Webhook created: id=%d url=%s", sub.pk, url)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "webhook.created",
+        {"events": events, "tier": api_key.tier},
+    )
 
     return Response(
         {
@@ -172,6 +178,11 @@ def delete_webhook(request, webhook_id):
 
     sub.delete()
     logger.info("Webhook deleted: id=%d", webhook_id)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "webhook.deleted",
+        {"webhook_id": webhook_id},
+    )
     return Response({"status": "deleted", "id": webhook_id})
 
 

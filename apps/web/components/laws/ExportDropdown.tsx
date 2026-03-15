@@ -6,6 +6,7 @@ import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth, type UserTier } from '@/components/providers/AuthContext';
 import { API_BASE_URL } from '@/lib/config';
 import { getAuthToken } from '@/lib/auth-token';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { TierGate } from '@/components/TierGate';
 
 type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
@@ -152,6 +153,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
             const requiredTier = FORMAT_TIERS[format];
             setGateRequiredTier(TIER_RANK[requiredTier] >= TIER_RANK['institutional'] ? 'institutional' : 'academic');
             setShowGate(true);
+            trackEvent('export.tier_gated', { format, required_tier: requiredTier, user_tier: tier });
             return;
         }
 
@@ -172,6 +174,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                 const data = await res.json().catch(() => ({ retry_after: 300 }));
                 setRateLimitSecs(data.retry_after || 300);
                 setShowGate(true);
+                trackEvent('export.rate_limited', { format, retry_after: data.retry_after || 300 });
                 return;
             }
             if (res.status === 403) {
@@ -192,6 +195,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
             URL.revokeObjectURL(downloadUrl);
             setOpen(false);
             setMessage(null);
+            trackEvent('export.downloaded', { format, law_id: lawId, tier });
         } catch (err) {
             console.error(`Export ${format} failed:`, err);
             setMessage(t.error);

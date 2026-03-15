@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, lazy, Suspense, useMemo } from 'react';
 import { useLang } from '@/components/providers/LanguageContext';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { useGraphData } from './useGraphData';
 import { GraphControls } from './GraphControls';
 import { GraphLegend } from './GraphLegend';
@@ -107,9 +108,11 @@ export function LawGraphContainer({ lawId, mode = 'embedded' }: LawGraphContaine
         if (!document.fullscreenElement) {
             containerRef.current.requestFullscreen().catch(() => {});
             setIsFullscreen(true);
+            trackEvent('graph.fullscreen_toggled', { is_fullscreen: true });
         } else {
             document.exitFullscreen().catch(() => {});
             setIsFullscreen(false);
+            trackEvent('graph.fullscreen_toggled', { is_fullscreen: false });
         }
     }, []);
 

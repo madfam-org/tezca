@@ -11,6 +11,7 @@ import { SearchFilters, type SearchFilterState } from '@/components/SearchFilter
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { Pagination } from '@/components/Pagination';
 import { api, APIError } from '@/lib/api';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { TierGate } from '@/components/TierGate';
@@ -244,6 +245,7 @@ function SearchContent() {
             setCurrentPage(1);
             router.push(`/busqueda?${buildSearchParams(q, filters, 1)}`);
             performSearch(q, filters, 1);
+            trackEvent('search.submitted', { query: q, filters });
         }
     };
 
@@ -253,6 +255,7 @@ function SearchContent() {
         if (query.trim()) {
             router.push(`/busqueda?${buildSearchParams(query, newFilters, 1)}`);
             performSearch(query, newFilters, 1);
+            trackEvent('search.filtered', { query, changed_filter: Object.keys(newFilters).find(k => newFilters[k as keyof SearchFilterState] !== filters[k as keyof SearchFilterState]) });
         }
     };
 
@@ -260,6 +263,7 @@ function SearchContent() {
         setCurrentPage(page);
         router.push(`/busqueda?${buildSearchParams(query, filters, page)}`);
         performSearch(query, filters, page);
+        trackEvent('search.paginated', { page, query });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 

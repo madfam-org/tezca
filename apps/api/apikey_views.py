@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from . import posthog_analytics
 from .apikeys import generate_api_key
 from .models import APIKey
 
@@ -95,6 +96,11 @@ def create_api_key(request):
     )
 
     logger.info("API key created: id=%d tier=%s", api_key.pk, tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "api_key.created",
+        {"tier": tier, "scopes": scopes},
+    )
 
     return Response(
         {
@@ -187,6 +193,11 @@ def update_api_key(request, prefix):
 
     api_key.save()
     logger.info("API key updated: %s (prefix=%s)", api_key.name, prefix)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "api_key.updated",
+        {"fields_changed": [f for f in updatable if f in data]},
+    )
 
     return Response(
         {
@@ -218,5 +229,10 @@ def revoke_api_key(request, prefix):
     api_key.is_active = False
     api_key.save(update_fields=["is_active"])
     logger.info("API key revoked: %s (prefix=%s)", api_key.name, prefix)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "api_key.revoked",
+        {"tier": api_key.tier},
+    )
 
     return Response({"status": "revoked", "prefix": prefix})

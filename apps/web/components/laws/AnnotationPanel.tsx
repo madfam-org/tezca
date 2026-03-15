@@ -8,6 +8,7 @@ import { api, type AnnotationData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 import { getAuthToken } from '@/lib/auth-token';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const content = {
     es: {
@@ -125,6 +126,7 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
             setAnnotations((prev) => [...prev, annotation]);
             setNewText('');
             setAdding(false);
+            trackEvent('annotation.created', { law_id: lawId, color: newColor });
         } catch (err) {
             console.error(err);
         }
@@ -140,6 +142,7 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
             });
             setAnnotations((prev) => prev.map((a) => (a.id === id ? updated : a)));
             setEditingId(null);
+            trackEvent('annotation.updated', { law_id: lawId });
         } catch (err) {
             console.error(err);
         }
@@ -151,6 +154,7 @@ export function AnnotationPanel({ lawId, open, onClose, focusArticleId }: Annota
         try {
             await api.deleteAnnotation(token, id);
             setAnnotations((prev) => prev.filter((a) => a.id !== id));
+            trackEvent('annotation.deleted', { law_id: lawId });
         } catch (err) {
             console.error(err);
         }
