@@ -22,6 +22,7 @@ from apps.api.models import Law, LawVersion
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 DEFAULT_CATALOG = PROJECT_ROOT / "data" / "conamer" / "discovered_conamer.json"
+SINEC_CATALOG = PROJECT_ROOT / "data" / "federal" / "noms" / "sinec_noms.json"
 BATCH_DIR = PROJECT_ROOT / "data" / "conamer"
 
 # Category mapping from CONAMER regulation_type to Law.category
@@ -117,13 +118,33 @@ def _load_catalog(catalog_path: Path) -> list:
     return all_items
 
 
+def _normalize_sinec_entry(entry: dict) -> dict:
+    """Map SINEC NOM fields to the CONAMER regulation schema."""
+    return {
+        "id": entry.get("nom_id", ""),
+        "name": entry.get("title", entry.get("nom_id", "Unknown NOM")),
+        "url": entry.get("url", ""),
+        "date": entry.get("date_published", ""),
+        "regulation_type": "norma",
+        "issuing_body": entry.get("agency_name", entry.get("agency_abbr", "")),
+        "source": "sinec",
+    }
+
+
 class Command(BaseCommand):
-    help = "Ingest CONAMER regulations into database from discovered_conamer.json"
+    help = "Ingest CONAMER/SINEC regulations into database"
 
     def add_arguments(self, parser):
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument("--all", action="store_true", help="Ingest all regulations")
 
+        parser.add_argument(
+            "--source",
+            type=str,
+            choices=["conamer", "sinec"],
+            default="conamer",
+            help="Data source: conamer (default) or sinec (NOM standards)",
+        )
         parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -143,8 +164,8 @@ class Command(BaseCommand):
         parser.add_argument(
             "--catalog",
             type=str,
-            default=str(DEFAULT_CATALOG),
-            help=f"Path to discovered_conamer.json (default: {DEFAULT_CATALOG})",
+            default=None,
+            help="Path to catalog JSON (auto-detected from --source if omitted)",
         )
 
     def create_law_and_version(self, regulation, dry_run=False):
@@ -255,20 +276,38 @@ class Command(BaseCommand):
             }
 
     def handle(self, *args, **options):
-        catalog_path = Path(options["catalog"])
+        source = options["source"]
 
-        self.stdout.write(f"Loading CONAMER catalog from {catalog_path}...")
+        # Determine catalog path
+        if options["catalog"]:
+            catalog_path = Path(options["catalog"])
+        elif source == "sinec":
+            catalog_path = SINEC_CATALOG
+        else:
+            catalog_path = DEFAULT_CATALOG
+
+        self.stdout.write(f"Loading {source.upper()} catalog from {catalog_path}...")
 
         all_regulations = _load_catalog(catalog_path)
+
+        # Normalize SINEC entries to CONAMER schema
+        if source == "sinec":
+            all_regulations = [_normalize_sinec_entry(r) for r in all_regulations]
 
         if not all_regulations:
             self.stdout.write(
                 self.style.ERROR(f"No regulations found at {catalog_path}")
             )
-            self.stdout.write(
-                "   Run the CONAMER scraper first:\n"
-                "   python -m apps.scraper.federal.conamer_playwright"
-            )
+            if source == "sinec":
+                self.stdout.write(
+                    "   Run the SINEC scraper first:\n"
+                    "   python -m apps.scraper.federal.sinec_scraper"
+                )
+            else:
+                self.stdout.write(
+                    "   Run the CONAMER scraper first:\n"
+                    "   python -m apps.scraper.federal.conamer_playwright"
+                )
             return
 
         if options["limit"]:
@@ -279,14 +318,14 @@ class Command(BaseCommand):
             return
 
         self.stdout.write("=" * 70)
-        self.stdout.write("CONAMER REGULATION INGESTION PLAN")
+        self.stdout.write(f"{source.upper()} REGULATION INGESTION PLAN")
         self.stdout.write("=" * 70)
         self.stdout.write(f"Regulations to ingest: {len(all_regulations):,}")
         self.stdout.write(f"Batch size: {options['batch_size']}")
         self.stdout.write(f"Dry run: {options['dry_run']}")
         self.stdout.write("=" * 70)
 
-        self.stdout.write("Starting CONAMER ingestion...\n")
+        self.stdout.write(f"Starting {source.upper()} ingestion...\n")
 
         results = []
         batch_count = 0
@@ -329,7 +368,7 @@ class Command(BaseCommand):
 
         self.stdout.write("")
         self.stdout.write("=" * 70)
-        self.stdout.write("CONAMER INGESTION SUMMARY")
+        self.stdout.write(f"{source.upper()} INGESTION SUMMARY")
         self.stdout.write("=" * 70)
         self.stdout.write(f"Total regulations:  {len(results):,}")
         self.stdout.write(
@@ -361,5 +400,7 @@ class Command(BaseCommand):
 
         if not options["dry_run"]:
             self.stdout.write(
-                self.style.SUCCESS(f"\nIngested {success_count:,} CONAMER regulations!")
+                self.style.SUCCESS(
+                    f"\nIngested {success_count:,} {source.upper()} regulations!"
+                )
             )

@@ -410,3 +410,113 @@ class TestIngestJudicialCommand:
         assert JudicialRecord.objects.filter(registro="DIR-001").exists()
         assert JudicialRecord.objects.filter(registro="DIR-002").exists()
         assert JudicialRecord.objects.count() == 2
+
+
+# ---------------------------------------------------------------------------
+# ingest_conamer --source sinec
+# ---------------------------------------------------------------------------
+@pytest.mark.django_db
+class TestIngestConamerSinecSource:
+    """Smoke tests for the ingest_conamer command with --source sinec."""
+
+    def test_sinec_source_dry_run(self, tmp_path, capsys):
+        """--dry-run with --source sinec should not write to DB and show SINEC summary."""
+        catalog = tmp_path / "sinec_noms.json"
+        noms = [
+            {
+                "nom_id": "NOM-001-TEST-2024",
+                "title": "NOM de Prueba",
+                "agency_abbr": "SE",
+                "date_published": "2024-08-01",
+                "url": "https://example.com/nom001",
+                "status": "vigente",
+            },
+        ]
+        catalog.write_text(json.dumps(noms), encoding="utf-8")
+
+        before_laws = Law.objects.count()
+        before_versions = LawVersion.objects.count()
+
+        call_command(
+            "ingest_conamer",
+            "--all",
+            "--dry-run",
+            "--source",
+            "sinec",
+            "--catalog",
+            str(catalog),
+        )
+        captured = capsys.readouterr()
+
+        assert Law.objects.count() == before_laws
+        assert LawVersion.objects.count() == before_versions
+        assert "SINEC INGESTION SUMMARY" in captured.out
+
+    def test_sinec_source_creates_law(self, tmp_path, capsys):
+        """Ingesting a SINEC NOM should create a Law with conamer_ prefix and norma category."""
+        catalog = tmp_path / "sinec_noms.json"
+        noms = [
+            {
+                "nom_id": "NOM-099-SINEC-2024",
+                "title": "NOM de Seguridad Industrial",
+                "agency_abbr": "STPS",
+                "date_published": "2024-03-15",
+                "url": "https://example.com/nom099",
+                "status": "vigente",
+            },
+        ]
+        catalog.write_text(json.dumps(noms), encoding="utf-8")
+
+        call_command(
+            "ingest_conamer",
+            "--all",
+            "--source",
+            "sinec",
+            "--catalog",
+            str(catalog),
+        )
+
+        law = Law.objects.get(official_id="conamer_NOM-099-SINEC-2024")
+        assert law.name == "NOM de Seguridad Industrial"
+        assert law.category == "norma"
+
+
+# ---------------------------------------------------------------------------
+# retry_failed_non_leg command
+# ---------------------------------------------------------------------------
+@pytest.mark.django_db
+class TestRetryFailedNonLeg:
+    """Smoke tests for the retry_failed_non_leg management command."""
+
+    @patch("apps.api.management.commands.retry_failed_non_leg.read_metadata_json")
+    def test_missing_metadata_shows_error(self, mock_read_meta, capsys):
+        """Command reports error when metadata file is not found."""
+        mock_read_meta.return_value = None
+
+        call_command("retry_failed_non_leg", "--all")
+        captured = capsys.readouterr()
+
+        assert "Metadata file not found" in captured.out
+
+    @patch("apps.api.management.commands.retry_failed_non_leg.data_exists")
+    @patch("apps.api.management.commands.retry_failed_non_leg.read_metadata_json")
+    def test_dry_run_reports_gaps(self, mock_read_meta, mock_data_exists, capsys):
+        """--dry-run should report retryable gaps without downloading."""
+        mock_read_meta.return_value = {
+            "laws": [
+                {
+                    "official_id": "test_1",
+                    "law_name": "Test",
+                    "state": "Michoacan",
+                    "url": "http://example.com/test.pdf",
+                    "text_file": "",
+                },
+            ],
+        }
+        mock_data_exists.return_value = False
+
+        call_command("retry_failed_non_leg", "--all", "--dry-run")
+        captured = capsys.readouterr()
+
+        assert "Retryable gaps found: 1" in captured.out
+        assert "Dry run complete" in captured.out

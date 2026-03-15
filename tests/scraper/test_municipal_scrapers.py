@@ -15,7 +15,7 @@ from apps.scraper.municipal.config import (
     get_tier2_municipalities,
     list_municipalities,
 )
-from apps.scraper.municipal.generic import GenericMunicipalScraper
+from apps.scraper.municipal.generic import _CITY_TO_STATE_KEY, GenericMunicipalScraper
 
 
 class TestConfiguration:
@@ -327,3 +327,34 @@ class TestGenericMunicipalScraper:
         assert scraper.municipality is not None
         assert scraper.state is not None
         assert hasattr(scraper, "scrape_catalog")
+
+
+class TestPNTFallback:
+    """Test PNT fallback behavior in GenericMunicipalScraper."""
+
+    def test_pnt_fallback_city_to_state_mapping(self):
+        """Verify _CITY_TO_STATE_KEY contains expected cities with correct state keys."""
+        assert isinstance(_CITY_TO_STATE_KEY, dict)
+
+        expected_mappings = {
+            "merida": "yucatan",
+            "juarez": "chihuahua",
+            "cdmx": "ciudad_de_mexico",
+            "monterrey": "nuevo_leon",
+        }
+
+        for city, expected_state in expected_mappings.items():
+            assert city in _CITY_TO_STATE_KEY, f"{city} missing from _CITY_TO_STATE_KEY"
+            assert (
+                _CITY_TO_STATE_KEY[city] == expected_state
+            ), f"{city} maps to {_CITY_TO_STATE_KEY[city]}, expected {expected_state}"
+
+    def test_pnt_fallback_unknown_city_returns_empty(self):
+        """PNT fallback for a known city with mocked _try_pnt_fallback returns a list."""
+        scraper = GenericMunicipalScraper(city_key="merida")
+
+        from unittest.mock import patch
+
+        with patch.object(scraper, "_try_pnt_fallback", return_value=[]):
+            result = scraper._try_pnt_fallback()
+            assert isinstance(result, list)

@@ -231,10 +231,10 @@ def check_dof_daily():
 
 @shared_task(name="dataops.run_state_scraper")
 def run_state_scraper(state_key):
-    """Run a state congress scraper by key (baja_california, durango, quintana_roo).
+    """Run a state congress scraper by key.
 
     Args:
-        state_key: One of 'baja_california', 'durango', 'quintana_roo'
+        state_key: State scraper key (e.g. 'baja_california', 'guerrero')
     """
     from pathlib import Path
 
@@ -242,6 +242,8 @@ def run_state_scraper(state_key):
         "baja_california": "apps.scraper.state.baja_california.BajaCaliforniaScraper",
         "durango": "apps.scraper.state.durango.DurangoScraper",
         "quintana_roo": "apps.scraper.state.quintana_roo.QuintanaRooScraper",
+        "guerrero": "apps.scraper.state.guerrero.GuerreroScraper",
+        "nuevo_leon": "apps.scraper.state.nuevo_leon.NuevoLeonScraper",
     }
 
     if state_key not in scrapers:
@@ -441,3 +443,54 @@ def run_parser_pipeline(new_only=True):
 
     logger.info("Parser pipeline complete: %s", result.stdout[-200:])
     return {"success": True, "output": result.stdout[-500:]}
+
+
+@shared_task(name="dataops.scrape_scjn")
+def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
+    """Run SCJN judicial scraper for jurisprudencia and tesis.
+
+    Args:
+        max_items: Maximum items to scrape per run (default: 5000)
+        epoca: Epoca filter (default: 10 for Décima Época)
+        mode: "jurisprudencia" or "tesis"
+    """
+    import json
+    from pathlib import Path
+
+    try:
+        from apps.scraper.judicial.scjn_scraper import ScjnScraper
+
+        scraper = ScjnScraper()
+        result = scraper.run(
+            output_dir="data/judicial/batches",
+            max_items=max_items,
+            epoca=epoca,
+            mode=mode,
+        )
+
+        logger.info(
+            "SCJN scraper (%s): %d items scraped",
+            mode,
+            result.get("total_scraped", 0),
+        )
+
+        # Log to AcquisitionLog
+        try:
+            from apps.scraper.dataops.models import AcquisitionLog
+
+            AcquisitionLog.objects.create(
+                operation=f"scjn_{mode}_scrape",
+                parameters={"max_items": max_items, "epoca": epoca, "mode": mode},
+                found=result.get("total_scraped", 0),
+                downloaded=result.get("total_scraped", 0),
+                failed=result.get("failed", 0),
+                ingested=0,
+            )
+        except Exception:
+            pass
+
+        return result
+
+    except Exception as e:
+        logger.error("SCJN scraper failed: %s", e)
+        return {"error": str(e)}

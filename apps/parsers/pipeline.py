@@ -4,6 +4,8 @@ Law ingestion pipeline - End-to-end processing.
 Combines: Download → Extract → Parse → Validate → Quality Assessment
 """
 
+import subprocess
+
 # Import components
 import sys
 import time
@@ -11,8 +13,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
+from urllib.parse import urlparse
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from apps.parsers.error_tracker import ErrorTracker
 
@@ -21,6 +26,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Minimum characters expected from a valid PDF text extraction.
 # Below this threshold, the PDF is likely scanned/image-based and needs OCR.
 MIN_TEXT_LENGTH = 100
+
+# OJN hostnames that require extended timeouts
+_OJN_HOSTS = {"compilacion.ordenjuridico.gob.mx", "ordenjuridico.gob.mx"}
+_OJN_TIMEOUT = 120  # seconds
+_OJN_MAX_RETRIES = 5
+_DEFAULT_TIMEOUT = 30
 
 from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
 from apps.parsers.quality import QualityCalculator, QualityMetrics
@@ -316,30 +327,67 @@ class IngestionPipeline:
 
         return result
 
-    def _download_pdf(self, law_metadata: Dict) -> Path:
-        """Download PDF from URL or use existing."""
+    def _download_file(self, law_metadata: Dict) -> Path:
+        """Download file from URL or use existing.
+
+        Supports PDF, .doc, and .docx files. Uses extended timeout and
+        aggressive retry for slow OJN servers.
+        """
         law_id = law_metadata["id"]
-        pdf_path = self.pdf_dir / f"{law_id}.pdf"
+        url = law_metadata["url"]
+
+        # Determine file extension from URL
+        url_path = urlparse(url).path.lower()
+        if url_path.endswith(".docx"):
+            ext = ".docx"
+        elif url_path.endswith(".doc"):
+            ext = ".doc"
+        else:
+            ext = ".pdf"
+
+        file_path = self.pdf_dir / f"{law_id}{ext}"
 
         # Use existing if skip_download or already exists
-        if self.skip_download and pdf_path.exists():
-            return pdf_path
+        if self.skip_download and file_path.exists():
+            return file_path
 
-        if pdf_path.exists():
-            # Check if file is valid (size > 1KB)
-            if pdf_path.stat().st_size > 1024:
-                return pdf_path
+        if file_path.exists() and file_path.stat().st_size > 1024:
+            return file_path
 
-        # Download from URL
-        url = law_metadata["url"]
-        response = requests.get(url, timeout=30)
+        # Determine timeout and retry strategy based on hostname
+        hostname = urlparse(url).hostname or ""
+        is_ojn = hostname in _OJN_HOSTS
+
+        if is_ojn:
+            timeout = _OJN_TIMEOUT
+            max_retries = _OJN_MAX_RETRIES
+            backoff_factor = 2  # 2, 4, 8, 16, 32s
+        else:
+            timeout = _DEFAULT_TIMEOUT
+            max_retries = 3
+            backoff_factor = 1
+
+        session = requests.Session()
+        retry_strategy = Retry(
+            total=max_retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"],
+        )
+        session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+        session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
+
+        response = session.get(url, timeout=timeout, verify=not is_ojn)
         response.raise_for_status()
 
-        pdf_path.write_bytes(response.content)
-        return pdf_path
+        file_path.write_bytes(response.content)
+        return file_path
 
-    def _extract_text(self, law_metadata: Dict, pdf_path: Path) -> tuple[Path, str]:
-        """Extract text from PDF, with OCR fallback for scanned documents."""
+    # Keep old name as alias for backwards compat within pipeline
+    _download_pdf = _download_file
+
+    def _extract_text(self, law_metadata: Dict, file_path: Path) -> tuple[Path, str]:
+        """Extract text from PDF, .doc, or .docx, with OCR fallback for scanned PDFs."""
         law_id = law_metadata["id"]
         text_path = self.text_dir / f"{law_id}_extracted.txt"
 
@@ -348,7 +396,21 @@ class IngestionPipeline:
             text = text_path.read_text(encoding="utf-8")
             return text_path, text
 
-        # Extract using pdfplumber
+        suffix = file_path.suffix.lower()
+
+        if suffix == ".docx":
+            full_text = self._extract_docx_text(file_path)
+        elif suffix == ".doc":
+            full_text = self._extract_doc_text(file_path)
+        else:
+            full_text = self._extract_pdf_text(file_path)
+
+        # Save extracted text
+        text_path.write_text(full_text, encoding="utf-8")
+        return text_path, full_text
+
+    def _extract_pdf_text(self, pdf_path: Path) -> str:
+        """Extract text from PDF using pdfplumber, with OCR fallback."""
         import pdfplumber
 
         text_parts = []
@@ -360,7 +422,6 @@ class IngestionPipeline:
 
         full_text = "\n".join(text_parts)
 
-        # Check if pdfplumber got meaningful text
         if len(full_text.strip()) >= MIN_TEXT_LENGTH:
             print(f"   📄 Extracted via pdfplumber ({len(full_text):,} chars)")
         else:
@@ -378,10 +439,86 @@ class IngestionPipeline:
                     "keeping pdfplumber result"
                 )
 
-        # Save extracted text
-        text_path.write_text(full_text, encoding="utf-8")
+        return full_text
 
-        return text_path, full_text
+    def _extract_docx_text(self, docx_path: Path) -> str:
+        """Extract text from .docx using python-docx."""
+        try:
+            import docx
+        except ImportError:
+            print(
+                "   ⚠️  python-docx not installed — "
+                "install with: poetry install -E export"
+            )
+            return ""
+
+        try:
+            doc = docx.Document(str(docx_path))
+            paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+            full_text = "\n".join(paragraphs)
+            print(f"   📄 Extracted via python-docx ({len(full_text):,} chars)")
+            return full_text
+        except Exception as e:
+            print(f"   ⚠️  DOCX extraction failed: {e}")
+            return ""
+
+    def _extract_doc_text(self, doc_path: Path) -> str:
+        """Extract text from .doc using antiword or libreoffice fallback."""
+        # Try antiword first (fast, lightweight)
+        try:
+            result = subprocess.run(
+                ["antiword", str(doc_path)],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode == 0 and len(result.stdout.strip()) >= MIN_TEXT_LENGTH:
+                print(f"   📄 Extracted via antiword ({len(result.stdout):,} chars)")
+                return result.stdout
+        except FileNotFoundError:
+            pass  # antiword not installed, try libreoffice
+        except subprocess.TimeoutExpired:
+            print("   ⚠️  antiword timed out")
+
+        # Fallback: libreoffice headless convert to txt
+        try:
+            import tempfile
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                result = subprocess.run(
+                    [
+                        "libreoffice",
+                        "--headless",
+                        "--convert-to",
+                        "txt:Text",
+                        "--outdir",
+                        tmpdir,
+                        str(doc_path),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+                if result.returncode == 0:
+                    txt_file = Path(tmpdir) / (doc_path.stem + ".txt")
+                    if txt_file.exists():
+                        full_text = txt_file.read_text(
+                            encoding="utf-8", errors="replace"
+                        )
+                        print(
+                            f"   📄 Extracted via libreoffice "
+                            f"({len(full_text):,} chars)"
+                        )
+                        return full_text
+        except FileNotFoundError:
+            print(
+                "   ⚠️  Neither antiword nor libreoffice found — "
+                "cannot extract .doc files"
+            )
+        except subprocess.TimeoutExpired:
+            print("   ⚠️  libreoffice conversion timed out")
+
+        return ""
 
     def _ocr_extract(self, pdf_path: Path) -> str:
         """

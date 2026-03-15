@@ -343,4 +343,21 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.api.tasks.expire_trials",
         "schedule": crontab(minute=0),  # every hour at :00
     },
+    # ── Phase 16: New state scrapers ──────────────────────────────────
+    "state-guerrero-monthly": {
+        "task": "dataops.run_state_scraper",
+        "schedule": crontab(hour=2, minute=0, day_of_month="5"),
+        "kwargs": {"state_key": "guerrero"},
+    },
+    "state-nuevo-leon-monthly": {
+        "task": "dataops.run_state_scraper",
+        "schedule": crontab(hour=2, minute=30, day_of_month="5"),
+        "kwargs": {"state_key": "nuevo_leon"},
+    },
+    # ── Phase 16: SCJN judicial corpus ────────────────────────────────
+    "scjn-weekly-scrape": {
+        "task": "dataops.scrape_scjn",
+        "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
+        "kwargs": {"max_items": 5000, "epoca": 10},
+    },
 }

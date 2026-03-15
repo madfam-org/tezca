@@ -17,6 +17,31 @@ from bs4 import BeautifulSoup
 from .base import MunicipalScraper
 from .config import MUNICIPALITY_CONFIGS, get_config
 
+# State key mapping for PNT fallback (city_key -> state_key for INEGI codes)
+_CITY_TO_STATE_KEY = {
+    "juarez": "chihuahua",
+    "zapopan": "jalisco",
+    "merida": "yucatan",
+    "cancun": "quintana_roo",
+    "aguascalientes": "aguascalientes",
+    "san_luis_potosi": "san_luis_potosi",
+    "hermosillo": "sonora",
+    "chihuahua": "chihuahua",
+    "queretaro": "queretaro",
+    "morelia": "michoacan",
+    "saltillo": "coahuila",
+    "toluca": "estado_de_mexico",
+    "culiacan": "sinaloa",
+    "villahermosa": "tabasco",
+    "acapulco": "guerrero",
+    "cdmx": "ciudad_de_mexico",
+    "guadalajara": "jalisco",
+    "monterrey": "nuevo_leon",
+    "puebla": "puebla",
+    "tijuana": "baja_california",
+    "leon": "guanajuato",
+}
+
 logger = logging.getLogger(__name__)
 
 # Keywords that indicate a regulatory document
@@ -118,6 +143,16 @@ class GenericMunicipalScraper(MunicipalScraper):
             laws.extend(subpage_laws)
 
         logger.info(f"[{self.city_key}] Total laws discovered: {len(laws)}")
+
+        # PNT fallback: if portal yielded 0 results, try PNT SIPOT API
+        if not laws:
+            pnt_laws = self._try_pnt_fallback()
+            if pnt_laws:
+                logger.info(
+                    f"[{self.city_key}] PNT fallback found {len(pnt_laws)} documents"
+                )
+                laws.extend(pnt_laws)
+
         return laws
 
     def scrape_law_content(self, url: str) -> Optional[Dict]:
@@ -160,6 +195,37 @@ class GenericMunicipalScraper(MunicipalScraper):
                 "content": text_content,
                 "size_bytes": len(text_content),
             }
+
+    def _try_pnt_fallback(self) -> List[Dict]:
+        """
+        Try PNT SIPOT API as fallback when the primary portal yields no results.
+
+        Uses the PNTMunicipalScraper with the city's state and municipality name
+        to query the national transparency platform for regulatory documents.
+
+        Returns:
+            List of law dictionaries from PNT, or empty list if unavailable.
+        """
+        state_key = _CITY_TO_STATE_KEY.get(self.city_key)
+        if not state_key:
+            logger.debug(f"[{self.city_key}] No state key mapping for PNT fallback")
+            return []
+
+        try:
+            from .pnt_scraper import PNTMunicipalScraper
+
+            logger.info(
+                f"[{self.city_key}] Trying PNT fallback "
+                f"(state={state_key}, municipality={self.municipality})"
+            )
+            pnt_scraper = PNTMunicipalScraper(
+                state_key=state_key,
+                municipality=self.municipality,
+            )
+            return pnt_scraper.scrape_catalog_regulatory_only()
+        except Exception as e:
+            logger.warning(f"[{self.city_key}] PNT fallback failed: {e}")
+            return []
 
     def _is_regulatory_link(self, href: str, text: str) -> bool:
         """

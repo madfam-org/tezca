@@ -1,5 +1,6 @@
 """
-Tests for state congress scrapers (Baja California, Durango, Quintana Roo).
+Tests for state congress scrapers (Baja California, Durango, Guerrero,
+Nuevo León, Quintana Roo).
 
 Tests initialization, base class behavior, and catalog interface.
 """
@@ -9,6 +10,8 @@ import pytest
 from apps.scraper.state.baja_california import BajaCaliforniaScraper
 from apps.scraper.state.base import StateCongressScraper
 from apps.scraper.state.durango import DurangoScraper
+from apps.scraper.state.guerrero import GuerreroScraper
+from apps.scraper.state.nuevo_leon import NuevoLeonScraper
 from apps.scraper.state.quintana_roo import QuintanaRooScraper
 
 
@@ -86,6 +89,49 @@ class TestDurangoScraper:
         assert scraper.extract_category("Reglamento Interior") == "Reglamento"
 
 
+class TestGuerreroScraper:
+    """Test Guerrero state scraper."""
+
+    def test_initialization(self):
+        scraper = GuerreroScraper()
+        assert scraper.state == "Guerrero"
+        assert "congresoguerrero" in scraper.base_url
+        assert scraper.session is not None
+
+    def test_has_required_methods(self):
+        scraper = GuerreroScraper()
+        assert hasattr(scraper, "scrape_catalog")
+        assert hasattr(scraper, "scrape_law_content")
+        assert callable(scraper.scrape_catalog)
+
+    def test_has_catalog_paths(self):
+        """Guerrero scraper defines multiple catalog paths to try."""
+        assert isinstance(GuerreroScraper.CATALOG_PATHS, list)
+        assert len(GuerreroScraper.CATALOG_PATHS) >= 3
+
+
+class TestNuevoLeonScraper:
+    """Test Nuevo León state scraper."""
+
+    def test_initialization(self):
+        scraper = NuevoLeonScraper()
+        assert scraper.state == "Nuevo León"
+        assert "hcnl" in scraper.base_url
+        assert scraper.session is not None
+
+    def test_has_required_methods(self):
+        scraper = NuevoLeonScraper()
+        assert hasattr(scraper, "scrape_catalog")
+        assert hasattr(scraper, "scrape_law_content")
+        assert callable(scraper.scrape_catalog)
+
+    def test_follows_section_links_method(self):
+        """Nuevo León scraper has a method to follow sub-catalog section links."""
+        scraper = NuevoLeonScraper()
+        assert hasattr(scraper, "_follow_section_links")
+        assert callable(scraper._follow_section_links)
+
+
 class TestQuintanaRooScraper:
     """Test Quintana Roo state scraper."""
 
@@ -115,6 +161,8 @@ class TestAllStateScrapers:
         [
             (BajaCaliforniaScraper, "Baja California"),
             (DurangoScraper, "Durango"),
+            (GuerreroScraper, "Guerrero"),
+            (NuevoLeonScraper, "Nuevo León"),
             (QuintanaRooScraper, "Quintana Roo"),
         ],
     )
@@ -124,7 +172,13 @@ class TestAllStateScrapers:
 
     @pytest.mark.parametrize(
         "scraper_cls",
-        [BajaCaliforniaScraper, DurangoScraper, QuintanaRooScraper],
+        [
+            BajaCaliforniaScraper,
+            DurangoScraper,
+            GuerreroScraper,
+            NuevoLeonScraper,
+            QuintanaRooScraper,
+        ],
     )
     def test_session_has_user_agent(self, scraper_cls):
         scraper = scraper_cls()
@@ -133,7 +187,13 @@ class TestAllStateScrapers:
 
     @pytest.mark.parametrize(
         "scraper_cls",
-        [BajaCaliforniaScraper, DurangoScraper, QuintanaRooScraper],
+        [
+            BajaCaliforniaScraper,
+            DurangoScraper,
+            GuerreroScraper,
+            NuevoLeonScraper,
+            QuintanaRooScraper,
+        ],
     )
     def test_normalize_url(self, scraper_cls):
         scraper = scraper_cls()

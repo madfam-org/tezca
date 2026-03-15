@@ -98,6 +98,10 @@ cd apps/admin && npx vitest run
 # MCP server (pytest + respx, 18 tests)
 cd packages/mcp-server && uv run pytest tests/ -v
 
+# Data recovery
+python manage.py retry_failed_non_leg --dry-run          # report retryable non-leg gaps
+python manage.py retry_failed_non_leg --all --batch-size 50  # retry with enhanced timeout
+
 # E2E (89 tests across 15 specs, 4 browser projects)
 cd apps/web && npx playwright test
 cd apps/web && DATA_INTEGRITY_E2E=1 npx playwright test data-integrity.spec.ts  # live API
@@ -231,7 +235,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
-- 12 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports, parser pipeline (weekly)
+- 15 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight)
 
 ### Storage
 
@@ -347,6 +351,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/management/commands/spot_check.py` | Data integrity spot-check (samples laws, traces DB→file→ES→API) |
 | `apps/parsers/error_tracker.py` | ErrorTracker + ErrorRecord for pipeline error logging |
 | `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality) with ErrorTracker |
+| `apps/api/management/commands/retry_failed_non_leg.py` | Retry failed non-leg state law downloads |
+| `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
+| `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
 | `apps/api/es_index_manager.py` | ES alias management (zero-downtime reindex) |
@@ -399,6 +406,8 @@ type Lang = 'es' | 'en' | 'nah';
 16. **Admin endpoint test pattern:** Tests for `_protected()` endpoints must patch both `JanuaJWTAuthentication.authenticate` (returns `(admin_user, "fake-token")`) and `IsTezcaAdmin.has_permission` (returns `True`). Patching `CombinedAuthentication.authenticate` has no effect on admin endpoints. See `_start_admin_patches()` in `tests/api/test_admin_views.py` for the canonical pattern.
 
 17. **`APIKey.rate_limit_per_hour` is capped:** Custom per-key rate limit overrides are capped at 100,000/hour in `TieredRateThrottle._get_limits()`. Model validators enforce 1–100,000 range.
+
+18. **`.doc` extraction deps:** `retry_failed_non_leg` and the pipeline `.doc` extraction require either `antiword` or `libreoffice` on the system for legacy `.doc` files. `.docx` uses `python-docx` from `poetry install -E export`.
 
 ---
 
