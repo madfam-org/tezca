@@ -44,18 +44,22 @@ class OJNScraper:
             }
         )
 
-    def _request(self, url: str, retries: int = 3) -> Optional[requests.Response]:
-        """Make HTTP request with rate limiting and retries"""
+    def _request(self, url: str, retries: int = 5) -> Optional[requests.Response]:
+        """Make HTTP request with rate limiting and retries.
+
+        Uses 120s timeout for OJN's slow file server (Phase 16 hardening).
+        """
         for attempt in range(retries):
             try:
                 time.sleep(self.REQUEST_DELAY)  # Rate limiting
-                response = self.session.get(url, timeout=30)
+                response = self.session.get(url, timeout=120)
                 response.raise_for_status()
                 return response
             except requests.RequestException as e:
                 print(f"  ⚠️  Request failed (attempt {attempt + 1}/{retries}): {e}")
                 if attempt < retries - 1:
-                    time.sleep(5 * (attempt + 1))  # Exponential backoff
+                    backoff = 2 ** (attempt + 1)  # 2, 4, 8, 16s
+                    time.sleep(backoff)
                 else:
                     return None
         return None

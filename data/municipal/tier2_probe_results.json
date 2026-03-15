@@ -1,0 +1,190 @@
+{
+  "probe_date": "2026-03-15T16:25:00.980860",
+  "total": 15,
+  "confirmed": [
+    "merida",
+    "toluca"
+  ],
+  "needs_reconfig": [
+    "juarez",
+    "zapopan",
+    "cancun",
+    "aguascalientes",
+    "san_luis_potosi",
+    "hermosillo",
+    "chihuahua",
+    "queretaro",
+    "morelia",
+    "saltillo",
+    "culiacan",
+    "villahermosa",
+    "acapulco"
+  ],
+  "results": [
+    {
+      "city": "juarez",
+      "name": "Ciudad Juarez",
+      "state": "Chihuahua",
+      "url": "https://www.juarez.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.juarez.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 395,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "zapopan",
+      "name": "Zapopan",
+      "state": "Jalisco",
+      "url": "https://www.zapopan.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.zapopan.gob.mx",
+      "status": "base_unreachable",
+      "http_status": null,
+      "response_time_ms": null,
+      "error": "HTTPSConnectionPool(host='www.zapopan.gob.mx', port=443): Read timed out. (read timeout=10)"
+    },
+    {
+      "city": "merida",
+      "name": "Mérida",
+      "state": "Yucatán",
+      "url": "https://www.merida.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.merida.gob.mx",
+      "status": "confirmed",
+      "http_status": 200,
+      "response_time_ms": 720,
+      "error": null
+    },
+    {
+      "city": "cancun",
+      "name": "Cancún (Benito Juárez)",
+      "state": "Quintana Roo",
+      "url": "https://www.benitojuarez.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.benitojuarez.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 937,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "aguascalientes",
+      "name": "Aguascalientes",
+      "state": "Aguascalientes",
+      "url": "https://www.ags.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.ags.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 496,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "san_luis_potosi",
+      "name": "San Luis Potosí",
+      "state": "San Luis Potosí",
+      "url": "https://www.slp.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.slp.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 390,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "hermosillo",
+      "name": "Hermosillo",
+      "state": "Sonora",
+      "url": "https://www.hermosillo.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.hermosillo.gob.mx",
+      "status": "error",
+      "http_status": 500,
+      "response_time_ms": 196,
+      "error": "HTTP 500"
+    },
+    {
+      "city": "chihuahua",
+      "name": "Chihuahua",
+      "state": "Chihuahua",
+      "url": "https://www.municipiochihuahua.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.municipiochihuahua.gob.mx",
+      "status": "base_unreachable",
+      "http_status": null,
+      "response_time_ms": null,
+      "error": "HTTPSConnectionPool(host='www.municipiochihuahua.gob.mx', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate veri"
+    },
+    {
+      "city": "queretaro",
+      "name": "Querétaro",
+      "state": "Querétaro",
+      "url": "https://www.municipiodequeretaro.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.municipiodequeretaro.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 1063,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "morelia",
+      "name": "Morelia",
+      "state": "Michoacán",
+      "url": "https://www.morelia.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.morelia.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 3098,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "saltillo",
+      "name": "Saltillo",
+      "state": "Coahuila",
+      "url": "https://www.saltillo.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.saltillo.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 3786,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "toluca",
+      "name": "Toluca",
+      "state": "Estado de México",
+      "url": "https://www.toluca.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.toluca.gob.mx",
+      "status": "confirmed",
+      "http_status": 200,
+      "response_time_ms": 1984,
+      "error": null
+    },
+    {
+      "city": "culiacan",
+      "name": "Culiacán",
+      "state": "Sinaloa",
+      "url": "https://culiacan.gob.mx/transparencia/normatividad",
+      "base_url": "https://culiacan.gob.mx",
+      "status": "base_unreachable",
+      "http_status": null,
+      "response_time_ms": null,
+      "error": "HTTPSConnectionPool(host='culiacan.gob.mx', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(\"HTTPSConnection(host='culiacan.gob.mx', port=443): Failed to resolve 'culiacan.g"
+    },
+    {
+      "city": "villahermosa",
+      "name": "Villahermosa (Centro)",
+      "state": "Tabasco",
+      "url": "https://www.villahermosa.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.villahermosa.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 1177,
+      "error": "Catalog path not found"
+    },
+    {
+      "city": "acapulco",
+      "name": "Acapulco",
+      "state": "Guerrero",
+      "url": "https://www.acapulco.gob.mx/transparencia/normatividad",
+      "base_url": "https://www.acapulco.gob.mx",
+      "status": "needs_reconfig",
+      "http_status": 404,
+      "response_time_ms": 2270,
+      "error": "Catalog path not found"
+    }
+  ]
+}

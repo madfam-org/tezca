@@ -1,0 +1,19 @@
+{
+  "expansion_date": "2026-03-15T16:25:15.909566",
+  "total_cities": 1,
+  "total_laws_found": 0,
+  "total_downloaded": 0,
+  "total_failed": 0,
+  "results": [
+    {
+      "city": "merida",
+      "name": "Mérida",
+      "state": "Yucatán",
+      "status": "empty",
+      "total_found": 0,
+      "downloaded": 0,
+      "failed": 0,
+      "error": null
+    }
+  ]
+}
