@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useSyncExternalStore } from 'react';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 export type Lang = 'es' | 'en' | 'nah';
 
@@ -44,13 +45,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const lang = override ?? storedLang;
 
   const setLang = useCallback((newLang: Lang) => {
+    trackEvent('language.switched', { from: lang, to: newLang });
     setOverride(newLang);
     try {
       localStorage.setItem(STORAGE_KEY, newLang);
     } catch {
       // localStorage unavailable
     }
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     document.documentElement.lang = lang === 'nah' ? 'nci' : lang;

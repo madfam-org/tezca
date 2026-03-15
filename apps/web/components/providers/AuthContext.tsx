@@ -1,7 +1,8 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
+import { identifyUser, resetUser } from '@/lib/analytics/posthog';
 
 export type UserTier = 'anon' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { client } = useJanua();
 
     const handleSignOut = useCallback(() => {
+        resetUser();
         client?.signOut?.();
         window.location.assign('/');
     }, [client]);
@@ -96,6 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             signOut: handleSignOut,
         };
     }, [januaAuth, handleSignOut]);
+
+    const prevAuthRef = useRef(false);
+    useEffect(() => {
+        if (state.isAuthenticated && !prevAuthRef.current && state.userId) {
+            identifyUser(state.userId, { email: state.email, name: state.name, tier: state.tier });
+        }
+        prevAuthRef.current = state.isAuthenticated;
+    }, [state.isAuthenticated, state.userId, state.email, state.name, state.tier]);
 
     return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }

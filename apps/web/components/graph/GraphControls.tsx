@@ -1,6 +1,7 @@
 'use client';
 
 import { useLang } from '@/components/providers/LanguageContext';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { ZoomIn, ZoomOut, Maximize2, Minimize2, RotateCcw, Play, Pause, Download } from 'lucide-react';
 
 const content = {
@@ -163,7 +164,7 @@ export function GraphControls({
                 )}
                 {onExportPNG && (
                     <button
-                        onClick={onExportPNG}
+                        onClick={() => { onExportPNG(); trackEvent('graph.exported_png'); }}
                         className={btnClass}
                         aria-label={t.exportPNG}
                     >

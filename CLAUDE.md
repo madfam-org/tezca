@@ -89,7 +89,7 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 402 tests across 50 files)
+# Web (vitest, 619 tests across 66 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 72 tests across 10 files)
@@ -98,7 +98,7 @@ cd apps/admin && npx vitest run
 # MCP server (pytest + respx, 18 tests)
 cd packages/mcp-server && uv run pytest tests/ -v
 
-# E2E (84 tests across 15 specs, 4 browser projects)
+# E2E (89 tests across 15 specs, 4 browser projects)
 cd apps/web && npx playwright test
 cd apps/web && DATA_INTEGRITY_E2E=1 npx playwright test data-integrity.spec.ts  # live API
 cd apps/web && UI_FIDELITY_E2E=1 npx playwright test e2e/ui-data-fidelity.spec.ts e2e/search-data-completeness.spec.ts  # live API
@@ -310,6 +310,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/middleware/tier_permissions.py` | `RequireTier` (rank-based), `RequireFeature` (feature-flag-based), `get_effective_tier()` (self-hosted cap) |
 | `apps/api/tiers.json` | Feature flags and limits per tier (loaded by tier_permissions) |
 | `apps/api/tier_throttles.py` | Rate limiting by tier (imports from tier_permissions) |
+| `apps/api/posthog_analytics.py` | PostHog telemetry — `init_posthog()`, `track()`, `identify()`, `get_distinct_id(request)`. No-op when `POSTHOG_API_KEY` is unset |
+| `apps/web/lib/analytics/posthog.ts` | Frontend PostHog — `initPostHog()`, `trackEvent()`, `identifyUser()`, `resetUser()`. No-op when `NEXT_PUBLIC_POSTHOG_KEY` is unset |
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
 | `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/utils/url_validation.py` | Webhook SSRF protection — validates URLs against private/reserved IPs |

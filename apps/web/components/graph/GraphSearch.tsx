@@ -3,6 +3,7 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const content = {
     es: { placeholder: 'Buscar ley...', clear: 'Limpiar búsqueda' },
@@ -38,8 +39,9 @@ export function GraphSearch({ nodes, onFocus, onClear }: GraphSearchProps) {
     const handleSelect = useCallback((nodeId: string) => {
         onFocus(nodeId);
         setIsOpen(false);
+        trackEvent('graph.node_searched', { node_id: nodeId, query });
         setQuery('');
-    }, [onFocus]);
+    }, [onFocus, query]);
 
     const handleClear = useCallback(() => {
         setQuery('');

@@ -23,6 +23,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from . import posthog_analytics
 from .config import INDEX_NAME, es_client
 from .export_throttles import check_export_quota, log_export
 from .models import Law
@@ -271,6 +272,16 @@ def export_txt(request, law_id):
     safe_name = _safe_filename(law_id)
 
     log_export(user_id, ip, law_id, "txt", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "txt",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(content, content_type="text/plain; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.txt"'
@@ -308,6 +319,16 @@ def export_pdf(request, law_id):
 
     safe_name = _safe_filename(law_id)
     log_export(user_id, ip, law_id, "pdf", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "pdf",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.pdf"'
@@ -381,6 +402,16 @@ def export_latex(request, law_id):
 
     safe_name = _safe_filename(law_id)
     log_export(user_id, ip, law_id, "latex", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "latex",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(
         tex_content, content_type="application/x-tex; charset=utf-8"
@@ -458,6 +489,16 @@ def export_docx(request, law_id):
 
     safe_name = _safe_filename(law_id)
     log_export(user_id, ip, law_id, "docx", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "docx",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(
         buf.getvalue(),
@@ -561,6 +602,16 @@ def export_epub(request, law_id):
 
     safe_name = _safe_filename(law_id)
     log_export(user_id, ip, law_id, "epub", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "epub",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(buf.getvalue(), content_type="application/epub+zip")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.epub"'
@@ -626,6 +677,16 @@ def export_json(request, law_id):
 
     safe_name = _safe_filename(law_id)
     log_export(user_id, ip, law_id, "json", tier)
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "export.completed",
+        {
+            "format": "json",
+            "law_id": law_id,
+            "tier": tier,
+            "article_count": len(articles),
+        },
+    )
 
     response = HttpResponse(json_str, content_type="application/json; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{safe_name}.json"'

@@ -7,6 +7,7 @@ import { Button, Badge, Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth, type UserTier } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 type TierGateVariant = 'inline' | 'overlay' | 'card' | 'toast';
 type RequiredTier = 'community' | 'essentials' | 'academic' | 'institutional';
@@ -133,6 +134,11 @@ export function TierGate({
     const [dismissed, setDismissed] = useState(false);
 
     useEffect(() => {
+        trackEvent('tier_gate.shown', { variant, required_tier: requiredTier, user_tier: tier, feature });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- track once on mount
+    }, []);
+
+    useEffect(() => {
         if (!showCountdown || countdown <= 0) return;
         const interval = setInterval(() => {
             setCountdown((c) => {
@@ -150,6 +156,7 @@ export function TierGate({
 
     const handleDismiss = () => {
         setDismissed(true);
+        trackEvent('tier_gate.dismissed', { variant });
         onDismiss?.();
     };
 
@@ -200,7 +207,7 @@ export function TierGate({
                                         {TIER_DISPLAY[requiredTier]}
                                     </Badge>
                                 </div>
-                                <Link href={checkoutUrl} className="mt-3 inline-block">
+                                <Link href={checkoutUrl} className="mt-3 inline-block" onClick={() => trackEvent('tier_gate.upgrade_clicked', { variant, required_tier: requiredTier })}>
                                     <Button size="sm" className="gap-1">
                                         <Sparkles className="h-3 w-3" />
                                         {ctaLabel}
@@ -236,7 +243,7 @@ export function TierGate({
                             </p>
                         </div>
                     </div>
-                    <Link href={checkoutUrl} className="shrink-0">
+                    <Link href={checkoutUrl} className="shrink-0" onClick={() => trackEvent('tier_gate.upgrade_clicked', { variant, required_tier: requiredTier })}>
                         <Button size="sm" className="gap-1 group">
                             <Sparkles className="h-3 w-3" />
                             {ctaLabel}
@@ -299,7 +306,7 @@ export function TierGate({
                         </div>
                     )}
 
-                    <Link href={checkoutUrl}>
+                    <Link href={checkoutUrl} onClick={() => trackEvent('tier_gate.upgrade_clicked', { variant, required_tier: requiredTier })}>
                         <Button className="gap-2 group">
                             <Sparkles className="h-4 w-4" />
                             {ctaLabel}
@@ -323,7 +330,7 @@ export function TierGate({
                     <p className="text-sm text-muted-foreground mb-4">
                         {feature ?? subtitle}
                     </p>
-                    <Link href={checkoutUrl}>
+                    <Link href={checkoutUrl} onClick={() => trackEvent('tier_gate.upgrade_clicked', { variant, required_tier: requiredTier })}>
                         <Button size="sm" className="gap-1">
                             <Sparkles className="h-3 w-3" />
                             {ctaLabel}

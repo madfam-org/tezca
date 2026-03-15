@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from . import posthog_analytics
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
 from .schema import SEARCH_PARAMETERS, ErrorSchema, SearchResponseSchema
@@ -322,6 +323,16 @@ class SearchView(APIView):
             if law_type and law_type != "all":
                 _filters["law_type"] = law_type
             _log_search_query(query, _filters, total, _elapsed_ms, request)
+            posthog_analytics.track(
+                posthog_analytics.get_distinct_id(request),
+                "search.query",
+                {
+                    "query": query[:200],
+                    "result_count": total,
+                    "response_time_ms": _elapsed_ms,
+                    "tier": tier,
+                },
+            )
 
             return response
 

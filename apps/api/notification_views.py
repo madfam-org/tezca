@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from . import posthog_analytics
 from .models import Notification, UserAlert
 from .preference_views import _get_user_id
 
@@ -120,6 +121,11 @@ def alert_list(request):
         alert_type=alert_type,
         delivery=request.data.get("delivery", "in_app")[:20],
     )
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "alert.created",
+        {"alert_type": alert_type, "law_id": alert.law_id},
+    )
     return Response(
         {
             "id": alert.id,
@@ -147,4 +153,9 @@ def alert_delete(request, alert_id):
 
     alert.is_active = False
     alert.save()
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "alert.deleted",
+        {"alert_type": alert.alert_type, "law_id": alert.law_id},
+    )
     return Response(status=status.HTTP_204_NO_CONTENT)

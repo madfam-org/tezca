@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from . import posthog_analytics
 from .models import Annotation
 from .preference_views import _get_user_id
 
@@ -74,6 +75,11 @@ def annotation_list(request):
         highlight_end=request.data.get("highlight_end"),
         color=request.data.get("color", "yellow")[:20],
     )
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "annotation.created",
+        {"law_id": law_id, "article_id": article_id},
+    )
     return Response(_serialize_annotation(annotation), status=status.HTTP_201_CREATED)
 
 
@@ -97,6 +103,11 @@ def annotation_detail(request, annotation_id):
         )
 
     if request.method == "DELETE":
+        posthog_analytics.track(
+            posthog_analytics.get_distinct_id(request),
+            "annotation.deleted",
+            {"law_id": annotation.law_id, "article_id": annotation.article_id},
+        )
         annotation.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -110,4 +121,9 @@ def annotation_detail(request, annotation_id):
     if "highlight_end" in request.data:
         annotation.highlight_end = request.data["highlight_end"]
     annotation.save()
+    posthog_analytics.track(
+        posthog_analytics.get_distinct_id(request),
+        "annotation.updated",
+        {"law_id": annotation.law_id},
+    )
     return Response(_serialize_annotation(annotation))
