@@ -260,6 +260,83 @@ class SourceDiscoverer:
 
         return discovered
 
+    def check_wayback_cdx(self, domain, url_filter=None, limit=100):
+        """Query Wayback Machine CDX API for comprehensive URL history.
+
+        Unlike check_wayback() which finds the closest single snapshot,
+        this method returns all archived URLs under a domain — useful for
+        bulk mining dead sites.
+
+        Args:
+            domain: Target domain (e.g. "sinec.gob.mx")
+            url_filter: Optional regex pattern to filter URLs
+            limit: Max results (default: 100)
+
+        Returns:
+            List of dicts with archive_url, original_url, timestamp, mimetype
+        """
+        cdx_url = "https://web.archive.org/cdx/search/cdx"
+        params = {
+            "url": f"{domain}/*",
+            "output": "json",
+            "fl": "timestamp,original,statuscode,mimetype",
+            "filter": "statuscode:200",
+            "collapse": "urlkey",
+            "limit": limit,
+        }
+
+        results = []
+        try:
+            response = requests.get(
+                cdx_url,
+                params=params,
+                timeout=60,
+                headers={"User-Agent": "Tezca-SourceDiscovery/1.0"},
+            )
+            if response.status_code != 200:
+                return results
+
+            rows = response.json()
+            if not rows or len(rows) <= 1:
+                return results
+
+            import re as _re
+
+            url_pattern = (
+                _re.compile(url_filter, _re.IGNORECASE) if url_filter else None
+            )
+
+            for row in rows[1:]:  # skip header
+                timestamp, original, status, mimetype = row[0], row[1], row[2], row[3]
+
+                # Skip non-document mimetypes
+                if mimetype in (
+                    "image/png",
+                    "image/gif",
+                    "image/jpeg",
+                    "text/css",
+                    "application/javascript",
+                    "image/svg+xml",
+                ):
+                    continue
+
+                if url_pattern and not url_pattern.search(original):
+                    continue
+
+                results.append(
+                    {
+                        "archive_url": f"https://web.archive.org/web/{timestamp}/{original}",
+                        "original_url": original,
+                        "timestamp": timestamp,
+                        "mimetype": mimetype,
+                    }
+                )
+
+        except requests.RequestException as e:
+            logger.warning("CDX API error for %s: %s", domain, e)
+
+        return results
+
     def _probe_url(self, url):
         """Check if a URL is accessible (HTTP 200)."""
         try:

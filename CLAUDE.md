@@ -235,7 +235,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
-- 15 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight)
+- 20 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct)
 
 ### Storage
 
@@ -364,6 +364,12 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/graph/GraphFilters.tsx` | Category filter pills for graph visualization |
 | `apps/web/components/graph/GraphStats.tsx` | Collapsible graph statistics panel |
 | `apps/web/components/graph/useGraphExport.ts` | PNG export via Sigma canvas compositing |
+| `apps/scraper/playwright_base.py` | Shared Playwright ABC for browser-automated scrapers |
+| `apps/scraper/judicial/scjn_playwright.py` | SJF browser scraper (Playwright, 4 extraction strategies) |
+| `scripts/scraping/ojn_multipath_recovery.py` | OJN 3-path waterfall recovery for failed downloads |
+| `scripts/scraping/wayback_bulk_recovery.py` | CDX API bulk mining for dead legal domains |
+| `scripts/scraping/dof_historical_scan.py` | DOF 2000-2026 scan for gap-filling + NOM detection |
+| `scripts/scraping/probe_datos_gob.py` | datos.gob.mx CKAN API probe for legal datasets |
 
 ---
 

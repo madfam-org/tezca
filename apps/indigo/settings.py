@@ -360,4 +360,32 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
         "kwargs": {"max_items": 5000, "epoca": 10},
     },
+    # ── Phase 17: Total Legal Universe Capture ──────────────────────
+    "scjn-playwright-weekly": {
+        "task": "dataops.scrape_scjn_playwright",
+        "schedule": crontab(hour=22, minute=0, day_of_week="saturday"),
+        "kwargs": {"max_items": 5000, "epoca": 11, "tipo": "jurisprudencia"},
+    },
+    "ojn-recovery-monthly": {
+        "task": "dataops.run_ojn_recovery",
+        "schedule": crontab(hour=3, minute=0, day_of_month="10"),
+        "kwargs": {"paths": "ab", "limit": 500},
+    },
+    "wayback-recovery-monthly": {
+        "task": "dataops.run_wayback_recovery",
+        "schedule": crontab(hour=1, minute=0, day_of_month="20"),
+        "kwargs": {"limit": 200},
+    },
+    "dof-historical-quarterly": {
+        "task": "dataops.run_dof_historical",
+        "schedule": crontab(
+            hour=2, minute=0, day_of_month="1", month_of_year="1,4,7,10"
+        ),
+        "kwargs": {"mode": "noms"},
+    },
+    "conamer-playwright-weekly": {
+        "task": "dataops.run_conamer_playwright",
+        "schedule": crontab(hour=23, minute=0, day_of_week="friday"),
+        "kwargs": {"max_pages": 200},
+    },
 }

@@ -445,6 +445,209 @@ def run_parser_pipeline(new_only=True):
     return {"success": True, "output": result.stdout[-500:]}
 
 
+@shared_task(name="dataops.run_conamer_playwright")
+def run_conamer_playwright(max_pages=None, resume_from_page=0):
+    """Run CONAMER Playwright scraper for WAF-protected catalog.
+
+    Args:
+        max_pages: Max pages to scrape (None for all)
+        resume_from_page: Page to resume from
+    """
+    try:
+        from apps.scraper.federal.conamer_playwright import ConamerPlaywrightScraper
+
+        scraper = ConamerPlaywrightScraper(headless=True)
+        result = scraper.run(
+            max_pages=max_pages,
+            resume_from_page=resume_from_page,
+        )
+
+        logger.info(
+            "CONAMER Playwright: %d total, %d after dedup",
+            result.get("total_items", 0),
+            result.get("total_after_dedup", 0),
+        )
+
+        try:
+            from apps.scraper.dataops.models import AcquisitionLog
+
+            AcquisitionLog.objects.create(
+                operation="conamer_playwright_scrape",
+                parameters={"max_pages": max_pages, "resume_from": resume_from_page},
+                found=result.get("total_items", 0),
+                downloaded=result.get("total_after_dedup", 0),
+                failed=0,
+                ingested=0,
+            )
+        except Exception:
+            pass
+
+        return result
+
+    except Exception as e:
+        logger.error("CONAMER Playwright scraper failed: %s", e)
+        return {"error": str(e)}
+
+
+@shared_task(name="dataops.scrape_scjn_playwright")
+def scrape_scjn_playwright(max_items=5000, epoca=11, tipo="jurisprudencia"):
+    """Run SCJN Playwright scraper for JS-rendered SJF portal.
+
+    Args:
+        max_items: Max items to scrape
+        epoca: Judicial epoch (default: 11)
+        tipo: "jurisprudencia" or "tesis_aislada"
+    """
+    try:
+        from apps.scraper.judicial.scjn_playwright import ScjnPlaywrightScraper
+
+        scraper = ScjnPlaywrightScraper(headless=True)
+        result = scraper.run(
+            epoca=epoca,
+            tipo=tipo,
+            max_items=max_items,
+        )
+
+        logger.info(
+            "SCJN Playwright (%s, epoca=%d): %d items",
+            tipo,
+            epoca,
+            result.get("total_items", 0),
+        )
+
+        try:
+            from apps.scraper.dataops.models import AcquisitionLog
+
+            AcquisitionLog.objects.create(
+                operation=f"scjn_playwright_{tipo}",
+                parameters={"max_items": max_items, "epoca": epoca, "tipo": tipo},
+                found=result.get("total_items", 0),
+                downloaded=result.get("total_items", 0),
+                failed=0,
+                ingested=0,
+            )
+        except Exception:
+            pass
+
+        return result
+
+    except Exception as e:
+        logger.error("SCJN Playwright scraper failed: %s", e)
+        return {"error": str(e)}
+
+
+@shared_task(name="dataops.run_ojn_recovery")
+def run_ojn_recovery(paths="ab", scope="all", limit=500):
+    """Run OJN multi-path recovery for failed downloads.
+
+    Args:
+        paths: Recovery paths to run ("a", "ab", "abc")
+        scope: "non_leg", "leg", or "all"
+        limit: Max items per path
+    """
+    import subprocess
+
+    cmd = [
+        "python",
+        "scripts/scraping/ojn_multipath_recovery.py",
+        "--path",
+        paths,
+        "--scope",
+        scope,
+        "--limit",
+        str(limit),
+    ]
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=14400,  # 4 hours
+    )
+
+    if result.returncode != 0:
+        logger.error("OJN recovery failed: %s", result.stderr[:500])
+        return {"success": False, "error": result.stderr[:500]}
+
+    logger.info("OJN recovery complete: %s", result.stdout[-300:])
+    return {"success": True, "output": result.stdout[-500:]}
+
+
+@shared_task(name="dataops.run_wayback_recovery")
+def run_wayback_recovery(domains=None, limit=200):
+    """Run Wayback Machine bulk recovery for dead domains.
+
+    Args:
+        domains: List of domains (None = all configured)
+        limit: Max records per domain
+    """
+    import subprocess
+
+    cmd = [
+        "python",
+        "scripts/scraping/wayback_bulk_recovery.py",
+        "--all",
+        "--limit",
+        str(limit),
+    ]
+    if domains:
+        cmd = (
+            [
+                "python",
+                "scripts/scraping/wayback_bulk_recovery.py",
+                "--domain",
+            ]
+            + domains
+            + ["--limit", str(limit)]
+        )
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=7200,  # 2 hours
+    )
+
+    if result.returncode != 0:
+        logger.error("Wayback recovery failed: %s", result.stderr[:500])
+        return {"success": False, "error": result.stderr[:500]}
+
+    logger.info("Wayback recovery complete: %s", result.stdout[-300:])
+    return {"success": True, "output": result.stdout[-500:]}
+
+
+@shared_task(name="dataops.run_dof_historical")
+def run_dof_historical(mode="noms", year=None, date_range=None):
+    """Run DOF historical scan for gap-filling.
+
+    Args:
+        mode: "all", "noms", "new_laws", "gazette"
+        year: Single year to scan
+        date_range: "YYYY-YYYY" range
+    """
+    import subprocess
+
+    cmd = ["python", "scripts/scraping/dof_historical_scan.py", "--mode", mode]
+    if year:
+        cmd.extend(["--year", str(year)])
+    elif date_range:
+        cmd.extend(["--range", date_range])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=28800,  # 8 hours
+    )
+
+    if result.returncode != 0:
+        logger.error("DOF historical scan failed: %s", result.stderr[:500])
+        return {"success": False, "error": result.stderr[:500]}
+
+    logger.info("DOF historical scan complete: %s", result.stdout[-300:])
+    return {"success": True, "output": result.stdout[-500:]}
+
+
 @shared_task(name="dataops.scrape_scjn")
 def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
     """Run SCJN judicial scraper for jurisprudencia and tesis.

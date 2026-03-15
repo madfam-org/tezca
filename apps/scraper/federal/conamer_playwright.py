@@ -8,6 +8,9 @@ Playwright to render the page in a real browser context.
 Complements conamer_scraper.py which provides the requests-based approach
 and dedup/normalization utilities.
 
+Now inherits from PlaywrightBase for shared browser lifecycle, WAF handling,
+navigation, and checkpointing.
+
 Usage:
     python -m apps.scraper.federal.conamer_playwright
     python -m apps.scraper.federal.conamer_playwright --max-pages 10
@@ -18,19 +21,17 @@ Usage:
 import json
 import logging
 import time
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from playwright.sync_api import Browser, BrowserContext, Page, Playwright
 from playwright.sync_api import TimeoutError as PlaywrightTimeout
-from playwright.sync_api import sync_playwright
 
 from apps.scraper.federal.conamer_scraper import (
     _STOP_WORDS,
     _normalise_title,
     _strip_accents,
 )
+from apps.scraper.playwright_base import PlaywrightBase
 
 logger = logging.getLogger(__name__)
 
@@ -40,42 +41,19 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://catalogonacional.gob.mx"
 
-# WAF challenge selectors (Cloudflare, Imperva, generic challenge pages)
-_WAF_SELECTORS = [
-    "#challenge-form",
-    "#challenge-running",
-    ".cf-browser-verification",
-    "#cf-challenge-running",
-    "#trk_jschal_js",
-    ".ray_id",
-    "#challenge-stage",
-]
-
-_PAGE_LOAD_DELAY = 2.0  # seconds between page loads
-_WAF_TIMEOUT = 30_000  # 30 seconds for WAF to resolve (milliseconds)
-_NAVIGATION_TIMEOUT = 60_000  # 60 seconds for page navigation
-_CHECKPOINT_INTERVAL = 10  # save checkpoint every N pages
-
-# Realistic browser fingerprint
-_USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/122.0.0.0 Safari/537.36"
-)
-
 
 # ---------------------------------------------------------------------------
 # Scraper
 # ---------------------------------------------------------------------------
 
 
-class ConamerPlaywrightScraper:
+class ConamerPlaywrightScraper(PlaywrightBase):
     """
     Browser-based scraper for CONAMER's catalogonacional.gob.mx.
 
-    Uses Playwright with headless Chromium to bypass WAF challenges.
-    Supports pagination, checkpointing, and dedup via the existing
-    conamer_scraper normalization utilities.
+    Inherits browser lifecycle, WAF handling, navigation, and checkpointing
+    from PlaywrightBase. Implements CONAMER-specific page parsing and
+    catalog pagination.
     """
 
     def __init__(
@@ -83,195 +61,10 @@ class ConamerPlaywrightScraper:
         headless: bool = True,
         output_dir: str = "data/conamer",
     ) -> None:
-        self._headless = headless
-        self._output_dir = Path(output_dir)
-        self._output_dir.mkdir(parents=True, exist_ok=True)
-        self._debug_dir = self._output_dir / "debug"
-        self._debug_dir.mkdir(parents=True, exist_ok=True)
-
-        self._playwright: Optional[Playwright] = None
-        self._browser: Optional[Browser] = None
-        self._context: Optional[BrowserContext] = None
-        self._page: Optional[Page] = None
-        self._items_collected: List[Dict[str, Any]] = []
-
-    # ------------------------------------------------------------------
-    # Browser lifecycle
-    # ------------------------------------------------------------------
-
-    def _launch(self) -> None:
-        """Launch headless Chromium with realistic browser fingerprint."""
-        logger.info(
-            "Launching Chromium (headless=%s)",
-            self._headless,
+        super().__init__(
+            headless=headless,
+            output_dir=output_dir,
         )
-        self._playwright = sync_playwright().start()
-        self._browser = self._playwright.chromium.launch(
-            headless=self._headless,
-        )
-        self._context = self._browser.new_context(
-            user_agent=_USER_AGENT,
-            viewport={"width": 1920, "height": 1080},
-            locale="es-MX",
-            timezone_id="America/Mexico_City",
-            extra_http_headers={
-                "Accept-Language": "es-MX,es;q=0.9,en;q=0.5",
-            },
-        )
-        self._context.set_default_navigation_timeout(_NAVIGATION_TIMEOUT)
-        self._context.set_default_timeout(_NAVIGATION_TIMEOUT)
-        self._page = self._context.new_page()
-        logger.info("Browser launched successfully.")
-
-    def close(self) -> None:
-        """Close browser and release Playwright resources."""
-        if self._context:
-            try:
-                self._context.close()
-            except Exception:
-                pass
-        if self._browser:
-            try:
-                self._browser.close()
-            except Exception:
-                pass
-        if self._playwright:
-            try:
-                self._playwright.stop()
-            except Exception:
-                pass
-        self._page = None
-        self._context = None
-        self._browser = None
-        self._playwright = None
-        logger.info("Browser closed.")
-
-    # ------------------------------------------------------------------
-    # WAF handling
-    # ------------------------------------------------------------------
-
-    def _wait_for_waf(self) -> bool:
-        """
-        Detect and wait for WAF challenge page to resolve.
-
-        Checks for common WAF/challenge selectors. If detected, waits
-        up to 30 seconds for JavaScript to resolve the challenge.
-
-        Returns:
-            True if WAF was detected and resolved (or no WAF present).
-            False if WAF challenge did not resolve within timeout.
-        """
-        if not self._page:
-            return False
-
-        # Check if any WAF challenge element is present
-        waf_detected = False
-        for selector in _WAF_SELECTORS:
-            try:
-                element = self._page.query_selector(selector)
-                if element:
-                    waf_detected = True
-                    logger.warning(
-                        "WAF challenge detected (selector: %s). "
-                        "Waiting up to %ds for resolution...",
-                        selector,
-                        _WAF_TIMEOUT // 1000,
-                    )
-                    break
-            except Exception:
-                continue
-
-        if not waf_detected:
-            logger.debug("No WAF challenge detected.")
-            return True
-
-        # Wait for the challenge to resolve by waiting for challenge
-        # elements to disappear
-        try:
-            for selector in _WAF_SELECTORS:
-                try:
-                    self._page.wait_for_selector(
-                        selector,
-                        state="hidden",
-                        timeout=_WAF_TIMEOUT,
-                    )
-                except PlaywrightTimeout:
-                    pass
-                except Exception:
-                    pass
-
-            # Additional wait for page to stabilize after challenge
-            self._page.wait_for_load_state("networkidle", timeout=_WAF_TIMEOUT)
-            logger.info("WAF challenge appears resolved.")
-            return True
-
-        except PlaywrightTimeout:
-            logger.error(
-                "WAF challenge did not resolve within %ds.",
-                _WAF_TIMEOUT // 1000,
-            )
-            self._screenshot("waf_timeout")
-            return False
-
-    # ------------------------------------------------------------------
-    # Navigation
-    # ------------------------------------------------------------------
-
-    def _navigate(self, url: str, retries: int = 3) -> bool:
-        """
-        Navigate to a URL with retry logic and WAF handling.
-
-        Args:
-            url: Target URL.
-            retries: Number of retry attempts on failure.
-
-        Returns:
-            True if navigation succeeded, False otherwise.
-        """
-        if not self._page:
-            return False
-
-        for attempt in range(1, retries + 1):
-            try:
-                logger.info(
-                    "Navigating to %s (attempt %d/%d)",
-                    url,
-                    attempt,
-                    retries,
-                )
-                self._page.goto(url, wait_until="domcontentloaded")
-                self._page.wait_for_load_state("networkidle", timeout=30_000)
-
-                if not self._wait_for_waf():
-                    logger.warning("WAF not resolved, retrying...")
-                    time.sleep(5)
-                    continue
-
-                return True
-
-            except PlaywrightTimeout:
-                logger.warning(
-                    "Navigation timeout for %s (attempt %d/%d)",
-                    url,
-                    attempt,
-                    retries,
-                )
-                self._screenshot(f"nav_timeout_attempt_{attempt}")
-                if attempt < retries:
-                    time.sleep(3)
-            except Exception as exc:
-                logger.error(
-                    "Navigation error for %s: %s (attempt %d/%d)",
-                    url,
-                    exc,
-                    attempt,
-                    retries,
-                )
-                self._screenshot(f"nav_error_attempt_{attempt}")
-                if attempt < retries:
-                    time.sleep(3)
-
-        return False
 
     # ------------------------------------------------------------------
     # Page parsing
@@ -538,147 +331,16 @@ class ConamerPlaywrightScraper:
             )
 
             # Checkpoint
-            if pages_scraped % _CHECKPOINT_INTERVAL == 0:
+            if pages_scraped % self._checkpoint_interval == 0:
                 self._save_checkpoint(page, all_items)
 
             page += 1
-            time.sleep(_PAGE_LOAD_DELAY)
+            self._rate_limit()
 
         return all_items
 
-    def _try_click_next(self) -> bool:
-        """
-        Attempt to click a pagination "Next" or "Siguiente" button.
-
-        Returns:
-            True if a next-page button was found and clicked.
-        """
-        if not self._page:
-            return False
-
-        next_selectors = [
-            "a:has-text('Siguiente')",
-            "button:has-text('Siguiente')",
-            "a:has-text('Next')",
-            "button:has-text('Next')",
-            ".pagination .next a",
-            ".pagination li:last-child a",
-            "a[rel='next']",
-            "[aria-label='Next']",
-            "[aria-label='Siguiente']",
-        ]
-
-        for selector in next_selectors:
-            try:
-                element = self._page.query_selector(selector)
-                if element and element.is_visible():
-                    element.click()
-                    logger.debug("Clicked next-page button: %s", selector)
-                    return True
-            except Exception:
-                continue
-
-        return False
-
-    # ------------------------------------------------------------------
-    # Checkpoint / resume
-    # ------------------------------------------------------------------
-
-    def _save_checkpoint(
-        self,
-        current_page: int,
-        items: List[Dict[str, Any]],
-    ) -> None:
-        """Save progress checkpoint for resume capability."""
-        checkpoint = {
-            "current_page": current_page,
-            "items_collected": len(items),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
-        checkpoint_path = self._output_dir / "checkpoint.json"
-        with open(checkpoint_path, "w", encoding="utf-8") as f:
-            json.dump(checkpoint, f, indent=2, ensure_ascii=False)
-        logger.info(
-            "Checkpoint saved: page=%d, items=%d",
-            current_page,
-            len(items),
-        )
-
-    @staticmethod
-    def load_checkpoint(output_dir: str = "data/conamer") -> Optional[Dict[str, Any]]:
-        """
-        Load a previously saved checkpoint.
-
-        Args:
-            output_dir: Directory containing checkpoint.json.
-
-        Returns:
-            Checkpoint dict or None if no checkpoint exists.
-        """
-        checkpoint_path = Path(output_dir) / "checkpoint.json"
-        if not checkpoint_path.exists():
-            return None
-        with open(checkpoint_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-
-    # ------------------------------------------------------------------
-    # Screenshot on failure
-    # ------------------------------------------------------------------
-
-    def _screenshot(self, label: str) -> None:
-        """Save a debug screenshot with timestamp and label."""
-        if not self._page:
-            return
-        try:
-            ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-            path = self._debug_dir / f"{ts}_{label}.png"
-            self._page.screenshot(path=str(path))
-            logger.info("Debug screenshot saved: %s", path)
-        except Exception as exc:
-            logger.warning("Failed to save screenshot: %s", exc)
-
-    # ------------------------------------------------------------------
-    # Persistence
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def save_results(
-        items: List[Dict[str, Any]],
-        output_dir: str = "data/conamer",
-        filename: str = "discovered_conamer.json",
-    ) -> Path:
-        """
-        Save all discovered items to a single JSON file.
-
-        Args:
-            items: Regulation dicts to persist.
-            output_dir: Target directory.
-            filename: Output filename.
-
-        Returns:
-            Path to the written file.
-        """
-        out_path = Path(output_dir)
-        out_path.mkdir(parents=True, exist_ok=True)
-        file_path = out_path / filename
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(items, f, indent=2, ensure_ascii=False)
-        logger.info("Saved %d items to %s", len(items), file_path)
-        return file_path
-
-    @staticmethod
-    def save_batch(
-        items: List[Dict[str, Any]],
-        output_dir: Path,
-        batch_number: int,
-    ) -> Path:
-        """Save a batch of regulation dicts to a numbered JSON file."""
-        output_dir.mkdir(parents=True, exist_ok=True)
-        path = output_dir / f"batch_{batch_number:04d}.json"
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(items, f, indent=2, ensure_ascii=False)
-        logger.info("Saved %d items to %s", len(items), path)
-        return path
+    # _try_click_next, _save_checkpoint, load_checkpoint, _screenshot,
+    # save_results, save_batch are all inherited from PlaywrightBase.
 
     # ------------------------------------------------------------------
     # Dedup
@@ -785,13 +447,13 @@ class ConamerPlaywrightScraper:
             deduped = self.dedup(items, existing_titles)
 
             # Save consolidated file
-            self.save_results(deduped, str(self._output_dir))
+            self.save_results(deduped, filename="discovered_conamer.json")
 
             # Also save as batches (50 items each) for compatibility
             batch_size = 50
             for i in range(0, len(deduped), batch_size):
                 batch = deduped[i : i + batch_size]
-                self.save_batch(batch, self._output_dir, i // batch_size)
+                self.save_batch(batch, i // batch_size)
 
             summary = {
                 "total_items": len(items),
@@ -868,11 +530,16 @@ def main() -> None:
     args = parser.parse_args()
 
     # Determine resume page
+    scraper = ConamerPlaywrightScraper(
+        headless=args.headless,
+        output_dir=args.output_dir,
+    )
+
     resume_from = 0
     if args.resume_from is not None:
         resume_from = args.resume_from
     else:
-        checkpoint = ConamerPlaywrightScraper.load_checkpoint(args.output_dir)
+        checkpoint = scraper.load_checkpoint()
         if checkpoint:
             resume_from = checkpoint["current_page"] + 1
             logger.info(
@@ -894,10 +561,6 @@ def main() -> None:
                     existing = set(data)
             logger.info("Loaded %d existing titles for dedup.", len(existing))
 
-    scraper = ConamerPlaywrightScraper(
-        headless=args.headless,
-        output_dir=args.output_dir,
-    )
     result = scraper.run(
         max_pages=args.max_pages,
         resume_from_page=resume_from,
