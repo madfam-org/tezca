@@ -5,28 +5,31 @@ import Link from 'next/link';
 import { Lock, ArrowRight, Clock, Sparkles, X } from 'lucide-react';
 import { Button, Badge, Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
-import { useAuth, type UserTier } from '@/components/providers/AuthContext';
+import { useAuth } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
 import { trackEvent } from '@/lib/analytics/posthog';
 
 type TierGateVariant = 'inline' | 'overlay' | 'card' | 'toast';
-type RequiredTier = 'community' | 'essentials' | 'academic' | 'institutional';
+type RequiredTier = 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional';
 
 const content = {
     es: {
         unlockTitle: {
+            free_member: 'Crea tu cuenta gratuita',
             community: 'Crea tu cuenta gratuita',
             essentials: 'Desbloquea más con Essentials',
             academic: 'Desbloquea todo con Academic',
             institutional: 'Acceso completo con Institutional',
         },
         unlockSubtitle: {
+            free_member: 'Accede a PDF, JSON y funciones básicas',
             community: 'Accede a PDF, JSON y funciones básicas',
             essentials: 'Búsqueda avanzada, más formatos de descarga',
             academic: 'LaTeX, análisis avanzado y descarga masiva',
             institutional: 'Todos los formatos, webhooks y API de grafo',
         },
         cta: {
+            free_member: 'Empieza gratis',
             community: 'Empieza gratis',
             essentials: 'Mejora a Essentials',
             academic: 'Mejora a Academic',
@@ -42,18 +45,21 @@ const content = {
     },
     en: {
         unlockTitle: {
+            free_member: 'Create your free account',
             community: 'Create your free account',
             essentials: 'Unlock more with Essentials',
             academic: 'Unlock everything with Academic',
             institutional: 'Full access with Institutional',
         },
         unlockSubtitle: {
+            free_member: 'Access PDF, JSON, and basic features',
             community: 'Access PDF, JSON, and basic features',
             essentials: 'Advanced search and more download formats',
             academic: 'LaTeX, advanced analytics, and bulk downloads',
             institutional: 'All formats, webhooks, and graph API',
         },
         cta: {
+            free_member: 'Start free',
             community: 'Start free',
             essentials: 'Upgrade to Essentials',
             academic: 'Upgrade to Academic',
@@ -69,18 +75,21 @@ const content = {
     },
     nah: {
         unlockTitle: {
+            free_member: 'Xictlālia mocuenta',
             community: 'Xictlālia mocuenta',
             essentials: 'Xictlapo achi ica Essentials',
             academic: 'Xictlapo mochi ica Academic',
             institutional: 'Mochi ica Institutional',
         },
         unlockSubtitle: {
+            free_member: 'Xicāci PDF, JSON ihuan tlachīhualiztli',
             community: 'Xicāci PDF, JSON ihuan tlachīhualiztli',
             essentials: 'Tlatemoliztli huēyi ihuan achi tēmōhuiliztli',
             academic: 'LaTeX, tlanextīliztli ihuan mīec tēmōhuiliztli',
             institutional: 'Mochi tlahtōlli, webhooks ihuan tlanextīliztli',
         },
         cta: {
+            free_member: 'Xipēhua',
             community: 'Xipēhua',
             essentials: 'Xicmelahua ic Essentials',
             academic: 'Xicmelahua ic Academic',
@@ -98,6 +107,7 @@ const content = {
 
 const TIER_DISPLAY: Record<string, string> = {
     anon: 'Anónimo',
+    free_member: 'Free Member',
     community: 'Community',
     essentials: 'Essentials',
     academic: 'Academic',
@@ -127,7 +137,7 @@ export function TierGate({
     className = '',
 }: TierGateProps) {
     const { lang } = useLang();
-    const { tier, userId, isAuthenticated } = useAuth();
+    const { effectiveTier: tier, userId, isAuthenticated } = useAuth();
     const t = content[lang];
 
     const [countdown, setCountdown] = useState(retryAfterSeconds ?? 0);
@@ -162,7 +172,7 @@ export function TierGate({
 
     const targetTier = !isAuthenticated ? 'community' : requiredTier;
     const checkoutUrl = isAuthenticated
-        ? getCheckoutUrl(requiredTier === 'community' ? 'essentials' : requiredTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined)
+        ? getCheckoutUrl(requiredTier === 'community' || requiredTier === 'free_member' ? 'essentials' : requiredTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined)
         : '/login';
     const ctaLabel = t.cta[targetTier as keyof typeof t.cta] ?? t.cta.academic;
     const title = t.unlockTitle[targetTier as keyof typeof t.unlockTitle] ?? t.unlockTitle.academic;

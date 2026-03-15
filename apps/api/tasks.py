@@ -675,3 +675,28 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
         subscription.pk,
         error_msg,
     )
+
+
+# ---------------------------------------------------------------------------
+# Trial expiry
+# ---------------------------------------------------------------------------
+
+
+@shared_task(name="apps.api.tasks.expire_trials")
+def expire_trials():
+    """Expire finished trials by clearing trial fields."""
+    from .models import APIKey
+
+    now = timezone.now()
+    expired = APIKey.objects.filter(
+        trial_tier__isnull=False,
+        trial_ends_at__lt=now,
+    )
+    count = expired.update(
+        trial_tier=None,
+        trial_ends_at=None,
+        trial_cc_provided=False,
+    )
+    if count:
+        logger.info("Expired %d trial(s)", count)
+    return count

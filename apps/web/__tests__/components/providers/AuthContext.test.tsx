@@ -198,9 +198,9 @@ describe('AuthContext', () => {
     });
 
     // ---------------------------------------------------------------
-    // 8. Unknown tier defaults to 'essentials'
+    // 8. Unknown tier defaults to 'free_member'
     // ---------------------------------------------------------------
-    it('defaults unknown tier to "essentials"', () => {
+    it('defaults unknown tier to "free_member"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
             user: { sub: 'u5', tier: 'garbage_value' },
@@ -213,7 +213,7 @@ describe('AuthContext', () => {
             </AuthProvider>,
         );
 
-        expect(screen.getByTestId('tier').textContent).toBe('essentials');
+        expect(screen.getByTestId('tier').textContent).toBe('free_member');
     });
 
     // ---------------------------------------------------------------

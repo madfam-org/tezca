@@ -8,6 +8,7 @@ so callers can import everything from one place.
 
 # Canonical tier names
 TIER_ANON = "anon"
+TIER_FREE_MEMBER = "free_member"
 TIER_COMMUNITY = "community"
 TIER_ESSENTIALS = "essentials"
 TIER_ACADEMIC = "academic"
@@ -18,6 +19,7 @@ TIER_MADFAM = "madfam"
 # Legacy aliases map to their canonical equivalents
 TIER_RANK = {
     "anon": 0,
+    "free_member": 1,
     "community": 1,
     "free": 2,
     "essentials": 2,
@@ -33,8 +35,8 @@ TIER_RANK = {
 # Export format access by minimum tier
 FORMAT_TIERS = {
     "txt": "anon",
-    "pdf": "community",
-    "json": "community",
+    "pdf": "free_member",
+    "json": "free_member",
     "latex": "academic",
     "docx": "institutional",
     "epub": "institutional",
@@ -44,6 +46,7 @@ FORMAT_TIERS = {
 # Legacy aliases redirect to new canonical names
 EXPORT_TIER_MAP = {
     "anon": "anon",
+    "free_member": "free_member",
     "community": "community",
     "essentials": "essentials",
     "academic": "academic",
@@ -60,6 +63,7 @@ EXPORT_TIER_MAP = {
 # Export hourly limits
 EXPORT_HOURLY_LIMITS = {
     "anon": 10,
+    "free_member": 20,
     "community": 1_000,
     "essentials": 30,
     "academic": 60,
@@ -76,6 +80,7 @@ EXPORT_HOURLY_LIMITS = {
 # Rate limiting (per minute, per hour)
 RATE_LIMITS = {
     "anon": (10, 100),
+    "free_member": (20, 200),
     "community": (1_000, 100_000),
     "essentials": (30, 500),
     "free": (30, 500),
@@ -91,6 +96,7 @@ RATE_LIMITS = {
 # Search page_size limits by tier
 SEARCH_PAGE_SIZE_LIMITS = {
     "anon": 25,
+    "free_member": 25,
     "community": 1_000,
     "essentials": 50,
     "free": 50,

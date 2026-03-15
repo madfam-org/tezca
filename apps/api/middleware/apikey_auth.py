@@ -5,6 +5,7 @@ Checks X-API-Key header, then falls back to Authorization: ApiKey <key>.
 Returns an APIKeyUser carrying tier, scopes, and allowed_domains.
 """
 
+import datetime
 import logging
 from datetime import timedelta
 
@@ -28,13 +29,24 @@ class APIKeyUser:
         self.email = api_key.owner_email
         self.name = api_key.name
         self.tier = api_key.tier
+
+        # Trial tier resolution: active trial overrides base tier
+        trial_tier = getattr(api_key, "trial_tier", None)
+        trial_ends_at = getattr(api_key, "trial_ends_at", None)
+        if (
+            trial_tier
+            and isinstance(trial_ends_at, datetime.datetime)
+            and trial_ends_at > timezone.now()
+        ):
+            self.tier = trial_tier
+
         self.scopes = api_key.scopes or []
         self.allowed_domains = api_key.allowed_domains or []
         self.api_key_prefix = api_key.prefix
         self.rate_limit_per_hour = api_key.rate_limit_per_hour  # nullable int
         self.is_authenticated = True
         self.claims = {
-            "tier": api_key.tier,
+            "tier": self.tier,
             "scopes": api_key.scopes or [],
             "allowed_domains": api_key.allowed_domains or [],
         }

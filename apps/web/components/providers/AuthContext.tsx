@@ -1,10 +1,10 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
 import { identifyUser, resetUser } from '@/lib/analytics/posthog';
 
-export type UserTier = 'anon' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
+export type UserTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
 /** Normalize legacy/alias tier names from JWT claims to canonical form. */
 const TIER_NORMALIZE: Record<string, UserTier> = {
@@ -15,11 +15,16 @@ const TIER_NORMALIZE: Record<string, UserTier> = {
     internal: 'madfam',
 };
 
-const VALID_TIERS: UserTier[] = ['anon', 'community', 'essentials', 'academic', 'institutional', 'madfam'];
+const VALID_TIERS: UserTier[] = ['anon', 'free_member', 'community', 'essentials', 'academic', 'institutional', 'madfam'];
 
 interface AuthState {
     isAuthenticated: boolean;
     tier: UserTier;
+    effectiveTier: UserTier;
+    trialTier: UserTier | null;
+    trialEndsAt: Date | null;
+    trialCcProvided: boolean;
+    isOnTrial: boolean;
     loginUrl: string;
     userId: string | null;
     email: string | null;
@@ -32,6 +37,11 @@ const DEFAULT_LOGIN_URL = '/api/auth/signin';
 const defaultState: AuthState = {
     isAuthenticated: false,
     tier: 'anon',
+    effectiveTier: 'anon',
+    trialTier: null,
+    trialEndsAt: null,
+    trialCcProvided: false,
+    isOnTrial: false,
     loginUrl: DEFAULT_LOGIN_URL,
     userId: null,
     email: null,
@@ -52,27 +62,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const januaAuth = useJanuaAuth();
     const { client } = useJanua();
 
+    const [trialState, setTrialState] = useState<{
+        trialTier: UserTier | null;
+        trialEndsAt: Date | null;
+        trialCcProvided: boolean;
+    }>({ trialTier: null, trialEndsAt: null, trialCcProvided: false });
+
     const handleSignOut = useCallback(() => {
         resetUser();
         client?.signOut?.();
         window.location.assign('/');
     }, [client]);
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+    useEffect(() => {
+        if (!januaAuth?.isAuthenticated) return;
+        const token = getToken();
+        if (!token) return;
+
+        fetch(`${API_BASE}/trial/status/`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+        })
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data && data.active) {
+                    setTrialState({
+                        trialTier: data.trial_tier as UserTier,
+                        trialEndsAt: data.trial_ends_at ? new Date(data.trial_ends_at) : null,
+                        trialCcProvided: data.trial_cc_provided ?? false,
+                    });
+                }
+            })
+            .catch(() => {});
+    }, [januaAuth?.isAuthenticated, API_BASE]);
+
     const state = useMemo<AuthState>(() => {
         function normalizeTier(raw: unknown): UserTier {
-            const str = String(raw || 'essentials');
+            const str = String(raw || 'free_member');
             const normalized = TIER_NORMALIZE[str] ?? str;
             return VALID_TIERS.includes(normalized as UserTier)
                 ? (normalized as UserTier)
-                : 'essentials';
+                : 'free_member';
         }
+
+        const isTrialActive = trialState.trialTier !== null && trialState.trialEndsAt !== null && trialState.trialEndsAt > new Date();
 
         // If Janua has an authenticated user, use that
         if (januaAuth?.isAuthenticated && januaAuth.user) {
             const claims = (januaAuth.user as unknown as Record<string, unknown>) ?? {};
+            const baseTier = normalizeTier(claims.tier || claims.plan);
             return {
                 isAuthenticated: true,
-                tier: normalizeTier(claims.tier || claims.plan),
+                tier: baseTier,
+                effectiveTier: isTrialActive ? trialState.trialTier! : baseTier,
+                trialTier: trialState.trialTier,
+                trialEndsAt: trialState.trialEndsAt,
+                trialCcProvided: trialState.trialCcProvided,
+                isOnTrial: isTrialActive,
                 loginUrl: DEFAULT_LOGIN_URL,
                 userId: (claims.sub || claims.user_id || null) as string | null,
                 email: (claims.email || null) as string | null,
@@ -88,16 +135,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const jwtClaims = decodeJwtPayload(token);
         if (!jwtClaims) return { ...defaultState, signOut: handleSignOut };
 
+        const baseTier = normalizeTier(jwtClaims.tier || jwtClaims.plan);
         return {
             isAuthenticated: true,
-            tier: normalizeTier(jwtClaims.tier || jwtClaims.plan),
+            tier: baseTier,
+            effectiveTier: isTrialActive ? trialState.trialTier! : baseTier,
+            trialTier: trialState.trialTier,
+            trialEndsAt: trialState.trialEndsAt,
+            trialCcProvided: trialState.trialCcProvided,
+            isOnTrial: isTrialActive,
             loginUrl: DEFAULT_LOGIN_URL,
             userId: (jwtClaims.sub || jwtClaims.user_id || null) as string | null,
             email: (jwtClaims.email || null) as string | null,
             name: (jwtClaims.name || jwtClaims.full_name || null) as string | null,
             signOut: handleSignOut,
         };
-    }, [januaAuth, handleSignOut]);
+    }, [januaAuth, handleSignOut, trialState]);
 
     const prevAuthRef = useRef(false);
     useEffect(() => {

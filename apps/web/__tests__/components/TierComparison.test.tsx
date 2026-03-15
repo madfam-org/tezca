@@ -69,7 +69,7 @@ describe('TierComparison', () => {
         const { container } = render(<TierComparison compact />);
         const grid = container.querySelector('.grid.grid-cols-4');
         expect(grid).toBeTruthy();
-        expect(screen.getByText('Community')).toBeDefined();
+        expect(screen.getByText('Free Member')).toBeDefined();
         expect(screen.getByText('Essentials')).toBeDefined();
         expect(screen.getByText('Academic')).toBeDefined();
         expect(screen.getByText('Institutional')).toBeDefined();
@@ -86,13 +86,13 @@ describe('TierComparison', () => {
         expect(rows.length).toBe(10);
         // Verify specific feature labels are present (using getAllByText since
         // they also appear in the mobile card section)
-        expect(screen.getAllByText('Resultados por página').length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText('Resultados por pagina').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('Descargar TXT').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('Descargar PDF/JSON').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('Acceso API').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('Descarga masiva').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('Webhooks').length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText('Análisis de búsqueda').length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText('Analisis de busqueda').length).toBeGreaterThanOrEqual(1);
     });
 
     it('renders mobile stacked cards in full mode', () => {
@@ -110,7 +110,7 @@ describe('TierComparison', () => {
         const { container } = render(<TierComparison compact />);
         const highlighted = container.querySelector('.ring-1.ring-primary\\/30');
         expect(highlighted).toBeTruthy();
-        expect(highlighted!.textContent).toContain('Community');
+        expect(highlighted!.textContent).toContain('Free Member');
     });
 
     it('shows "Tu plan" badge for current tier', () => {

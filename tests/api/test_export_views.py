@@ -146,7 +146,7 @@ class TestExportPdfAnonymous:
 
         assert response.status_code == 403
         assert "Authentication required" in response.data["error"]
-        assert response.data["required_tier"] == "community"
+        assert response.data["required_tier"] == "free_member"
 
 
 @pytest.mark.django_db

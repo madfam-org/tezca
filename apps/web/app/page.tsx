@@ -3,6 +3,7 @@ import { JurisdictionCards } from '@/components/JurisdictionCards';
 import { DashboardStatsGrid, RecentLawsList } from '@/components/DashboardStats';
 import { PopularLaws } from '@/components/PopularLaws';
 import { DynamicFeatures } from '@/components/DynamicFeatures';
+import { ConversionBanner } from '@/components/ConversionBanner';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
 import { FeaturedLaws } from '@/components/FeaturedLaws';
@@ -93,6 +94,8 @@ export default function HomePage() {
 
         {/* Features section - dynamically populated from API */}
         <DynamicFeatures />
+
+        <ConversionBanner />
       </div>
     </div>
   );

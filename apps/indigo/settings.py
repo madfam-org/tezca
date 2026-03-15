@@ -253,6 +253,11 @@ if SENTRY_DSN:
     except ImportError:
         pass  # sentry-sdk not installed (optional dependency)
 
+# ── Trial Configuration ──────────────────────────────────────────────────
+TRIAL_DURATION_NO_CC_DAYS = int(os.environ.get("TRIAL_DURATION_NO_CC_DAYS", "3"))
+TRIAL_DURATION_WITH_CC_DAYS = int(os.environ.get("TRIAL_DURATION_WITH_CC_DAYS", "21"))
+TRIAL_VALID_PLANS = {"essentials", "academic", "institutional"}
+
 # ── Celery ──────────────────────────────────────────────────────────────
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get(
@@ -333,5 +338,9 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.run_parser_pipeline",
         "schedule": crontab(hour=5, minute=0, day_of_week="saturday"),
         "kwargs": {"new_only": True},
+    },
+    "expire-trials-hourly": {
+        "task": "apps.api.tasks.expire_trials",
+        "schedule": crontab(minute=0),  # every hour at :00
     },
 }

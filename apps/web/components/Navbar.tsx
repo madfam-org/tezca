@@ -10,6 +10,7 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { CommandSearchTrigger } from '@/components/CommandSearch';
 import { AuthModal } from '@/components/AuthModal';
 import { NotificationBell } from '@/components/NotificationBell';
+import { TrialBadge } from '@/components/TrialBadge';
 import { useLang } from '@/components/providers/LanguageContext';
 
 const content = {
@@ -22,6 +23,7 @@ const content = {
         compare: 'Comparar',
         graph: 'Grafo',
         favorites: 'Favoritos',
+        plans: 'Planes',
         openMenu: 'Abrir menú',
         closeMenu: 'Cerrar menú',
         signIn: 'Iniciar sesión',
@@ -36,6 +38,7 @@ const content = {
         compare: 'Compare',
         graph: 'Graph',
         favorites: 'Favorites',
+        plans: 'Plans',
         openMenu: 'Open menu',
         closeMenu: 'Close menu',
         signIn: 'Sign in',
@@ -50,6 +53,7 @@ const content = {
         compare: 'Tlanānamiquiliztli',
         graph: 'Grafo',
         favorites: 'Tlapepenilistli',
+        plans: 'Tlaxtlahuīlli',
         openMenu: 'Xictlapo tlahcuilōlli',
         closeMenu: 'Xictlatzacua tlahcuilōlli',
         signIn: 'Xicalaqui',
@@ -133,6 +137,7 @@ export function Navbar() {
                                 <LanguageToggle />
                             </div>
                             <NotificationBell />
+                            <TrialBadge />
                             <SignedIn>
                                 <div className="flex items-center gap-1">
                                     <Link
@@ -146,6 +151,12 @@ export function Navbar() {
                                 </div>
                             </SignedIn>
                             <SignedOut>
+                                <Link
+                                    href="/precios"
+                                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                >
+                                    {t.plans}
+                                </Link>
                                 <button
                                     onClick={() => setAuthModalOpen(true)}
                                     className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -194,6 +205,12 @@ export function Navbar() {
                                 );
                             })}
                             <SignedOut>
+                                <Link
+                                    href="/precios"
+                                    className="block px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                >
+                                    {t.plans}
+                                </Link>
                                 <button
                                     onClick={() => {
                                         setMobileOpen(false);

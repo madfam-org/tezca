@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell } from 'lucide-react';
 import { Protect } from '@janua/nextjs';
+import { Button } from '@tezca/ui';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 import { TierComparison } from '@/components/TierComparison';
@@ -12,7 +13,7 @@ const content = {
         title: 'Mi cuenta',
         email: 'Correo electrónico',
         tier: 'Plan',
-        tierLabels: { anon: 'Anónimo', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Anónimo', free_member: 'Free Member', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Favoritos guardados',
         recentlyViewed: 'Vistos recientemente',
         notes: 'Mis notas',
@@ -21,12 +22,16 @@ const content = {
         signOut: 'Cerrar sesión',
         greeting: 'Bienvenido',
         upgradePlans: 'Planes disponibles',
+        trialActive: 'Prueba activa',
+        trialEnds: 'Tu prueba termina el',
+        extendTrial: 'Extiende a 3 semanas',
+        subscribeCta: 'Suscríbete ahora',
     },
     en: {
         title: 'My Account',
         email: 'Email',
         tier: 'Plan',
-        tierLabels: { anon: 'Anonymous', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Anonymous', free_member: 'Free Member', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Saved Bookmarks',
         recentlyViewed: 'Recently Viewed',
         notes: 'My Notes',
@@ -35,12 +40,16 @@ const content = {
         signOut: 'Sign Out',
         greeting: 'Welcome',
         upgradePlans: 'Available plans',
+        trialActive: 'Trial active',
+        trialEnds: 'Your trial ends on',
+        extendTrial: 'Extend to 3 weeks',
+        subscribeCta: 'Subscribe now',
     },
     nah: {
         title: 'Notocaitl',
         email: 'Amatlahcuilōlli',
         tier: 'Tlaxtlahuīlli',
-        tierLabels: { anon: 'Ahmo machtīlli', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
+        tierLabels: { anon: 'Ahmo machtīlli', free_member: 'Free Member', community: 'Community', essentials: 'Essentials', academic: 'Academic', institutional: 'Institutional', madfam: 'MADFAM' } as Record<string, string>,
         bookmarks: 'Tlapepenilistli',
         recentlyViewed: 'Ōquittac achto',
         notes: 'Notlahcuilōlhuān',
@@ -49,11 +58,16 @@ const content = {
         signOut: 'Xiquīza',
         greeting: 'Ximopanōlti',
         upgradePlans: 'Tlaxtlahuīlli',
+        trialActive: 'Yeyecoliztli',
+        trialEnds: 'Moyeyecoliztli tlamia ic',
+        extendTrial: 'Xichuēyilia ic 3 semanas',
+        subscribeCta: 'Ximotlālia axcān',
     },
 };
 
 const TIER_COLORS: Record<string, string> = {
     anon: 'bg-muted text-muted-foreground',
+    free_member: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
     community: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
     essentials: 'bg-primary/10 text-primary',
     academic: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
@@ -64,7 +78,7 @@ const TIER_COLORS: Record<string, string> = {
 export default function CuentaPage() {
     const { lang } = useLang();
     const t = content[lang];
-    const { name, email, tier, signOut } = useAuth();
+    const { name, email, tier, isOnTrial, trialTier, trialEndsAt, trialCcProvided, signOut } = useAuth();
 
     const displayName = name || email || t.greeting;
     const tierLabel = t.tierLabels[tier] || tier;
@@ -94,6 +108,30 @@ export default function CuentaPage() {
                     </div>
                 </div>
 
+                {/* Trial card */}
+                {isOnTrial && trialEndsAt && (
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-50 dark:bg-amber-900/10 p-6 mb-6">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                {t.trialActive}: {trialTier ? t.tierLabels[trialTier] || trialTier : ''}
+                            </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">
+                            {t.trialEnds} {trialEndsAt.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX')}
+                        </p>
+                        <div className="flex gap-2">
+                            {!trialCcProvided && (
+                                <Link href="/precios">
+                                    <Button variant="outline" size="sm">{t.extendTrial}</Button>
+                                </Link>
+                            )}
+                            <Link href="/precios">
+                                <Button size="sm">{t.subscribeCta}</Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 {/* Quick links */}
                 <div className="grid gap-4 sm:grid-cols-2">
                     <QuickLinkCard
@@ -119,7 +157,7 @@ export default function CuentaPage() {
                 </div>
 
                 {/* Tier comparison for upgradeable users */}
-                {(tier === 'anon' || tier === 'essentials' || tier === 'community') && (
+                {(tier === 'anon' || tier === 'free_member' || tier === 'essentials' || tier === 'community') && (
                     <div className="mt-8">
                         <h2 className="text-lg font-bold mb-4">{t.upgradePlans}</h2>
                         <TierComparison />

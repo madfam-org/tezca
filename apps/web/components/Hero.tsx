@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from "@tezca/ui";
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { useLang, LOCALE_MAP } from '@/components/providers/LanguageContext';
+import { useAuth } from '@/components/providers/AuthContext';
 import { getSharedStats } from '@/components/DashboardStats';
 
 const content = {
@@ -33,6 +35,7 @@ const content = {
 
 export function Hero() {
     const { lang } = useLang();
+    const { tier } = useAuth();
     const t = content[lang];
     const [totalLaws, setTotalLaws] = useState<number | null>(null);
 
@@ -115,6 +118,18 @@ export function Hero() {
                 <div className="mt-6 sm:mt-8 text-xs sm:text-sm text-primary-100/80 animate-fade-in [animation-delay:300ms]">
                     {t.tagline}
                 </div>
+
+                {/* Pricing hint for non-paid users */}
+                {(tier === 'anon' || tier === 'community') && (
+                    <div className="mt-3 animate-fade-in [animation-delay:400ms]">
+                        <Link
+                            href="/precios"
+                            className="text-xs sm:text-sm text-primary-100/90 hover:text-white transition-colors underline underline-offset-2"
+                        >
+                            {lang === 'en' ? 'From MXN$31/mo \u2192' : lang === 'nah' ? 'MXN$31/metztli \u2192' : 'Desde MXN$31/mes \u2192'}
+                        </Link>
+                    </div>
+                )}
             </div>
         </section>
     );

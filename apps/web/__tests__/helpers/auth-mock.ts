@@ -15,11 +15,16 @@
  */
 import { vi } from 'vitest';
 
-export type UserTier = 'anon' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
+export type UserTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
 export interface AuthState {
     isAuthenticated: boolean;
     tier: UserTier;
+    effectiveTier: UserTier;
+    trialTier: UserTier | null;
+    trialEndsAt: Date | null;
+    trialCcProvided: boolean;
+    isOnTrial: boolean;
     loginUrl: string;
     userId: string | null;
     email: string | null;
@@ -30,6 +35,11 @@ export interface AuthState {
 export const defaultAuthState: AuthState = {
     isAuthenticated: false,
     tier: 'anon',
+    effectiveTier: 'anon',
+    trialTier: null,
+    trialEndsAt: null,
+    trialCcProvided: false,
+    isOnTrial: false,
     loginUrl: '/api/auth/signin',
     userId: null,
     email: null,
@@ -42,9 +52,14 @@ export const defaultAuthState: AuthState = {
  * Always returns a fresh `signOut` mock unless explicitly overridden.
  */
 export function mockAuth(overrides: Partial<AuthState> = {}): AuthState {
-    return {
+    const base = {
         ...defaultAuthState,
         signOut: vi.fn(),
         ...overrides,
     };
+    // If tier was overridden but effectiveTier was not, default effectiveTier to tier
+    if (overrides.tier && !overrides.effectiveTier) {
+        base.effectiveTier = overrides.tier;
+    }
+    return base;
 }

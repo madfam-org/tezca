@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 # Map Dhanam plan IDs to Tezca tier names
 PLAN_TO_TIER = {
+    "tezca_free_member": "free_member",
     "tezca_community": "community",
     "tezca_essentials": "essentials",
     "tezca_academic": "academic",
@@ -32,12 +33,18 @@ PLAN_TO_TIER = {
     "tezca_madfam": "madfam",
     # Legacy plan alias
     "tezca_pro": "academic",
+    # Promotional plan aliases
+    "tezca_essentials_promo": "essentials",
+    "tezca_academic_promo": "academic",
+    "tezca_institutional_promo": "institutional",
 }
 
 # Events that trigger an upgrade
 UPGRADE_EVENTS = {"subscription.activated", "subscription.upgraded"}
 # Events that trigger a downgrade
 DOWNGRADE_EVENTS = {"subscription.cancelled", "subscription.downgraded"}
+# Events related to trials
+TRIAL_EVENTS = {"trial.cc_provided"}
 
 
 def _verify_signature(payload_body: bytes, signature_header: str, secret: str) -> bool:
@@ -111,6 +118,12 @@ def billing_webhook(request):
         updated = APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
             tier=new_tier
         )
+        # Clear trial fields on paid conversion
+        APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
+            trial_tier=None,
+            trial_ends_at=None,
+            trial_cc_provided=False,
+        )
         logger.info(
             "Billing upgrade: user=%s plan=%s tier=%s keys_updated=%d",
             user_id,
@@ -122,10 +135,30 @@ def billing_webhook(request):
 
     elif event in DOWNGRADE_EVENTS:
         updated = APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
-            tier="community"
+            tier="free_member"
         )
         logger.info("Billing downgrade: user=%s keys_updated=%d", user_id, updated)
-        return Response({"status": "ok", "tier": "community", "keys_updated": updated})
+        return Response(
+            {"status": "ok", "tier": "free_member", "keys_updated": updated}
+        )
+
+    elif event in TRIAL_EVENTS:
+        # trial.cc_provided: extend trial to full duration from start
+        from datetime import timedelta
+
+        cc_days = getattr(settings, "TRIAL_DURATION_WITH_CC_DAYS", 21)
+        api_keys = APIKey.objects.filter(
+            janua_user_id=user_id, is_active=True, trial_tier__isnull=False
+        )
+        updated = 0
+        for key in api_keys:
+            if key.trial_started_at:
+                key.trial_cc_provided = True
+                key.trial_ends_at = key.trial_started_at + timedelta(days=cc_days)
+                key.save(update_fields=["trial_cc_provided", "trial_ends_at"])
+                updated += 1
+        logger.info("Trial CC provided: user=%s keys_updated=%d", user_id, updated)
+        return Response({"status": "ok", "event": event, "keys_updated": updated})
 
     else:
         # Unrecognized event — acknowledge but no-op

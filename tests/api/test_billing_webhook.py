@@ -80,7 +80,8 @@ class TestBillingWebhook:
         assert response.status_code == 200
         assert response.data["tier"] == "academic"
         assert response.data["keys_updated"] == 2
-        mock_qs.filter.assert_called_once_with(janua_user_id="usr_123", is_active=True)
+        # Called twice: once for tier update, once for clearing trial fields
+        assert mock_qs.filter.call_count == 2
 
     @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
     @patch("apps.api.billing_views.APIKey.objects")
@@ -121,7 +122,7 @@ class TestBillingWebhook:
 
     @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
     @patch("apps.api.billing_views.APIKey.objects")
-    def test_cancelled_downgrades_to_community(self, mock_qs):
+    def test_cancelled_downgrades_to_free_member(self, mock_qs):
         mock_qs.filter.return_value.update.return_value = 1
         data = {
             "event": "subscription.cancelled",
@@ -131,7 +132,7 @@ class TestBillingWebhook:
         request = self._post(data)
         response = billing_webhook(request)
         assert response.status_code == 200
-        assert response.data["tier"] == "community"
+        assert response.data["tier"] == "free_member"
 
     @override_settings(DHANAM_WEBHOOK_SECRET="")
     def test_missing_secret_rejects_all(self):

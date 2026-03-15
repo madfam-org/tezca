@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ExternalLink, Scale } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 
 const content = {
   es: {
@@ -185,6 +186,15 @@ export function Footer() {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* Newsletter */}
+      <div className="border-t border-border">
+          <div className="container mx-auto px-4 sm:px-6 py-8">
+              <div className="max-w-md mx-auto sm:mx-0">
+                  <NewsletterSignup />
+              </div>
+          </div>
       </div>
 
       {/* Bottom bar */}

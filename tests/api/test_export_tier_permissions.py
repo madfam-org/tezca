@@ -92,8 +92,8 @@ class TestConstants:
         assert set(FORMAT_TIERS.keys()) == expected_formats
 
     def test_format_tier_values(self):
-        assert FORMAT_TIERS["pdf"] == "community"
-        assert FORMAT_TIERS["json"] == "community"
+        assert FORMAT_TIERS["pdf"] == "free_member"
+        assert FORMAT_TIERS["json"] == "free_member"
         assert FORMAT_TIERS["latex"] == "academic"
         assert FORMAT_TIERS["docx"] == "institutional"
         assert FORMAT_TIERS["epub"] == "institutional"
@@ -102,6 +102,7 @@ class TestConstants:
         # Canonical tiers + legacy aliases
         expected = {
             "anon",
+            "free_member",
             "free",
             "essentials",
             "community",
@@ -124,6 +125,7 @@ class TestConstants:
         # Canonical tiers + legacy aliases
         expected = {
             "anon",
+            "free_member",
             "community",
             "essentials",
             "academic",

@@ -13,8 +13,8 @@ type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
 const FORMAT_TIERS: Record<ExportFormat, UserTier> = {
     txt: 'anon',
-    pdf: 'community',
-    json: 'community',
+    pdf: 'free_member',
+    json: 'free_member',
     latex: 'academic',
     docx: 'institutional',
     epub: 'institutional',
@@ -22,6 +22,7 @@ const FORMAT_TIERS: Record<ExportFormat, UserTier> = {
 
 const TIER_RANK: Record<UserTier, number> = {
     anon: 0,
+    free_member: 1,
     community: 1,
     essentials: 2,
     academic: 3,
@@ -116,7 +117,7 @@ interface ExportDropdownProps {
 
 export function ExportDropdown({ lawId }: ExportDropdownProps) {
     const { lang } = useLang();
-    const { isAuthenticated, tier, loginUrl } = useAuth();
+    const { isAuthenticated, effectiveTier: tier, loginUrl } = useAuth();
     const t = content[lang];
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState<ExportFormat | null>(null);

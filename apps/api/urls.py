@@ -73,6 +73,7 @@ from .notification_views import (
 )
 from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
 from .search_views import SearchView
+from .trial_views import trial_start, trial_status
 from .views import IngestionView
 from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 
@@ -208,6 +209,9 @@ urlpatterns = [
     ),
     # ── Billing (server-to-server) ──────────────────────────────────────
     path("billing/webhook/", billing_webhook, name="billing-webhook"),
+    # ── Trial (auth required) ──────────────────────────────────────────
+    path("trial/start/", trial_start, name="trial-start"),
+    path("trial/status/", trial_status, name="trial-status"),
     # ── Webhooks (API key required) ──────────────────────────────────────
     path("webhooks/", create_webhook, name="webhook-create"),
     path("webhooks/list/", list_webhooks, name="webhook-list"),

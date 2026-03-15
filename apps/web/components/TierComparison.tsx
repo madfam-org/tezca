@@ -6,12 +6,13 @@ import { Button, Badge, Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
+import { PRICING } from '@/lib/pricing';
 
 const content = {
     es: {
         title: 'Compara los planes de Tezca',
         subtitle: 'Elige el plan que mejor se adapte a tus necesidades',
-        community: 'Community',
+        free_member: 'Free Member',
         essentials: 'Essentials',
         academic: 'Academic',
         institutional: 'Institutional',
@@ -20,8 +21,10 @@ const content = {
         popular: 'Popular',
         ctaFree: 'Empieza gratis',
         ctaUpgrade: 'Mejora tu plan',
+        perMonth: '/mes',
+        promoNote: 'Primeros 3 meses',
         features: {
-            search_results: 'Resultados por página',
+            search_results: 'Resultados por pagina',
             export_txt: 'Descargar TXT',
             export_pdf: 'Descargar PDF/JSON',
             export_latex: 'Descargar LaTeX',
@@ -29,14 +32,14 @@ const content = {
             api_access: 'Acceso API',
             bulk_download: 'Descarga masiva',
             webhooks: 'Webhooks',
-            analytics: 'Análisis de búsqueda',
+            analytics: 'Analisis de busqueda',
             graph_api: 'API de grafo',
         },
     },
     en: {
         title: 'Compare Tezca plans',
         subtitle: 'Choose the plan that best fits your needs',
-        community: 'Community',
+        free_member: 'Free Member',
         essentials: 'Essentials',
         academic: 'Academic',
         institutional: 'Institutional',
@@ -45,6 +48,8 @@ const content = {
         popular: 'Popular',
         ctaFree: 'Start free',
         ctaUpgrade: 'Upgrade',
+        perMonth: '/mo',
+        promoNote: 'First 3 months',
         features: {
             search_results: 'Results per page',
             export_txt: 'Download TXT',
@@ -59,28 +64,30 @@ const content = {
         },
     },
     nah: {
-        title: 'Xicnānamiqui Tezca tlaxtlahuīlli',
-        subtitle: 'Xicpēpena in tlaxtlahuīlli',
-        community: 'Community',
+        title: 'Xicnanamiqui Tezca tlaxtlahuilli',
+        subtitle: 'Xicpepena in tlaxtlahuilli',
+        free_member: 'Free Member',
         essentials: 'Essentials',
         academic: 'Academic',
         institutional: 'Institutional',
-        free: 'Tlanāhuatīlli',
+        free: 'Tlanahuatilli',
         current: 'Mocuenta',
         popular: 'Popular',
-        ctaFree: 'Xipēhua',
+        ctaFree: 'Xipehua',
         ctaUpgrade: 'Xicmelahua',
+        perMonth: '/metztli',
+        promoNote: '3 metztli',
         features: {
-            search_results: 'Tlanextīliztli',
-            export_txt: 'Xictēmōhui TXT',
-            export_pdf: 'Xictēmōhui PDF/JSON',
-            export_latex: 'Xictēmōhui LaTeX',
+            search_results: 'Tlanextiliztli',
+            export_txt: 'Xictemohui TXT',
+            export_pdf: 'Xictemohui PDF/JSON',
+            export_latex: 'Xictemohui LaTeX',
             export_premium: 'DOCX, EPUB',
             api_access: 'API',
-            bulk_download: 'Huēyi tēmōhuiliztli',
+            bulk_download: 'Hueyi temohuiliztli',
             webhooks: 'Webhooks',
-            analytics: 'Tlanextīliztli tlaixmatiliztli',
-            graph_api: 'API tlanextīliztli',
+            analytics: 'Tlanextiliztli tlaixmatiliztli',
+            graph_api: 'API tlanextiliztli',
         },
     },
 };
@@ -89,46 +96,51 @@ type FeatureKey = keyof typeof content.en.features;
 
 interface FeatureRow {
     key: FeatureKey;
-    community: string | boolean;
+    free_member: string | boolean;
     essentials: string | boolean;
     academic: string | boolean;
     institutional: string | boolean;
 }
 
 const FEATURES: FeatureRow[] = [
-    { key: 'search_results', community: '1,000', essentials: '50', academic: '100', institutional: '1,000' },
-    { key: 'export_txt', community: true, essentials: true, academic: true, institutional: true },
-    { key: 'export_pdf', community: true, essentials: true, academic: true, institutional: true },
-    { key: 'export_latex', community: false, essentials: false, academic: true, institutional: true },
-    { key: 'export_premium', community: false, essentials: false, academic: false, institutional: true },
-    { key: 'api_access', community: true, essentials: true, academic: true, institutional: true },
-    { key: 'bulk_download', community: true, essentials: false, academic: true, institutional: true },
-    { key: 'webhooks', community: false, essentials: false, academic: false, institutional: true },
-    { key: 'analytics', community: false, essentials: false, academic: true, institutional: true },
-    { key: 'graph_api', community: false, essentials: false, academic: false, institutional: true },
+    { key: 'search_results', free_member: '25', essentials: '50', academic: '100', institutional: '1,000' },
+    { key: 'export_txt', free_member: true, essentials: true, academic: true, institutional: true },
+    { key: 'export_pdf', free_member: true, essentials: true, academic: true, institutional: true },
+    { key: 'export_latex', free_member: false, essentials: false, academic: true, institutional: true },
+    { key: 'export_premium', free_member: false, essentials: false, academic: false, institutional: true },
+    { key: 'api_access', free_member: true, essentials: true, academic: true, institutional: true },
+    { key: 'bulk_download', free_member: false, essentials: false, academic: true, institutional: true },
+    { key: 'webhooks', free_member: false, essentials: false, academic: false, institutional: true },
+    { key: 'analytics', free_member: false, essentials: false, academic: true, institutional: true },
+    { key: 'graph_api', free_member: false, essentials: false, academic: false, institutional: true },
 ];
 
 interface TierComparisonProps {
     className?: string;
     compact?: boolean;
+    showPricing?: boolean;
 }
 
-export function TierComparison({ className = '', compact = false }: TierComparisonProps) {
+export function TierComparison({ className = '', compact = false, showPricing = false }: TierComparisonProps) {
     const { lang } = useLang();
     const { tier, userId, isAuthenticated } = useAuth();
     const t = content[lang];
 
-    const tiers = ['community', 'essentials', 'academic', 'institutional'] as const;
+    const tiers = ['free_member', 'essentials', 'academic', 'institutional'] as const;
 
     const getCheckoutHref = (targetTier: typeof tiers[number]) => {
         if (!isAuthenticated) return '/login';
-        if (targetTier === 'community') return '/cuenta';
+        if (targetTier === 'free_member') return '/cuenta';
         return getCheckoutUrl(targetTier, userId ?? undefined, typeof window !== 'undefined' ? window.location.href : undefined);
     };
 
-    const isCurrent = (planTier: string) => tier === planTier;
+    // Map free_member to community for current-plan detection (community is the auth tier for free users)
+    const isCurrent = (planTier: string) => {
+        if (planTier === 'free_member') return tier === 'community' || tier === 'anon';
+        return tier === planTier;
+    };
     const isDowngrade = (planTier: string) => {
-        const rank: Record<string, number> = { anon: 0, community: 1, essentials: 2, academic: 3, institutional: 4, madfam: 5 };
+        const rank: Record<string, number> = { anon: 0, free_member: 1, community: 1, essentials: 2, academic: 3, institutional: 4, madfam: 5 };
         return (rank[planTier] ?? 0) <= (rank[tier] ?? 0);
     };
 
@@ -136,6 +148,12 @@ export function TierComparison({ className = '', compact = false }: TierComparis
         if (typeof val === 'string') return <span className="text-sm font-medium">{val}</span>;
         if (val) return <Check className="h-4 w-4 text-primary mx-auto" />;
         return <X className="h-4 w-4 text-muted-foreground/30 mx-auto" />;
+    };
+
+    const getPriceLabel = (planTier: typeof tiers[number]): string | null => {
+        if (planTier === 'free_member') return t.free;
+        const priceData = PRICING[planTier];
+        return `$${priceData.promo}${t.perMonth}*`;
     };
 
     if (compact) {
@@ -170,7 +188,7 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                                         <div className="font-bold text-base">
                                             {t[planTier]}
                                         </div>
-                                        {planTier === 'community' && (
+                                        {planTier === 'free_member' && (
                                             <Badge variant="secondary" className="text-xs">{t.free}</Badge>
                                         )}
                                         {planTier === 'academic' && (
@@ -185,6 +203,18 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                         </tr>
                     </thead>
                     <tbody>
+                        {showPricing && (
+                            <tr className="border-t border-border/50">
+                                <td className="py-3 pr-4 text-muted-foreground font-medium">
+                                    {lang === 'en' ? 'Price' : lang === 'nah' ? 'Patiyotl' : 'Precio'}
+                                </td>
+                                {tiers.map((planTier) => (
+                                    <td key={planTier} className="py-3 text-center">
+                                        <span className="text-sm font-bold">{getPriceLabel(planTier)}</span>
+                                    </td>
+                                ))}
+                            </tr>
+                        )}
                         {FEATURES.map((feature) => (
                             <tr key={feature.key} className="border-t border-border/50">
                                 <td className="py-3 pr-4 text-muted-foreground">
@@ -198,6 +228,15 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                             </tr>
                         ))}
                     </tbody>
+                    {showPricing && (
+                        <tfoot>
+                            <tr>
+                                <td className="pt-2 text-xs text-muted-foreground" colSpan={5}>
+                                    * {t.promoNote}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    )}
                     <tfoot>
                         <tr className="border-t">
                             <td className="pt-4" />
@@ -235,16 +274,21 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <span className="font-bold">{t[planTier]}</span>
-                                        {planTier === 'community' && (
+                                        {planTier === 'free_member' && (
                                             <Badge variant="secondary" className="text-xs">{t.free}</Badge>
                                         )}
                                         {isHighlighted && (
                                             <Badge className="text-xs bg-primary text-primary-foreground">{t.popular}</Badge>
                                         )}
                                     </div>
-                                    {isCurrent(planTier) && (
-                                        <Badge variant="outline" className="text-xs">{t.current}</Badge>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {showPricing && (
+                                            <span className="text-sm font-bold">{getPriceLabel(planTier)}</span>
+                                        )}
+                                        {isCurrent(planTier) && (
+                                            <Badge variant="outline" className="text-xs">{t.current}</Badge>
+                                        )}
+                                    </div>
                                 </div>
                                 <ul className="space-y-1.5 text-sm mb-3">
                                     {FEATURES.map((feature) => {
@@ -278,6 +322,9 @@ export function TierComparison({ className = '', compact = false }: TierComparis
                         </Card>
                     );
                 })}
+                {showPricing && (
+                    <p className="text-xs text-muted-foreground text-center">* {t.promoNote}</p>
+                )}
             </div>
         </div>
     );

@@ -81,7 +81,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1138 tests)
+# Backend (pytest + django, 1154 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -89,7 +89,7 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 619 tests across 66 files)
+# Web (vitest, 643 tests across 69 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 72 tests across 10 files)
@@ -197,12 +197,22 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Webhook: `POST /api/v1/billing/webhook/` — HMAC-SHA256 signed by Dhanam, upgrades/downgrades API key tiers
 - Secret: `DHANAM_WEBHOOK_SECRET` env var
 - Plan mappings: `tezca_community`, `tezca_essentials`, `tezca_academic`, `tezca_institutional`, `tezca_madfam` → corresponding tiers (legacy `tezca_pro`→`academic`)
-- Downgrade fallback: `community` (free tier for authenticated users)
+- Downgrade fallback: `free_member` (free tier for authenticated users)
+
+### Trials
+
+- `POST /api/v1/trial/start/` — starts a trial (only `free_member` users eligible, per `trial_eligible` flag in `tiers.json`)
+- `GET /api/v1/trial/status/` — returns active/expired status, days remaining
+- Trial durations: `TRIAL_DURATION_NO_CC_DAYS` (default 3) and `TRIAL_DURATION_WITH_CC_DAYS` (default 21), configurable via env
+- Valid trial plans: `essentials`, `academic`, `institutional` (set in `settings.TRIAL_VALID_PLANS`)
+- `expire_trials` Celery task runs hourly, clears expired trial fields
+- CC extension: `trial.cc_provided` Dhanam webhook event extends trial to 21 days from start
+- Frontend: `TrialBadge` (countdown in Navbar), `ConversionBanner` (CTA for non-paid users), `/precios` pricing page
 
 ### Route Conventions
 
-- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`
+- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Elasticsearch
@@ -313,6 +323,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/posthog_analytics.py` | PostHog telemetry — `init_posthog()`, `track()`, `identify()`, `get_distinct_id(request)`. No-op when `POSTHOG_API_KEY` is unset |
 | `apps/web/lib/analytics/posthog.ts` | Frontend PostHog — `initPostHog()`, `trackEvent()`, `identifyUser()`, `resetUser()`. No-op when `NEXT_PUBLIC_POSTHOG_KEY` is unset |
 | `apps/api/billing_views.py` | Dhanam billing webhook receiver (HMAC-verified tier upgrades) |
+| `apps/api/trial_views.py` | Trial start/status endpoints, duration constants from settings |
+| `apps/web/lib/billing.ts` | Checkout URL builders (`getCheckoutUrl`, `getTrialCheckoutUrl`, `hasPaidAccess`) |
+| `apps/web/lib/pricing.ts` | Pricing constants (PRICING, PROMO) for frontend tier cards |
 | `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/utils/url_validation.py` | Webhook SSRF protection — validates URLs against private/reserved IPs |
 | `apps/api/storage.py` | StorageBackend (local + R2) |

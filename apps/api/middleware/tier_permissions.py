@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 TIERS_FILE = Path(__file__).parent.parent / "tiers.json"
 TIER_HIERARCHY = {
     "anon": 0,
+    "free_member": 1,
     "community": 1,
     "free": 2,
     "essentials": 2,
@@ -33,6 +34,7 @@ TIER_HIERARCHY = {
 # Normalize legacy/internal tier names to canonical form
 TIER_NORMALIZE = {
     "anon": "anon",
+    "free_member": "free_member",
     "free": "essentials",
     "internal": "madfam",
     "enterprise": "academic",

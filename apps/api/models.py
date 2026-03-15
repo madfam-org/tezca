@@ -188,6 +188,7 @@ class APIKey(models.Model):
     """API key for programmatic access to Tezca data."""
 
     class Tier(models.TextChoices):
+        FREE_MEMBER = "free_member", "Free Member"
         COMMUNITY = "community", "Community"
         ESSENTIALS = "essentials", "Essentials"
         ACADEMIC = "academic", "Academic"
@@ -226,6 +227,12 @@ class APIKey(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(100_000)],
         help_text="Override tier default rate limit (1–100,000)",
     )
+    trial_tier = models.CharField(
+        max_length=20, choices=Tier.choices, null=True, blank=True
+    )
+    trial_started_at = models.DateTimeField(null=True, blank=True)
+    trial_ends_at = models.DateTimeField(null=True, blank=True)
+    trial_cc_provided = models.BooleanField(default=False)
 
     class Meta:
         indexes = [models.Index(fields=["prefix", "is_active"])]
