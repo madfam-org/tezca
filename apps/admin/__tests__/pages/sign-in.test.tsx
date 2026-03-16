@@ -226,6 +226,64 @@ describe('SignInPage', () => {
         expect(screen.getByText(/JANUA_SECRET_KEY/)).toBeInTheDocument();
     });
 
+    it('shows SSO hint when SSO domain email is entered', async () => {
+        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
+
+        const { default: SignInPage } = await import('@/app/sign-in/page');
+        render(<SignInPage />);
+
+        // Initially password field is visible
+        expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
+
+        // Type an SSO domain email
+        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
+            target: { value: 'admin@madfam.io' },
+        });
+
+        // Password field replaced with SSO hint
+        expect(screen.queryByLabelText('Contraseña')).not.toBeInTheDocument();
+        expect(screen.getByText(/Cuenta de organización/)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Continuar con SSO' })).toBeInTheDocument();
+    });
+
+    it('keeps password field for non-SSO domain emails', async () => {
+        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
+
+        const { default: SignInPage } = await import('@/app/sign-in/page');
+        render(<SignInPage />);
+
+        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
+            target: { value: 'user@example.com' },
+        });
+
+        expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument();
+        expect(screen.queryByText(/Cuenta de organización/)).not.toBeInTheDocument();
+    });
+
+    it('redirects SSO domain emails to /api/auth/sso on form submit', async () => {
+        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
+
+        const originalLocation = window.location;
+        // @ts-expect-error — override for test
+        delete window.location;
+        window.location = { ...originalLocation, origin: 'http://localhost:3000', href: '' } as Location;
+
+        const { default: SignInPage } = await import('@/app/sign-in/page');
+        render(<SignInPage />);
+
+        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
+            target: { value: 'admin@madfam.io' },
+        });
+        fireEvent.submit(screen.getByRole('button', { name: 'Continuar con SSO' }).closest('form')!);
+
+        await waitFor(() => {
+            expect(window.location.href).toBe('/api/auth/sso');
+        });
+
+        window.location = originalLocation;
+    });
+
     it('redirects to / when already authenticated', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
         mockUseAuth.mockReturnValue({
