@@ -156,6 +156,11 @@ data/latest_ingestion_results.json
 # Bulk scraping logs
 scripts/scraping/*.log
 
+# Scraper debug screenshots (Playwright artifacts)
+data/**/debug/
+data/conamer/batch_*.json
+data/conamer/discovered_conamer.json
+
 # ── Data Pipeline: Keep These (metadata, registries, catalogs) ─────
 # Negation rules to preserve metadata JSON files
 
