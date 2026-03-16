@@ -24,35 +24,35 @@ class TestFieldOverflow(TestCase):
         return f"{prefix}-{uuid.uuid4().hex[:8]}"
 
     def test_law_name_at_max_length(self):
-        """A Law with exactly 500-char name saves and retrieves correctly."""
-        name_500 = "A" * 500
+        """A Law with exactly 2000-char name saves and retrieves correctly."""
+        name_2000 = "A" * 2000
         official_id = self._unique_id()
 
         law = Law.objects.create(
             official_id=official_id,
-            name=name_500,
+            name=name_2000,
             tier="federal",
             status="vigente",
         )
 
         law.refresh_from_db()
-        assert law.name == name_500
-        assert len(law.name) == 500
+        assert law.name == name_2000
+        assert len(law.name) == 2000
 
     def test_law_name_over_max_length(self):
         """
-        A Law with 501-char name: Postgres raises DataError, SQLite allows it.
+        A Law with 2001-char name: Postgres raises DataError, SQLite allows it.
 
         This documents a data integrity risk when running on SQLite -- the
         max_length constraint is only enforced at the Django form/serializer
         layer, not at the database level. Production must use Postgres.
         """
-        name_501 = "B" * 501
+        name_2001 = "B" * 2001
         official_id = self._unique_id()
 
         law = Law(
             official_id=official_id,
-            name=name_501,
+            name=name_2001,
             tier="federal",
             status="vigente",
         )
@@ -64,10 +64,10 @@ class TestFieldOverflow(TestCase):
             law.save()
             law.refresh_from_db()
             assert (
-                len(law.name) == 501
+                len(law.name) == 2001
             ), "SQLite does not enforce CharField max_length at the DB level"
         else:
-            # PostgreSQL enforces varchar(500) and raises DataError.
+            # PostgreSQL enforces varchar(2000) and raises DataError.
             with self.assertRaises(Exception):
                 law.save()
 
