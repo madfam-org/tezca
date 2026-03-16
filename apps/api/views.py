@@ -1,3 +1,6 @@
+import logging
+
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -5,6 +8,8 @@ from rest_framework.views import APIView
 
 from .ingestion_manager import IngestionManager
 from .schema import ErrorSchema, IngestionRequestSchema, IngestionResponseSchema
+
+logger = logging.getLogger(__name__)
 
 
 class IngestionView(APIView):
@@ -34,5 +39,13 @@ class IngestionView(APIView):
         responses={200: IngestionResponseSchema},
     )
     def get(self, request):
-        status_data = IngestionManager.get_status()
+        try:
+            status_data = IngestionManager.get_status()
+        except Exception:
+            logger.exception("Failed to get ingestion status")
+            status_data = {
+                "status": "error",
+                "message": "Failed to read ingestion status",
+                "timestamp": timezone.now().isoformat(),
+            }
         return Response(status_data)
