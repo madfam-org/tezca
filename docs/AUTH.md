@@ -156,6 +156,27 @@ The admin interface uses the same Janua authentication mechanism but with a sepa
 
 The admin app's environment variables follow the same naming convention (`JANUA_CLIENT_ID`, `JANUA_CLIENT_SECRET`, etc.) but are set to the admin-specific OAuth client values.
 
+### skipRemoteAuth Mode
+
+The admin app sets `skipRemoteAuth: true` in the Janua SDK configuration. This flag prevents the SDK from making direct browser-side API calls to `auth.madfam.io`, which would be CORS-blocked since Janua only allows server-side requests.
+
+When `skipRemoteAuth` is enabled:
+
+- The SDK derives user information from the JWT token stored in `localStorage` (base64-decoded payload) instead of calling `getCurrentUser()` on the remote API.
+- The 60-second auth state polling interval is disabled (no remote auth checks).
+- Token refresh and OAuth callback handling continue to work normally.
+
+This flag is appropriate for apps that manage authentication server-side (e.g., via httpOnly cookies and a `/api/auth/me` proxy route). The admin app uses `AdminAuthBridge` to hydrate the SDK's localStorage from server-side session tokens, so the remote API call is unnecessary.
+
+```typescript
+const januaConfig = {
+    baseURL: "https://auth.madfam.io",
+    apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY,
+    autoRefreshTokens: true,
+    skipRemoteAuth: true, // Prevent CORS-blocked getCurrentUser() calls
+};
+```
+
 ---
 
 ## Reference Implementation

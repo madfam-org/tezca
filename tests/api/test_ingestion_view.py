@@ -112,6 +112,30 @@ class TestIngestionViewGet:
         assert response.status_code == 200
         assert response.json()["status"] == "error"
 
+    @patch("apps.api.ingestion_manager.IngestionManager.get_status")
+    def test_get_status_exception_returns_error_json(self, mock_status):
+        """GET /ingest/ returns error JSON even when get_status() raises an exception."""
+        mock_status.side_effect = PermissionError("Read-only filesystem")
+
+        response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "error"
+        assert "Failed to read ingestion status" in data["message"]
+        assert "timestamp" in data
+
+    @patch("apps.api.ingestion_manager.IngestionManager.get_status")
+    def test_get_status_oserror_returns_error_json(self, mock_status):
+        """GET /ingest/ handles OSError from get_status() gracefully."""
+        mock_status.side_effect = OSError("Disk I/O error")
+
+        response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "error"
+
 
 @pytest.mark.django_db
 class TestIngestionViewPost:
