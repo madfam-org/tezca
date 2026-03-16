@@ -18,6 +18,7 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", _default_hosts).split(",")
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001"
 ).split(",")
+CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",

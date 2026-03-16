@@ -16,6 +16,7 @@ export const metadata: Metadata = {
         template: "%s — Tezca Admin",
     },
     description: "Consola administrativa para tezca.mx",
+    icons: { icon: "/icon.svg" },
 };
 
 import { JanuaProvider, UserButton, AdminAuthBridge } from "@/lib/auth";

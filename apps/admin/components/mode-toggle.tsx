@@ -7,13 +7,13 @@ import { useTheme } from "next-themes"
 import { Button } from "@tezca/ui"
 
 export function ModeToggle() {
-    const { setTheme, theme } = useTheme()
+    const { setTheme, resolvedTheme } = useTheme()
 
     return (
         <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             title="Cambiar tema"
         >
             <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
