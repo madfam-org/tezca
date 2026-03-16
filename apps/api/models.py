@@ -20,7 +20,7 @@ class Law(models.Model):
         unique=True,
         help_text="Slug identifier (e.g., 'cpeum')",
     )
-    name = models.CharField(max_length=500, help_text="Full name of the law")
+    name = models.CharField(max_length=2000, help_text="Full name of the law")
     short_name = models.CharField(max_length=200, blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     tier = models.CharField(max_length=50, blank=True, null=True, db_index=True)

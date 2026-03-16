@@ -84,7 +84,7 @@
 | tezca-worker | ghcr.io/madfam-org/tezca/api | — | 1 | — |
 | tezca-beat | ghcr.io/madfam-org/tezca/api | — | 1 (singleton) | — |
 | tezca-redis | redis:7-alpine | 6379 | 1 | — |
-| tezca-es | elasticsearch:7.17.9 | 9200 | 1 | — |
+| tezca-es | elasticsearch:8.17.0 | 9200 | 1 | — |
 
 PostgreSQL uses the shared MADFAM cluster (database: `tezca`).
 

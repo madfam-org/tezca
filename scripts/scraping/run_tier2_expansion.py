@@ -24,10 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from apps.scraper.municipal import get_scraper, list_available_scrapers
-from apps.scraper.municipal.config import (
-    MUNICIPALITY_CONFIGS,
-    get_tier2_municipalities,
-)
+from apps.scraper.municipal.config import MUNICIPALITY_CONFIGS, get_tier2_municipalities
 
 DATA_DIR = PROJECT_ROOT / "data"
 PROBE_RESULTS = DATA_DIR / "municipal" / "tier2_probe_results.json"
