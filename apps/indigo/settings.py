@@ -183,7 +183,7 @@ if not DEBUG:
 
 # ── Janua Auth ────────────────────────────────────────────────────────
 JANUA_BASE_URL = os.environ.get("JANUA_BASE_URL", "")
-JANUA_AUDIENCE = os.environ.get("JANUA_AUDIENCE", "tezca-api")
+JANUA_AUDIENCE = os.environ.get("JANUA_AUDIENCE", "janua.dev")
 
 # ── Admin Access ─────────────────────────────────────────────────────
 TEZCA_ADMIN_USER_IDS = set(
