@@ -15,7 +15,8 @@ COPY packages/lib/package.json packages/lib/package.json
 
 # Install dependencies (workspaces need all package.json files present)
 ARG NPM_MADFAM_TOKEN
-RUN npm ci --workspace=apps/web --workspace=packages/ui --workspace=packages/lib
+RUN npm ci --workspace=apps/web --workspace=packages/ui --workspace=packages/lib \
+    && mkdir -p apps/web/node_modules packages/ui/node_modules packages/lib/node_modules
 
 # Explicitly install musl-compatible native bindings for Alpine
 # npm ci --workspace=... skips platform-specific optional deps (npm/cli#4828)
