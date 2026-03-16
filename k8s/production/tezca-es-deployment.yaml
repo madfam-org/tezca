@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: elasticsearch
-          image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
           securityContext:
             privileged: false
             allowPrivilegeEscalation: false
@@ -49,6 +49,10 @@ spec:
               value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms1g -Xmx1g"
+            - name: xpack.security.enabled
+              value: "false"
+            - name: xpack.security.enrollment.enabled
+              value: "false"
           livenessProbe:
             httpGet:
               path: /_cluster/health?local=true

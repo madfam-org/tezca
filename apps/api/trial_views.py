@@ -7,13 +7,12 @@ GET  /api/v1/trial/status/ — Check trial status
 
 import logging
 
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from django.conf import settings
 
 from .middleware.tier_permissions import check_feature
 from .models import APIKey

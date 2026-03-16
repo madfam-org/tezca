@@ -1,5 +1,5 @@
 service: tezca-es
-image: elasticsearch:7.17.9
+image: elasticsearch:8.17.0
 port: 9200
 replicas:
   min: 1
@@ -25,6 +25,10 @@ env:
     value: "true"
   - name: ES_JAVA_OPTS
     value: "-Xms1g -Xmx1g"
+  - name: xpack.security.enabled
+    value: "false"
+  - name: xpack.security.enrollment.enabled
+    value: "false"
 initContainers:
   - name: sysctl
     image: busybox
