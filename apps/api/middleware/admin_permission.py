@@ -25,9 +25,14 @@ class IsTezcaAdmin(BasePermission):
         if not user or not getattr(user, "is_authenticated", False):
             return False
 
-        # Check JWT role claim
+        # Check JWT role claims (supports both singular and plural formats)
         claims = getattr(user, "claims", {})
         if claims.get("role") == "admin":
+            return True
+        roles = claims.get("roles", [])
+        if "admin" in roles:
+            return True
+        if claims.get("is_admin") is True:
             return True
 
         # Check allow-list by user ID
