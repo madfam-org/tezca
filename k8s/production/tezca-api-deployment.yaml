@@ -79,6 +79,8 @@ spec:
               value: "https://auth.madfam.io"
             - name: JANUA_AUDIENCE
               value: "tezca-api"
+            - name: TEZCA_ADMIN_USER_IDS
+              value: "1cf3ecc0-b6f3-47d7-9575-5c88beab22c0"
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
