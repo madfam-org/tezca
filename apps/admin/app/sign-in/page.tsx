@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect, FormEvent, Suspense } from "react";
+import { useState, useEffect, useMemo, FormEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Shield } from "lucide-react";
 
 const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
+
+/** Email domains that require SSO login (no email/password fallback). */
+const SSO_DOMAINS = ["madfam.io"];
 
 export default function SignInPage() {
     const router = useRouter();
@@ -52,9 +55,22 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         window.location.href = "/api/auth/sso";
     }
 
+    const isSsoDomain = useMemo(() => {
+        const domain = email.split("@")[1]?.toLowerCase();
+        return domain ? SSO_DOMAINS.includes(domain) : false;
+    }, [email]);
+
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setFormError(null);
+
+        // Redirect SSO-only domains directly to SSO flow
+        const domain = email.split("@")[1]?.toLowerCase();
+        if (domain && SSO_DOMAINS.includes(domain)) {
+            window.location.href = "/api/auth/sso";
+            return;
+        }
+
         setSubmitting(true);
         try {
             const res = await fetch("/api/auth/login", {
@@ -183,32 +199,38 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-foreground"
-                    >
-                        Contraseña
-                    </label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        required
-                        value={password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                        disabled={submitting}
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                    />
-                </div>
+                {isSsoDomain ? (
+                    <div className="rounded-md bg-muted/50 border border-border px-4 py-3 text-sm text-muted-foreground">
+                        Cuenta de organización — usar SSO
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-foreground"
+                        >
+                            Contraseña
+                        </label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            value={password}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            disabled={submitting}
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                        />
+                    </div>
+                )}
 
                 <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || isSsoDomain}
                     className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
-                    {submitting ? "Iniciando sesión..." : "Iniciar sesión"}
+                    {isSsoDomain ? "Continuar con SSO" : submitting ? "Iniciando sesión..." : "Iniciar sesión"}
                 </button>
             </form>
         </PageShell>

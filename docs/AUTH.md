@@ -177,6 +177,26 @@ const januaConfig = {
 };
 ```
 
+### SSO Domain Enforcement
+
+The admin sign-in page detects email domains that require SSO and prevents the email/password form from submitting for those domains. This avoids a 502 error that occurs when the server-side login proxy hits Cloudflare's HTML challenge page instead of Janua's JSON API.
+
+**Enforced domains**: `madfam.io`
+
+When a user types an email with an SSO-enforced domain:
+
+1. The password field is replaced with an "Cuenta de organización — usar SSO" hint.
+2. The submit button changes to "Continuar con SSO".
+3. Submitting the form redirects to `/api/auth/sso` (the PKCE OAuth flow) instead of calling the login proxy.
+
+To add a new SSO-enforced domain, update the `SSO_DOMAINS` array in `apps/admin/app/sign-in/page.tsx`.
+
+### Email/Password Login Proxy
+
+The admin app includes a server-side proxy route at `/api/auth/login` that forwards email/password credentials to Janua's `/api/v1/auth/login` endpoint. This avoids CORS issues since browser-to-Janua requests are blocked.
+
+The proxy includes Content-Type validation: if Janua returns HTML (e.g., a Cloudflare challenge page) instead of JSON, the proxy returns a 503 with a user-friendly message directing the user to SSO.
+
 ---
 
 ## Reference Implementation

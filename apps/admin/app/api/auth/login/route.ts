@@ -60,6 +60,17 @@ export async function POST(request: Request) {
             );
         }
 
+        // Detect non-JSON responses (e.g. Cloudflare HTML challenge pages)
+        const contentType = loginRes.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+            return NextResponse.json(
+                {
+                    error: "El servidor de autenticación no está disponible. Usa SSO para iniciar sesión.",
+                },
+                { status: 503 }
+            );
+        }
+
         loginData = await loginRes.json();
     } catch (err) {
         console.error("Login proxy error:", err);
