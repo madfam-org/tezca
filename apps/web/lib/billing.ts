@@ -8,7 +8,7 @@
 const DHANAM_CHECKOUT_URL =
   process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL || 'https://dhanam.madfam.io/checkout';
 
-export type TezaTier = 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam' | null;
+export type TezaTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam' | null;
 
 /**
  * Build a checkout URL for upgrading to a Tezca tier via Dhanam.
