@@ -29,6 +29,7 @@ const januaConfig = {
     baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io",
     apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "",
     autoRefreshTokens: true,
+    skipRemoteAuth: true,
 };
 
 export default function RootLayout({

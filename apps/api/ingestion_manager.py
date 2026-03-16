@@ -32,7 +32,11 @@ class IngestionManager:
     @staticmethod
     def get_status():
         """Read the current ingestion status."""
-        IngestionManager._ensure_paths()
+        try:
+            IngestionManager._ensure_paths()
+        except (PermissionError, OSError) as e:
+            logger.warning("Cannot create data directory: %s", e)
+            # Continue — STATUS_FILE.exists() will return False below
 
         if not STATUS_FILE.exists():
             return {
