@@ -1,0 +1,28 @@
+{
+  "domains_queried": [
+    "sinec.gob.mx",
+    "congresoguerrero.gob.mx"
+  ],
+  "dry_run": false,
+  "results": {
+    "sinec.gob.mx": {
+      "cdx_records": 500,
+      "filtered": 309,
+      "downloaded": 9,
+      "skipped": 300,
+      "failed": 0,
+      "total_bytes": 3420405
+    },
+    "congresoguerrero.gob.mx": {
+      "cdx_records": 480,
+      "filtered": 16,
+      "downloaded": 7,
+      "skipped": 9,
+      "failed": 0,
+      "total_bytes": 562513
+    }
+  },
+  "total_discovered": 980,
+  "total_filtered": 325,
+  "total_downloaded": 16
+}

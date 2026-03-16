@@ -259,8 +259,9 @@ class ConamerPlaywrightScraper(PlaywrightBase):
         """
         Navigate through catalog pages and extract regulation entries.
 
-        Tries URL-based pagination (?page=N) first. If a page returns
-        no items, attempts to click a "Next"/"Siguiente" button.
+        Uses click-based pagination exclusively — the CONAMER WAF blocks
+        URL-based pagination (?page=N). Loads the base catalog page once,
+        then clicks "Siguiente"/"Next" buttons to paginate.
 
         Args:
             max_pages: Maximum number of pages to scrape (None = unlimited).
@@ -270,71 +271,79 @@ class ConamerPlaywrightScraper(PlaywrightBase):
             Aggregated list of all regulation dicts found.
         """
         all_items: List[Dict[str, Any]] = []
-        page = resume_from_page
         empty_streak = 0
         pages_scraped = 0
+
+        # Navigate to the catalog landing page once
+        catalog_urls = [
+            f"{BASE_URL}/catalogo",
+            BASE_URL,
+            f"{BASE_URL}/",
+        ]
+        landed = False
+        for url in catalog_urls:
+            if self._navigate(url):
+                landed = True
+                break
+
+        if not landed:
+            logger.error("Cannot reach %s at all.", BASE_URL)
+            return all_items
+
+        # Skip ahead if resuming (click Next N times)
+        if resume_from_page > 0:
+            logger.info("Resuming: skipping %d pages...", resume_from_page)
+            for _ in range(resume_from_page):
+                if not self._try_click_next():
+                    logger.warning("Could not skip to resume page %d", resume_from_page)
+                    break
+                self._page.wait_for_load_state("networkidle", timeout=15_000)
+                self._rate_limit()
 
         while True:
             if max_pages is not None and pages_scraped >= max_pages:
                 logger.info("Reached max_pages=%d, stopping.", max_pages)
                 break
 
-            # Try URL-based pagination
-            url = f"{BASE_URL}/catalogo?page={page}"
-            if not self._navigate(url):
-                # If the catalog URL fails, try the base URL on first page
-                if page == resume_from_page:
-                    logger.info("Catalog URL failed, trying base URL...")
-                    if not self._navigate(BASE_URL):
-                        logger.error("Cannot reach %s at all.", BASE_URL)
-                        break
-                else:
-                    empty_streak += 1
-                    if empty_streak >= 3:
-                        logger.warning("3 consecutive navigation failures, stopping.")
-                        break
-                    page += 1
-                    continue
-
             items = self._parse_page()
-
-            if not items:
-                # Try clicking "Next" / "Siguiente" button
-                clicked = self._try_click_next()
-                if clicked:
-                    self._page.wait_for_load_state("networkidle", timeout=15_000)
-                    items = self._parse_page()
 
             if not items:
                 empty_streak += 1
                 logger.info(
                     "No items on page %d (empty streak: %d/3).",
-                    page,
+                    resume_from_page + pages_scraped,
                     empty_streak,
                 )
                 if empty_streak >= 3:
                     logger.info("3 consecutive empty pages, assuming end of catalog.")
                     break
-                page += 1
-                pages_scraped += 1
-                continue
+            else:
+                empty_streak = 0
+                all_items.extend(items)
+                logger.info(
+                    "Page %d: found %d items (total: %d, pages: %d).",
+                    resume_from_page + pages_scraped,
+                    len(items),
+                    len(all_items),
+                    pages_scraped + 1,
+                )
 
-            empty_streak = 0
-            all_items.extend(items)
             pages_scraped += 1
-            logger.info(
-                "Page %d: found %d items (total: %d, pages: %d).",
-                page,
-                len(items),
-                len(all_items),
-                pages_scraped,
-            )
 
             # Checkpoint
             if pages_scraped % self._checkpoint_interval == 0:
-                self._save_checkpoint(page, all_items)
+                self._save_checkpoint(resume_from_page + pages_scraped, all_items)
 
-            page += 1
+            # Click-based pagination — advance to next page
+            if not self._try_click_next():
+                logger.info("No next button found, assuming last page.")
+                break
+
+            try:
+                self._page.wait_for_load_state("networkidle", timeout=15_000)
+            except PlaywrightTimeout:
+                logger.debug("networkidle timeout after clicking next, continuing.")
+
             self._rate_limit()
 
         return all_items

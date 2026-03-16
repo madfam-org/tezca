@@ -1,0 +1,18 @@
+{
+  "total_failed": 5230,
+  "failure_breakdown": {
+    "no_download_url": 4395,
+    "download_failed": 44,
+    "unknown": 10,
+    "not_attempted": 781
+  },
+  "paths_run": "a",
+  "dry_run": true,
+  "path_a": {
+    "recovered": 0,
+    "still_failed": 4439
+  },
+  "total_recovered": 0,
+  "total_remaining": 4439,
+  "recovery_rate": "0.0%"
+}

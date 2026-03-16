@@ -1,0 +1,14 @@
+{
+  "start_date": "2025-01-01",
+  "end_date": "2025-12-31",
+  "mode": "noms",
+  "total_entries": 31,
+  "by_instrument": {
+    "nom": 31
+  },
+  "by_change_type": {
+    "other": 27,
+    "reform": 4
+  },
+  "noms_found": 20
+}
