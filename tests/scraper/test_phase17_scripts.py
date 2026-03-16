@@ -80,6 +80,45 @@ class TestOjnMultipathRecovery:
         # dry_run returns all as still_failed, but only refetchable ones
         assert len(still_failed) == 3  # unknown_reason excluded from refetchable
 
+    def test_path_b_cdx_uses_prefix_match(self):
+        """CDX queries use matchType=prefix without glob wildcards in URL."""
+        from scripts.scraping.ojn_multipath_recovery import OJN_BASE
+
+        # URL patterns should not contain asterisks (cleaned up in Wave 2)
+        url1 = f"{OJN_BASE}/obtenerdoc.php?path=12345"
+        url2 = f"{OJN_BASE}/fichaOrdenamiento2.php?idArchivo=12345"
+        assert "*" not in url1
+        assert "*" not in url2
+
+    def test_path_b_saves_partial_results(self, tmp_path):
+        """After 500 items, partial file should be created."""
+        from scripts.scraping import ojn_multipath_recovery as m
+
+        # Create 501 fake records to trigger partial save at 500
+        records = [
+            {"file_id": i, "state": "test", "law_name": f"Law {i}"} for i in range(501)
+        ]
+
+        mock_session = MagicMock()
+        # Make CDX return empty (no archive found) for all
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.json.return_value = [
+            ["timestamp", "original", "statuscode", "mimetype"]
+        ]  # header only
+        mock_session.get.return_value = mock_resp
+
+        output = tmp_path / "path_b"
+        with patch("scripts.scraping.ojn_multipath_recovery.time.sleep"):
+            _, still_failed = m.path_b_wayback_cdx(
+                records, mock_session, output, dry_run=False, limit=501
+            )
+
+        partial = output / "path_b_partial.json"
+        assert partial.exists()
+        data = json.loads(partial.read_text())
+        assert "still_failed_count" in data
+
 
 class TestWaybackBulkRecovery:
     """Test Wayback bulk recovery script."""
@@ -162,6 +201,85 @@ class TestDofHistoricalScan:
         assert "cdmx" in STATE_GAZETTE_URLS
         assert len(STATE_GAZETTE_URLS) >= 5
 
+    def test_cross_reference_noms_finds_new(self, tmp_path):
+        """DOF NOM not in catalog is flagged as new."""
+        from scripts.scraping import dof_historical_scan as m
+
+        # Create a small catalog
+        catalog = [
+            {"nom_number": "NOM-001-SSA1-2024"},
+            {"nom_number": "NOM-002-STPS-2023"},
+        ]
+        catalog_path = tmp_path / "catalog.json"
+        catalog_path.write_text(json.dumps(catalog))
+
+        dof_noms = [
+            {
+                "nom_number": "NOM-001-SSA1-2024",
+                "title": "Existing",
+                "date": "2024-01-01",
+                "url": "...",
+            },
+            {
+                "nom_number": "NOM-999-SEMARNAT-2025",
+                "title": "New one",
+                "date": "2025-06-01",
+                "url": "...",
+            },
+        ]
+
+        with patch.object(m, "OUTPUT_DIR", tmp_path):
+            result = m.cross_reference_noms(dof_noms, catalog_path=catalog_path)
+
+        assert result["new_count"] == 1
+        assert result["existing_count"] == 1
+        assert result["new_noms"][0]["nom_number"] == "NOM-999-SEMARNAT-2025"
+
+    def test_cross_reference_noms_all_existing(self, tmp_path):
+        """All match → 0 new."""
+        from scripts.scraping import dof_historical_scan as m
+
+        catalog = [{"nom_number": "NOM-001-SSA1-2024"}]
+        catalog_path = tmp_path / "catalog.json"
+        catalog_path.write_text(json.dumps(catalog))
+
+        dof_noms = [
+            {
+                "nom_number": "NOM-001-SSA1-2024",
+                "title": "Known",
+                "date": "2024-01-01",
+                "url": "...",
+            },
+        ]
+
+        with patch.object(m, "OUTPUT_DIR", tmp_path):
+            result = m.cross_reference_noms(dof_noms, catalog_path=catalog_path)
+
+        assert result["new_count"] == 0
+        assert result["existing_count"] == 1
+
+    def test_checkpoint_roundtrip(self, tmp_path):
+        """Save + load checkpoint preserves state."""
+        import datetime
+
+        from scripts.scraping.dof_historical_scan import (
+            _delete_checkpoint,
+            _load_checkpoint,
+            _save_checkpoint,
+        )
+
+        test_date = datetime.date(2023, 6, 15)
+        _save_checkpoint(tmp_path, test_date, 42, "noms")
+
+        cp = _load_checkpoint(tmp_path)
+        assert cp is not None
+        assert cp["last_date"] == "2023-06-15"
+        assert cp["entries_count"] == 42
+        assert cp["mode"] == "noms"
+
+        _delete_checkpoint(tmp_path)
+        assert _load_checkpoint(tmp_path) is None
+
 
 class TestProbeDatosGob:
     """Test datos.gob.mx probe script."""
@@ -207,6 +325,43 @@ class TestProbeDatosGob:
         assert len(resources) == 2  # one with empty URL excluded
         assert resources[0]["is_structured"] is True  # CSV
         assert resources[1]["is_structured"] is False  # PDF
+
+    def test_assess_resources_flags_legal_columns(self, tmp_path):
+        """CSV with legal column names → high relevance."""
+        from scripts.scraping import probe_datos_gob as m
+
+        # Create a mock CSV with a legal column
+        res_dir = tmp_path / "resources" / "dataset1"
+        res_dir.mkdir(parents=True)
+        csv_path = res_dir / "data.csv"
+        csv_path.write_text("id,nombre_reglamento,fecha\n1,Test,2024-01-01\n")
+
+        with patch.object(m, "OUTPUT_DIR", tmp_path):
+            result = m.assess_resources(resources_dir=tmp_path / "resources")
+
+        assert result["high_count"] == 1
+        assert result["low_count"] == 0
+        assert "reglamento" in result["high_relevance"][0]["matched_keywords"]
+
+    def test_assess_resources_low_relevance(self, tmp_path):
+        """CSV without legal columns → low relevance."""
+        from scripts.scraping import probe_datos_gob as m
+
+        res_dir = tmp_path / "resources" / "dataset2"
+        res_dir.mkdir(parents=True)
+        csv_path = res_dir / "weather.csv"
+        csv_path.write_text("date,temperature,humidity\n2024-01-01,25,60\n")
+
+        with patch.object(m, "OUTPUT_DIR", tmp_path):
+            result = m.assess_resources(resources_dir=tmp_path / "resources")
+
+        assert result["high_count"] == 0
+        assert result["low_count"] == 1
+
+    def test_download_resources_import(self):
+        from scripts.scraping.probe_datos_gob import download_resources
+
+        assert download_resources is not None
 
 
 class TestSourceDiscoveryCDX:

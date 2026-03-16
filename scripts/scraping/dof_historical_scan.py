@@ -307,11 +307,54 @@ def classify_entry(entry: Dict[str, str]) -> Dict[str, str]:
     return entry
 
 
+CHECKPOINT_FILE = "dof_scan_checkpoint.json"
+PARTIAL_FILE = "dof_entries_partial.json"
+NOM_CATALOG_PATH = Path("data/federal/noms/discovered_noms.json")
+
+
+def _load_checkpoint(output_dir: Path) -> Optional[Dict[str, Any]]:
+    """Load scan checkpoint if it exists."""
+    cp_path = output_dir / CHECKPOINT_FILE
+    if cp_path.exists():
+        try:
+            return json.loads(cp_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return None
+
+
+def _save_checkpoint(
+    output_dir: Path,
+    last_date: datetime.date,
+    entries_count: int,
+    mode: str,
+) -> None:
+    """Save scan checkpoint."""
+    cp = {
+        "last_date": last_date.isoformat(),
+        "entries_count": entries_count,
+        "mode": mode,
+        "saved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+    (output_dir / CHECKPOINT_FILE).write_text(
+        json.dumps(cp, indent=2), encoding="utf-8"
+    )
+
+
+def _delete_checkpoint(output_dir: Path) -> None:
+    """Remove checkpoint file on completion."""
+    cp_path = output_dir / CHECKPOINT_FILE
+    if cp_path.exists():
+        cp_path.unlink()
+
+
 def scan_date_range(
     session: requests.Session,
     start_date: datetime.date,
     end_date: datetime.date,
     mode: str = "all",
+    resume: bool = False,
+    output_dir: Optional[Path] = None,
 ) -> List[Dict[str, str]]:
     """Scan DOF editions over a date range.
 
@@ -320,12 +363,39 @@ def scan_date_range(
         start_date: First date to scan.
         end_date: Last date to scan.
         mode: "all", "noms", "new_laws", or "gap"
+        resume: If True, attempt to resume from checkpoint.
+        output_dir: Directory for checkpoint files.
 
     Returns:
         List of classified DOF entries.
     """
+    out = output_dir or OUTPUT_DIR
+    out.mkdir(parents=True, exist_ok=True)
+
     all_entries: List[Dict[str, str]] = []
-    current = start_date
+    effective_start = start_date
+
+    # Resume from checkpoint
+    if resume:
+        cp = _load_checkpoint(out)
+        if cp:
+            last_date = datetime.date.fromisoformat(cp["last_date"])
+            effective_start = last_date + datetime.timedelta(days=1)
+            logger.info(
+                "Resuming from checkpoint: %s (%d entries so far)",
+                last_date,
+                cp["entries_count"],
+            )
+            # Load partial results
+            partial = out / PARTIAL_FILE
+            if partial.exists():
+                try:
+                    all_entries = json.loads(partial.read_text(encoding="utf-8"))
+                    logger.info("Loaded %d partial entries", len(all_entries))
+                except (json.JSONDecodeError, OSError):
+                    pass
+
+    current = effective_start
     days_scanned = 0
     total_days = (end_date - start_date).days + 1
 
@@ -356,8 +426,18 @@ def scan_date_range(
                 total_days,
                 len(all_entries),
             )
+            # Save checkpoint every 30 days
+            _save_checkpoint(out, current, len(all_entries), mode)
+            with open(out / PARTIAL_FILE, "w", encoding="utf-8") as f:
+                json.dump(all_entries, f, indent=2, ensure_ascii=False)
 
         current += datetime.timedelta(days=1)
+
+    # Clean up checkpoint on completion
+    _delete_checkpoint(out)
+    partial_path = out / PARTIAL_FILE
+    if partial_path.exists():
+        partial_path.unlink()
 
     logger.info(
         "Scan complete: %d days scanned, %d entries found",
@@ -365,6 +445,70 @@ def scan_date_range(
         len(all_entries),
     )
     return all_entries
+
+
+# ---------------------------------------------------------------------------
+# NOM cross-reference
+# ---------------------------------------------------------------------------
+
+
+def cross_reference_noms(
+    dof_noms: List[Dict],
+    catalog_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Cross-reference DOF-discovered NOMs against the existing catalog.
+
+    Args:
+        dof_noms: List of NOM dicts from DOF scan (must have 'nom_number').
+        catalog_path: Path to discovered_noms.json (default: NOM_CATALOG_PATH).
+
+    Returns:
+        Dict with new_noms, existing_noms, new_count, existing_count.
+    """
+    cat_path = catalog_path or NOM_CATALOG_PATH
+    known_numbers: Set[str] = set()
+
+    if cat_path.exists():
+        try:
+            catalog = json.loads(cat_path.read_text(encoding="utf-8"))
+            for entry in catalog:
+                nom_num = entry.get("nom_number") or entry.get("nom_id") or ""
+                if nom_num:
+                    known_numbers.add(nom_num.upper())
+            logger.info("Loaded %d known NOMs from catalog", len(known_numbers))
+        except (json.JSONDecodeError, OSError) as e:
+            logger.warning("Could not load NOM catalog: %s", e)
+
+    new_noms: List[Dict] = []
+    existing_noms: List[Dict] = []
+
+    for nom in dof_noms:
+        nom_number = (nom.get("nom_number") or "").upper()
+        if not nom_number:
+            continue
+        if nom_number in known_numbers:
+            existing_noms.append(nom)
+        else:
+            new_noms.append(nom)
+
+    result = {
+        "new_noms": new_noms,
+        "existing_noms": existing_noms,
+        "new_count": len(new_noms),
+        "existing_count": len(existing_noms),
+        "catalog_size": len(known_numbers),
+    }
+
+    # Save new NOMs if any
+    if new_noms:
+        new_path = OUTPUT_DIR / "dof_new_noms.json"
+        with open(new_path, "w", encoding="utf-8") as f:
+            json.dump(new_noms, f, indent=2, ensure_ascii=False)
+        logger.info(
+            "Found %d new NOMs not in catalog, saved to %s", len(new_noms), new_path
+        )
+
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -436,6 +580,8 @@ def run_historical_scan(
     mode: str = "all",
     dry_run: bool = False,
     states: Optional[List[str]] = None,
+    resume: bool = False,
+    cross_ref_only: bool = False,
 ) -> Dict[str, Any]:
     """Run DOF historical scan.
 
@@ -445,11 +591,40 @@ def run_historical_scan(
         mode: "all", "noms", "new_laws", "gap", "gazette".
         dry_run: Only report counts without full analysis.
         states: States for gazette mode.
+        resume: Resume from checkpoint if available.
+        cross_ref_only: Only run NOM cross-reference on existing results.
 
     Returns:
         Summary dict.
     """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Cross-reference only mode
+    if cross_ref_only:
+        # Find the most recent noms results file
+        nom_files = sorted(OUTPUT_DIR.glob("dof_noms_*.json"), reverse=True)
+        if not nom_files:
+            logger.warning("No DOF NOM results found for cross-reference")
+            return {"error": "no_nom_results_found"}
+        noms_path = nom_files[0]
+        logger.info("Cross-referencing NOMs from %s", noms_path)
+        dof_noms = json.loads(noms_path.read_text(encoding="utf-8"))
+        xref = cross_reference_noms(dof_noms)
+        logger.info(
+            "Cross-reference: %d new, %d existing (catalog: %d)",
+            xref["new_count"],
+            xref["existing_count"],
+            xref["catalog_size"],
+        )
+        return {
+            "mode": "cross_ref",
+            "cross_reference": {
+                "new_count": xref["new_count"],
+                "existing_count": xref["existing_count"],
+                "catalog_size": xref["catalog_size"],
+            },
+        }
+
     session = _setup_session()
 
     # State gazette mode
@@ -492,7 +667,9 @@ def run_historical_scan(
             "estimated_time_hours": weekdays * REQUEST_DELAY / 3600,
         }
 
-    entries = scan_date_range(session, start_date, end_date, mode=mode)
+    entries = scan_date_range(
+        session, start_date, end_date, mode=mode, resume=resume, output_dir=OUTPUT_DIR
+    )
 
     # Analyze results
     summary: Dict[str, Any] = {
@@ -539,6 +716,19 @@ def run_historical_scan(
             json.dump(noms_found, f, indent=2, ensure_ascii=False)
         logger.info(
             "Found %d NOM publications, saved to %s", len(noms_found), noms_path
+        )
+
+        # Auto cross-reference NOMs against catalog
+        xref = cross_reference_noms(noms_found)
+        summary["nom_cross_reference"] = {
+            "new_count": xref["new_count"],
+            "existing_count": xref["existing_count"],
+            "catalog_size": xref["catalog_size"],
+        }
+        logger.info(
+            "NOM cross-reference: %d new, %d existing",
+            xref["new_count"],
+            xref["existing_count"],
         )
 
     report_path = OUTPUT_DIR / "dof_scan_report.json"
@@ -595,6 +785,17 @@ def main() -> None:
         default=None,
         help="States for gazette mode",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from checkpoint if available",
+    )
+    parser.add_argument(
+        "--cross-ref",
+        action="store_true",
+        dest="cross_ref",
+        help="Run NOM cross-reference on existing results without re-scanning",
+    )
 
     args = parser.parse_args()
 
@@ -604,6 +805,8 @@ def main() -> None:
         mode=args.mode,
         dry_run=args.dry_run,
         states=args.states,
+        resume=args.resume,
+        cross_ref_only=args.cross_ref,
     )
 
     print(json.dumps(result, indent=2, ensure_ascii=False))

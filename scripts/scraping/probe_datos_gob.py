@@ -14,6 +14,8 @@ Usage:
 """
 
 import argparse
+import csv
+import io
 import json
 import logging
 import time
@@ -347,6 +349,192 @@ def run_probe(
 
 
 # ---------------------------------------------------------------------------
+# Resource download and assessment
+# ---------------------------------------------------------------------------
+
+LEGAL_COLUMN_KEYWORDS = [
+    "ley",
+    "reglamento",
+    "norma",
+    "decreto",
+    "articulo",
+    "código",
+    "codigo",
+    "legislacion",
+    "regulacion",
+    "ordenamiento",
+    "disposicion",
+    "jurisprudencia",
+    "constitución",
+    "constitucion",
+]
+
+
+def download_resources(
+    datasets_path: Optional[Path] = None,
+    output_dir: Optional[Path] = None,
+    limit: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Download structured resources from discovered datasets.
+
+    Args:
+        datasets_path: Path to discovered_datasets.json.
+        output_dir: Root directory for downloaded resources.
+        limit: Max datasets to process.
+
+    Returns:
+        Summary with download counts and any errors.
+    """
+    ds_path = datasets_path or (OUTPUT_DIR / "discovered_datasets.json")
+    out_dir = output_dir or (OUTPUT_DIR / "resources")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if not ds_path.exists():
+        logger.warning("No discovered datasets at %s", ds_path)
+        return {"error": "no_datasets_file"}
+
+    datasets = json.loads(ds_path.read_text(encoding="utf-8"))
+    session = _setup_session()
+
+    downloaded = 0
+    skipped = 0
+    errors = 0
+    processed = 0
+
+    for dataset in datasets:
+        if limit and processed >= limit:
+            break
+
+        urls = dataset.get("download_urls", [])
+        if not urls:
+            continue
+
+        processed += 1
+        ds_id = dataset.get("id", "unknown")
+        ds_dir = out_dir / ds_id
+        ds_dir.mkdir(parents=True, exist_ok=True)
+
+        for url in urls:
+            # Derive filename from URL
+            filename = url.split("/")[-1].split("?")[0]
+            if not filename or len(filename) < 3:
+                filename = f"resource_{downloaded}.dat"
+            file_path = ds_dir / filename
+
+            # Skip existing files (idempotent)
+            if file_path.exists() and file_path.stat().st_size > 0:
+                skipped += 1
+                continue
+
+            try:
+                time.sleep(REQUEST_DELAY)
+                resp = session.get(url, timeout=60, stream=True)
+                if resp.status_code == 200:
+                    with open(file_path, "wb") as f:
+                        for chunk in resp.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                    downloaded += 1
+                    logger.info("Downloaded: %s (%s)", filename, ds_id)
+                else:
+                    errors += 1
+                    logger.debug("HTTP %d for %s", resp.status_code, url)
+            except requests.RequestException as e:
+                errors += 1
+                logger.debug("Download error for %s: %s", url, e)
+
+    summary = {
+        "datasets_processed": processed,
+        "downloaded": downloaded,
+        "skipped_existing": skipped,
+        "errors": errors,
+        "output_dir": str(out_dir),
+    }
+    logger.info("Download complete: %s", summary)
+    return summary
+
+
+def assess_resources(
+    resources_dir: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Assess downloaded resources for legal relevance.
+
+    Reads CSV headers from downloaded files and flags those with
+    legal-related column names.
+
+    Args:
+        resources_dir: Directory containing downloaded resources.
+
+    Returns:
+        Dict with high_relevance and low_relevance lists.
+    """
+    res_dir = resources_dir or (OUTPUT_DIR / "resources")
+    if not res_dir.exists():
+        return {"error": "resources_dir_not_found"}
+
+    high_relevance: List[Dict[str, Any]] = []
+    low_relevance: List[Dict[str, Any]] = []
+
+    for ds_dir in sorted(res_dir.iterdir()):
+        if not ds_dir.is_dir():
+            continue
+
+        for file_path in ds_dir.iterdir():
+            if file_path.suffix.lower() not in (".csv", ".tsv"):
+                continue
+
+            try:
+                raw = file_path.read_bytes()[:4096]
+                text = raw.decode("utf-8", errors="replace")
+                reader = csv.reader(io.StringIO(text))
+                headers = next(reader, [])
+                headers_lower = [h.lower().strip() for h in headers]
+
+                has_legal = any(
+                    kw in col for col in headers_lower for kw in LEGAL_COLUMN_KEYWORDS
+                )
+
+                entry = {
+                    "file": str(file_path),
+                    "dataset_id": ds_dir.name,
+                    "columns": headers[:20],
+                    "num_columns": len(headers),
+                }
+
+                if has_legal:
+                    entry["matched_keywords"] = [
+                        kw
+                        for col in headers_lower
+                        for kw in LEGAL_COLUMN_KEYWORDS
+                        if kw in col
+                    ]
+                    high_relevance.append(entry)
+                else:
+                    low_relevance.append(entry)
+
+            except Exception as e:
+                logger.debug("Error reading %s: %s", file_path, e)
+
+    result = {
+        "high_relevance": high_relevance,
+        "low_relevance": low_relevance,
+        "high_count": len(high_relevance),
+        "low_count": len(low_relevance),
+    }
+
+    # Save assessment
+    assess_path = OUTPUT_DIR / "resource_assessment.json"
+    with open(assess_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2, ensure_ascii=False)
+    logger.info(
+        "Assessment: %d high relevance, %d low relevance",
+        len(high_relevance),
+        len(low_relevance),
+    )
+
+    return result
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -379,12 +567,33 @@ def main() -> None:
         help="Max results per query",
     )
 
+    parser.add_argument(
+        "--assess",
+        action="store_true",
+        help="Assess downloaded resources for legal relevance",
+    )
+
     args = parser.parse_args()
+
+    # Download mode: download structured resources from discovered datasets
+    if args.download:
+        dl_result = download_resources(limit=args.limit)
+        print(json.dumps(dl_result, indent=2, ensure_ascii=False))
+        if args.assess:
+            assess_result = assess_resources()
+            print(json.dumps(assess_result, indent=2, ensure_ascii=False))
+        return
+
+    # Assess-only mode
+    if args.assess:
+        assess_result = assess_resources()
+        print(json.dumps(assess_result, indent=2, ensure_ascii=False))
+        return
 
     result = run_probe(
         queries=args.query,
         check_orgs=not args.no_orgs,
-        download_metadata=args.download,
+        download_metadata=False,
         limit=args.limit,
     )
 

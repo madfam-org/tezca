@@ -30,6 +30,7 @@ Usage:
 
 import json
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -45,15 +46,19 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-SJF_BASE_URL = "https://sjf.scjn.gob.mx"
+SJF_BASE_URL = "https://sjfsemanal.scjn.gob.mx"
+SJF_BASE_URL_LEGACY = "https://sjf.scjn.gob.mx"
 # The SJF search interface lives on a separate subdomain (as of 2026)
 SJF_SEARCH_URL = "https://sjfsemanal.scjn.gob.mx/busqueda-principal-tesis"
 SJF_SEARCH_URL_LEGACY = "https://sjf2.scjn.gob.mx/busqueda-principal-tesis"
+SJF_DETAIL_URL = "https://sjfsemanal.scjn.gob.mx/detalle/tesis"
 
 _BATCH_SIZE = 50
 _CHECKPOINT_EVERY = 100  # items
 _MAX_EMPTY_PAGES = 5  # consecutive empty pages before stopping
 _RESULT_WAIT_TIMEOUT = 15_000  # 15s for JS results to render
+_ENRICH_CHECKPOINT_EVERY = 50  # items between enrichment checkpoints
+_ENRICH_RATE_LIMIT = 1.5  # seconds between detail page fetches
 
 
 class ScjnPlaywrightScraper(PlaywrightBase):
@@ -427,7 +432,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                 return None
 
             registro = fields.get("registro", "")
-            url = f"{SJF_BASE_URL}/detalle/tesis/{registro}" if registro else ""
+            url = f"{SJF_DETAIL_URL}/{registro}" if registro else ""
 
             return self._make_record(
                 registro=registro,
@@ -468,7 +473,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         registro = kwargs.get("registro", "")
         url = kwargs.get("url", "")
         if not url and registro:
-            url = f"{SJF_BASE_URL}/detalle/tesis/{registro}"
+            url = f"{SJF_DETAIL_URL}/{registro}"
 
         return {
             "registro": registro,
@@ -484,6 +489,219 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             "url": url,
             "source": "sjf_scjn_playwright",
         }
+
+    # ------------------------------------------------------------------
+    # Detail page enrichment
+    # ------------------------------------------------------------------
+
+    def _fetch_detail_page(self, registro: str) -> Dict[str, str]:
+        """Fetch and parse a single SJF detail page for full record fields.
+
+        Navigates to sjfsemanal.scjn.gob.mx/detalle/tesis/{registro} and
+        extracts labeled fields from the rendered page text.
+
+        Args:
+            registro: The registro digital number.
+
+        Returns:
+            Dict of extracted fields (materia, tesis_num, instancia, ponente,
+            rubro, texto). Empty strings for fields not found.
+        """
+        if not self._page:
+            return {}
+
+        url = f"{SJF_DETAIL_URL}/{registro}"
+        fields: Dict[str, str] = {}
+
+        try:
+            self._page.goto(url, wait_until="networkidle", timeout=30_000)
+            time.sleep(3)  # SPA rendering time
+
+            raw_text = self._page.inner_text("body")
+            if not raw_text or len(raw_text) < 100:
+                logger.debug("Detail page empty for registro %s", registro)
+                return fields
+
+            # Extract labeled fields via regex
+            label_patterns = {
+                "materia": r"Materia\(s\):\s*(.+)",
+                "tesis_num": r"Tesis:\s*(.+)",
+                "instancia": r"Instancia:\s*(.+)",
+                "ponente": r"Ponente:\s*(.+)",
+                "tipo_tesis": r"Tipo:\s*(.+)",
+            }
+            for key, pattern in label_patterns.items():
+                match = re.search(pattern, raw_text)
+                if match:
+                    fields[key] = match.group(1).strip()
+
+            # Extract rubro: first ALL-CAPS paragraph after metadata section.
+            # Typically appears after "Fuente:" or the publication timestamp line.
+            lines = raw_text.split("\n")
+            rubro_start = None
+            rubro_lines: List[str] = []
+            in_rubro = False
+
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                if not stripped:
+                    if in_rubro and rubro_lines:
+                        break  # end of rubro block
+                    continue
+
+                # Skip metadata labels
+                if any(
+                    stripped.startswith(lbl)
+                    for lbl in (
+                        "Registro digital:",
+                        "Materia(s):",
+                        "Tesis:",
+                        "Instancia:",
+                        "Tipo:",
+                        "Fuente:",
+                        "Publicación:",
+                        "Ponente:",
+                    )
+                ):
+                    continue
+
+                # Detect rubro: paragraph that is mostly uppercase, length > 20
+                if (
+                    not in_rubro
+                    and len(stripped) > 20
+                    and sum(1 for c in stripped if c.isupper()) / max(len(stripped), 1)
+                    > 0.6
+                ):
+                    in_rubro = True
+                    rubro_start = i
+                    rubro_lines.append(stripped)
+                elif in_rubro:
+                    # Continue rubro if still mostly uppercase or continuation
+                    if (
+                        sum(1 for c in stripped if c.isupper()) / max(len(stripped), 1)
+                        > 0.5
+                        or len(stripped) < 30
+                    ):
+                        rubro_lines.append(stripped)
+                    else:
+                        break
+
+            if rubro_lines:
+                fields["rubro"] = " ".join(rubro_lines)
+
+            # Extract texto: content between rubro and the court name line
+            # Court name lines: "PLENO.", "PRIMERA SALA.", "SEGUNDA SALA.", etc.
+            court_pattern = re.compile(
+                r"^(PLENO|PRIMERA SALA|SEGUNDA SALA|"
+                r"TRIBUNAL COLEGIADO|TRIBUNAL PLENO)\.",
+                re.IGNORECASE,
+            )
+            if rubro_start is not None:
+                texto_lines: List[str] = []
+                started = False
+                for line in lines[rubro_start + len(rubro_lines) :]:
+                    stripped = line.strip()
+                    if not stripped:
+                        if started:
+                            texto_lines.append("")
+                        continue
+                    if court_pattern.match(stripped):
+                        break
+                    started = True
+                    texto_lines.append(stripped)
+                texto = "\n".join(texto_lines).strip()
+                if texto and len(texto) > 50:
+                    fields["texto"] = texto
+
+            # Debug screenshot on first successful extraction
+            if fields.get("rubro") and not hasattr(self, "_detail_screenshot_taken"):
+                self._screenshot("detail_enrichment_sample")
+                self._detail_screenshot_taken = True
+
+        except PlaywrightTimeout:
+            logger.debug("Detail page timeout for registro %s", registro)
+        except Exception:
+            logger.debug("Detail page error for registro %s", registro, exc_info=True)
+
+        return fields
+
+    def _enrich_records(self, records: List[Dict]) -> List[Dict]:
+        """Enrich records by fetching detail pages for those missing texto.
+
+        Args:
+            records: List of judicial record dicts from scrape_catalog().
+
+        Returns:
+            The same list with enriched fields merged in.
+        """
+        needs_enrichment = [(i, r) for i, r in enumerate(records) if not r.get("texto")]
+        if not needs_enrichment:
+            logger.info(
+                "All %d records already have texto, skipping enrichment.", len(records)
+            )
+            return records
+
+        logger.info(
+            "Enriching %d/%d records missing texto...",
+            len(needs_enrichment),
+            len(records),
+        )
+
+        enriched_count = 0
+        for idx, (orig_idx, record) in enumerate(needs_enrichment, 1):
+            registro = record.get("registro")
+            if not registro:
+                continue
+
+            detail = self._fetch_detail_page(registro)
+            if detail:
+                # Merge non-empty fields into record
+                for key, value in detail.items():
+                    if value and not record.get(key):
+                        record[key] = value
+                if detail.get("rubro") or detail.get("texto"):
+                    enriched_count += 1
+
+            # Rate limit
+            time.sleep(_ENRICH_RATE_LIMIT)
+
+            # Checkpoint and partial save
+            if idx % _ENRICH_CHECKPOINT_EVERY == 0:
+                self._save_checkpoint(
+                    0,
+                    records,
+                    extra={
+                        "epoca": self._epoca,
+                        "tipo": self._tipo,
+                        "enrichment_progress": idx,
+                        "enrichment_total": len(needs_enrichment),
+                    },
+                )
+                subdir = (
+                    "jurisprudencia"
+                    if self._tipo == "jurisprudencia"
+                    else "tesis_aisladas"
+                )
+                partial_path = (
+                    self._output_dir / subdir / f"enriched_partial_{idx}.json"
+                )
+                partial_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(partial_path, "w", encoding="utf-8") as f:
+                    json.dump(records, f, indent=2, ensure_ascii=False)
+
+                logger.info(
+                    "Enrichment progress: %d/%d (enriched: %d)",
+                    idx,
+                    len(needs_enrichment),
+                    enriched_count,
+                )
+
+        logger.info(
+            "Enrichment complete: %d/%d records enriched with detail page data.",
+            enriched_count,
+            len(needs_enrichment),
+        )
+        return records
 
     # ------------------------------------------------------------------
     # Pagination
@@ -607,6 +825,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         max_pages: Optional[int] = None,
         max_items: Optional[int] = None,
         resume_from_page: int = 0,
+        enrich: bool = True,
     ) -> Dict[str, Any]:
         """Run the full SCJN Playwright scraping pipeline.
 
@@ -614,6 +833,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         2. Launch browser and navigate to SJF search.
         3. Fill search form for the target epoca/tipo.
         4. Paginate and extract records.
+        5. Enrich records with detail page data.
 
         Args:
             epoca: Judicial epoch number (default: 10, Décima Época).
@@ -621,6 +841,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             max_pages: Max pages to scrape.
             max_items: Max items to collect (approximate).
             resume_from_page: Page to resume from.
+            enrich: Whether to enrich records via detail pages (default True).
 
         Returns:
             Summary dict.
@@ -672,6 +893,12 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             if max_items and len(items) > max_items:
                 items = items[:max_items]
 
+            # Enrich records with detail page data
+            if enrich and items:
+                items = self._enrich_records(items)
+                enriched = sum(1 for it in items if it.get("texto"))
+                summary["enriched_count"] = enriched
+
             # Save consolidated results
             filename = f"scjn_{tipo}_epoca{epoca}.json"
             self.save_results(items, filename=filename)
@@ -684,6 +911,58 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         except Exception as exc:
             logger.error("SCJN scraper failed: %s", exc, exc_info=True)
             self._screenshot("fatal_error")
+            summary["error"] = str(exc)
+            return summary
+
+        finally:
+            self.close()
+
+    def run_enrich_only(
+        self,
+        input_path: str,
+        epoca: int = 10,
+        tipo: str = "jurisprudencia",
+    ) -> Dict[str, Any]:
+        """Load existing results and run enrichment without re-searching.
+
+        Args:
+            input_path: Path to existing JSON results file.
+            epoca: Epoch for record metadata.
+            tipo: Type for record metadata.
+
+        Returns:
+            Summary dict.
+        """
+        self._epoca = epoca
+        self._tipo = tipo
+
+        logger.info("Enrich-only mode: loading %s", input_path)
+
+        with open(input_path, "r", encoding="utf-8") as f:
+            items = json.load(f)
+
+        summary: Dict[str, Any] = {
+            "epoca": epoca,
+            "tipo": tipo,
+            "input_path": input_path,
+            "total_items": len(items),
+            "output_dir": str(self._output_dir),
+        }
+
+        try:
+            self._launch()
+            items = self._enrich_records(items)
+            enriched = sum(1 for it in items if it.get("texto"))
+            summary["enriched_count"] = enriched
+
+            filename = f"scjn_{tipo}_epoca{epoca}_enriched.json"
+            self.save_results(items, filename=filename)
+
+            logger.info("Enrich-only complete: %d/%d enriched", enriched, len(items))
+            return summary
+
+        except Exception as exc:
+            logger.error("Enrich-only failed: %s", exc, exc_info=True)
             summary["error"] = str(exc)
             return summary
 
@@ -762,6 +1041,18 @@ def main() -> None:
         action="store_true",
         help="Only probe SCJN open data portal, do not scrape.",
     )
+    parser.add_argument(
+        "--enrich-only",
+        type=str,
+        default=None,
+        metavar="FILE",
+        help="Load existing results JSON and run detail page enrichment only.",
+    )
+    parser.add_argument(
+        "--no-enrich",
+        action="store_true",
+        help="Skip detail page enrichment after scraping.",
+    )
 
     args = parser.parse_args()
 
@@ -776,12 +1067,22 @@ def main() -> None:
         print(json.dumps(search_api, indent=2, ensure_ascii=False))
         return
 
-    # Determine resume page
     scraper = ScjnPlaywrightScraper(
         headless=args.headless,
         output_dir=args.output_dir,
     )
 
+    # Enrich-only mode: load existing results and enrich
+    if args.enrich_only:
+        result = scraper.run_enrich_only(
+            input_path=args.enrich_only,
+            epoca=args.epoca,
+            tipo=args.tipo,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return
+
+    # Determine resume page
     resume_from = 0
     if args.resume_from is not None:
         resume_from = args.resume_from
@@ -801,6 +1102,7 @@ def main() -> None:
         max_pages=args.max_pages,
         max_items=args.max_items,
         resume_from_page=resume_from,
+        enrich=not args.no_enrich,
     )
 
     print(json.dumps(result, indent=2, ensure_ascii=False))

@@ -335,9 +335,10 @@ def path_b_wayback_cdx(
             continue
 
         # Try both known URL patterns for OJN documents
+        # Use matchType=prefix in CDX params, no glob wildcards in URL
         url_patterns = [
-            f"{OJN_BASE}/obtenerdoc.php?path=*{file_id}*",
-            f"{OJN_BASE}/fichaOrdenamiento2.php?idArchivo={file_id}*",
+            f"{OJN_BASE}/obtenerdoc.php?path={file_id}",
+            f"{OJN_BASE}/fichaOrdenamiento2.php?idArchivo={file_id}",
         ]
 
         found_archive = False
@@ -352,7 +353,7 @@ def path_b_wayback_cdx(
                         "fl": "timestamp,original,statuscode,mimetype",
                         "filter": "statuscode:200",
                         "limit": "5",
-                        "matchType": "prefix" if "*" in pattern else "exact",
+                        "matchType": "prefix",
                     },
                     timeout=30,
                     headers={"User-Agent": USER_AGENT},
@@ -443,6 +444,19 @@ def path_b_wayback_cdx(
                 len(records),
                 len(recovered),
             )
+
+        # Save partial results every 500 items
+        if i % 500 == 0 and (recovered or still_failed):
+            partial_path = output_dir / "path_b_partial.json"
+            partial_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(partial_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    {"recovered": recovered, "still_failed_count": len(still_failed)},
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            logger.info("Path B partial results saved at item %d", i)
 
     logger.info(
         "Path B complete: %d recovered, %d still failed (of %d)",

@@ -81,7 +81,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1154 tests)
+# Backend (pytest + django, 1234 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -365,11 +365,11 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/graph/GraphStats.tsx` | Collapsible graph statistics panel |
 | `apps/web/components/graph/useGraphExport.ts` | PNG export via Sigma canvas compositing |
 | `apps/scraper/playwright_base.py` | Shared Playwright ABC for browser-automated scrapers |
-| `apps/scraper/judicial/scjn_playwright.py` | SJF browser scraper (Playwright, 4 extraction strategies) |
-| `scripts/scraping/ojn_multipath_recovery.py` | OJN 3-path waterfall recovery for failed downloads |
+| `apps/scraper/judicial/scjn_playwright.py` | SJF browser scraper (Playwright, 4 extraction strategies + detail page enrichment) |
+| `scripts/scraping/ojn_multipath_recovery.py` | OJN 3-path waterfall recovery for failed downloads (partial result persistence) |
 | `scripts/scraping/wayback_bulk_recovery.py` | CDX API bulk mining for dead legal domains |
-| `scripts/scraping/dof_historical_scan.py` | DOF 2000-2026 scan for gap-filling + NOM detection |
-| `scripts/scraping/probe_datos_gob.py` | datos.gob.mx CKAN API probe for legal datasets |
+| `scripts/scraping/dof_historical_scan.py` | DOF 2000-2026 scan for gap-filling + NOM detection + checkpointing + cross-reference |
+| `scripts/scraping/probe_datos_gob.py` | datos.gob.mx CKAN API probe, resource download, and legal relevance assessment |
 
 ---
 
