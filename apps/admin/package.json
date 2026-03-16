@@ -11,7 +11,7 @@
         "test:watch": "vitest"
     },
     "dependencies": {
-        "@janua/nextjs": "^0.1.3",
+        "@janua/nextjs": "^0.1.5",
         "@radix-ui/react-slot": "^1.2.4",
         "@tezca/lib": "*",
         "@tezca/ui": "*",
