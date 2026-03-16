@@ -502,6 +502,29 @@ class Command(BaseCommand):
                         raw_settings.pop(key, None)
                     articles_settings = raw_settings if raw_settings else None
 
+                # Fall back to default mapping/settings when no source index exists
+                # (e.g. fresh ES instance). Without this, dynamic mapping creates
+                # keyword fields as text, breaking aggregations.
+                if not articles_mappings:
+                    self._create_indices(es)
+                    if es.indices.exists(index=INDEX_ARTICLES):
+                        info = es.indices.get(index=INDEX_ARTICLES)
+                        idx_info = info[INDEX_ARTICLES]
+                        articles_mappings = idx_info.get("mappings")
+                        raw_settings = idx_info.get("settings", {}).get("index", {})
+                        for key in [
+                            "creation_date",
+                            "uuid",
+                            "version",
+                            "provided_name",
+                            "number_of_replicas",
+                            "number_of_shards",
+                        ]:
+                            raw_settings.pop(key, None)
+                        articles_settings = raw_settings if raw_settings else None
+                        # Remove the temporary index — reindex will create a versioned one
+                        es.indices.delete(index=INDEX_ARTICLES)
+
                 reindex_new_index = create_versioned_index(
                     es,
                     mappings=articles_mappings,
