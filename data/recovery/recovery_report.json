@@ -7,12 +7,12 @@
     "not_attempted": 781
   },
   "paths_run": "a",
-  "dry_run": true,
+  "dry_run": false,
   "path_a": {
     "recovered": 0,
-    "still_failed": 4439
+    "still_failed": 100
   },
   "total_recovered": 0,
-  "total_remaining": 4439,
+  "total_remaining": 100,
   "recovery_rate": "0.0%"
 }

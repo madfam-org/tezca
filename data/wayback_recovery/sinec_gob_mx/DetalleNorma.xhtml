@@ -1,0 +1,429 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://xmlns.jcp.org/jsf/core"><head><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/theme.css.xhtml?ln=primefaces-aristo" /><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/css/sinec.css.xhtml" /><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/css/sinecIE.css.xhtml" /><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/primefaces.css.xhtml?ln=primefaces&amp;v=5.1" /><script type="text/javascript" src="/SINEC/javax.faces.resource/jquery/jquery.js.xhtml?ln=primefaces&amp;v=5.1"></script><script type="text/javascript" src="/SINEC/javax.faces.resource/jquery/jquery-plugins.js.xhtml?ln=primefaces&amp;v=5.1"></script><script type="text/javascript" src="/SINEC/javax.faces.resource/primefaces.js.xhtml?ln=primefaces&amp;v=5.1"></script><script type="text/javascript" src="/SINEC/javax.faces.resource/primefaces-extensions.js.xhtml?ln=primefaces-extensions&amp;v=3.0.0"></script><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/timer/timer.css.xhtml?ln=primefaces-extensions&amp;v=3.0.0" /><script type="text/javascript" src="/SINEC/javax.faces.resource/timer/timer.js.xhtml?ln=primefaces-extensions&amp;v=3.0.0"></script><link type="text/css" rel="stylesheet" href="/SINEC/javax.faces.resource/blockui/blockui.css.xhtml?ln=primefaces-extensions&amp;v=3.0.0" /><script type="text/javascript" src="/SINEC/javax.faces.resource/blockui/blockui.js.xhtml?ln=primefaces-extensions&amp;v=3.0.0"></script>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Cache-control" content="no-cache" />
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="expires" content="mon, 27 sep 2010 14:30:00 GMT" />
+        <meta name="description" content=" - " />
+        <meta property="og:url" />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content="SINEC" />
+        <meta property="og:site_name" content="SINEC" />
+        <meta property="og:description" content=" - " />
+
+        <link rel="shortcut icon" type="image/x-icon" href="/SINEC/javax.faces.resource/imagenes/favicon.ico.xhtml" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic" rel="stylesheet" type="text/css" />
+        <title>SINEC</title>
+
+
+
+        <!--                &lt;link href=&quot;https://framework-gb-ssl.cdn.gob.mx/assets/styles/main.css&quot; rel=&quot;stylesheet&quot; /&gt;-->
+        <link href="https://framework-gb.cdn.gob.mx/assets/styles/main.css" rel="stylesheet" /><script type="text/javascript" src="/SINEC/javax.faces.resource/bootstrap/js/bootstrap.js.xhtml"></script><script type="text/javascript" src="/SINEC/javax.faces.resource/js/sinec.js.xhtml"></script>
+        <style id="antiClickjack">body{display:none !important;}</style>
+        <script type="text/javascript">
+            if (self === top) {
+                var antiClickjack = document.getElementById("antiClickjack");
+                antiClickjack.parentNode.removeChild(antiClickjack);
+            } else {
+                top.location = self.location;
+            }
+        </script>
+
+
+
+        <script>
+            function redirect() {
+                var sinec = (window.location.pathname.split('/')[1]).toString();
+                var url = window.location.protocol + '//' +
+                        window.location.host + '/'.concat(sinec) +
+                        "/Vista/Seguridad/IniciarSesion.xhtml";
+                $(location).attr("href", url);
+            }
+        </script>
+        <style>
+            /*Estilos necesarios para permitir la adaptabilidad del SINEC con dispositivos moviles*/ 
+
+            @media (max-width: 768px) {
+                .container {
+                    padding-left:0;
+                    padding-right: 0;
+                    display: inline;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                body {
+                    padding-left:0 !important;
+                    display: inline-table;  
+
+                }
+
+                li.ui-widget-header{
+                    background-color: #fff;
+                }
+
+                li.ui-state-hover.ui-widget-header{
+                    background-color: #efefef;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header{
+                    background-color: transparent;
+                    background: #fff;
+                    color: #000;
+                    padding: 5px;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header.ui-state-hover{
+                    background-color: #efefef !important;
+                    background: #efefef;
+                    color: #000;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header.ui-state-hover > a > span.ui-menuitem-text{
+                    background-color: #efefef !important;
+                    background: #efefef;
+                    z-index: 10000 !important;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header.ui-state-hover > a.ui-menuitem-link{
+                    background-color: #efefef !important;
+                    background: #efefef;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header > a > span.ui-menuitem-text{
+                    background-color: #fff !important;
+                    color: #000 !important;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header > a.ui-menuitem-link{
+                    background-color: #fff !important;
+                    color: #000 !important;
+                    text-decoration: none !important;
+                }
+
+                li.ui-menuitem.ui-corner-all.ui-widget-header > a.ui-menuitem-link.ui-state-hover{
+                    background-color: #efefef !important;
+                    color: #000 !important;
+                    text-decoration: none !important;
+                }
+
+                .navbar-right{
+                    width: 100% !important;
+                }
+
+                .ui-menuitem-link{
+                    height: auto !important;
+                    width: auto !important; 
+                    display: inline !important;
+                }
+                #divBreadcrumbs{
+                    margin-top: 20px !important;
+                }
+            }
+        </style></head><body>
+        <!--Encabezado-->
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top navbar" style="height: auto !important;" role="navigation">
+                <div class="container" id="menuNav">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-target="#navbarMainCollapse" data-toggle="collapse">
+                            <span class="sr-only">Interruptor de Navegación</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a href="/" class="navbar-brand" title="Ir a la página inicial">
+                            <img alt="gob.mx" src="https://framework-gb.cdn.gob.mx/assets/images/gobmxlogo-2.svg" />
+                        </a>
+                    </div>
+                    <div class="collapse navbar-collapse" id="navbarMainCollapse">
+                        <ul class="nav navbar-nav navbar-right" style="height: 100% !important;">
+                            <li>
+                                <a href="http://www.gob.mx/tramites" target="_blank">Trámites</a>
+                            </li>
+                            <li>
+                                <a href="http://www.gob.mx/gobierno" target="_blank">Gobierno</a>
+                            </li>
+                            <li>
+                                <a href="http://www.gob.mx/participa" target="_blank">Participa</a>
+                            </li>
+                            <li>
+                                <a href="http://datos.gob.mx/" target="_blank">Datos</a>
+                            </li>
+                            <li id="icono-busqueda">
+                                <a href="http://www.gob.mx/busqueda" target="_blank"><i class="icon-search"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!--Contenido-->
+        <div class="container">
+
+            <!--Menu principal-->
+<form id="j_idt14" name="j_idt14" method="post" action="/SINEC/Vista/Normalizacion/DetalleNorma.xhtml" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt14" value="j_idt14" />
+
+                    <nav class="navbar navbar-inverse sub-navbar navbar-fixed-top" style="height: auto !important;" role="navigation">
+                        <div class="container" id="x002">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#subenlaces">
+                                    <span class="sr-only"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                <a class="navbar-brand" href="http://www.gob.mx/se/" style="z-index: 1000;">SE</a>
+                            </div>
+                            <div class="collapse navbar-collapse" id="subenlaces"><div id="j_idt14:menuNorm" class="ui-menu ui-menubar ui-widget ui-widget-content ui-corner-all ui-helper-clearfix" style="margin-right: -1%; display: none;" role="menubar"><div tabindex="0" class="ui-helper-hidden-accessible"></div><ul class="ui-menu-list ui-helper-reset"></ul></div><script id="j_idt14:menuNorm_s" type="text/javascript">PrimeFaces.cw("Menubar","widget_j_idt14_menuNorm",{id:"j_idt14:menuNorm",widgetVar:"widget_j_idt14_menuNorm",autoDisplay:false});</script><div id="j_idt14:menuMobile" class="ui-menu ui-widget ui-widget-content ui-corner-all ui-helper-clearfix ui-menu-toggleable nav navbar-nav navbar-right" style="display: none;" role="menu"><div tabindex="0" class="ui-helper-hidden-accessible"></div></div><script id="j_idt14:menuMobile_s" type="text/javascript">$(function(){PrimeFaces.cw("PlainMenu","widget_j_idt14_menuMobile",{id:"j_idt14:menuMobile",widgetVar:"widget_j_idt14_menuMobile",toggleable:true});});</script>
+                            </div>
+                        </div>
+                    </nav><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="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" autocomplete="off" />
+</form>
+            <script>
+
+                /**
+                 * Función encargada de permitir la adaptabilidad de botones, menu y mensajes de dialogo del template
+                 * en dispositivos móviles                 * 
+                 * */
+
+                //<![CDATA[
+                $(function () {
+                    $("div > ul.ui-menu-list").addClass("nav").addClass("navbar-nav").addClass("navbar-right");
+                    verificaScreen();
+                    $(window).resize(function () {
+                        verificaScreen();
+                    });
+
+                    function verificaScreen() {
+                        var ancho = $(window).width();
+                        var alto = $(window).height();
+                        if (ancho < 769) {
+                            $("#menuNav").addClass("container-fluid").removeClass("container");
+                            $("#x002").addClass("container-fluid").removeClass("container");
+                            $("[id*=menuMobile]").show();
+                            $("[id*=menuNorm]").hide();
+                            $("button[id^=frm]").addClass("form-control");
+                            $("#confirmDialog").css("max-width", ancho).css("top", "25%").css("left", "0px");
+                            $("#mdlMensajeSesion").css("max-width", ancho).css("top", "25%").css("left", "0px");
+                            $("#mdlMensaje").css("max-width", ancho).css("top", "25%").css("left", "0px");
+                            $("li.ui-menuitem.ui-widget-header").click(function () {
+                                var url = $(this).find(".ui-menuitem-link").attr("href");
+                                $(location).attr("href", url);
+                            });
+                        } else {
+                            $("div.ui-menubar > ul.ui-menu-list > li").removeClass("ui-widget-header");
+                            $("[id*=menuMobile]").hide();
+                            $("#menuNav").removeClass("container-fluid").addClass("container");
+                            $("#x002").removeClass("container-fluid").addClass("container");
+                            $("[id*=menuNorm]").show();
+                            $("button[id^=frm]").removeClass("form-control");
+                            $("#confirmDialog").css("max-width", ancho).css("top", "25%").css("left", "25%");
+                            $("#mdlMensaje").css("max-width", ancho).css("top", "25%").css("left", "25%");
+                            $("#mdlMensajeSesion").css("max-width", ancho).css("top", "25%").css("left", "25%");
+                        }
+                    }
+                });
+                //]]>
+            </script>
+            <!--BreadCrumbs-->
+<form id="formPreadCrumb" name="formPreadCrumb" method="post" action="/SINEC/Vista/Normalizacion/DetalleNorma.xhtml" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="formPreadCrumb" value="formPreadCrumb" />
+
+                    <div id="divBreadcrumbs" class="row col-xs-12 col-md-8" style="position: relative; margin-top: 50px; "><div id="j_idt19" class="ui-breadcrumb ui-module ui-widget ui-widget-header ui-helper-clearfix ui-corner-all bread-crumbs-main breadcrumb" role="menu"><ul><li role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all ui-icon ui-icon-home" href="#" onclick="PrimeFaces.ab({s:'j_idt19',g:false,pa:[{name:'j_idt19_menuid',value:'0'}],f:'formPreadCrumb'});return false;"></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all icon icon-home breadcrumbs-home" href="http://www.gob.mx/"></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" href="/SINEC/index.xhtml"><span class="ui-menuitem-text">Inicio</span></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" href="/SINEC/Vista/Normalizacion/BusquedaNormas.xhtml"><span class="ui-menuitem-text">Consulta de catálogo de normas</span></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all active" href="#" onclick="PrimeFaces.ab({s:'j_idt19',g:false,pa:[{name:'j_idt19_menuid',value:'4'}],f:'formPreadCrumb'});return false;"><span class="ui-menuitem-text">Detalle de NOM</span></a></li></ul></div>
+                    </div><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="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" autocomplete="off" />
+</form>
+            <!--Credenciales de usuario-->
+<form id="j_idt24" name="j_idt24" method="post" action="/SINEC/Vista/Normalizacion/DetalleNorma.xhtml" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt24" value="j_idt24" />
+
+                    <br /><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="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" autocomplete="off" />
+</form>
+
+            <!--Centro-->
+        <style>
+            .ui-accordion-content {
+                padding: 0 !important; 
+            }
+        </style>
+        <script type="text/javascript">
+            function start() {
+                PF('blockUI').block();
+            }
+
+            function stop() {
+                PF('blockUI').unblock();
+            }
+
+            $(function () {
+                $("#histograma-flecha-izquierda").click(function () {
+                    $(".time-line-content").stop().animate({
+                        scrollLeft: $(".time-line-content").scrollLeft() - 150
+                    }, 500, 'easeInOutExpo');
+                });
+
+                $("#histograma-flecha-derecha").click(function () {
+                    $(".time-line-content").stop().animate({
+                        scrollLeft: $(".time-line-content").scrollLeft() + 150
+                    }, 500, 'easeInOutExpo');
+                });
+            });
+        </script>
+        <!--Formulario principal-->
+<form id="frmDetalleNorma" name="frmDetalleNorma" method="post" action="/SINEC/Vista/Normalizacion/DetalleNorma.xhtml" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="frmDetalleNorma" value="frmDetalleNorma" />
+
+            <!--Error de validacion de tipo de norma--><div id="frmDetalleNorma:j_idt35" class="ui-panel ui-widget ui-widget-content ui-corner-all" data-widget="widget_frmDetalleNorma_j_idt35"><div id="frmDetalleNorma:j_idt35_content" class="ui-panel-content ui-widget-content">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="alert alert-danger" style="display: block;">
+                            <span style="font-weight: bold;">¡Error!</span>
+                            <span>Está intentando consultar una norma cuyo tipo no corresponde a la página que desea consultar. Favor de validar.</span>
+                        </div>
+                    </div>
+                </div></div></div><script id="frmDetalleNorma:j_idt35_s" type="text/javascript">PrimeFaces.cw("Panel","widget_frmDetalleNorma_j_idt35",{id:"frmDetalleNorma:j_idt35",widgetVar:"widget_frmDetalleNorma_j_idt35"});</script>
+            <!--Contenido principal de norma--><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="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" autocomplete="off" />
+</form>
+
+            <!--Bloquer--><div id="j_idt147_content" style="display: none;"><table>
+<tbody>
+<tr>
+<td><label class="tituloLoader">Por favor, espere</label></td>
+</tr>
+<tr>
+<td><label class="contenidoLoader">Procesando la información</label></td>
+</tr>
+<tr>
+<td><img src="/SINEC/javax.faces.resource/loader.GIF.xhtml?ln=imagenes" class="imagenLoader" /></td>
+</tr>
+</tbody>
+</table>
+</div><script id="j_idt147_s" type="text/javascript">$(function() {PrimeFacesExt.cw('BlockUI', 'blockUI',{id:'j_idt147',widgetVar:'blockUI',source:'j_idt11',autoShow:false,css:{'z-index': 2000},overlayCSS:{'z-index': 1999},centerX:true,centerY:true,content:'#j_idt147_content',contentExtern:false,namingContSep:':',regEx:/javax.faces.source=j_idt11(.)*$/},true);});</script>
+
+            <!--Dialogos confirmacion--><script id="confirmDialog_s" type="text/javascript">$(function(){PrimeFaces.cw("ConfirmDialog","confirmDialog",{id:"confirmDialog",widgetVar:"confirmDialog",showEffect:"drop",hideEffect:"drop",closeOnEscape:true,global:true});});</script><div id="confirmDialog" class="ui-confirm-dialog ui-dialog ui-widget ui-widget-content ui-overlay-hidden ui-corner-all ui-shadow" style="height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span class="ui-dialog-title"></span></div><div class="ui-dialog-content ui-widget-content"><span class="ui-icon ui-confirm-dialog-severity"></span><span class="ui-confirm-dialog-message"></span></div><div class="ui-dialog-buttonpane ui-dialog-footer ui-widget-content ui-helper-clearfix"><button id="confirmYes" name="confirmYes" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-confirmdialog-yes" style="float: left; margin-left: 80px;" type="button"><span class="ui-button-text ui-c">Si</span></button><script id="confirmYes_s" type="text/javascript">PrimeFaces.cw("CommandButton","confirmYes",{id:"confirmYes",widgetVar:"confirmYes"});</script><button id="confirmNo" name="confirmNo" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-confirmdialog-no" style="float: left; margin-left: 10px;" type="button"><span class="ui-button-text ui-c">No</span></button><script id="confirmNo_s" type="text/javascript">PrimeFaces.cw("CommandButton","confirmNo",{id:"confirmNo",widgetVar:"confirmNo"});</script></div></div>
+
+            <!--Mensaje notificacion--><div id="mdlMensaje" class="ui-dialog ui-widget ui-widget-content ui-overlay-hidden ui-corner-all ui-shadow"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="mdlMensaje_title" class="ui-dialog-title"></span></div><div class="ui-dialog-content ui-widget-content"></div></div><script id="mdlMensaje_s" type="text/javascript">$(function(){PrimeFaces.cw("Dialog","mdlMensaje",{id:"mdlMensaje",widgetVar:"mdlMensaje",draggable:false,resizable:false,modal:true,dynamic:true});});</script><div id="mdlMensajeSesion" class="ui-dialog ui-widget ui-widget-content ui-overlay-hidden ui-corner-all ui-shadow"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="mdlMensajeSesion_title" class="ui-dialog-title">SINEC - Error</span></div><div class="ui-dialog-content ui-widget-content"></div></div><script id="mdlMensajeSesion_s" type="text/javascript">$(function(){PrimeFaces.cw("Dialog","mdlMensajeSesion",{id:"mdlMensajeSesion",widgetVar:"mdlMensajeSesion",draggable:false,resizable:false,modal:true,dynamic:true});});</script>
+        </div>
+
+        <!--Pie de pagina-->
+        <footer class="main-footer top-buffer" style="z-index:100;position:relative;">
+            <div class="list-info">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h5>Enlaces</h5>
+                            <ul>
+                                <li>
+                                    <a href="http://reformas.gob.mx" target="_blank">Reformas</a>
+                                </li>
+                                <li>
+                                    <a href="http://portaltransparencia.gob.mx" target="_blank">Portal de Obligaciones de Transparencia</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.infomex.org.mx/gobiernofederal/home.action" target="_blank">Sistema Infomex</a>
+                                </li>
+                                <li>
+                                    <a href="http://inicio.ifai.org.mx/SitePages/ifai.aspx">INAI</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>¿Qué es gob.mx?</h5>
+                            <p>Es el portal único de trámites, información y participación ciudadana.
+                                <a href="http://www.gob.mx/que-es-gobmx">Leer más</a>
+                            </p>
+                            <p></p>
+                            <ul>
+                                <li>
+                                    <a href="http://www.gob.mx/en/index">English</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/temas">Temas</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/accesibilidad" target="_blank">Declaración de Accesibilidad</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/privacidadintegral" target="_blank">Aviso de privacidad integral</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/privacidadsimplificado" target="_blank">Aviso de privacidad simplificado</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/terminos" target="_blank">Términos y Condiciones</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.gob.mx/terminos#medidas-seguridad-informacion" target="_blank">Política de seguridad</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.ordenjuridico.gob.mx/" target="_blank">Marco Jurídico</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.gob.mx/sitemap" target="_blank">Mapa de sitio</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>Contacto</h5>
+                            <p>
+                                Insurgentes Sur 1735, Col. Guadalupe Inn.
+                                <br />
+                                Delegación Alvaro Obregón
+                                <br />
+                                México, D.F. C.P. 01020
+                            </p>
+                            <p>gobmx@funcionpublica.gob.mx</p>
+                            <p>
+                                <a href="http://www.gob.mx/atencion/">Atención Ciudadana</a>
+                            </p>
+                            <p>
+                                <a href="http://www.gob.mx/tramites/ficha/presentacion-de-quejas-y-denuncias-en-la-sfp/SFP54">Denuncia contra servidores públicos</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div id="subscribete">
+                                <label style="font-weight: 300;">Mantente informado. Suscríbete.</label>
+                                <div class="form-group-icon">
+                                    <input class="form-control" id="email" name="email" placeholder="Ingresa tu correo electrónico" type="email" />
+                                    <button class="blue-right btn" id="subscribe" type="button">
+                                        <i class="icon-caret-right"></i>
+                                    </button>
+                                </div>
+                                <div class="message-subscribe hidden"></div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+                            <h5>Síguenos en</h5>
+                            <ul class="list-inline">
+                                <li>
+                                    <a class="social-icon facebook" href="https://www.facebook.com/gobmx" target="_blank"></a>
+                                </li>
+                                <li>
+                                    <a class="social-icon twitter" href="https://twitter.com/gobmx" target="_blank"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-3 col-sm-2">
+                         <img class="img-responsive center-block" alt="gob.mx" height="29" src="https://framework-gb.cdn.gob.mx/assets/images/gobmxlogo-2.svg" width="126" />
+                    </div>
+                    <!--  &lt;div class=&quot;col-xs-12 col-sm-4 col-sm-offset-4&quot;&gt;
+                        &lt;img class=&quot;img-responsive center-block&quot; alt=&quot;gob.mx&quot; height=&quot;70&quot; src=&quot;/SINEC/javax.faces.resource/gobmx/images/gobmx/logos/logo_mexico.svg.xhtml&quot; width=&quot;172&quot; /&gt;
+                    &lt;/div&gt;-->
+                </div>
+            </div>
+        </footer></body>
+
+</html>
