@@ -40,6 +40,7 @@ ALLOWED_LARGE_FILES = {
     "apps/scraper/federal/nom_agency_scrapers.py",
     "apps/scraper/federal/treaty_scraper.py",
     "apps/scraper/judicial/scjn_scraper.py",
+    "apps/scraper/judicial/scjn_playwright.py",
 }
 
 
