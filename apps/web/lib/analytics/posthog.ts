@@ -16,7 +16,7 @@ export function initPostHog(): void {
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
     capture_pageview: false,
-    autocapture: true,
+    autocapture: false,
     respect_dnt: true,
     persistence: "localStorage+cookie",
     secure_cookie: true,
