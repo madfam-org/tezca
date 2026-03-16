@@ -1,0 +1,812 @@
+{
+  "queries_run": 14,
+  "total_datasets": 42,
+  "total_resources": 332,
+  "structured_resources": 331,
+  "datasets": [
+    {
+      "id": "8ce147d2-54af-4684-967a-2f52b7152818",
+      "title": "Inventario de Ordenamiento Ecológicos Expedidos",
+      "organization": "Secretaría de Medio Ambiente y Recursos Naturales (SEMARNAT)",
+      "notes": "Listado de los ordenamientos ecológicos de modalidad General del Territorio, Marino, Regional o Local, que hayan sido expedidos en el D.O.F, los Periódicos Oficiales de las entidades federativas o las",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "legislacion",
+      "url": "https://datos.gob.mx/busca/dataset/8ce147d2-54af-4684-967a-2f52b7152818",
+      "download_urls": [
+        "https://www.datos.gob.mx/dataset/8ce147d2-54af-4684-967a-2f52b7152818/resource/ce9fcc3c-a5fd-4897-8c73-40244a2230ca/download/ordenamientos_ecologicos_expedidos.csv"
+      ]
+    },
+    {
+      "id": "5499e883-1fd9-4a2b-a593-343329faa98f",
+      "title": "Resumen del Diario Oficial de la Federación (DOF)",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Contiene disposiciones vigentes e históricas que provienen de la fuente de origen con el máximo nivel de desagregación posible. Los datos permiten identificar las disposiciones publicadas en dicho med",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "legislacion",
+      "url": "https://datos.gob.mx/busca/dataset/5499e883-1fd9-4a2b-a593-343329faa98f",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/resumen_diario_oficial_federacion_dof/resumen_del_DOF_diciembre_2025.csv"
+      ]
+    },
+    {
+      "id": "e845de5d-4954-4d46-8858-88f259b58117",
+      "title": "Certificados Emitidos dentro del Programa Nacional de Auditoría Ambiental",
+      "organization": "Procuraduría Federal de Protección al Ambiente (PROFEPA)",
+      "notes": "Empresas que obtuvieron su certificado ambiental del Programa Nacional de Auditoría Ambiental en el año, de conformidad con el Reglamento de la Ley General del Equilibrio Ecológico y la Protección al ",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "legislacion",
+      "url": "https://datos.gob.mx/busca/dataset/e845de5d-4954-4d46-8858-88f259b58117",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/profepa/certificados_emitidos_programa_nacional_auditoria_ambiental/certificados_emitidos_pnaa.csv"
+      ]
+    },
+    {
+      "id": "9c77586a-5f9b-4140-ba17-c8a53e335b7e",
+      "title": "Certificados Vigentes a la fecha del Programa Nacional de Auditoria Ambiental",
+      "organization": "Procuraduría Federal de Protección al Ambiente (PROFEPA)",
+      "notes": "Empresas que mantienen vigente su certificado ambiental del Programa Nacional de Auditoría Ambiental en el año, de conformidad con el Reglamento de la Ley General del Equilibrio Ecológico y la Protecc",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "legislacion",
+      "url": "https://datos.gob.mx/busca/dataset/9c77586a-5f9b-4140-ba17-c8a53e335b7e",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/profepa/certificados_vigentes_fecha_programa_nacional_auditoria_ambiental/certificados_vigentes_pnaa.csv"
+      ]
+    },
+    {
+      "id": "b1bd0d87-bbbf-4bdf-a9a7-85a8868e0c22",
+      "title": "Consultas jurídicas en materia de derechos de autor",
+      "organization": "Instituto Nacional del Derecho de Autor (INDAUTOR)",
+      "notes": "Información y asesoría jurídica respecto de alguna figura contemplada en la Ley Federal del Derecho de Autor y su Reglamento.",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "reglamento federal",
+      "url": "https://datos.gob.mx/busca/dataset/b1bd0d87-bbbf-4bdf-a9a7-85a8868e0c22",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/indautor/consultas_juridicas_materia_derechos_autor/02_consulta_juridica_atendida_2013-2024.csv"
+      ]
+    },
+    {
+      "id": "9019b58b-2d64-4feb-a170-be51d1208465",
+      "title": "Información, monitoreo y evaluación para la conservación",
+      "organization": "Comisión Nacional de Áreas Naturales Protegidas (CONANP)",
+      "notes": "Conjunto de datos sobre las Áreas Naturales Protegidas e indicadores estratégicos que miden aspectos de las mismas.",
+      "num_resources": 3,
+      "structured_resources": 2,
+      "formats": [
+        "CSV",
+        "SHP"
+      ],
+      "matched_query": "reglamento federal",
+      "url": "https://datos.gob.mx/busca/dataset/9019b58b-2d64-4feb-a170-be51d1208465",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/conanp/informacion_monitoreo_evaluacion_para_conservacion/listado_anp.csv",
+        "https://repodatos.atdt.gob.mx/api_update/conanp/informacion_monitoreo_evaluacion_para_conservacion/Indicadores_estrategicos.csv"
+      ]
+    },
+    {
+      "id": "f75170e4-614d-4a67-8482-6f2cc288923b",
+      "title": "Padrón Nacional de Centros de Trabajo Certificados en Igualdad Laboral y No Discriminación",
+      "organization": "Consejo Nacional para Prevenir la Discriminación (CONAPRED)",
+      "notes": "Datos recabados y registrados de manera directa por el Organismo de Certificación, en el marco del proceso de certificación para la aplicación de la Norma Mexicana NMX-R-025-SCFI-2015 en materia de Ig",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "norma oficial mexicana",
+      "url": "https://datos.gob.mx/busca/dataset/f75170e4-614d-4a67-8482-6f2cc288923b",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/conapred/padron_nacional_centros_trabajo_certificados_igualdad_laboral_discriminacion/padron_certificado_CONAPRED_4to_trim_2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/conapred/padron_nacional_centros_trabajo_certificados_igualdad_laboral_discriminacion/padron_certificado_CONAPRED_3er_trim_2025.csv"
+      ]
+    },
+    {
+      "id": "f4359bb6-d93f-4dac-9428-a0f1fb25e3a5",
+      "title": "Directorio de Laboratorios de Diagnóstico Autorizados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Información sobre los laboratorios de diagnóstico clínico zoosanitario autorizados en materia zoosanitaria en el país, reconocidos por AGRICULTURA, para realizar pruebas de diagnóstico con el propósit",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "norma oficial mexicana",
+      "url": "https://datos.gob.mx/busca/dataset/f4359bb6-d93f-4dac-9428-a0f1fb25e3a5",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/directorio_laboratorios_diagnostico_autorizados/padron_laboratorios_diagnostico_autorizados_nov2025_ok.csv"
+      ]
+    },
+    {
+      "id": "5f7ed799-682a-40cc-bc06-ea6853f462c6",
+      "title": "Programa de Desarrollo Forestal",
+      "organization": "Comisión Nacional Forestal (CONAFOR)",
+      "notes": "Información sobre el Programa de Apoyos al Desarrollo Forestal Sustentable 2020, con el que se busca apoyar a las personas propietarias, legítimas poseedoras y habitantes de las zonas forestales para ",
+      "num_resources": 5,
+      "structured_resources": 5,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "norma oficial mexicana",
+      "url": "https://datos.gob.mx/busca/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6",
+      "download_urls": [
+        "https://www.datos.gob.mx/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6/resource/430c056c-8110-4741-a3c7-954b6a6521f3/download/d3_rforesta11_10.csv",
+        "https://www.datos.gob.mx/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6/resource/be92a2aa-7016-4426-9fa4-215b10381c27/download/d3_rforesta11_11.csv",
+        "https://www.datos.gob.mx/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6/resource/0c110e0d-5f4e-42af-af98-e35bde4df8ad/download/d3_rforesta11_12.csv",
+        "https://www.datos.gob.mx/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6/resource/1e650e63-3d06-4a04-9c5a-4aa1f3fc389b/download/d3_rforesta11_13.csv",
+        "https://www.datos.gob.mx/dataset/5f7ed799-682a-40cc-bc06-ea6853f462c6/resource/2ce396b0-573d-47d9-81cd-f5e7d8d28d19/download/d3_rforesta11_14.csv"
+      ]
+    },
+    {
+      "id": "23ed4724-0790-489e-8b03-ac33653014b6",
+      "title": "Proveedores responsables en comercio electrónico",
+      "organization": "Procuraduría Federal del Consumidor (PROFECO)",
+      "notes": "Proveedores con Distintivo Digital Profeco y Código de ética en materia de Comercio Electrónico",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "codigo federal",
+      "url": "https://datos.gob.mx/busca/dataset/23ed4724-0790-489e-8b03-ac33653014b6",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/profeco/proveedores_responsables_comercio_electronico/proveedores_responsables_comercio_electronico_2021_2025.csv"
+      ]
+    },
+    {
+      "id": "1ce515d5-528f-4466-83d5-d27df58cb759",
+      "title": "Catálogo de municipios",
+      "organization": "Hospital Juárez de México (HJM)",
+      "notes": "Catálogo de municipios de la República Mexicana",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "codigo federal",
+      "url": "https://datos.gob.mx/busca/dataset/1ce515d5-528f-4466-83d5-d27df58cb759",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/hjm/catalogo_municipios/catalogo_municipios.csv"
+      ]
+    },
+    {
+      "id": "66f73b5a-4eb4-4e2f-b6ec-9b04fe3dd40b",
+      "title": "Auditoría",
+      "organization": "Servicio de Administración Tributaria (SAT)",
+      "notes": "El conjunto de datos contiene los actos de fiscalización con los que está facultada la autoridad fiscal para verificar o comprobar el cumplimiento de las obligaciones fiscales. En materia fiscal, se i",
+      "num_resources": 4,
+      "structured_resources": 4,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "codigo federal",
+      "url": "https://datos.gob.mx/busca/dataset/66f73b5a-4eb4-4e2f-b6ec-9b04fe3dd40b",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/sat/auditoria/formato_57_recderaud.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/auditoria/formato_15_actfisc.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/auditoria/formato_45_pamace.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/auditoria/formato_46_valmerembce.csv"
+      ]
+    },
+    {
+      "id": "3d9420c0-cca0-4005-a6b1-ba777079cf55",
+      "title": "Audiencias de avenencia",
+      "organization": "Instituto Nacional del Derecho de Autor (INDAUTOR)",
+      "notes": "Juntas para solucionar de manera amistosa los conflictos en materia de derechos de autor contemplados en la Ley Federal del Derecho de Autor.",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/3d9420c0-cca0-4005-a6b1-ba777079cf55",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/indautor/audiencias_avenencia/01_audiencias_avenencia_2013-2024.csv"
+      ]
+    },
+    {
+      "id": "3bf0d865-8319-4f14-bb46-1d088005c078",
+      "title": "Trámites de conciliación colectiva registrados",
+      "organization": "Centro Federal de Conciliación y Registro Laboral (CFCRL)",
+      "notes": "Este conjunto de datos contiene información sobre los trámites de conciliación colectiva registrados ante la Coordinación General de Conciliación Colectiva. Incluye datos sobre sindicatos, empresas, o",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/3bf0d865-8319-4f14-bb46-1d088005c078",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/cfcrl/tramites_conciliacion_colectiva_registrados/12_solicitudes_con_emplazamiento_102025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/cfcrl/tramites_conciliacion_colectiva_registrados/13_solicitudes_sin_emplazamiento_102025.csv"
+      ]
+    },
+    {
+      "id": "2f04b2b2-295a-48c4-98d6-a17f70240ce1",
+      "title": "Inspección y vigilancia industrial",
+      "organization": "Procuraduría Federal de Protección al Ambiente (PROFEPA)",
+      "notes": "Vigilancia del cumplimiento de la normatividad ambiental en las materias de contaminación atmosférica, suelos contaminados con materiales peligrosos, manejo y disposición final de residuos peligrosos,",
+      "num_resources": 8,
+      "structured_resources": 8,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1",
+      "download_urls": [
+        "https://www.datos.gob.mx/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1/resource/3e29cb2b-4b86-446c-8f2b-60a4c8076743/download/d4_profepa02_18_1.csv",
+        "https://www.datos.gob.mx/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1/resource/3c060021-0ed1-4f14-a7ef-19bc3af7dc39/download/d4_profepa02_22.csv",
+        "https://www.datos.gob.mx/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1/resource/1f32b1ed-922f-46f4-aa83-32c79132bcb4/download/d4_profepa02_25.csv",
+        "https://www.datos.gob.mx/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1/resource/e811cd95-c5d5-423d-a96c-4efb843a9735/download/d4_profepa02_26.csv",
+        "https://www.datos.gob.mx/dataset/2f04b2b2-295a-48c4-98d6-a17f70240ce1/resource/ae955ad7-f85c-4b65-8dd2-5c9fabc626ed/download/d4_profepa02_27.csv"
+      ]
+    },
+    {
+      "id": "66ada54d-7812-4e4a-ba04-6949779db743",
+      "title": "Agentes capacitadores externos registrados ante la STPS",
+      "organization": "Secretaría del Trabajo y Previsión Social (STPS)",
+      "notes": "Información sobre el registro de agentes capacitadores externos en cumplimiento de la Ley Federal del Trabajo en materia de capacitación y adiestramiento.",
+      "num_resources": 3,
+      "structured_resources": 3,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/66ada54d-7812-4e4a-ba04-6949779db743",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/secretaria_trabajo/agentes_capacitadores_externos_registrados_stps/Registro_Agentes_Externos_Oct-Dic_2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/stps/agentes_capacitadores_externos_registrados_stps/03_Registro_Agentes_Externos_Jul-Sep2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/stps/agentes_capacitadores_externos_registrados_stps/04_ok_Registro_Agentes_Externos.csv"
+      ]
+    },
+    {
+      "id": "a8d07ea2-8050-4570-918a-710a8cadd3ba",
+      "title": "Población penitenciaria vulnerable y de origen extranjero (junio, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria vulnerable y de origen extranjero, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (junio, 2025).",
+      "num_resources": 21,
+      "structured_resources": 21,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/a8d07ea2-8050-4570-918a-710a8cadd3ba",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_junio_2025/01_ind_leng_fue_sjur_sexo_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_junio_2025/02_pmimp_fue_sjur_sexo_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_junio_2025/03_may_fue_sjur_sexo_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_junio_2025/04_mujeres_hijos_gedad_ent_fijo_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_junio_2025/05_lgbtttiqm_ent_jun25.csv"
+      ]
+    },
+    {
+      "id": "0d1fb8e9-4dab-40b6-8f0f-f708d5fd1708",
+      "title": "Población penitenciaria vulnerable y de origen extranjero (mayo, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria vulnerable y de origen extranjero, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (mayo, 2025).",
+      "num_resources": 21,
+      "structured_resources": 21,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/0d1fb8e9-4dab-40b6-8f0f-f708d5fd1708",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_mayo_2025/01_ind_leng_fue_sjur_sexo_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_mayo_2025/02_pmimp_fue_sjur_sexo_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_mayo_2025/03_may_fue_sjur_sexo_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_mayo_2025/04_mujeres_hijos_gedad_ent_fijo_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_mayo_2025/05_lgbtttiqm_ent_may25.csv"
+      ]
+    },
+    {
+      "id": "ba4de946-b7a0-49ea-87c5-c8ab9e2bda06",
+      "title": "Población penitenciaria vulnerable y de origen extranjero (abril, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria vulnerable y de origen extranjero, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (abril, 2025).",
+      "num_resources": 21,
+      "structured_resources": 21,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/ba4de946-b7a0-49ea-87c5-c8ab9e2bda06",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_abril_2025/01_ind_leng_fue_sjur_sexo_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_abril_2025/02_pmimp_fue_sjur_sexo_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_abril_2025/03_may_fue_sjur_sexo_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_abril_2025/04_mujeres_hijos_gedad_ent_fijo_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_abril_2025/05_lgbtttiqm_ent_abr25.csv"
+      ]
+    },
+    {
+      "id": "7cee975e-60b8-40f8-8b70-84ac3a2bf9bb",
+      "title": "Población penitenciaria vulnerable y de origen extranjero (marzo, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria vulnerable y de origen extranjero, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (marzo, 2025).",
+      "num_resources": 21,
+      "structured_resources": 21,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/7cee975e-60b8-40f8-8b70-84ac3a2bf9bb",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_marzo_2025/01_ind_leng_fue_sjur_sexo_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_marzo_2025/02_pmimp_fue_sjur_sexo_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_marzo_2025/03_may_fue_sjur_sexo_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_marzo_2025/04_mujeres_hijos_gedad_ent_fijo_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_marzo_2025/05_lgbtttiqm_ent_mar25.csv"
+      ]
+    },
+    {
+      "id": "fab4685b-fd3b-403b-8d82-21649c29e01b",
+      "title": "Población penitenciaria vulnerable y de origen extranjero (enero, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria vulnerable y de origen extranjero, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (enero, 2025).",
+      "num_resources": 21,
+      "structured_resources": 21,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/fab4685b-fd3b-403b-8d82-21649c29e01b",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_enero_2025/01_ind_leng_fue_sjur_sexo_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_enero_2025/02_pmimp_fue_sjur_sexo_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_enero_2025/03_may_fue_sjur_sexo_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_enero_2025/04_mujeres_hijos_gedad_ent_fijo_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/poblacion_penitenciaria_vulnerable_origen_extranjero_enero_2025/05_lgbtttiqm_ent_ene25.csv"
+      ]
+    },
+    {
+      "id": "174a03b6-252e-42a3-ae48-fd6d4df43d6b",
+      "title": "Información estadística penitenciaria nacional (junio, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (junio, 2025).",
+      "num_resources": 31,
+      "structured_resources": 31,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/174a03b6-252e-42a3-ae48-fd6d4df43d6b",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_junio_2025/01_ing_eg_sex_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_junio_2025/02_fue_sjur_sex_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_junio_2025/03_sobrepob_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_junio_2025/04_tipos_centro_ent_jun25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_junio_2025/05_altiplano_fue_sjur_sex_ente_jun25.csv"
+      ]
+    },
+    {
+      "id": "64aa1e74-5531-45e2-a7da-5a4110576ab3",
+      "title": "Información estadística penitenciaria nacional (mayo, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (mayo, 2025).",
+      "num_resources": 31,
+      "structured_resources": 31,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/64aa1e74-5531-45e2-a7da-5a4110576ab3",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_mayo_2025/01_ing_eg_sex_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_mayo_2025/02_fue_sjur_sex_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_mayo_2025/03_sobrepob_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_mayo_2025/04_tipos_centro_ent_may25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_mayo_2025/05_altiplano_fue_sjur_sex_ente_may25.csv"
+      ]
+    },
+    {
+      "id": "3cc385c7-94a3-4421-8911-94e7aaec765f",
+      "title": "Información estadística penitenciaria nacional (abril, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (abril, 2025).",
+      "num_resources": 31,
+      "structured_resources": 31,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/3cc385c7-94a3-4421-8911-94e7aaec765f",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_abril_2025/01_ing_eg_sex_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_abril_2025/02_fue_sjur_sex_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_abril_2025/03_sobrepob_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_abril_2025/04_tipos_centro_ent_abr25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_abril_2025/05_altiplano_fue_sjur_sex_ente_abr25.csv"
+      ]
+    },
+    {
+      "id": "7a7e75ad-9229-462b-92d8-f84a05b6bd6e",
+      "title": "Información estadística penitenciaria nacional (marzo, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria, desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (marzo, 2025).",
+      "num_resources": 31,
+      "structured_resources": 31,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/7a7e75ad-9229-462b-92d8-f84a05b6bd6e",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_marzo_2025/01_ing_eg_sex_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_marzo_2025/02_fue_sjur_sex_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_marzo_2025/03_sobrepob_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_marzo_2025/04_tipos_centro_ent_mar25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_marzo_2025/05_altiplano_fue_sjur_sex_ente_mar25.csv"
+      ]
+    },
+    {
+      "id": "a2ae772e-245f-4404-b884-d0dbd708837f",
+      "title": "Información estadística penitenciaria nacional (enero, 2025)",
+      "organization": "Prevención y Reinserción Social (PRS)",
+      "notes": "Estadística mensual de la población penitenciaria desagregada por fuero, condición jurídica, sexo, entidad y centro penitenciario (enero, 2025).",
+      "num_resources": 31,
+      "structured_resources": 31,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "ley federal",
+      "url": "https://datos.gob.mx/busca/dataset/a2ae772e-245f-4404-b884-d0dbd708837f",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_enero_2025/01_ing_eg_sex_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_enero_2025/02_fue_sjur_sex_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_enero_2025/03_sobrepob_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_enero_2025/04_tipos_centro_ent_ene25.csv",
+        "https://repodatos.atdt.gob.mx/api_update/prs/informacion_estadistica_penitenciaria_nacional_enero_2025/05_altiplano_fue_sjur_sex_ente_ene25.csv"
+      ]
+    },
+    {
+      "id": "88ad7a80-2df2-4238-b331-835658ee507a",
+      "title": "Estadísticas de regulación migratoria",
+      "organization": "Instituto Nacional de Migración (INM)",
+      "notes": "Registro de trámites y documentos relacionados con el tema de migración.",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "regulacion",
+      "url": "https://datos.gob.mx/busca/dataset/88ad7a80-2df2-4238-b331-835658ee507a",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/inm/estadisticas_regulacion_migratoria/04_documentos_migratorios_2024-2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/inm/estadisticas_regulacion_migratoria/141_tramites_migratorios.csv"
+      ]
+    },
+    {
+      "id": "81a86ae6-b37a-488a-a5ed-df2125ca26ba",
+      "title": "Certificados de sanidad acuícola",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Certificados emitidos por la DSAP bajo el sustento de la Ley General de Pesca y Acuacultura Sustentables.",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "regulacion",
+      "url": "https://datos.gob.mx/busca/dataset/81a86ae6-b37a-488a-a5ed-df2125ca26ba",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/certificados_sanidad_acuicola/certificado_sanidad_acuicola.csv"
+      ]
+    },
+    {
+      "id": "451c1e36-96be-4a12-bf14-71c1a8f71293",
+      "title": "Productos regulados y registrados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Integra los datos de los productos de uso veterinario, recomendados para su uso y aplicación en especies acuáticas, que se encuentran regulados por la Secretaría y  vigente para su fabricación, import",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "regulacion",
+      "url": "https://datos.gob.mx/busca/dataset/451c1e36-96be-4a12-bf14-71c1a8f71293",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/productos_regulados_registrados/productos_regulados_y_registrados.csv",
+        "https://repodatos.atdt.gob.mx/api_update/senasica/productos_regulados_registrados/productos_regulados_y_registrados_ok.csv"
+      ]
+    },
+    {
+      "id": "a2983598-32f5-445d-b5de-480a020af8e8",
+      "title": "BIENPESCA - Incentivo económico directo al pescador y al acuicultor",
+      "organization": "Comisión Nacional de Acuacultura y Pesca (CONAPESCA)",
+      "notes": "Apoyo económico directo a los pescadores y trabajadores acuícolas para compensar los bajos ingresos que perciben debido a la aplicación de regulaciones pesqueras o contingencias naturales.",
+      "num_resources": 3,
+      "structured_resources": 3,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "regulacion",
+      "url": "https://datos.gob.mx/busca/dataset/a2983598-32f5-445d-b5de-480a020af8e8",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/conapesca/bienpesca_incentivo_economico_directo_pescador_y_acuicultor/08_BIENPESCA_2025_ok.csv",
+        "https://repodatos.atdt.gob.mx/api_update/conapesca/bienpesca_incentivo_economico_directo_pescador_y_acuicultor/07_BIENPESCA_2020-2024_ok.csv",
+        "https://repodatos.atdt.gob.mx/api_update/conapesca/bienpesca_incentivo_economico_directo_pescador_y_acuicultor/09_BIENPESCA_2019.csv"
+      ]
+    },
+    {
+      "id": "1ef2f38d-af6c-4ba9-8dfe-a68f6340ebe3",
+      "title": "Manifestaciones de Impacto Ambiental",
+      "organization": "Secretaría de Medio Ambiente y Recursos Naturales (SEMARNAT)",
+      "notes": "La Manifestación de Impacto Ambiental (MIA) es un instrumento de la política ambiental que tiene el objetivo de prevenir, mitigar y restaurar los daños al ambiente, así como la regulación de obras o a",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "regulacion",
+      "url": "https://datos.gob.mx/busca/dataset/1ef2f38d-af6c-4ba9-8dfe-a68f6340ebe3",
+      "download_urls": [
+        "https://www.datos.gob.mx/dataset/1ef2f38d-af6c-4ba9-8dfe-a68f6340ebe3/resource/8da5d613-841c-4569-ad1b-4ef557ec933a/download/ingresos_2024.csv",
+        "https://www.datos.gob.mx/dataset/1ef2f38d-af6c-4ba9-8dfe-a68f6340ebe3/resource/144ca659-3699-4c6c-bfe9-c8f846ea7e29/download/resueltos_2024.csv"
+      ]
+    },
+    {
+      "id": "0a14882f-12f8-4b8c-abc5-34d8deff881f",
+      "title": "Unidades de Verificación",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Directorio de personas físicas o morales aprobadas por AGRICULTURA, cuya función principal es verificar el cumplimiento de la normatividad en materia zoosanitaria, determinando su grado de cumplimient",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/0a14882f-12f8-4b8c-abc5-34d8deff881f",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/unidades_verificacion/34_unidades-verificacion.csv"
+      ]
+    },
+    {
+      "id": "188bc459-955d-40be-8efc-a590f6f951c2",
+      "title": "Organismos genéticamente modificados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Documentos que presentan personas físicas o morales ante la autoridad para obtener un permiso de liberación al ambiente de un organismo genéticamente modificado (OGM), en los que se incluye la informa",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/188bc459-955d-40be-8efc-a590f6f951c2",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/organismos_geneticamente_modificados/72_organismos-geneticamente-modificados.csv"
+      ]
+    },
+    {
+      "id": "0f0121e6-e0fd-49dc-9b1a-df870cbc3a72",
+      "title": "Instrumentos de política climática en México por entidad federativa",
+      "organization": "Instituto Nacional de Ecología y Cambio Climático (INECC)",
+      "notes": "Integra información sobre los instrumentos normativos y de planeación en materia de cambio climático identificados en cada entidad federativa de México.",
+      "num_resources": 3,
+      "structured_resources": 3,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/0f0121e6-e0fd-49dc-9b1a-df870cbc3a72",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/inecc/instrumentos_politica_climatica_mexico_entidad_federativa/instrumentos_politica_climatica_2021.csv",
+        "https://repodatos.atdt.gob.mx/api_update/inecc/instrumentos_politica_climatica_mexico_entidad_federativa/instrumentos_politica_climatica_2020.csv",
+        "https://repodatos.atdt.gob.mx/api_update/inecc/instrumentos_politica_climatica_mexico_entidad_federativa/instrumentos_inecc.csv"
+      ]
+    },
+    {
+      "id": "585bdafc-945b-412e-b8d2-e44da829a765",
+      "title": "Actividades de inspección en la movilización",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Establece las actividades realizadas en los diversos puntos a los diferentes medios de transporte, sean particulares o públicos.",
+      "num_resources": 2,
+      "structured_resources": 2,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/585bdafc-945b-412e-b8d2-e44da829a765",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/actividades_inspeccion_movilizacion/01_actividades-inspeccion-movilizacion_2dotrim2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/senasica/actividades_inspeccion_movilizacion/29_actividades-inspeccion-movilizacion.csv"
+      ]
+    },
+    {
+      "id": "477607e5-d179-46bf-af85-6e94dced3be2",
+      "title": "Directorio de Bioterios Autorizados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Información de los Bioterios que cumplen con la normatividad aplicable para ser autorizados por el SENASICA a nivel nacional.",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/477607e5-d179-46bf-af85-6e94dced3be2",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/directorio_bioterios_autorizados/padron_bioterios.csv"
+      ]
+    },
+    {
+      "id": "a61fde26-e78d-48cd-a6ca-a542c57ea4d5",
+      "title": "Médicos veterinarios responsables autorizados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Directorio con información general de los médicos veterinarios en el ejercicio libre de su profesión, autorizados por AGRICULTURA, que prestan sus servicios en unidades de producción, a fin de garanti",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/a61fde26-e78d-48cd-a6ca-a542c57ea4d5",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/medicos_veterinarios_responsables_autorizados/medicos_veterinarios_responsables_autorizados.csv"
+      ]
+    },
+    {
+      "id": "1eb9f412-9734-4fb0-a42f-201f0b02a8fa",
+      "title": "Médicos veterinarios terceros especialistas autorizados",
+      "organization": "Servicio Nacional de Sanidad, Inocuidad y Calidad Agroalimentaria (SENASICA)",
+      "notes": "Directorio con información general sobre médicos veterinarios autorizados por AGRICULTURA, para realizar la constatación documental, ocular o mediante muestreo y análisis de laboratorio de diagnóstico",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/1eb9f412-9734-4fb0-a42f-201f0b02a8fa",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/senasica/medicos_veterinarios_terceros_especialistas_autorizados/padron_medicos_terceros_especialistas_autorizados.csv"
+      ]
+    },
+    {
+      "id": "ede30204-2c53-45a1-9165-84ce3dc962e7",
+      "title": "Personas capacitadas del sector minero por entidad federativa",
+      "organization": "Fideicomiso de Fomento Minero (FIFOMI)",
+      "notes": "Personas que asisten a cursos de capacitación por entidad federativa. Se organizan cursos en modalidades presencial y virtual con temas de exploración, explotación, beneficio y comercialización de min",
+      "num_resources": 8,
+      "structured_resources": 8,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "normatividad",
+      "url": "https://datos.gob.mx/busca/dataset/ede30204-2c53-45a1-9165-84ce3dc962e7",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/fifomi/personas_capacitadas_sector_minero_entidad_federativa/capacitación_2025.csv",
+        "https://repodatos.atdt.gob.mx/api_update/fifomi/personas_capacitadas_sector_minero_entidad_federativa/capacitacion_2024_ok.csv",
+        "https://repodatos.atdt.gob.mx/api_update/fifomi/personas_capacitadas_sector_minero_entidad_federativa/capacitacion_2023_ok.csv",
+        "https://repodatos.atdt.gob.mx/api_update/fifomi/personas_capacitadas_sector_minero_entidad_federativa/capacitacion_2022_ok.csv",
+        "https://repodatos.atdt.gob.mx/api_update/fifomi/personas_capacitadas_sector_minero_entidad_federativa/capacitacion_2021_ok.csv"
+      ]
+    },
+    {
+      "id": "66b2d30e-bc5a-463a-ac8f-3b2abd641749",
+      "title": "Declaraciones y pagos",
+      "organization": "Servicio de Administración Tributaria (SAT)",
+      "notes": "Contiene información relacionada con el cumplimiento de las obligaciones fiscales del contribuyente, relativa al número de declaraciones anuales presentadas, así como el número de pagos por tipo de co",
+      "num_resources": 6,
+      "structured_resources": 6,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "decreto",
+      "url": "https://datos.gob.mx/busca/dataset/66b2d30e-bc5a-463a-ac8f-3b2abd641749",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/sat/declaraciones_y_pagos/formato_59_recderimp.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/declaraciones_y_pagos/decanuatipcon.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/declaraciones_y_pagos/formato_44_expnum.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/declaraciones_y_pagos/formato_43_impnum.csv",
+        "https://repodatos.atdt.gob.mx/api_update/sat/declaraciones_y_pagos/numpagosmedrec.csv"
+      ]
+    },
+    {
+      "id": "a36b762d-2a4f-48f0-a24c-9ac0740f533b",
+      "title": "Unidades de Manejo para la conservación de la vida silvestre",
+      "organization": "Secretaría de Medio Ambiente y Recursos Naturales (SEMARNAT)",
+      "notes": "Las UMA son unidades de manejo para la conservación de vida silvestre. Se trata de predios e instalaciones registrados que operan de conformidad con un plan de manejo aprobado. Las UMA pueden ser de m",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "municipio reglamento",
+      "url": "https://datos.gob.mx/busca/dataset/a36b762d-2a4f-48f0-a24c-9ac0740f533b",
+      "download_urls": [
+        "https://www.datos.gob.mx/dataset/a36b762d-2a4f-48f0-a24c-9ac0740f533b/resource/64a1aea9-94d8-4ab9-bdd6-357b9f08b49d/download/d3_biodiv04_28.csv"
+      ]
+    },
+    {
+      "id": "92b5bb9d-3b7c-4a15-9a5e-5568103351ae",
+      "title": "Permisos para la constitución de fideicomisos en zona restringida",
+      "organization": "Secretaría de Relaciones Exteriores (SRE)",
+      "notes": "Cantidad mensual de permisos otorgados para constituir fideicomisos en zonas restringidas. Los datos se actualizan de manera trimestral.",
+      "num_resources": 1,
+      "structured_resources": 1,
+      "formats": [
+        "CSV"
+      ],
+      "matched_query": "constitucion",
+      "url": "https://datos.gob.mx/busca/dataset/92b5bb9d-3b7c-4a15-9a5e-5568103351ae",
+      "download_urls": [
+        "https://repodatos.atdt.gob.mx/api_update/sre/permisos_constitucion_fideicomisos_zona_restringida/05_Permisos_para_la_constitucion_de_fideicomisos.csv"
+      ]
+    }
+  ],
+  "by_query": {
+    "legislacion": {
+      "total_count": 4,
+      "returned": 4
+    },
+    "reglamento federal": {
+      "total_count": 4,
+      "returned": 4
+    },
+    "norma oficial mexicana": {
+      "total_count": 4,
+      "returned": 4
+    },
+    "codigo federal": {
+      "total_count": 3,
+      "returned": 3
+    },
+    "ley federal": {
+      "total_count": 17,
+      "returned": 17
+    },
+    "tratados internacionales": {
+      "total_count": 0,
+      "returned": 0
+    },
+    "jurisprudencia": {
+      "total_count": 0,
+      "returned": 0
+    },
+    "marco juridico": {
+      "total_count": 0,
+      "returned": 0
+    },
+    "regulacion": {
+      "total_count": 5,
+      "returned": 5
+    },
+    "normatividad": {
+      "total_count": 11,
+      "returned": 11
+    },
+    "decreto": {
+      "total_count": 2,
+      "returned": 2
+    },
+    "diario oficial": {
+      "total_count": 2,
+      "returned": 2
+    },
+    "municipio reglamento": {
+      "total_count": 2,
+      "returned": 2
+    },
+    "constitucion": {
+      "total_count": 1,
+      "returned": 1
+    }
+  },
+  "organizations": {}
+}

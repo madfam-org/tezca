@@ -46,7 +46,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 SJF_BASE_URL = "https://sjf.scjn.gob.mx"
-SJF_SEARCH_URL = f"{SJF_BASE_URL}/busqueda"
+# The SJF search interface lives on a separate subdomain (as of 2026)
+SJF_SEARCH_URL = "https://sjfsemanal.scjn.gob.mx/busqueda-principal-tesis"
+SJF_SEARCH_URL_LEGACY = "https://sjf2.scjn.gob.mx/busqueda-principal-tesis"
 
 _BATCH_SIZE = 50
 _CHECKPOINT_EVERY = 100  # items
@@ -84,19 +86,24 @@ class ScjnPlaywrightScraper(PlaywrightBase):
 
     def _navigate_to_search(self) -> bool:
         """Navigate to the SJF search interface and wait for form."""
-        if not self._navigate(SJF_SEARCH_URL):
-            # Try alternative paths
-            alternatives = [
-                f"{SJF_BASE_URL}/Busqueda",
-                f"{SJF_BASE_URL}/IUSQuery/",
-                f"{SJF_BASE_URL}/iusfnav/",
-                SJF_BASE_URL,
-            ]
-            for alt_url in alternatives:
-                if self._navigate(alt_url):
+        # Try the current search URL first, then legacy subdomain
+        search_urls = [
+            SJF_SEARCH_URL,
+            SJF_SEARCH_URL_LEGACY,
+            f"{SJF_BASE_URL}/SJFHome/home",
+            SJF_BASE_URL,
+        ]
+        for url in search_urls:
+            if self._navigate(url):
+                # Check if we actually got a search page (not a 404 or redirect)
+                title = self._page.title() if self._page else ""
+                current_url = self._page.url if self._page else ""
+                if "404" not in title and "Error" not in title:
+                    logger.info(
+                        "Search page loaded: %s (title: %s)", current_url, title[:60]
+                    )
                     return True
-            return False
-        return True
+        return False
 
     def _fill_search_form(self, epoca: int, tipo: str) -> bool:
         """Fill and submit the SJF search form.

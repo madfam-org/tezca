@@ -35,7 +35,11 @@ logger = logging.getLogger(__name__)
 CKAN_BASE = "https://www.datos.gob.mx/api/3/action"
 OUTPUT_DIR = Path("data/datos_gob")
 REQUEST_DELAY = 1.0
-USER_AGENT = "Tezca-DatosGob/1.0 (+https://tezca.mx)"
+USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/122.0.0.0 Safari/537.36"
+)
 
 # Search queries for legal datasets
 LEGAL_QUERIES = [
