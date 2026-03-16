@@ -154,7 +154,7 @@ describe('AdminAuthBridge', () => {
         expect(callHeaders['Authorization']).toBe('Bearer mock-token');
     });
 
-    it('clears token source on unmount', async () => {
+    it('preserves token source after unmount (root layout never unmounts)', async () => {
         const mockGetAccessToken = vi.fn().mockResolvedValue('unmount-token');
         const { useJanua } = await import('@janua/nextjs');
         (useJanua as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -182,11 +182,12 @@ describe('AdminAuthBridge', () => {
         await api.getHealth();
         expect(mockFetchFn.mock.calls[0][1].headers['Authorization']).toBe('Bearer unmount-token');
 
-        // After unmount, token source should be cleared
+        // Token source persists after unmount — no cleanup nullification
+        // (AdminAuthBridge lives in root layout and never unmounts in production)
         unmount();
         mockFetchFn.mockClear();
         await api.getHealth();
-        expect(mockFetchFn.mock.calls[0][1].headers).not.toHaveProperty('Authorization');
+        expect(mockFetchFn.mock.calls[0][1].headers['Authorization']).toBe('Bearer unmount-token');
     });
 });
 

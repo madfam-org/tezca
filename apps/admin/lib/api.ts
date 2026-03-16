@@ -26,11 +26,16 @@ async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
     };
 
     // Inject auth token if available
+    let token: string | null = null;
     if (_getToken) {
-        const token = await _getToken();
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        token = await _getToken();
+    }
+    // Fallback: read directly from localStorage if token source unavailable
+    if (!token && typeof window !== 'undefined') {
+        token = localStorage.getItem('janua_access_token');
+    }
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
     }
 
     const doFetch = async (hdrs: Record<string, string>) => {

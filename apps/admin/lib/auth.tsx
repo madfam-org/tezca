@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { setTokenSource } from "./api";
 
 // Re-export Janua components for use across the app
@@ -75,15 +75,10 @@ export function AdminAuthBridge({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (client) {
             setTokenSource(() => client.getAccessToken());
-        } else {
-            setTokenSource(null);
         }
-        return () => {
-            setTokenSource(null);
-        };
     }, [client]);
 
     return <>{children}</>;
