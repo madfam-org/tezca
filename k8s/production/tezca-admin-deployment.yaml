@@ -49,6 +49,8 @@ spec:
                 secretKeyRef:
                   name: tezca-secrets
                   key: JANUA_SECRET_KEY
+            - name: JANUA_INTERNAL_URL
+              value: "http://janua-api.janua.svc.cluster.local:80"
           livenessProbe:
             httpGet:
               path: /api/health
