@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, FormEvent, Suspense } from "react";
-import Link from "next/link";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import { SignIn } from "@janua/ui/components/auth";
 import { Shield } from "lucide-react";
 
 const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
@@ -19,22 +19,28 @@ export default function SignInPage() {
     }
 
     return (
-        <Suspense fallback={<PageShell subtitle="Cargando..."><div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div></PageShell>}>
+        <Suspense
+            fallback={
+                <PageShell subtitle="Cargando...">
+                    <div className="flex justify-center py-8">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    </div>
+                </PageShell>
+            }
+        >
             <SignInFormContent router={router} />
         </Suspense>
     );
 }
 
-function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> }) {
+function SignInFormContent({
+    router,
+}: {
+    router: ReturnType<typeof useRouter>;
+}) {
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const searchParams = useSearchParams();
     const [ssoError, setSsoError] = useState<string | null>(null);
-
-    // Email/password fallback state
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [formError, setFormError] = useState<string | null>(null);
-    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated && !authLoading) {
@@ -55,69 +61,6 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
         window.location.href = "/api/auth/sso";
     }
 
-    const isSsoDomain = useMemo(() => {
-        const domain = email.split("@")[1]?.toLowerCase();
-        return domain ? SSO_DOMAINS.includes(domain) : false;
-    }, [email]);
-
-    async function handleSubmit(e: FormEvent) {
-        e.preventDefault();
-        setFormError(null);
-
-        // Redirect SSO-only domains directly to SSO flow
-        const domain = email.split("@")[1]?.toLowerCase();
-        if (domain && SSO_DOMAINS.includes(domain)) {
-            window.location.href = "/api/auth/sso";
-            return;
-        }
-
-        setSubmitting(true);
-        try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setFormError(
-                    data.error ||
-                        "Error al iniciar sesión. Verifica tus credenciales."
-                );
-                return;
-            }
-
-            // Hydrate Janua SDK localStorage so AdminAuthBridge picks up the tokens
-            if (data.access_token) {
-                localStorage.setItem("janua_access_token", data.access_token);
-                if (data.refresh_token) {
-                    localStorage.setItem(
-                        "janua_refresh_token",
-                        data.refresh_token
-                    );
-                }
-                if (data.expires_at) {
-                    localStorage.setItem(
-                        "janua_token_expires_at",
-                        String(data.expires_at)
-                    );
-                }
-            }
-
-            // Full reload so JanuaProvider + AdminAuthBridge pick up the new session
-            window.location.href = "/";
-        } catch (err) {
-            setFormError(
-                err instanceof Error
-                    ? err.message
-                    : "Error al iniciar sesión. Verifica tus credenciales."
-            );
-        } finally {
-            setSubmitting(false);
-        }
-    }
-
     if (authLoading) {
         return (
             <PageShell subtitle="Cargando...">
@@ -129,9 +72,19 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
     }
 
     return (
-        <PageShell subtitle="Inicia sesión para acceder a la consola">
-            {/* SSO Button */}
-            <div className="space-y-3">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div className="w-full max-w-md space-y-6">
+                {/* Header */}
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold tracking-tight">
+                        Iniciar sesión
+                    </h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Bienvenido de nuevo
+                    </p>
+                </div>
+
+                {/* SSO Error */}
                 {ssoError && (
                     <div
                         role="alert"
@@ -141,99 +94,72 @@ function SignInFormContent({ router }: { router: ReturnType<typeof useRouter> })
                     </div>
                 )}
 
-                <button
-                    onClick={handleSsoLogin}
-                    className="w-full flex justify-center items-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                    <Shield className="h-4 w-4" />
-                    Iniciar sesión con Janua SSO
-                </button>
+                {/* Enterprise SSO Button */}
+                <div className="space-y-3">
+                    <button
+                        onClick={handleSsoLogin}
+                        className="w-full flex justify-center items-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                    >
+                        <Shield className="h-4 w-4" />
+                        Iniciar sesión con Janua SSO
+                    </button>
+                    <p className="text-center text-xs text-muted-foreground">
+                        Serás redirigido al proveedor de identidad de tu
+                        organización.
+                    </p>
+                </div>
 
+                {/* Divider */}
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            o usa correo y contraseña
+                        </span>
+                    </div>
+                </div>
+
+                {/* @janua/ui SignIn component for email/password + social providers */}
+                <SignIn
+                    apiUrl=""
+                    socialProviders={{ google: true, github: true }}
+                    showRememberMe={true}
+                    afterSignIn={() => {
+                        // Full reload so AdminAuthBridge hydrates SDK
+                        // state from the janua-session cookie via /api/auth/me
+                        window.location.href = "/";
+                    }}
+                    onError={(error) => {
+                        console.error("Sign-in error:", error.message);
+                    }}
+                />
+
+                {/* Legal links */}
                 <p className="text-center text-xs text-muted-foreground">
-                    Serás redirigido al proveedor de identidad de tu
-                    organización.
+                    Al continuar, aceptas los{" "}
+                    <a
+                        href="https://tezca.mx/terms"
+                        className="underline hover:text-foreground"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Términos de Servicio
+                    </a>{" "}
+                    y la{" "}
+                    <a
+                        href="https://tezca.mx/privacy"
+                        className="underline hover:text-foreground"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Política de Privacidad
+                    </a>
+                    .
                 </p>
             </div>
-
-            {/* Divider */}
-            <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                        o usa correo y contraseña
-                    </span>
-                </div>
-            </div>
-
-            {/* Email/password fallback form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {formError && (
-                    <div
-                        role="alert"
-                        className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive"
-                    >
-                        {formError}
-                    </div>
-                )}
-
-                <div className="space-y-2">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-foreground"
-                    >
-                        Correo electrónico
-                    </label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        value={email}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                        disabled={submitting}
-                        placeholder="admin@madfam.io"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                    />
-                </div>
-
-                {isSsoDomain ? (
-                    <div className="rounded-md bg-muted/50 border border-border px-4 py-3 text-sm text-muted-foreground">
-                        Cuenta de organización — usar SSO
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-foreground"
-                        >
-                            Contraseña
-                        </label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autoComplete="current-password"
-                            required
-                            value={password}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                            disabled={submitting}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                        />
-                    </div>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={submitting || isSsoDomain}
-                    className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                    {isSsoDomain ? "Continuar con SSO" : submitting ? "Iniciando sesión..." : "Iniciar sesión"}
-                </button>
-            </form>
-        </PageShell>
+        </div>
     );
 }
 
@@ -267,19 +193,20 @@ function UnconfiguredFallback() {
             <div className="rounded-lg border bg-muted/50 p-6 space-y-4">
                 <p className="text-sm text-muted-foreground">
                     Las variables de entorno de Janua no están configuradas.
-                    Para habilitar autenticación, agrega las siguientes variables:
+                    Para habilitar autenticación, agrega las siguientes
+                    variables:
                 </p>
                 <pre className="text-xs bg-muted p-3 rounded overflow-x-auto">
-{`NEXT_PUBLIC_JANUA_BASE_URL=https://auth.madfam.io
+                    {`NEXT_PUBLIC_JANUA_BASE_URL=https://auth.madfam.io
 NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=jnc_...
 JANUA_SECRET_KEY=jns_...`}
                 </pre>
-                <Link
+                <a
                     href="/"
                     className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                     Continuar sin autenticación
-                </Link>
+                </a>
             </div>
         </PageShell>
     );
