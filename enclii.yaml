@@ -22,3 +22,62 @@ spec:
     - name: admin.tezca.mx
       environment: production
       port: 3001
+  network:
+    services:
+      - name: tezca-web
+        label: app.kubernetes.io/name
+        port: 3000
+        ingress: [cloudflare-tunnel]
+        egress: [dns, https, postgres, redis]
+      - name: tezca-api
+        label: app.kubernetes.io/name
+        port: 8000
+        ingress: [cloudflare-tunnel]
+        egress: [dns, https, postgres, redis]
+      - name: tezca-admin
+        label: app.kubernetes.io/name
+        port: 3001
+        ingress: [cloudflare-tunnel]
+        egress: [dns, https, janua, postgres, redis]
+      - name: tezca-worker
+        label: app.kubernetes.io/name
+        port: 0
+        egress: [dns, https, postgres, redis]
+      - name: tezca-beat
+        label: app.kubernetes.io/name
+        port: 0
+        egress: [dns, postgres, redis]
+      - name: tezca-redis
+        label: app.kubernetes.io/name
+        port: 0
+        egress: [dns]
+      - name: tezca-es
+        label: app.kubernetes.io/name
+        port: 0
+        egress: [dns]
+    custom:
+      - name: api-to-intra-redis
+        from: { app.kubernetes.io/name: tezca-api }
+        to: { app.kubernetes.io/name: tezca-redis }
+        port: 6379
+        direction: both
+      - name: worker-to-intra-redis
+        from: { app.kubernetes.io/name: tezca-worker }
+        to: { app.kubernetes.io/name: tezca-redis }
+        port: 6379
+        direction: both
+      - name: beat-to-intra-redis
+        from: { app.kubernetes.io/name: tezca-beat }
+        to: { app.kubernetes.io/name: tezca-redis }
+        port: 6379
+        direction: both
+      - name: api-to-intra-es
+        from: { app.kubernetes.io/name: tezca-api }
+        to: { app.kubernetes.io/name: tezca-es }
+        port: 9200
+        direction: both
+      - name: worker-to-intra-es
+        from: { app.kubernetes.io/name: tezca-worker }
+        to: { app.kubernetes.io/name: tezca-es }
+        port: 9200
+        direction: both
