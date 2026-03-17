@@ -4,3 +4,4 @@ metadata:
   name: tezca
   labels:
     app.kubernetes.io/part-of: tezca
+    enclii.dev/type: application
