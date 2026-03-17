@@ -32,11 +32,15 @@ const mockMetrics = {
 
 const mockGetMetrics = vi.fn();
 
-vi.mock('@/lib/api', () => ({
-    api: {
-        getMetrics: (...args: unknown[]) => mockGetMetrics(...args),
-    },
-}));
+vi.mock('@/lib/api', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/api')>();
+    return {
+        ...actual,
+        api: {
+            getMetrics: (...args: unknown[]) => mockGetMetrics(...args),
+        },
+    };
+});
 
 describe('Metrics page', () => {
     beforeEach(() => {

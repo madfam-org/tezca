@@ -93,7 +93,7 @@ describe('setTokenSource + fetcher integration', () => {
         expect(retryHeaders['Authorization']).toBe('Bearer fresh-token');
     });
 
-    it('throws on 401 when no fresh token available', async () => {
+    it('redirects to /sign-in on 401 when no fresh token available', async () => {
         global.fetch = vi.fn().mockResolvedValue({
             ok: false,
             status: 401,
@@ -103,8 +103,20 @@ describe('setTokenSource + fetcher integration', () => {
 
         setTokenSource(() => Promise.resolve('same-token'));
 
-        await expect(api.getHealth()).rejects.toThrow('API request failed');
-        await expect(api.getHealth()).rejects.toBeInstanceOf(APIError);
+        const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+        // The fetcher returns a never-resolving promise after redirect
+        const result = await Promise.race([
+            api.getHealth().then(() => 'resolved').catch(() => 'rejected'),
+            new Promise<string>((r) => setTimeout(() => r('pending'), 50)),
+        ]);
+
+        expect(result).toBe('pending');
+        expect(removeItemSpy).toHaveBeenCalledWith('janua_access_token');
+        expect(removeItemSpy).toHaveBeenCalledWith('janua_refresh_token');
+        expect(removeItemSpy).toHaveBeenCalledWith('janua_token_expires_at');
+
+        removeItemSpy.mockRestore();
     });
 });
 

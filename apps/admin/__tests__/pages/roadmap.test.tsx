@@ -64,12 +64,16 @@ const mockRoadmapData = {
     ],
 };
 
-vi.mock('@/lib/api', () => ({
-    api: {
-        getRoadmap: vi.fn(),
-        updateRoadmapItem: vi.fn(),
-    },
-}));
+vi.mock('@/lib/api', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/api')>();
+    return {
+        ...actual,
+        api: {
+            getRoadmap: vi.fn(),
+            updateRoadmapItem: vi.fn(),
+        },
+    };
+});
 
 describe('RoadmapPage', () => {
     beforeEach(() => {

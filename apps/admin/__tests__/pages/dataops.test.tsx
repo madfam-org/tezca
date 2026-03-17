@@ -31,11 +31,15 @@ const mockDashboardData = {
     health_status: [],
 };
 
-vi.mock('@/lib/api', () => ({
-    api: {
-        getCoverageDashboard: vi.fn(),
-    },
-}));
+vi.mock('@/lib/api', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/api')>();
+    return {
+        ...actual,
+        api: {
+            getCoverageDashboard: vi.fn(),
+        },
+    };
+});
 
 vi.mock('@/components/dataops/CoverageHeader', () => ({
     CoverageHeader: ({ loading }: { loading: boolean }) => (

@@ -1,5 +1,6 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useApiData } from '@/hooks/useApiData';
+import { APIError } from '@/lib/api';
 
 describe('useApiData', () => {
     it('starts in loading state with null data', () => {
@@ -56,6 +57,22 @@ describe('useApiData', () => {
         await act(() => result.current.refresh());
         expect(result.current.data).toEqual({ value: 2 });
         expect(fetchFn).toHaveBeenCalledTimes(2);
+    });
+
+    it('shows session expired message on APIError 401', async () => {
+        const fetchFn = vi.fn().mockRejectedValue(new APIError(401, 'Unauthorized'));
+        const { result } = renderHook(() => useApiData(fetchFn));
+
+        await waitFor(() => expect(result.current.loading).toBe(false));
+        expect(result.current.error).toBe('Sesión expirada. Redirigiendo al inicio de sesión...');
+    });
+
+    it('shows access denied message on APIError 403', async () => {
+        const fetchFn = vi.fn().mockRejectedValue(new APIError(403, 'Forbidden'));
+        const { result } = renderHook(() => useApiData(fetchFn));
+
+        await waitFor(() => expect(result.current.loading).toBe(false));
+        expect(result.current.error).toBe('Acceso denegado. Se requieren permisos de administrador.');
     });
 
     it('refresh clears error on retry success', async () => {

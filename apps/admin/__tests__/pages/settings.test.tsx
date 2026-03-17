@@ -43,12 +43,16 @@ const mockHealth = {
 const mockGetConfig = vi.fn();
 const mockGetHealth = vi.fn();
 
-vi.mock('@/lib/api', () => ({
-    api: {
-        getConfig: (...args: unknown[]) => mockGetConfig(...args),
-        getHealth: (...args: unknown[]) => mockGetHealth(...args),
-    },
-}));
+vi.mock('@/lib/api', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/api')>();
+    return {
+        ...actual,
+        api: {
+            getConfig: (...args: unknown[]) => mockGetConfig(...args),
+            getHealth: (...args: unknown[]) => mockGetHealth(...args),
+        },
+    };
+});
 
 describe('Settings page', () => {
     beforeEach(() => {

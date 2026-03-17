@@ -43,6 +43,24 @@ describe('API client', () => {
             global.fetch = vi.fn().mockRejectedValue(new Error('Connection refused'));
             await expect(api.getConfig()).rejects.toThrow('Network error');
         });
+
+        it('redirects to /sign-in on 401 and clears stale tokens', async () => {
+            mockFetch({ ok: false, status: 401, statusText: 'Unauthorized' });
+
+            const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+            const result = await Promise.race([
+                api.getHealth().then(() => 'resolved').catch(() => 'rejected'),
+                new Promise<string>((r) => setTimeout(() => r('pending'), 50)),
+            ]);
+
+            expect(result).toBe('pending');
+            expect(removeItemSpy).toHaveBeenCalledWith('janua_access_token');
+            expect(removeItemSpy).toHaveBeenCalledWith('janua_refresh_token');
+            expect(removeItemSpy).toHaveBeenCalledWith('janua_token_expires_at');
+
+            removeItemSpy.mockRestore();
+        });
     });
 
     describe('endpoints', () => {
