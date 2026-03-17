@@ -4,6 +4,7 @@ import { SignJWT } from "jose";
 
 const JANUA_BASE_URL =
     process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
+const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_BASE_URL;
 const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
 
 /**
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     let loginData;
     try {
         const loginRes = await fetch(
-            `${JANUA_BASE_URL}/api/v1/auth/login`,
+            `${JANUA_SERVER_URL}/api/v1/auth/login`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -96,7 +97,7 @@ export async function POST(request: Request) {
     // Fetch user info from Janua
     let userInfo;
     try {
-        const userRes = await fetch(`${JANUA_BASE_URL}/api/v1/auth/me`, {
+        const userRes = await fetch(`${JANUA_SERVER_URL}/api/v1/auth/me`, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         if (userRes.ok) {

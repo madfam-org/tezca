@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
 const JANUA_BASE_URL = process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
+const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_BASE_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "";
 const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
 
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
     const redirectUri = `${origin}/api/auth/callback`;
     let tokenData;
     try {
-        const tokenRes = await fetch(`${JANUA_BASE_URL}/api/v1/oauth/token`, {
+        const tokenRes = await fetch(`${JANUA_SERVER_URL}/api/v1/oauth/token`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
@@ -82,7 +83,7 @@ export async function GET(request: Request) {
     // Fetch user info
     let userInfo;
     try {
-        const userRes = await fetch(`${JANUA_BASE_URL}/api/v1/oauth/userinfo`, {
+        const userRes = await fetch(`${JANUA_SERVER_URL}/api/v1/oauth/userinfo`, {
             headers: { Authorization: `Bearer ${tokenData.access_token}` },
         });
 
