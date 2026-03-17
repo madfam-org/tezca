@@ -66,6 +66,16 @@ async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
                 return doFetch(headers);
             }
         }
+        // After retry fails, redirect to sign-in on 401
+        if (error instanceof APIError && error.status === 401) {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('janua_access_token');
+                localStorage.removeItem('janua_refresh_token');
+                localStorage.removeItem('janua_token_expires_at');
+                window.location.href = '/sign-in';
+                return new Promise(() => {});
+            }
+        }
         if (error instanceof APIError) {
             throw error;
         }

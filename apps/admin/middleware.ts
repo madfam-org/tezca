@@ -1,36 +1,24 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createJanuaMiddleware } from "@janua/nextjs/middleware";
 
-const jwtSecret = process.env.JANUA_SECRET_KEY || "";
-const isProduction = process.env.NODE_ENV === "production";
+const PUBLIC_PATHS = ["/sign-in", "/api/auth", "/_next", "/favicon", "/icon"];
 
-// When no secret key is configured:
-// - Production: return 503 (auth required but not configured)
-// - Dev mode: all routes are open (passthrough)
-const januaMiddleware = jwtSecret
-    ? createJanuaMiddleware({
-          jwtSecret,
-          publicRoutes: ["/sign-in", "/api/health", "/api/auth/*"],
-          redirectUrl: "/sign-in",
-      })
-    : null;
+export function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
 
-export default function middleware(req: NextRequest) {
-    if (!januaMiddleware) {
-        if (isProduction) {
-            return new NextResponse(
-                "Admin panel unavailable: authentication not configured",
-                { status: 503 }
-            );
-        }
+    if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
         return NextResponse.next();
     }
-    return januaMiddleware(req);
+
+    const session = request.cookies.get("janua-session");
+    if (!session?.value) {
+        const signInUrl = new URL("/sign-in", request.url);
+        return NextResponse.redirect(signInUrl);
+    }
+
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    ],
+    matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg).*)"],
 };

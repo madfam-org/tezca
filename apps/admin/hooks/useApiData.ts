@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { APIError } from '@/lib/api';
 
 interface UseApiDataResult<T> {
     data: T | null;
@@ -27,7 +28,13 @@ export function useApiData<T>(
             const result = await fetchFn();
             setData(result);
         } catch (err) {
-            setError(err instanceof Error ? err.message : errorMessage);
+            if (err instanceof APIError && err.status === 401) {
+                setError('Sesión expirada. Redirigiendo al inicio de sesión...');
+            } else if (err instanceof APIError && err.status === 403) {
+                setError('Acceso denegado. Se requieren permisos de administrador.');
+            } else {
+                setError(err instanceof Error ? err.message : errorMessage);
+            }
         } finally {
             setLoading(false);
         }
