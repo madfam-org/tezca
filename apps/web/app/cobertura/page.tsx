@@ -20,7 +20,7 @@ const content = {
     intro: 'Tezca aspira a capturar la totalidad del marco jurídico mexicano: leyes federales, estatales, municipales, normas oficiales, tratados internacionales, regulaciones y jurisprudencia. Esta página muestra nuestro progreso en tiempo real.',
     methodology: {
       title: 'Metodología',
-      body: 'Los conteos del "universo conocido" provienen de fuentes oficiales: la Cámara de Diputados para leyes federales, el Orden Jurídico Nacional (OJN) para legislación estatal, CONAMER para regulaciones, y la SCJN para jurisprudencia. Los conteos de "capturados" reflejan documentos descargados, parseados e indexados en nuestra base de datos. Las barras verdes indican cobertura mayor al 90%, amarillas entre 50-90%, y rojas menor al 50%.',
+      body: 'Los conteos del "universo conocido" provienen de fuentes oficiales: la Cámara de Diputados para leyes federales, el Orden Jurídico Nacional (OJN) para legislación estatal, CONAMER para regulaciones, y la SCJN para jurisprudencia. Los conteos de "capturados" reflejan documentos descargados, parseados e indexados en nuestra base de datos. Las barras verdes indican cobertura mayor al 90%, amarillas entre 50-90%, y rojas menor al 50%. Las cuatro perspectivas de cobertura permiten evaluar el progreso desde distintos ángulos: leyes vigentes, marco jurídico completo, normatividad primaria, y marco jurídico total. La tabla por estado muestra el desglose de los 32 estados.',
     },
     help: {
       title: '¿Cómo puedes ayudar?',
@@ -52,7 +52,7 @@ const content = {
     intro: 'Tezca aims to capture the entirety of Mexico\'s legal framework: federal, state, and municipal laws, official standards, international treaties, regulations, and case law. This page shows our real-time progress.',
     methodology: {
       title: 'Methodology',
-      body: 'The "known universe" counts come from official sources: the Chamber of Deputies for federal laws, the National Legal Order (OJN) for state legislation, CONAMER for regulations, and the SCJN for case law. The "captured" counts reflect documents downloaded, parsed, and indexed in our database. Green bars indicate coverage above 90%, yellow between 50-90%, and red below 50%.',
+      body: 'The "known universe" counts come from official sources: the Chamber of Deputies for federal laws, the National Legal Order (OJN) for state legislation, CONAMER for regulations, and the SCJN for case law. The "captured" counts reflect documents downloaded, parsed, and indexed in our database. Green bars indicate coverage above 90%, yellow between 50-90%, and red below 50%. The four coverage perspectives let you evaluate progress from different angles: active laws, complete legal framework, primary legislation, and total legal framework. The state table shows a breakdown across all 32 states.',
     },
     help: {
       title: 'How you can help',
@@ -84,7 +84,7 @@ const content = {
     intro: 'Tezca quināmiqui quipiya mochi in mēxihcatl tenahuatiliz tlamachiliztli: federal, altepetl, calpulli tenahuatilli, NOMs, tlanōnōtzaliztli, ihuan jurisprudencia. Inīn āmatl quināmiqui totlachihuaz.',
     methodology: {
       title: 'Tlachihualiztli',
-      body: 'In "cemānāhuac" tlapohualli ītēuctlahtōlpialōyan: Cámara de Diputados ic federal tenahuatilli, OJN ic altepetl, CONAMER ic regulaciones, ihuan SCJN ic jurisprudencia.',
+      body: 'In "cemānāhuac" tlapohualli ītēuctlahtōlpialōyan: Cámara de Diputados ic federal tenahuatilli, OJN ic altepetl, CONAMER ic regulaciones, ihuan SCJN ic jurisprudencia. Nāhui cobertura tlanextiliztli ihuan altepetl tlapohualli.',
     },
     help: {
       title: 'Quēnin huelīz tipalēhuia?',
@@ -135,7 +135,7 @@ export default async function CoberturaPage({
       </section>
 
       {/* Nav bar */}
-      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -149,7 +149,7 @@ export default async function CoberturaPage({
       </div>
 
       {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-24 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-24 max-w-5xl">
         {/* Intro */}
         <p className="font-serif text-base sm:text-lg leading-relaxed text-muted-foreground mb-12">
           {t.intro}

@@ -3,6 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock @tezca/ui
 vi.mock('@tezca/ui', () => ({
+    Badge: ({ children, className }: any) => <span data-testid="badge" className={className}>{children}</span>,
+    Button: ({ children, className, onClick, ...props }: any) => (
+        <button className={className} onClick={onClick} {...props}>{children}</button>
+    ),
     Card: ({ children, className }: any) => <div data-testid="card" className={className}>{children}</div>,
     CardContent: ({ children, className }: any) => <div className={className}>{children}</div>,
 }));
@@ -22,6 +26,7 @@ const MOCK_COVERAGE = {
     total_items: 30000,
     total_universe: 40000,
     overall_pct: 75,
+    total_articles: 3500000,
     tiers: [
         {
             id: 'federal',
@@ -30,6 +35,7 @@ const MOCK_COVERAGE = {
             universe: 2500,
             pct: 80,
             color: 'green',
+            confidence: 'high',
         },
         {
             id: 'state',
@@ -38,6 +44,17 @@ const MOCK_COVERAGE = {
             universe: 35000,
             pct: 71,
             color: 'yellow',
+            confidence: 'medium',
+        },
+        {
+            id: 'noms',
+            name: { es: 'NOMs', en: 'NOMs', nah: 'NOMs' },
+            have: 428,
+            universe: null,
+            pct: null,
+            color: 'red',
+            confidence: 'low',
+            note: { es: 'No existe censo', en: 'No census exists', nah: 'Ahmo' },
         },
         {
             id: 'municipal',
@@ -46,8 +63,39 @@ const MOCK_COVERAGE = {
             universe: null,
             pct: null,
             color: 'red',
+            confidence: null,
             note: { es: 'Sin universo conocido', en: 'No known universe', nah: 'Ahmo machiz' },
         },
+    ],
+    coverage_views: {
+        leyes_vigentes: {
+            label: { es: 'Leyes Legislativas Vigentes', en: 'Active Legislative Laws', nah: 'Tenahuatilli' },
+            universe: 12804,
+            captured: 12804,
+            pct: 100,
+        },
+        marco_juridico_completo: {
+            label: { es: 'Marco Jurídico Completo', en: 'Complete Legal Framework', nah: 'Mochi' },
+            universe: 36719,
+            captured: 31846,
+            pct: 86.7,
+        },
+        normatividad_primaria: {
+            label: { es: 'Normatividad Primaria', en: 'Primary Legislation', nah: 'Achto' },
+            universe: 36719,
+            captured: 34285,
+            pct: 93.4,
+        },
+        marco_juridico_total: {
+            label: { es: 'Marco Jurídico Total', en: 'Total Legal Framework', nah: 'Cemānāhuac' },
+            universe: 652136,
+            captured: 35945,
+            pct: 5.5,
+        },
+    },
+    state_coverage: [
+        { state: 'Jalisco', legislative: 500, non_legislative: 200, total: 700 },
+        { state: 'Aguascalientes', legislative: 300, non_legislative: 100, total: 400 },
     ],
     last_updated: '2026-03-01',
 };
@@ -150,7 +198,9 @@ describe('CoverageDashboard', () => {
         render(<CoverageDashboard lang="es" />);
 
         await waitFor(() => {
-            expect(screen.getByText('N/D')).toBeInTheDocument();
+            // Both NOMs and Municipal have null pct
+            const nds = screen.getAllByText('N/D');
+            expect(nds.length).toBeGreaterThanOrEqual(2);
         });
     });
 
@@ -162,7 +212,8 @@ describe('CoverageDashboard', () => {
         render(<CoverageDashboard lang="es" />);
 
         await waitFor(() => {
-            expect(screen.getByText('Desconocido')).toBeInTheDocument();
+            const unknowns = screen.getAllByText('Desconocido');
+            expect(unknowns.length).toBeGreaterThanOrEqual(1);
         });
     });
 
@@ -199,7 +250,8 @@ describe('CoverageDashboard', () => {
 
         await waitFor(() => {
             expect(screen.getByText('Overall coverage')).toBeInTheDocument();
-            expect(screen.getByText('State')).toBeInTheDocument();
+            // "State" appears in both tier card and state table header
+            expect(screen.getAllByText('State').length).toBeGreaterThanOrEqual(1);
             expect(screen.getByText(/Last updated/)).toBeInTheDocument();
         });
     });
@@ -213,7 +265,8 @@ describe('CoverageDashboard', () => {
 
         await waitFor(() => {
             expect(screen.getByText('Mochi cobertura')).toBeInTheDocument();
-            expect(screen.getByText('Altepetl')).toBeInTheDocument();
+            // "Altepetl" appears in both tier card name and state table header
+            expect(screen.getAllByText('Altepetl').length).toBeGreaterThanOrEqual(1);
         });
     });
 
@@ -225,5 +278,85 @@ describe('CoverageDashboard', () => {
         render(<CoverageDashboard lang="en" />);
 
         expect(screen.getByText('Loading statistics...')).toBeInTheDocument();
+    });
+
+    // ---------------------------------------------------------------
+    // 15. Coverage view tabs render
+    // ---------------------------------------------------------------
+    it('renders coverage view tabs', async () => {
+        mockGetCoverage.mockResolvedValue(MOCK_COVERAGE);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Perspectivas de cobertura')).toBeInTheDocument();
+            // View label appears in both tab button and active detail card
+            expect(screen.getAllByText(/Leyes Legislativas Vigentes/).length).toBeGreaterThanOrEqual(1);
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 16. State coverage table renders
+    // ---------------------------------------------------------------
+    it('renders state coverage table', async () => {
+        mockGetCoverage.mockResolvedValue(MOCK_COVERAGE);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Jalisco')).toBeInTheDocument();
+            expect(screen.getByText('Aguascalientes')).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 17. Confidence badges appear
+    // ---------------------------------------------------------------
+    it('renders confidence badges on tiers', async () => {
+        mockGetCoverage.mockResolvedValue(MOCK_COVERAGE);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText('alta')).toBeInTheDocument();
+            expect(screen.getByText('media')).toBeInTheDocument();
+            expect(screen.getByText('baja')).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 18. Total articles displayed
+    // ---------------------------------------------------------------
+    it('displays total articles when present', async () => {
+        mockGetCoverage.mockResolvedValue(MOCK_COVERAGE);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/3,500,000 artículos indexados/)).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 19. NOMs-like tier with null pct shows N/D
+    // ---------------------------------------------------------------
+    it('shows N/D for NOMs tier with null pct', async () => {
+        mockGetCoverage.mockResolvedValue(MOCK_COVERAGE);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText('NOMs')).toBeInTheDocument();
+            expect(screen.getByText('No existe censo')).toBeInTheDocument();
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 20. No coverage views section when absent
+    // ---------------------------------------------------------------
+    it('does not render coverage view tabs when coverage_views is absent', async () => {
+        const dataWithoutViews = { ...MOCK_COVERAGE, coverage_views: undefined };
+        mockGetCoverage.mockResolvedValue(dataWithoutViews);
+        render(<CoverageDashboard lang="es" />);
+
+        await waitFor(() => {
+            expect(screen.getByText('75%')).toBeInTheDocument();
+        });
+        expect(screen.queryByText('Perspectivas de cobertura')).not.toBeInTheDocument();
     });
 });

@@ -501,6 +501,7 @@ export const api = {
             total_items: number;
             total_universe: number;
             overall_pct: number;
+            total_articles?: number | null;
             tiers: Array<{
                 id: string;
                 name: Record<string, string>;
@@ -508,7 +509,20 @@ export const api = {
                 universe: number | null;
                 pct: number | null;
                 color: string;
+                confidence?: string | null;
                 note?: Record<string, string>;
+            }>;
+            coverage_views?: Record<string, {
+                label: Record<string, string>;
+                universe: number;
+                captured: number;
+                pct: number | null;
+            }>;
+            state_coverage?: Array<{
+                state: string;
+                legislative: number;
+                non_legislative: number;
+                total: number;
             }>;
             last_updated: string;
             version: string;

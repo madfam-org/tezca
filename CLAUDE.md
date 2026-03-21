@@ -82,7 +82,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1308 tests)
+# Backend (pytest + django, 1332 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -90,7 +90,7 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 667 tests across 76 files)
+# Web (vitest, 684 tests across 78 files)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 82 tests across 12 files)
