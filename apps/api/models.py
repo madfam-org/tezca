@@ -543,6 +543,10 @@ class WebhookSubscription(models.Model):
         default=list,
         help_text='e.g. ["fiscal"] — empty list means all domains',
     )
+    law_id_filter = models.JSONField(
+        default=list,
+        help_text='e.g. ["cff", "lisr"] — empty list means all laws',
+    )
     secret = models.CharField(max_length=64, help_text="HMAC-SHA256 signing secret")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

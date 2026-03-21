@@ -161,7 +161,7 @@ Tezca is a generic multi-tenant platform. The codebase must NEVER contain:
 
 All integrations happen through standard, client-agnostic mechanisms:
 - **API Keys** (`tzk_*`) — provisioned via `provision_api_key` command, scoped by tier/domains/scopes
-- **Webhooks** — any subscriber can register via `/api/v1/webhooks/`, receives HMAC-signed events. SSRF-protected: URLs validated against private/reserved IPs at creation and delivery time
+- **Webhooks** — any subscriber can register via `/api/v1/webhooks/`, receives HMAC-signed events. Supports `domain_filter` (by category) and `law_id_filter` (by specific law official_id). SSRF-protected: URLs validated against private/reserved IPs at creation and delivery time. Payloads include `law_type` and `domains` for consumer-side routing
 - **REST API** — standard endpoints, rate-limited by tier
 - **Django signals** — `post_save` on `Law`/`LawVersion` triggers generic `dispatch_webhook_event()`
 
@@ -337,7 +337,7 @@ type Lang = 'es' | 'en' | 'nah';
 | File | Purpose |
 |------|---------|
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
-| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned) |
+| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits. Re-exports `RequireTier`, `RequireFeature`, `check_feature`, `get_effective_tier` from middleware |

@@ -14,7 +14,7 @@ from rest_framework.response import Response
 
 from . import posthog_analytics
 from .middleware.tier_permissions import RequireFeature
-from .models import APIKey, WebhookSubscription
+from .models import APIKey, Law, WebhookSubscription
 from .tasks import deliver_webhook
 from .utils.url_validation import UnsafeURLError, validate_webhook_url
 
@@ -62,6 +62,7 @@ def create_webhook(request):
     url = data.get("url", "").strip()
     events = data.get("events", [])
     domain_filter = data.get("domain_filter", [])
+    law_id_filter = data.get("law_id_filter", [])
 
     if not url:
         return Response(
@@ -92,6 +93,21 @@ def create_webhook(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    # Validate law_id_filter entries exist
+    if law_id_filter:
+        existing_count = Law.objects.filter(official_id__in=law_id_filter).count()
+        if existing_count != len(law_id_filter):
+            existing_ids = set(
+                Law.objects.filter(official_id__in=law_id_filter).values_list(
+                    "official_id", flat=True
+                )
+            )
+            invalid_ids = [lid for lid in law_id_filter if lid not in existing_ids]
+            return Response(
+                {"error": f"Unknown law IDs: {invalid_ids}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
     # Generate signing secret
     secret = secrets.token_hex(32)
 
@@ -100,6 +116,7 @@ def create_webhook(request):
         url=url,
         events=events,
         domain_filter=domain_filter,
+        law_id_filter=law_id_filter,
         secret=secret,
     )
 
@@ -116,6 +133,7 @@ def create_webhook(request):
             "url": sub.url,
             "events": sub.events,
             "domain_filter": sub.domain_filter,
+            "law_id_filter": sub.law_id_filter,
             "secret": secret,  # Shown once
             "is_active": sub.is_active,
             "created_at": sub.created_at.isoformat(),
@@ -144,6 +162,7 @@ def list_webhooks(request):
             "url": s.url,
             "events": s.events,
             "domain_filter": s.domain_filter,
+            "law_id_filter": s.law_id_filter,
             "is_active": s.is_active,
             "failure_count": s.failure_count,
             "created_at": s.created_at.isoformat(),

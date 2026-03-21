@@ -20,6 +20,10 @@ DOMAIN_MAP = {
     "foreign_trade": ["fiscal", "mercantil", "administrativo"],
     "financial_services": ["fiscal", "mercantil"],
     "professional_services": ["civil", "administrativo", "laboral"],
+    # Consumer-facing composite domains
+    "training": ["laboral", "administrativo"],
+    "customs": ["fiscal", "mercantil", "administrativo"],
+    "safety": ["laboral", "administrativo"],
 }
 
 KNOWN_STATES = {

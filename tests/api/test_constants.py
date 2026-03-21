@@ -79,6 +79,27 @@ class TestDomainMap:
             "laboral",
         }
 
+    def test_consumer_domains_present(self):
+        """Consumer-facing composite domains exist."""
+        for key in ("training", "customs", "safety"):
+            assert key in DOMAIN_MAP, f"Missing consumer domain '{key}'"
+
+    def test_training_categories(self):
+        """Training domain maps to laboral+administrativo."""
+        assert set(DOMAIN_MAP["training"]) == {"laboral", "administrativo"}
+
+    def test_customs_categories(self):
+        """Customs domain maps to fiscal+mercantil+administrativo."""
+        assert set(DOMAIN_MAP["customs"]) == {
+            "fiscal",
+            "mercantil",
+            "administrativo",
+        }
+
+    def test_safety_categories(self):
+        """Safety domain maps to laboral+administrativo."""
+        assert set(DOMAIN_MAP["safety"]) == {"laboral", "administrativo"}
+
     def test_no_empty_domain_values(self):
         """No domain maps to an empty list."""
         for domain, categories in DOMAIN_MAP.items():

@@ -33,4 +33,10 @@ def dispatch_webhook_event(event: str, payload: dict):
             if event_category and event_category not in sub.domain_filter:
                 continue
 
+        # Check law_id filter
+        if sub.law_id_filter:
+            event_law_id = payload.get("law_id", "")
+            if event_law_id and event_law_id not in sub.law_id_filter:
+                continue
+
         deliver_webhook.delay(sub.pk, event, payload)

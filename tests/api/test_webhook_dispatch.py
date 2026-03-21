@@ -51,7 +51,13 @@ class TestSignalDispatch:
         assert mock_delay.called
         call_args = mock_delay.call_args
         assert call_args[0][1] == "law.created"
-        assert call_args[0][2]["law_id"] == "test_signal_create"
+        payload = call_args[0][2]
+        assert payload["law_id"] == "test_signal_create"
+        assert "law_type" in payload
+        assert "domains" in payload
+        assert isinstance(payload["domains"], list)
+        # fiscal category maps to finance, commerce, foreign_trade, financial_services, customs
+        assert "finance" in payload["domains"]
 
     @patch("apps.api.tasks.deliver_webhook.delay")
     def test_law_updated_signal(self, mock_delay):
@@ -73,7 +79,7 @@ class TestSignalDispatch:
 
     @patch("apps.api.tasks.deliver_webhook.delay")
     def test_version_created_signal(self, mock_delay):
-        """Creating a LawVersion fires version.created event."""
+        """Creating a LawVersion fires version.created event with enriched payload."""
         law = Law.objects.create(
             official_id="test_signal_version",
             name="Version Law",
@@ -90,7 +96,11 @@ class TestSignalDispatch:
         # Should have been called for version.created (law.updated also fires from law save)
         calls = [c for c in mock_delay.call_args_list if c[0][1] == "version.created"]
         assert len(calls) == 1
-        assert calls[0][0][2]["law_id"] == "test_signal_version"
+        payload = calls[0][0][2]
+        assert payload["law_id"] == "test_signal_version"
+        assert "law_type" in payload
+        assert "domains" in payload
+        assert isinstance(payload["domains"], list)
 
     @patch("apps.api.tasks.deliver_webhook.delay")
     def test_version_update_does_not_dispatch(self, mock_delay):
@@ -170,5 +180,58 @@ class TestDispatchFiltering:
         )
         from apps.api.webhooks import dispatch_webhook_event
 
+        dispatch_webhook_event("law.updated", {"law_id": "cff", "category": "fiscal"})
+        assert mock_delay.called
+
+    @patch("apps.api.tasks.deliver_webhook.delay")
+    def test_law_id_filter_skips_non_matching(self, mock_delay):
+        """Subscription with law_id_filter=['cff'] ignores CPEUM events."""
+        WebhookSubscription.objects.create(
+            api_key=self.api_key,
+            url="https://example.com/hook",
+            events=["law.updated"],
+            law_id_filter=["cff"],
+            secret="d" * 64,
+        )
+        from apps.api.webhooks import dispatch_webhook_event
+
+        dispatch_webhook_event(
+            "law.updated", {"law_id": "cpeum", "category": "constitucional"}
+        )
+        assert not mock_delay.called
+
+    @patch("apps.api.tasks.deliver_webhook.delay")
+    def test_law_id_filter_matches(self, mock_delay):
+        """Subscription with law_id_filter=['cff'] receives CFF events."""
+        WebhookSubscription.objects.create(
+            api_key=self.api_key,
+            url="https://example.com/hook",
+            events=["law.updated"],
+            law_id_filter=["cff"],
+            secret="e" * 64,
+        )
+        from apps.api.webhooks import dispatch_webhook_event
+
+        dispatch_webhook_event("law.updated", {"law_id": "cff", "category": "fiscal"})
+        assert mock_delay.called
+
+    @patch("apps.api.tasks.deliver_webhook.delay")
+    def test_law_id_filter_combined_with_domain_filter(self, mock_delay):
+        """Both filters must pass for delivery."""
+        WebhookSubscription.objects.create(
+            api_key=self.api_key,
+            url="https://example.com/hook",
+            events=["law.updated"],
+            domain_filter=["fiscal"],
+            law_id_filter=["cff", "lisr"],
+            secret="f" * 64,
+        )
+        from apps.api.webhooks import dispatch_webhook_event
+
+        # Matching domain but wrong law_id → skipped
+        dispatch_webhook_event("law.updated", {"law_id": "liva", "category": "fiscal"})
+        assert not mock_delay.called
+
+        # Matching both → delivered
         dispatch_webhook_event("law.updated", {"law_id": "cff", "category": "fiscal"})
         assert mock_delay.called

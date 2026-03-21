@@ -391,6 +391,55 @@ class TestCreateWebhookValidation:
         assert response.status_code == 400
 
     @patch(AUTH_PATCH)
+    def test_create_with_law_id_filter(self, mock_auth):
+        """Can create webhook with law_id_filter."""
+        mock_auth.return_value = (self.user, "fake-key")
+
+        # Create test laws for validation
+        from apps.api.models import Law
+
+        Law.objects.create(
+            official_id="cff", name="CFF", tier="federal", category="fiscal"
+        )
+        Law.objects.create(
+            official_id="lisr", name="LISR", tier="federal", category="fiscal"
+        )
+
+        url = reverse("webhook-create")
+        response = self.client.post(
+            url,
+            {
+                "url": "https://example.com/hook",
+                "events": ["law.updated"],
+                "law_id_filter": ["cff", "lisr"],
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["law_id_filter"] == ["cff", "lisr"]
+
+    @patch(AUTH_PATCH)
+    def test_create_with_invalid_law_id_filter(self, mock_auth):
+        """Creating webhook with non-existent law IDs returns 400."""
+        mock_auth.return_value = (self.user, "fake-key")
+
+        url = reverse("webhook-create")
+        response = self.client.post(
+            url,
+            {
+                "url": "https://example.com/hook",
+                "events": ["law.updated"],
+                "law_id_filter": ["nonexistent_law"],
+            },
+            format="json",
+        )
+
+        assert response.status_code == 400
+        assert "Unknown law IDs" in response.json()["error"]
+
+    @patch(AUTH_PATCH)
     def test_create_generates_64char_secret(self, mock_auth):
         """Created webhook has a 64-character hex secret."""
         mock_auth.return_value = (self.user, "fake-key")
