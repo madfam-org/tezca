@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+interface MockResponse {
+    status: number;
+    body: { error?: string; access_token?: string };
+}
+
 // Mock next/server
 vi.mock('next/server', () => ({
     NextResponse: {
@@ -46,13 +51,13 @@ describe('POST /api/auth/login', () => {
     }
 
     it('returns 400 when email is missing', async () => {
-        const res = await importAndCall({ password: 'secret' }) as any;
+        const res = await importAndCall({ password: 'secret' }) as MockResponse;
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/Correo y contraseña/);
     });
 
     it('returns 400 when password is missing', async () => {
-        const res = await importAndCall({ email: 'a@b.com' }) as any;
+        const res = await importAndCall({ email: 'a@b.com' }) as MockResponse;
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/Correo y contraseña/);
     });
@@ -65,7 +70,7 @@ describe('POST /api/auth/login', () => {
             })
         );
 
-        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as any;
+        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as MockResponse;
         expect(res.status).toBe(503);
         expect(res.body.error).toMatch(/no está disponible/);
     });
@@ -78,7 +83,7 @@ describe('POST /api/auth/login', () => {
             })
         );
 
-        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as any;
+        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as MockResponse;
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Cuenta bloqueada');
     });
@@ -86,7 +91,7 @@ describe('POST /api/auth/login', () => {
     it('returns 502 on network failure', async () => {
         globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('ECONNREFUSED'));
 
-        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as any;
+        const res = await importAndCall({ email: 'a@b.com', password: 'p' }) as MockResponse;
         expect(res.status).toBe(502);
         expect(res.body.error).toMatch(/Error de conexión/);
     });

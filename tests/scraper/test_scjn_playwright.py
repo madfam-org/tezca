@@ -5,9 +5,11 @@ Tests initialization, interface, and record creation without requiring
 a browser (Playwright is an optional dependency).
 """
 
-import json
-
 import pytest
+
+pytest.importorskip("playwright")
+
+import json
 
 
 class TestScjnPlaywrightScraper:
