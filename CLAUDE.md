@@ -109,6 +109,11 @@ python manage.py backfill_quality_scores --all               # backfill all
 python manage.py backfill_quality_scores --law-id cpeum      # single law
 python manage.py backfill_quality_scores --all --force        # rescore
 
+# DOF health verification
+python manage.py verify_dof_health                           # 7-day report
+python manage.py verify_dof_health --days 30 --json          # 30-day JSON report
+python manage.py verify_dof_health --run-now                 # manual DOF check
+
 # E2E (89 tests across 15 specs, 4 browser projects)
 cd apps/web && npx playwright test
 cd apps/web && DATA_INTEGRITY_E2E=1 npx playwright test data-integrity.spec.ts  # live API
@@ -254,7 +259,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
-- 20 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct), `check-scraper-health-daily` (daily 08:00, logs stale/failing scrapers)
+- 21 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct), `check-scraper-health-daily` (daily 08:00, logs stale/failing scrapers), `nom-monthly-full` (15th, full-agency NOM scan with `priority_only=False`)
 
 ### Storage
 
@@ -373,6 +378,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/ingestion/db_saver.py` | DatabaseSaver — persists law versions with quality metrics to Django DB |
 | `apps/api/management/commands/retry_failed_non_leg.py` | Retry failed non-leg state law downloads |
 | `apps/api/management/commands/backfill_quality_scores.py` | Backfill quality_grade/quality_score for existing LawVersion records |
+| `apps/api/management/commands/verify_dof_health.py` | DOF daily task health report (last N days, optional `--run-now`) |
 | `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
 | `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |

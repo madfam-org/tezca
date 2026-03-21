@@ -179,12 +179,26 @@ _PRIORITY_PREFIXES: List[str] = [
     "NOM-003-SEMARNAT",
     "NOM-004-SEMARNAT",
     "NOM-005-SEMARNAT",
-    # STPS (labor safety) — NOM-001 through NOM-005
+    # STPS (labor safety) — critical series for manufacturing and training
     "NOM-001-STPS",
     "NOM-002-STPS",
     "NOM-003-STPS",
     "NOM-004-STPS",
     "NOM-005-STPS",
+    "NOM-006-STPS",
+    "NOM-009-STPS",
+    "NOM-010-STPS",
+    "NOM-011-STPS",
+    "NOM-012-STPS",
+    "NOM-015-STPS",
+    "NOM-017-STPS",  # PPE
+    "NOM-018-STPS",
+    "NOM-019-STPS",
+    "NOM-020-STPS",  # Training
+    "NOM-025-STPS",
+    "NOM-026-STPS",
+    "NOM-029-STPS",
+    "NOM-030-STPS",
     # SCFI (commerce/industry) — NOM-001 through NOM-003
     "NOM-001-SCFI",
     "NOM-002-SCFI",

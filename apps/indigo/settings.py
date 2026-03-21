@@ -393,4 +393,9 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.check_scraper_health",
         "schedule": crontab(hour=8, minute=0),
     },
+    "nom-monthly-full": {
+        "task": "dataops.run_nom_scraper",
+        "schedule": crontab(hour=2, minute=0, day_of_month="15"),
+        "kwargs": {"priority_only": False, "max_results": 5000},
+    },
 }

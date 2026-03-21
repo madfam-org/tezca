@@ -214,10 +214,14 @@ def check_dof_daily():
     """
     import datetime
 
+    # Pass existing law names so the scraper can match against actual DB laws
+    from apps.api.models import Law
     from apps.scraper.federal.dof_daily import DofScraper
 
+    existing_laws = list(Law.objects.values_list("name", flat=True))
+
     scraper = DofScraper(date=datetime.date.today())
-    results = scraper.run()
+    results = scraper.run(existing_laws=existing_laws)
 
     entries = results.get("entries", [])
     changes = results.get("changes", [])
@@ -228,17 +232,24 @@ def check_dof_daily():
 
         log_entry = AcquisitionLog.objects.create(
             operation="dof_daily_check",
-            parameters={"date": str(datetime.date.today())},
+            parameters={
+                "date": str(datetime.date.today()),
+                "existing_laws_count": len(existing_laws),
+                "changes": [
+                    {
+                        "change_type": c.get("change_type"),
+                        "title": c.get("title", "")[:200],
+                    }
+                    for c in changes[:20]
+                ],
+            },
             found=len(entries),
             downloaded=0,
             failed=0,
-            ingested=0,
+            ingested=len(changes),
         )
         if changes:
-            log_entry.error_summary = (
-                f"{len(changes)} law changes detected: "
-                + ", ".join(c.get("change_type", "unknown") for c in changes[:5])
-            )
+            log_entry.error_summary = f"{len(changes)} law changes detected"
         log_entry.finish()
     except Exception:
         pass
