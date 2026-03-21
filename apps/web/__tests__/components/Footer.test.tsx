@@ -1,7 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Footer } from '@/components/Footer';
 import { LanguageProvider } from '@/components/providers/LanguageContext';
+
+vi.mock('next/link', () => ({
+    default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>,
+}));
+vi.mock('lucide-react', () => ({
+    ExternalLink: (props: any) => <svg data-testid="external-link-icon" {...props} />,
+    Scale: (props: any) => <svg data-testid="scale-icon" {...props} />,
+}));
+vi.mock('@/components/NewsletterSignup', () => ({
+    NewsletterSignup: () => <div data-testid="newsletter-signup" />,
+}));
+vi.mock('@/components/LanguageToggle', () => ({
+    LanguageToggle: () => <div data-testid="language-toggle" />,
+}));
 
 function renderFooter() {
   return render(
