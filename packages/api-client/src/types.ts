@@ -127,7 +127,8 @@ export interface CoverageBreakdown {
 // SDK-specific types
 
 export interface TezcaClientConfig {
-  apiKey: string;
+  apiKey?: string;
+  token?: string;
   baseUrl?: string;
   timeout?: number;
 }
@@ -249,4 +250,196 @@ export interface PaginatedResponse<T> {
   next: string | null;
   previous: string | null;
   results: T[];
+}
+
+// --- Categories & Coverage ---
+
+export interface CategoryItem {
+  category: string;
+  count: number;
+}
+
+export interface CoverageTier {
+  label: string;
+  count: number;
+  universe: number | null;
+  percentage: number | null;
+  description?: string;
+  source?: string;
+  last_verified?: string;
+}
+
+export interface CoverageResponse {
+  leyes_vigentes: CoverageTier;
+  federal: CoverageTier;
+  state: CoverageTier;
+  state_all_powers: CoverageTier;
+  municipal: CoverageTier;
+}
+
+// --- Graph ---
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  category?: string;
+  tier?: string;
+  size: number;
+  color?: string;
+  x?: number;
+  y?: number;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  weight: number;
+  label?: string;
+}
+
+export interface GraphResponse {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  stats?: {
+    total_nodes: number;
+    total_edges: number;
+    density?: number;
+  };
+}
+
+export interface GraphParams {
+  depth?: number;
+  min_weight?: number;
+}
+
+export interface GraphOverviewParams {
+  min_weight?: number;
+  max_nodes?: number;
+}
+
+// --- Judicial ---
+
+export interface JudicialRecord {
+  registro: string;
+  epoca: string;
+  instancia: string;
+  materia: string;
+  tipo: "jurisprudencia" | "tesis_aislada";
+  rubro: string;
+  texto: string;
+  precedentes?: string;
+  votos?: string;
+  ponente?: string;
+  fuente?: string;
+  fecha_publicacion?: string;
+}
+
+export interface JudicialSearchParams extends PaginationOptions {
+  q?: string;
+  materia?: string;
+  tipo?: "jurisprudencia" | "tesis_aislada";
+  epoca?: string;
+  instancia?: string;
+  sort?: string;
+}
+
+export interface JudicialSearchResponse {
+  results: JudicialRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export interface JudicialStatsResponse {
+  total: number;
+  by_tipo: Record<string, number>;
+  by_materia: Record<string, number>;
+  by_epoca: Record<string, number>;
+}
+
+// --- Cross References ---
+
+export interface CrossReferenceData {
+  id: number;
+  source_law_slug: string;
+  source_article_id: string;
+  target_law_slug: string | null;
+  target_article_num: string | null;
+  reference_text: string;
+  fraction?: string | null;
+  confidence: number;
+  target_url?: string | null;
+}
+
+export interface IncomingCrossReference {
+  source_law_slug: string;
+  source_article_id: string;
+  reference_text: string;
+  confidence: number;
+}
+
+export interface BatchRefsResponse {
+  law_id: string;
+  article_refs: Record<string, CrossReferenceData[]>;
+}
+
+// --- Annotations ---
+
+export interface AnnotationData {
+  id: number;
+  law_id: string;
+  article_id: string;
+  text: string;
+  highlight_start?: number | null;
+  highlight_end?: number | null;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateAnnotationParams {
+  law_id: string;
+  article_id: string;
+  text: string;
+  highlight_start?: number;
+  highlight_end?: number;
+  color?: string;
+}
+
+// --- Notifications & Alerts ---
+
+export interface NotificationData {
+  id: number;
+  title: string;
+  body: string;
+  link?: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface AlertData {
+  id: number;
+  law_id?: string;
+  category?: string;
+  state?: string;
+  alert_type: string;
+  delivery: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface CreateAlertParams {
+  law_id?: string;
+  category?: string;
+  state?: string;
+  alert_type: string;
+  delivery?: string;
+}
+
+// --- User ---
+
+export interface UserPreferences {
+  bookmarks: string[];
+  recently_viewed: string[];
+  preferences: Record<string, unknown>;
 }

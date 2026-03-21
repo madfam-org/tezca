@@ -4,6 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.test import override_settings
 from rest_framework.test import APIRequestFactory
 
 from apps.api.middleware.tier_permissions import (
@@ -12,6 +13,7 @@ from apps.api.middleware.tier_permissions import (
     RequireFeature,
     RequireTier,
     check_feature,
+    get_effective_tier,
     get_tier_limits,
     has_tier,
     load_tiers,
@@ -20,7 +22,7 @@ from apps.api.middleware.tier_permissions import (
 
 
 class TestLoadTiers:
-    """Tests for load_tiers() — reads and caches tiers.json."""
+    """Tests for load_tiers() -- reads and caches tiers.json."""
 
     def setup_method(self):
         # Clear lru_cache between tests
@@ -97,7 +99,7 @@ class TestTierHierarchy:
 
 
 class TestNormalizeTier:
-    """Tests for normalize_tier() — maps legacy names to canonical tiers."""
+    """Tests for normalize_tier() -- maps legacy names to canonical tiers."""
 
     def test_free_maps_to_essentials(self):
         assert normalize_tier("free") == "essentials"
@@ -129,7 +131,7 @@ class TestNormalizeTier:
 
 
 class TestHasTier:
-    """Tests for has_tier() — checks if user tier meets required tier."""
+    """Tests for has_tier() -- checks if user tier meets required tier."""
 
     def test_anon_below_community(self):
         assert has_tier("anon", "community") is False
@@ -199,7 +201,7 @@ class TestHasTier:
 
 
 class TestCheckFeature:
-    """Tests for check_feature() — checks boolean feature flags per tier."""
+    """Tests for check_feature() -- checks boolean feature flags per tier."""
 
     def setup_method(self):
         load_tiers.cache_clear()
@@ -253,7 +255,7 @@ class TestCheckFeature:
 
 
 class TestGetTierLimits:
-    """Tests for get_tier_limits() — returns the full limits dict for a tier."""
+    """Tests for get_tier_limits() -- returns the full limits dict for a tier."""
 
     def setup_method(self):
         load_tiers.cache_clear()
@@ -433,3 +435,68 @@ class TestRequireFeature:
         request = self._make_request_with_tier("anon")
         perm.has_permission(request, None)
         assert "graph_api" in perm.message
+
+
+class TestGetEffectiveTier:
+    """Tests for get_effective_tier() -- deployment-mode tier capping."""
+
+    @override_settings(TEZCA_DEPLOYMENT="self-hosted")
+    def test_self_hosted_caps_institutional_to_academic(self):
+        assert get_effective_tier("institutional") == "academic"
+
+    @override_settings(TEZCA_DEPLOYMENT="self-hosted")
+    def test_self_hosted_caps_madfam_to_academic(self):
+        assert get_effective_tier("madfam") == "academic"
+
+    @override_settings(TEZCA_DEPLOYMENT="self-hosted")
+    def test_self_hosted_allows_academic_through(self):
+        assert get_effective_tier("academic") == "academic"
+
+    @override_settings(TEZCA_DEPLOYMENT="self-hosted")
+    def test_self_hosted_allows_essentials_through(self):
+        assert get_effective_tier("essentials") == "essentials"
+
+    @override_settings(TEZCA_DEPLOYMENT="managed")
+    def test_managed_deployment_no_cap(self):
+        assert get_effective_tier("institutional") == "institutional"
+
+
+class TestRequireFeatureNonMonotonic:
+    """Tests for non-monotonic feature flags -- higher tiers do not inherit all lower-tier features."""
+
+    def setup_method(self):
+        load_tiers.cache_clear()
+
+    def test_community_has_bulk_download_essentials_does_not(self):
+        assert check_feature("community", "bulk_download") is True
+        assert check_feature("essentials", "bulk_download") is False
+
+    def test_institutional_has_webhooks_academic_does_not(self):
+        assert check_feature("institutional", "webhooks") is True
+        assert check_feature("academic", "webhooks") is False
+
+    def test_academic_has_search_analytics(self):
+        assert check_feature("academic", "search_analytics") is True
+
+    def test_institutional_has_graph_api_academic_does_not(self):
+        assert check_feature("institutional", "graph_api") is True
+        assert check_feature("academic", "graph_api") is False
+
+
+class TestCheckFeatureExtended:
+    """Extended tests for check_feature() -- trial eligibility and annotations."""
+
+    def setup_method(self):
+        load_tiers.cache_clear()
+
+    def test_free_member_has_trial_eligible(self):
+        assert check_feature("free_member", "trial_eligible") is True
+
+    def test_community_no_trial_eligible(self):
+        assert check_feature("community", "trial_eligible") is False
+
+    def test_annotations_by_tier(self):
+        assert check_feature("free_member", "annotations") is True
+        assert check_feature("essentials", "annotations") is True
+        assert check_feature("academic", "annotations") is True
+        assert check_feature("anon", "annotations") is False

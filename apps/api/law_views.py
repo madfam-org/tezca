@@ -112,8 +112,8 @@ class LawDetailView(APIView):
                 for v in versions
             ],
             "articles": article_count,
-            "grade": None,
-            "score": None,
+            "grade": (versions[0].quality_grade if versions else None),
+            "score": (versions[0].quality_score if versions else None),
             "has_cross_refs": has_cross_refs,
         }
 

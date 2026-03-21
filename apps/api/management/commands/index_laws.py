@@ -68,6 +68,11 @@ class Command(BaseCommand):
             action="store_true",
             help="One-time migration: convert concrete 'articles' index to alias",
         )
+        parser.add_argument(
+            "--include-quarantined",
+            action="store_true",
+            help="Include laws with quarantined quality grades (D/F) in indexing",
+        )
 
     def _create_indices(self, es):
         """Create Elasticsearch indices with proper mappings."""
@@ -554,6 +559,30 @@ class Command(BaseCommand):
         tier = options.get("tier", "all")
         if tier and tier != "all":
             laws = laws.filter(tier=tier)
+
+        # Exclude quarantined laws (D/F quality grades) unless --include-quarantined
+        if not options.get("include_quarantined"):
+            try:
+                from django.conf import settings as django_settings
+
+                quarantine_grades = getattr(
+                    django_settings, "QUALITY_QUARANTINE_GRADES", ["D", "F"]
+                )
+                quarantined_qs = laws.filter(
+                    versions__quality_grade__in=quarantine_grades
+                ).distinct()
+                quarantined_count = quarantined_qs.count()
+                if quarantined_count > 0:
+                    laws = laws.exclude(versions__quality_grade__in=quarantine_grades)
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"Skipping {quarantined_count} quarantined laws "
+                            f"(grades: {', '.join(quarantine_grades)}). "
+                            f"Use --include-quarantined to override."
+                        )
+                    )
+            except Exception:
+                pass  # Skip quarantine filtering if DB schema not migrated yet
 
         if options.get("limit"):
             laws = laws[: options["limit"]]

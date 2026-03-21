@@ -225,6 +225,51 @@ class IngestionPipeline:
                     f"✅ Quality: Grade {metrics.grade} ({metrics.overall_score:.1f}%)"
                 )
 
+                # Stage 4.5: Quality quarantine gate
+                try:
+                    from django.conf import settings as django_settings
+
+                    quarantine_grades = getattr(
+                        django_settings, "QUALITY_QUARANTINE_GRADES", ["D", "F"]
+                    )
+                except Exception:
+                    quarantine_grades = ["D", "F"]
+
+                if metrics.grade in quarantine_grades:
+                    result.success = False
+                    result.error = (
+                        f"Quarantined: Grade {metrics.grade} "
+                        f"({metrics.overall_score:.1f}%)"
+                    )
+                    self.error_tracker.track(
+                        law_id=law_id,
+                        category="QUALITY_ERROR",
+                        exception=ValueError(result.error),
+                        stage="quality_quarantine",
+                        context={
+                            "grade": metrics.grade,
+                            "score": metrics.overall_score,
+                            "xml_path": str(xml_path),
+                        },
+                    )
+                    print(
+                        f"🚫 Quarantined: Grade {metrics.grade} — "
+                        f"XML preserved at {xml_path}"
+                    )
+                    result.duration_seconds = time.time() - start_time
+                    # Save quality metrics to DB even for quarantined laws
+                    if self.db_saver:
+                        try:
+                            self.db_saver.save_law_version(
+                                law_metadata,
+                                xml_path,
+                                pdf_path,
+                                quality_metrics=metrics,
+                            )
+                        except Exception:
+                            pass  # Best-effort DB save for quarantined
+                    return result
+
                 # Stage 5: Detect cross-references
                 try:
                     from apps.parsers.cross_reference_integration import (
@@ -252,7 +297,9 @@ class IngestionPipeline:
                 # Save to Database
                 if self.db_saver:
                     try:
-                        self.db_saver.save_law_version(law_metadata, xml_path, pdf_path)
+                        self.db_saver.save_law_version(
+                            law_metadata, xml_path, pdf_path, quality_metrics=metrics
+                        )
                         print("✅ Metadata saved to database")
                     except Exception as e:
                         print(f"⚠️  Failed to save to DB: {e}")

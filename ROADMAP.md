@@ -1,9 +1,10 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-03-07
-**Current Status**: 35,277 laws, 1,071,445 ES articles, 33,380 cross-references
+**Last Updated**: 2026-03-20
+**Current Status**: 35,277 laws, 3.5M+ ES articles, 33,380+ cross-references
 **Data Motor**: Pipeline fix complete (state/municipal AKN parsing + unified indexer)
 **DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
+**Codebase Audit**: Full audit completed 2026-03-20 — see [Codebase Audit](#codebase-audit-2026-03-20) section
 
 ---
 
@@ -19,13 +20,19 @@
 - **35,277 laws** in database (1,931 federal + 30,907 state + 2,439 municipal)
 - **93.9% legislative coverage** (11,696 of 12,456 leyes vigentes)
 - **98.9% parser accuracy** (world-class quality)
-- **1,071,445 articles** indexed in Elasticsearch
-- **Production-ready** backend infrastructure
-- **Full-stack Testing** (736 backend + 299 web Vitest + 72 admin Vitest)
+- **3.5M+ articles** indexed in Elasticsearch
+- **Production-ready** backend infrastructure (K8s, HPA, cosign-signed images)
+- **Full-stack Testing** (1,234 backend + 643 web Vitest + 72 admin Vitest + 89 E2E + 18 MCP)
+- **6-tier access control** with billing (Dhanam), trials, webhooks, API keys
+- **16-tool MCP server** published to PyPI for AI agent consumption
+- **20 Celery Beat tasks** automating scraping, pipeline, health checks, trials
+- **Graph visualization** (Sigma.js, ego graph, global overview, public showcase)
+- **Judicial corpus** (SCJN jurisprudencia + tesis aisladas via API + Playwright scrapers)
 
 ### 🔄 In Progress
-- Tezca production deployment
-- Municipal pilot planning
+- Tezca production deployment (infrastructure code done, manual provisioning remaining)
+- Municipal pilot planning (Tier 1: 6 major cities)
+- State scraper expansion (~12 of 32 states have dedicated scrapers)
 
 ---
 
@@ -269,11 +276,119 @@
 **Backlog (Future Sprints):**
 - Remaining 25+ municipal scraper implementations (Tier 2: state capitals)
 - State Periodicos Oficiales scrapers
-- SCJN Jurisprudencia scraper (~500K judicial instruments)
+- ~~SCJN Jurisprudencia scraper~~ (implemented: API + Playwright, weekly Beat task)
 - SIL legislative tracking integration
 - International Treaties — SRE (~1,500 treaties)
 - ~~Comparison tool UI~~ (completed Feb 2026)
-- Auto-update system (DOF monitoring → parse → ingest → index cycle)
+- ~~Auto-update system~~ (DOF daily wired to Celery Beat, 7 AM)
+- Address codebase audit gaps (see [Codebase Audit](#codebase-audit-2026-03-20) below)
+
+---
+
+## Codebase Audit (2026-03-20)
+
+**Scope**: Full codebase exploration — 371 Python files (~40.9K LOC), ~272 TSX files, 17 K8s manifests, 7 CI workflows.
+
+### Platform Inventory
+
+| Component | Files | LOC | Key Stats |
+|-----------|-------|-----|-----------|
+| API (Django + DRF) | 70 | 8,606 | 40+ endpoints, 6-tier auth, 14 management commands |
+| Scrapers | 47 | 10,581 | Federal (11), State (12), Municipal (10), Judicial (2), Playwright (3) |
+| Parsers | 19 | 3,708 | 5-stage pipeline, A-F quality grading, 6 cross-ref patterns |
+| Web frontend | ~272 | — | 16 routes (Spanish), 78 components, 9 lib modules |
+| Admin panel | ~30 | — | 5 pages, 17 components, Janua-protected |
+| Shared packages | 4 | — | @tezca/lib (types), @tezca/ui (7 primitives), @tezca/api-client (stub), tezca-mcp (16 tools) |
+| Tests | 86 (py) + 77 (ts) + 15 (e2e) | ~10K+ | 1,234 backend + 643 web + 72 admin + 89 E2E + 18 MCP |
+| Scripts | 69 | ~8K | Ingestion (26), scraping (22), dataops (5), validation (6), utility (8) |
+| K8s manifests | 17 | — | Deployments, HPAs, PDBs, PVCs, services, secrets |
+| CI workflows | 7 | — | ci, deploy-api, deploy-web, deploy-admin, publish-mcp, publish-sdk, codeql |
+
+### What's Complete (Beyond Roadmap Documentation)
+
+Several features listed under "Phase 5: Vision" are already implemented:
+
+| Feature | Status | Implementation |
+|---------|--------|----------------|
+| Auto-Updates (DOF monitoring) | ✅ Done | `dof_daily.py` + Celery Beat (7 AM daily) |
+| Annotations & Bookmarks | ✅ Done | `Annotation` model, `AnnotationPanel.tsx`, `BookmarksContext.tsx` |
+| Alerts (subscribe to law changes) | ✅ Done | `UserAlert` model, `AlertButton.tsx`, `notification_views.py` |
+| Deep links to articles | ✅ Done | Hash navigation (`#article-*`) in `LawDetail.tsx` |
+| WebHooks | ✅ Done | `WebhookSubscription` model, HMAC-SHA256 signing, SSRF protection |
+| Bulk Download | ✅ Done | `bulk_views.py`, tier-gated (`RequireFeature.of("bulk_download")`) |
+| SDK (JavaScript) | 🔄 Stub | `@tezca/api-client` published but incomplete; real client = `apps/web/lib/api.ts` |
+| Citation Network | ✅ Done | `CrossReference` model, `cross_reference_views.py`, `CrossReferencePanel.tsx` |
+| SCJN Jurisprudencia | ✅ Done | `JudicialRecord` model, API + Playwright scrapers, weekly Beat task |
+| Graph visualization | ✅ Done | Sigma.js, ego graph + overview + showcase APIs, `/grafo/` route |
+| MCP server for AI agents | ✅ Done | 16 tools, published to PyPI, 18 tests |
+| Billing & trials | ✅ Done | Dhanam webhook, 3/21-day trials, `TierGate` (4 variants) |
+
+### Identified Gaps & Technical Debt
+
+#### 🔴 Critical (Infrastructure Resilience)
+
+| # | Gap | Impact | Mitigation |
+|---|-----|--------|------------|
+| 1 | **Single-node ES in production** | K8s manifest: single-node, 512MB JVM for 3.5M articles. Node failure = full search outage (graceful degradation returns empty, not errors) | Add ES clustering or increase JVM heap; evaluate managed ES |
+| 2 | **Single-node PostgreSQL & Redis** | No HA. PDBs protect app pods but not data stores | Evaluate managed PG (RDS/CloudSQL) or PostgreSQL HA operator |
+| 3 | **No backup/restore strategy** | No pg_dump schedule, no ES snapshot policy, no disaster recovery runbook in codebase | Add scheduled backups + test restore procedure |
+| 4 | **ES JVM mismatch** | Dev: 2GB heap; K8s: 512MB heap for same dataset. Likely causes OOM/GC pressure in production | Align K8s ES heap to at least 1GB, ideally 2GB |
+| 5 | **Deploy workflow race conditions** | Digest commits can race with subsequent pushes. 3-retry loop is a workaround | Evaluate atomic kustomization update or GitOps controller |
+
+#### 🟡 Important (Quality & Coverage)
+
+| # | Gap | Impact | Mitigation |
+|---|-----|--------|------------|
+| 6 | **Test coverage floor at 44%** | `--cov-fail-under=44` is low for a legal data platform. Edge cases in tier gating, export, webhook delivery may be uncovered | Incrementally raise to 60%, prioritize tier_permissions and export coverage |
+| 7 | **20/32 states without dedicated scrapers** | Only ~12 state-specific scrapers. Other states rely on generic OJN bulk or have no dedicated implementation | Prioritize by population: create scrapers for top-10 uncovered states |
+| 8 | **No quality quarantine** | Grade D/F laws indexed identically to Grade A. Low-quality parses with broken article detection serve incorrect content | Add pipeline gate: Grade D/F → manual review queue, not auto-indexed |
+| 9 | **Cross-reference false positives** | All confidence levels (0-1) stored and displayed. No filtering threshold | Add minimum confidence floor (0.3) for display; keep all in DB for analysis |
+| 10 | **Data integrity E2E tests not in CI** | `DATA_INTEGRITY_E2E=1` and `UI_FIDELITY_E2E=1` tests gated behind env flags, never run in default CI | Run these in a nightly CI schedule against staging |
+| 11 | **No migration check in CI** | CI runs pytest but never runs `makemigrations --check` to detect drift | Add `python manage.py makemigrations --check --dry-run` to ci.yml |
+| 12 | **Admin endpoints in OpenAPI schema** | Admin routes in same `urls.py`, discoverable via `drf-spectacular` | Exclude admin URLs from schema generation |
+
+#### 🟢 Recommended (Developer Experience & Polish)
+
+| # | Gap | Impact | Mitigation |
+|---|-----|--------|------------|
+| 13 | **@tezca/api-client is a stub** | Published to npm but incomplete. Real API client = `apps/web/lib/api.ts` (350+ LOC). SDK consumers get empty package | Generate from OpenAPI spec or extract web client into api-client package |
+| 14 | **No committed OpenAPI spec** | `drf-spectacular` generates dynamically but no `openapi.yaml` in repo | Add `spectacular` management command to CI, commit spec |
+| 15 | **No load testing in CI** | k6 scripts exist in `tests/load/` but never run. No perf regression detection | Add periodic k6 runs against staging in nightly CI |
+| 16 | **MCP server thin test coverage** | 18 tests for 16 tools + 3 resources + 3 prompts | Expand to cover error paths, pagination, rate limiting |
+| 17 | **Webhook disable without notification** | Webhooks auto-disable after 10 failures, subscriber never notified | Send email/notification on disable, add re-enable API |
+| 18 | **No offline/PWA support** | Legal reference tool without offline access to viewed laws | Evaluate service worker for caching viewed law detail pages |
+| 19 | **Comparison hard-limited to 2 laws** | Multi-law comparison (e.g., same article across 5 state constitutions) not possible | Extend comparison to N laws with horizontal scroll or grid layout |
+| 20 | **No API versioning strategy** | All endpoints under `/api/v1/`. No plan for breaking changes | Document versioning policy; consider header-based versioning for v2 |
+| 21 | **Celery monitoring** | No Flower or equivalent. Admin `JobMonitor` polls `/admin/jobs/` but unclear depth | Add Flower or integrate Celery task state into admin metrics |
+| 22 | **Frontend re-render cascading** | 5+ React contexts (Language, Auth, Bookmarks, Comparison, trial polling) with no memoization strategy | Profile with React DevTools; consider context splitting or Zustand for high-frequency state |
+
+### Architecture Strengths (Preserve These)
+
+These patterns are well-designed and should be maintained:
+
+1. **Single source of truth for tiers** — `tier_permissions.py` centralizes all naming, ranking, features, rates, formats
+2. **Zero-downtime ES reindexing** — Alias-based versioning with atomic swap (`es_index_manager.py`)
+3. **Graceful ES degradation** — Returns 200 + `degraded: true` instead of 500s
+4. **SSRF webhook protection** — URL validation against private/reserved IPs at creation and delivery
+5. **Zero-touch integration policy** — No hardcoded client references, all via API keys + webhooks
+6. **Pluggable storage** — Local/R2 with transparent fallback (`storage.py`)
+7. **Pipeline error tracking** — `ErrorTracker` with per-stage categorization and structured logging
+8. **Batch cross-reference loading** — `useBatchCrossRefs` hook eliminates N+1 (200 IDs per chunk)
+9. **Tier-gating components** — `TierGate` with 4 variants (inline, overlay, card, toast), i18n, countdown
+10. **Comprehensive Celery Beat automation** — 20 scheduled tasks covering scraping, pipeline, health, trials
+
+### Codebase Metrics Snapshot
+
+```
+Python files:        371        Test files (py):     86
+TypeScript files:    ~272       Test files (ts):     77
+E2E spec files:      15         E2E tests:           89 (4 browsers)
+K8s manifests:       17         CI workflows:        7
+Management commands: 14         Celery Beat tasks:   20
+API endpoints:       40+        Scraper modules:     47
+MCP tools:           16         Export formats:      6
+Django models:       14         React contexts:      5
+```
 
 ---
 
@@ -310,32 +425,32 @@
 
 ---
 
-## Phase 5: Advanced Features 🚀 VISION
+## Phase 5: Advanced Features 🚀 PARTIALLY COMPLETE
 
-**Timeline**: 2026-2027  
+**Timeline**: 2026-2027
 **Goal**: Platform intelligence and computational law
 
 ### Computational Law Features
-- **Tax Calculator**: Re-enable Catala/OpenFisca engine
-- **Compliance Checker**: Automated contract verification
-- **Legal Reasoning**: AI-powered legal research assistant
-- **Citation Network**: Visualize legal interconnections
-- **Precedent Matching**: Find related cases and rulings
+- **Tax Calculator**: Re-enable Catala/OpenFisca engine (blocked — experimental)
+- **Compliance Checker**: Automated contract verification (future)
+- **Legal Reasoning**: AI-powered legal research assistant (future — MCP server is foundation)
+- ✅ **Citation Network**: 33K+ cross-references with graph visualization (Sigma.js)
+- ✅ **Precedent Matching**: SCJN judicial corpus with search + related laws API
 
 ### Platform Intelligence
-- **Auto-Updates**: Monitor DOF daily, auto-ingest new laws
-- **Version Diffing**: Visual comparison of law changes
-- **Translation**: English/Spanish toggle for all laws
-- **Annotations**: User bookmarking and notes
-- **Sharing**: Deep links to specific articles
-- **Alerts**: Subscribe to law changes in areas of interest
+- ✅ **Auto-Updates**: DOF daily wired to Celery Beat (7 AM), 20 scheduled tasks
+- ✅ **Version Diffing**: Word-level comparison tool with diff highlighting
+- ✅ **Translation**: Trilingual (ES/EN/NAH — Classical Nahuatl) across all components
+- ✅ **Annotations**: User bookmarking (`BookmarksContext`), notes (`AnnotationPanel`), color-coded highlights
+- ✅ **Sharing**: Deep links to articles (`#article-*`), social sharing (Twitter, LinkedIn, WhatsApp, email)
+- ✅ **Alerts**: `UserAlert` model with law/category/state subscriptions, in-app + email delivery
 
 ### Developer Tools
-- **WebHooks**: Real-time law change notifications
-- **GraphQL API**: Flexible query interface
-- **Bulk Download**: Dataset exports (XML/JSON/CSV)
-- **Embeddings**: Vector search for semantic legal research
-- **SDK**: Client libraries (Python, JavaScript, etc.)
+- ✅ **WebHooks**: `WebhookSubscription` model, HMAC-SHA256 signing, SSRF protection, auto-disable after 10 failures
+- **GraphQL API**: Not implemented (REST-only, evaluate need vs OpenAPI spec commitment)
+- ✅ **Bulk Download**: `bulk_views.py`, tier-gated via `RequireFeature.of("bulk_download")`
+- **Embeddings**: Dormant `EmbeddingGenerator` (paraphrase-multilingual-mpnet-base-v2), needs activation
+- 🔄 **SDK**: `@tezca/api-client` published to npm but stub; `tezca-mcp` (Python MCP) published to PyPI
 
 ---
 
@@ -345,13 +460,18 @@
 **Goal**: Transform 33K+ cross-references into an interactive legal knowledge graph
 **Research**: See `docs/research/Open Source Legal Data Graph.md`
 
-### Phase 6.1: Graph Visualization (Sigma.js + existing data) 🔄 IN PROGRESS
-- Interactive WebGL network graph of law cross-references
-- Per-law ego graph API (`/api/v1/laws/{id}/graph/`)
-- Global overview API (`/api/v1/graph/overview/`)
-- Sigma.js + Graphology frontend with ForceAtlas2 layout
-- Node color by tier, size by reference count, edge width by weight
-- Route: `/grafo/` (Spanish convention)
+### Phase 6.1: Graph Visualization (Sigma.js + existing data) ✅ COMPLETE
+- ✅ Interactive WebGL network graph of law cross-references
+- ✅ Per-law ego graph API (`/api/v1/laws/{id}/graph/`)
+- ✅ Global overview API (`/api/v1/graph/overview/`)
+- ✅ Public showcase endpoint (`/api/v1/graph/showcase/`, unauthenticated, top 50 nodes)
+- ✅ Sigma.js + Graphology frontend with ForceAtlas2 layout
+- ✅ Node color by tier, size by reference count, edge width by weight
+- ✅ Route: `/grafo/` (Spanish convention)
+- ✅ Graph search with autocomplete + camera animation (`GraphSearch.tsx`)
+- ✅ Category filter pills (`GraphFilters.tsx`)
+- ✅ Collapsible stats panel (`GraphStats.tsx`)
+- ✅ PNG export via canvas compositing (`useGraphExport.ts`)
 
 ### Phase 6.2: Enriched Edge Types + NLP
 - Edge type taxonomy (cites, modifies, derogates, defines, supersedes, references)
@@ -380,21 +500,25 @@
 ## Success Metrics
 
 ### 6-Month Goals (Aug 2026)
-- ✅ **Coverage**: 93.9% legislative + 77.9% non-legislative (30,343 total)
-- ✅ **Quality**: 97.9% → 98.5%+
-- ✅ **Municipal**: 0 → 500 laws (Tier 1)
-- ✅ **Users**: 10,000+ monthly active users
-- ✅ **API**: 100,000+ monthly calls
-- ✅ **Search**: <500ms latency
-- ✅ **Uptime**: 99.5%+
+- ✅ **Coverage**: 93.9% legislative + 77.9% non-legislative (35,277 total laws)
+- ✅ **Quality**: 98.9% parser accuracy
+- 🔄 **Municipal**: 208 → 500 laws (Tier 1 cities, in progress)
+- 🎯 **Users**: 10,000+ monthly active users
+- 🎯 **API**: 100,000+ monthly calls
+- 🎯 **Search**: <500ms latency
+- 🎯 **Uptime**: 99.5%+
+- 🎯 **Test coverage**: 44% → 60% backend
+- 🎯 **Infrastructure**: Backup/restore operational, ES heap aligned
 
 ### 2-Year Vision (2028)
-- ✅ **Coverage**: 95%+ of Mexican legal system
-- ✅ **Municipal**: 8,000+ ordinances (80% coverage)
-- ✅ **Users**: 100,000+ monthly active users
-- ✅ **International**: Expand to other Latin American countries
-- ✅ **Revenue**: Sustainable API monetization model
-- ✅ **Team**: 5-10 full-time contributors
+- 🎯 **Coverage**: 95%+ of Mexican legal system
+- 🎯 **Municipal**: 8,000+ ordinances (80% coverage)
+- 🎯 **Users**: 100,000+ monthly active users
+- 🎯 **International**: Expand to other Latin American countries
+- 🎯 **Revenue**: Sustainable API monetization model
+- 🎯 **Team**: 5-10 full-time contributors
+- 🎯 **State scrapers**: 32/32 dedicated implementations
+- 🎯 **SDK**: Fully functional @tezca/api-client + tezca-mcp
 
 ---
 
@@ -402,25 +526,43 @@
 
 ### High Priority (Next 3 Months)
 1. ⭐⭐⭐ Production go-live at tezca.mx (1-2 weeks)
-2. ⭐⭐⭐ Municipal pilot — Tier 1 cities (3-4 months)
-3. ⭐⭐ CONAMER CNARTyS integration (113K regulations)
+2. ⭐⭐⭐ Backup/restore strategy for PostgreSQL + ES snapshots
+3. ⭐⭐⭐ ES production hardening (JVM heap alignment, evaluate clustering)
+4. ⭐⭐⭐ Municipal pilot — Tier 1 cities (3-4 months)
+5. ⭐⭐ CONAMER CNARTyS integration (113K regulations)
+6. ⭐⭐ Raise test coverage floor (44% → 60%, prioritize tiers + export)
 
 ### Medium Priority (3-6 Months)
-4. ⭐⭐ Legal Knowledge Graph — Phase 6.1 (graph visualization)
-5. ⭐⭐ ES search quality tuning (spanish_legal analyzer)
-6. ⭐⭐ Federal Reglamentos expansion (150 → 800)
+7. ⭐⭐ Quality quarantine for Grade D/F parses (don't auto-index)
+8. ⭐⭐ ES search quality tuning (spanish_legal analyzer)
+9. ⭐⭐ Federal Reglamentos expansion (150 → 800)
+10. ⭐⭐ Complete @tezca/api-client SDK (extract from web client or generate from OpenAPI)
+11. ⭐⭐ Add migration check (`makemigrations --check`) + nightly data integrity E2E to CI
+12. ⭐⭐ State scraper expansion (top 10 uncovered states by population)
 
 ### Low Priority (6-12 Months)
-7. ⭐ Tax calculator (Catala — experimental/blocked)
-8. ⭐ Legal Knowledge Graph — Phase 6.4 (embeddings + vector search)
-9. ⭐ GraphQL API / SDK
+13. ⭐ Tax calculator (Catala — experimental/blocked)
+14. ⭐ Legal Knowledge Graph — Phase 6.4 (embeddings + vector search)
+15. ⭐ Offline/PWA support for viewed law pages
+16. ⭐ Multi-law comparison (extend beyond 2-law limit)
+17. ⭐ Celery monitoring (Flower or equivalent)
+18. ⭐ API versioning strategy documentation
+19. ⭐ Webhook disable notification + re-enable API
 
-### Completed (Phases 1-11) ✅
+### Completed (Phases 1-11 + audit reconciliation) ✅
 - ✅ State law processing (93.7%)
 - ✅ Non-legislative state laws (77.9%)
 - ✅ Public UI/UX (Phases 3-11: all features built)
 - ✅ Admin panel (5 pages)
 - ✅ Comparison tool, trilingual UI, faceted search, export, Cmd+K, citation, SEO
+- ✅ Graph visualization (Phase 6.1: Sigma.js, search, filters, stats, PNG export)
+- ✅ DOF auto-updates (Celery Beat, 7 AM daily)
+- ✅ Annotations, bookmarks, alerts, notifications
+- ✅ Webhooks (HMAC-SHA256, SSRF protection)
+- ✅ Bulk download (tier-gated)
+- ✅ SCJN judicial corpus (API + Playwright scrapers, weekly)
+- ✅ MCP server (16 tools, published to PyPI)
+- ✅ Billing + trials (Dhanam integration, 3/21-day trials)
 
 ---
 
@@ -448,19 +590,26 @@
 ## Risk Assessment
 
 ### Technical Risks
-- ⚠️ **Elasticsearch scale**: Mitigation = cluster optimization
-- ⚠️ **Word conversion**: Mitigation = manual fallback
-- ⚠️ **Municipal data gaps**: Mitigation = partnerships, OCR
+- 🔴 **Single-node data stores**: ES, PostgreSQL, Redis all single-node in K8s. Node failure = data/search outage. Mitigation = managed services or HA operators, backup/restore strategy
+- 🔴 **ES JVM undersized in production**: 512MB heap for 3.5M articles (dev uses 2GB). Mitigation = align heap to workload, monitor GC pressure
+- 🔴 **No disaster recovery**: No pg_dump schedule, no ES snapshots, no restore runbook. Mitigation = scheduled backups + tested restore procedure
+- ⚠️ **Deploy race conditions**: Digest commits can race. 3-retry workaround. Mitigation = GitOps controller (ArgoCD/Flux) or atomic kustomization updates
+- ⚠️ **Low test coverage floor**: 44% minimum allows regressions in tier gating, export, webhook delivery. Mitigation = raise incrementally, prioritize critical paths
+- ⚠️ **Quality quarantine gap**: Grade D/F parses auto-indexed, serving potentially broken article content. Mitigation = pipeline gate blocking low-grade laws from ES
+- ⚠️ **Municipal data gaps**: Only 208 laws from 5 cities. Mitigation = partnerships, OCR, dedicated scrapers
+- ⚠️ **20 states without dedicated scrapers**: Bulk OJN coverage exists but no portal-specific freshness tracking. Mitigation = prioritize by population
 
 ### Operational Risks
-- ⚠️ **Bus factor**: Mitigation = documentation, team expansion
-- ⚠️ **DOF API changes**: Mitigation = monitoring, adapters
-- ⚠️ **Data accuracy**: Mitigation = quality metrics, user reports
+- ⚠️ **Bus factor**: 1 full-time engineer. Mitigation = documentation (CLAUDE.md, ROADMAP.md), community, team expansion
+- ⚠️ **DOF API changes**: Mitigation = monitoring, adapters, DOF daily scraper validates response format
+- ⚠️ **Data accuracy**: Mitigation = quality grading, spot-check validation, user reports
+- ⚠️ **Celery visibility**: No Flower dashboard. Admin JobMonitor polls but may miss stuck tasks. Mitigation = add dedicated Celery monitoring
 
 ### Business Risks
-- ⚠️ **Monetization**: Mitigation = freemium API, partnerships
-- ⚠️ **Competition**: Mitigation = open source, quality focus
-- ⚠️ **Legal liability**: Mitigation = disclaimers (implemented), official sources, terms & conditions
+- ⚠️ **Monetization**: Mitigation = 6-tier freemium, Dhanam billing, trial system (3/21 days)
+- ⚠️ **Competition**: Mitigation = open source (AGPL-3.0), quality focus, AI-ready (MCP server)
+- ⚠️ **Legal liability**: Mitigation = disclaimers, official source attribution, terms & conditions
+- ⚠️ **SDK adoption**: Published @tezca/api-client is a stub, may disappoint early adopters. Mitigation = complete SDK or generate from OpenAPI
 
 ---
 

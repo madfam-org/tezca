@@ -4,16 +4,26 @@
  * Usage:
  *   const tezca = new TezcaClient({ apiKey: "tzk_..." });
  *   const laws = await tezca.laws.list({ domain: "finance" });
+ *
+ *   // JWT auth for user-specific endpoints:
+ *   const tezca = new TezcaClient({ token: "eyJ..." });
+ *   const prefs = await tezca.user.preferences();
  */
 
 import type { TezcaClientConfig, ChangelogParams, ChangelogResponse } from "./types";
-import { APIKeyAuth, type AuthStrategy } from "./auth";
+import { APIKeyAuth, JWTAuth, type AuthStrategy } from "./auth";
 import { TezcaAPIError, RateLimitError, AuthError, ForbiddenError } from "./errors";
 import { LawsEndpoint } from "./endpoints/laws";
 import { SearchEndpoint } from "./endpoints/search";
 import { BulkEndpoint } from "./endpoints/bulk";
 import { ExportEndpoint } from "./endpoints/export";
 import { WebhooksEndpoint } from "./endpoints/webhooks";
+import { CategoriesEndpoint } from "./endpoints/categories";
+import { CoverageEndpoint } from "./endpoints/coverage";
+import { GraphEndpoint } from "./endpoints/graph";
+import { JudicialEndpoint } from "./endpoints/judicial";
+import { ReferencesEndpoint } from "./endpoints/references";
+import { UserEndpoint } from "./endpoints/user";
 
 const DEFAULT_BASE_URL = "https://tezca.mx/api/v1";
 const DEFAULT_TIMEOUT = 30_000;
@@ -25,13 +35,25 @@ export class TezcaClient {
   readonly bulk: BulkEndpoint;
   readonly export: ExportEndpoint;
   readonly webhooks: WebhooksEndpoint;
+  readonly categories: CategoriesEndpoint;
+  readonly coverage: CoverageEndpoint;
+  readonly graph: GraphEndpoint;
+  readonly judicial: JudicialEndpoint;
+  readonly references: ReferencesEndpoint;
+  readonly user?: UserEndpoint;
 
   private auth: AuthStrategy;
   private baseUrl: string;
   private timeout: number;
 
   constructor(config: TezcaClientConfig) {
-    this.auth = new APIKeyAuth(config.apiKey);
+    if (!config.apiKey && !config.token) {
+      throw new Error("TezcaClient requires at least one of apiKey or token");
+    }
+
+    this.auth = config.token
+      ? new JWTAuth(config.token)
+      : new APIKeyAuth(config.apiKey!);
     this.baseUrl = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
     this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
 
@@ -49,6 +71,16 @@ export class TezcaClient {
     this.bulk = new BulkEndpoint(req);
     this.export = new ExportEndpoint(req, reqRaw);
     this.webhooks = new WebhooksEndpoint(req, reqBody);
+    this.categories = new CategoriesEndpoint(req);
+    this.coverage = new CoverageEndpoint(req);
+    this.graph = new GraphEndpoint(req);
+    this.judicial = new JudicialEndpoint(req);
+    this.references = new ReferencesEndpoint(req, reqBody);
+
+    // User endpoint only available with JWT auth
+    if (config.token) {
+      this.user = new UserEndpoint(req, reqBody);
+    }
   }
 
   /** Get changelog of laws updated since a date. */

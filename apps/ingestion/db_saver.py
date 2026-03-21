@@ -31,7 +31,7 @@ class DatabaseSaver:
             logger.error(f"Failed to setup Django: {e}")
             raise
 
-    def save_law_version(self, law_metadata, xml_path, pdf_path):
+    def save_law_version(self, law_metadata, xml_path, pdf_path, quality_metrics=None):
         """
         Save law version to database.
 
@@ -39,6 +39,7 @@ class DatabaseSaver:
             law_metadata (dict): Metadata from registry
             xml_path (Path): Path to generated XML
             pdf_path (Path): Path to downloaded PDF
+            quality_metrics: Optional QualityMetrics with grade/score
         """
         from django.utils.dateparse import parse_date
 
@@ -93,6 +94,12 @@ class DatabaseSaver:
             version.xml_file_path = str(xml_path)
             version.dof_url = law_metadata.get("url")
             version.save()
+
+        # Persist quality metrics
+        if quality_metrics is not None:
+            version.quality_grade = quality_metrics.grade
+            version.quality_score = quality_metrics.overall_score
+            version.save(update_fields=["quality_grade", "quality_score"])
 
         return version
 

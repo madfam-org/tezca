@@ -11,6 +11,7 @@ from .admin_views import (
     job_status,
     list_jobs,
     pipeline_status,
+    quarantined_laws,
     roadmap,
     system_config,
     system_metrics,
@@ -116,6 +117,11 @@ urlpatterns = [
     ),
     path("admin/dof/", _protected(dof_summary), name="admin-dof-summary"),
     path("admin/roadmap/", _protected(roadmap), name="admin-roadmap"),
+    path(
+        "admin/quarantined/",
+        _protected(quarantined_laws),
+        name="admin-quarantined",
+    ),
     path(
         "admin/analytics/search/",
         _protected(search_analytics),

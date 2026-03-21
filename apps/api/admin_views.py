@@ -420,6 +420,37 @@ def dof_summary(request):
     )
 
 
+@extend_schema(
+    tags=["Admin"],
+    summary="Quarantined laws",
+    description="List laws with D/F quality grades (quarantined from indexing).",
+    responses={200: None},
+)
+@api_view(["GET"])
+def quarantined_laws(request):
+    """List laws whose latest version has a quarantined quality grade."""
+    quarantine_grades = getattr(
+        django_settings, "QUALITY_QUARANTINE_GRADES", ["D", "F"]
+    )
+    quarantined = (
+        LawVersion.objects.filter(quality_grade__in=quarantine_grades)
+        .select_related("law")
+        .order_by("-created_at")[:100]
+    )
+    results = [
+        {
+            "law_id": v.law.official_id,
+            "name": v.law.name,
+            "grade": v.quality_grade,
+            "score": v.quality_score,
+            "publication_date": str(v.publication_date),
+            "created_at": v.created_at.isoformat(),
+        }
+        for v in quarantined
+    ]
+    return Response({"count": len(results), "quarantined": results})
+
+
 @api_view(["GET", "PATCH"])
 def roadmap(request):
     """Expansion roadmap: GET returns all phases/items, PATCH updates a single item."""
