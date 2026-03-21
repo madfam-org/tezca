@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Card, CardContent, Badge } from '@tezca/ui';
 import type { Metadata } from 'next';
 import { API_BASE_URL } from '@/lib/config';
+import { JsonLd } from '@/components/JsonLd';
 
 /* ------------------------------------------------------------------ */
 /*  Category metadata                                                  */
@@ -241,32 +242,6 @@ export async function generateMetadata({
       url: `${siteUrl}/categorias/${category}`,
       siteName: 'Tezca',
     },
-    other: {
-      'script:ld+json': JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Inicio',
-            item: siteUrl + '/',
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'Categorías',
-            item: siteUrl + '/categorias',
-          },
-          {
-            '@type': 'ListItem',
-            position: 3,
-            name: displayName,
-            item: `${siteUrl}/categorias/${category}`,
-          },
-        ],
-      }),
-    },
   };
 }
 
@@ -320,36 +295,35 @@ export default async function CategoryDetailPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* JSON-LD BreadcrumbList */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Inicio',
-                item: siteUrl + '/',
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Categorías',
-                item: siteUrl + '/categorias',
-              },
-              {
-                '@type': 'ListItem',
-                position: 3,
-                name: displayName,
-                item: `${siteUrl}/categorias/${category}`,
-              },
-            ],
-          }),
-        }}
-      />
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Categorias', item: `${siteUrl}/categorias` },
+          { '@type': 'ListItem', position: 3, name: displayName, item: `${siteUrl}/categorias/${category}` },
+        ],
+      }} />
+      {data && data.results.length > 0 && (
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: `${displayName} — Tezca`,
+          description: displayDesc,
+          url: `${siteUrl}/categorias/${category}`,
+          isPartOf: { '@type': 'WebSite', name: 'Tezca', url: siteUrl },
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: data.count,
+            itemListElement: data.results.slice(0, 10).map((law, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: law.name,
+              url: `${siteUrl}/leyes/${law.id}`,
+            })),
+          },
+        }} />
+      )}
 
       {/* Hero section */}
       <div className="bg-primary text-primary-foreground">

@@ -8,6 +8,9 @@ import { useAuth } from '@/components/providers/AuthContext';
 import { TierComparison } from '@/components/TierComparison';
 import { PRICING, PROMO } from '@/lib/pricing';
 import { getTrialCheckoutUrl } from '@/lib/billing';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 const content = {
     es: {
@@ -209,6 +212,23 @@ export default function PreciosPage() {
 
     return (
         <div className="min-h-screen bg-background">
+            <JsonLd data={{
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+                    { '@type': 'ListItem', position: 2, name: 'Precios', item: `${siteUrl}/precios` },
+                ],
+            }} />
+            <JsonLd data={{
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: content.es.faq.map(item => ({
+                    '@type': 'Question',
+                    name: item.q,
+                    acceptedAnswer: { '@type': 'Answer', text: item.a },
+                })),
+            }} />
             {/* Header */}
             <div className="bg-gradient-to-b from-primary/5 to-background pt-16 pb-8 text-center px-4">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">{t.title}</h1>

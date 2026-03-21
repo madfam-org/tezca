@@ -7,6 +7,9 @@ import { Button, Card, CardContent, Input, Badge } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLang } from '@/components/providers/LanguageContext';
 import { API_BASE_URL } from '@/lib/config';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 type Lang = 'es' | 'en' | 'nah';
 
@@ -162,6 +165,14 @@ export default function JurisprudenciaPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Jurisprudencia', item: `${siteUrl}/jurisprudencia` },
+        ],
+      }} />
       {/* Header */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">

@@ -3,6 +3,9 @@ import { ArrowLeft, Landmark, GraduationCap, Building2, Scale, Globe } from 'luc
 import { Card, CardContent } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 export const metadata: Metadata = {
   title: 'Convocatoria Institucional — Tezca',
@@ -247,6 +250,14 @@ export default async function ConvocatoriaPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Convocatoria', item: `${siteUrl}/convocatoria` },
+        ],
+      }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 px-4 sm:px-6 py-16 sm:py-24">
         <div className="absolute inset-0 bg-grid-pattern opacity-10" />

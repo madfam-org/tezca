@@ -29,6 +29,11 @@ dev = [
     "respx>=0.22",
 ]
 
+[project.urls]
+Homepage = "https://tezca.mx"
+Documentation = "https://tezca.mx/desarrolladores"
+Repository = "https://github.com/madfam-org/tezca"
+
 [project.scripts]
 tezca-mcp = "main:main"
 

@@ -226,8 +226,8 @@ def list_jobs(request):
                         ),
                         "duration": duration,
                         "found": log.found,
-                        "processed": log.processed,
-                        "errors": log.errors,
+                        "downloaded": log.downloaded,
+                        "failed": log.failed,
                     }
                 )
         except (
@@ -559,3 +559,112 @@ def roadmap(request):
     }
 
     return Response({"summary": summary, "phases": phase_list})
+
+
+# Expected run intervals (hours) — mirrors tasks.py for staleness detection
+_TASK_EXPECTED_INTERVALS = {
+    "dof_daily_check": 24,
+    "conamer_cnartys_scrape": 7 * 24,
+    "conamer_playwright_scrape": 7 * 24,
+    "scjn_jurisprudencia_scrape": 7 * 24,
+    "scjn_playwright_jurisprudencia": 7 * 24,
+    "state_scraper_guerrero": 30 * 24,
+    "state_scraper_nuevo_leon": 30 * 24,
+}
+
+
+@api_view(["GET"])
+def task_health(request):
+    """Per-operation scraper health: last_run, run_count, success_rate, staleness."""
+    from datetime import timedelta
+
+    from django.db.models import Avg, Count, Q
+
+    try:
+        from apps.scraper.dataops.models import AcquisitionLog
+    except ImportError:
+        return Response(
+            {"error": "AcquisitionLog not available"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+
+    operations = (
+        AcquisitionLog.objects.values("operation")
+        .annotate(
+            run_count=Count("id"),
+            avg_found=Avg("found"),
+            last_run=Max("started_at"),
+        )
+        .order_by("operation")
+    )
+
+    tasks = []
+    for op in operations:
+        op_name = op["operation"]
+        last_run = op["last_run"]
+
+        recent_failures = (
+            AcquisitionLog.objects.filter(
+                operation=op_name,
+                started_at__gte=seven_days_ago,
+            )
+            .filter(Q(error_summary__isnull=False) & ~Q(error_summary=""))
+            .count()
+        )
+
+        expected_hours = _TASK_EXPECTED_INTERVALS.get(op_name)
+        is_stale = False
+        if expected_hours and last_run:
+            staleness_threshold = now - timedelta(hours=expected_hours * 2)
+            is_stale = last_run < staleness_threshold
+
+        # Success rate: runs with finished_at and no error_summary
+        total_runs = op["run_count"]
+        successful_runs = (
+            AcquisitionLog.objects.filter(
+                operation=op_name,
+                finished_at__isnull=False,
+            )
+            .filter(Q(error_summary__isnull=True) | Q(error_summary=""))
+            .count()
+        )
+        success_rate = (
+            round(successful_runs / total_runs * 100, 1) if total_runs > 0 else 0
+        )
+
+        tasks.append(
+            {
+                "operation": op_name,
+                "run_count": total_runs,
+                "last_run": last_run.isoformat() if last_run else None,
+                "avg_items_found": round(op["avg_found"] or 0, 1),
+                "success_rate": success_rate,
+                "recent_failures": recent_failures,
+                "is_stale": is_stale,
+                "expected_interval_hours": expected_hours,
+            }
+        )
+
+    # Report known Beat tasks that have never run (0 AcquisitionLog entries)
+    known_ops = set(_TASK_EXPECTED_INTERVALS.keys())
+    logged_ops = {t["operation"] for t in tasks}
+    never_run = sorted(known_ops - logged_ops)
+
+    return Response(
+        {
+            "tasks": tasks,
+            "never_run": [
+                {
+                    "operation": op,
+                    "run_count": 0,
+                    "expected_interval_hours": _TASK_EXPECTED_INTERVALS.get(op),
+                    "is_stale": True,
+                }
+                for op in never_run
+            ],
+            "checked_at": now.isoformat(),
+        }
+    )

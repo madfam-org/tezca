@@ -450,3 +450,96 @@ class TestRoadmapEndpoint:
             url, {"id": item.id, "status": "nonexistent"}, format="json"
         )
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestTaskHealthEndpoint:
+    def setup_method(self):
+        self.client = APIClient()
+        _start_admin_patches(self)
+
+    def teardown_method(self):
+        _stop_admin_patches(self)
+
+    def test_task_health_returns_200(self):
+        """Test GET /admin/task-health/ returns 200 with task list."""
+        url = reverse("admin-task-health")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "tasks" in data
+        assert "never_run" in data
+        assert "checked_at" in data
+
+    def test_task_health_stale_detection(self):
+        """Test tasks with old AcquisitionLog entries are flagged as stale."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        # Create a log entry, then backdate it (started_at is auto_now_add)
+        old_time = timezone.now() - timedelta(days=30)
+        log = AcquisitionLog.objects.create(
+            operation="dof_daily_check",
+            finished_at=old_time + timedelta(minutes=5),
+            found=10,
+            downloaded=0,
+            failed=0,
+            ingested=0,
+        )
+        AcquisitionLog.objects.filter(pk=log.pk).update(started_at=old_time)
+
+        url = reverse("admin-task-health")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        dof_tasks = [t for t in data["tasks"] if t["operation"] == "dof_daily_check"]
+        assert len(dof_tasks) == 1
+        assert dof_tasks[0]["is_stale"] is True
+
+    def test_task_health_never_run(self):
+        """Tasks with no AcquisitionLog entries appear in never_run list."""
+        url = reverse("admin-task-health")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        # Known tasks in _TASK_EXPECTED_INTERVALS with no logs should appear
+        never_run_ops = [t["operation"] for t in data["never_run"]]
+        assert "dof_daily_check" in never_run_ops
+        for item in data["never_run"]:
+            assert item["run_count"] == 0
+            assert item["is_stale"] is True
+
+    def test_list_jobs_field_names(self):
+        """Verify list_jobs uses correct AcquisitionLog field names."""
+        from django.utils import timezone
+
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        now = timezone.now()
+        AcquisitionLog.objects.create(
+            operation="test_op",
+            started_at=now,
+            finished_at=now,
+            found=5,
+            downloaded=3,
+            failed=2,
+            ingested=0,
+        )
+
+        url = reverse("admin-jobs-list")
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        jobs = data["jobs"]
+        assert len(jobs) >= 1
+        job = next(j for j in jobs if j["operation"] == "test_op")
+        assert job["found"] == 5
+        assert job["downloaded"] == 3
+        assert job["failed"] == 2

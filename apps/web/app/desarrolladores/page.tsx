@@ -3,6 +3,9 @@ import { ArrowLeft, Code2, Key, Terminal, BookOpen, Zap } from 'lucide-react';
 import { Card, CardContent } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 export const metadata: Metadata = {
   title: 'Desarrolladores — Tezca API',
@@ -395,6 +398,14 @@ export default async function DesarrolladoresPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Desarrolladores', item: `${siteUrl}/desarrolladores` },
+        ],
+      }} />
       {/* Dark hero section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 px-4 sm:px-6 py-20 sm:py-28 lg:py-36">
         <div className="absolute inset-0 bg-grid-pattern opacity-10" />

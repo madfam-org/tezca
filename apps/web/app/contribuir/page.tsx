@@ -3,6 +3,9 @@ import { ArrowLeft, Users, Upload, Code2 } from 'lucide-react';
 import { Card, CardContent } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 export const metadata: Metadata = {
   title: 'Contribuir — Tezca',
@@ -107,6 +110,14 @@ export default async function ContribuirPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Contribuir', item: `${siteUrl}/contribuir` },
+        ],
+      }} />
       {/* Hero section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 px-4 sm:px-6 py-20 sm:py-28 lg:py-36">
         <div className="absolute inset-0 bg-grid-pattern opacity-10" />

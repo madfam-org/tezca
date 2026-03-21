@@ -94,7 +94,15 @@ class SearchView(APIView):
             ]
 
             # Boost active (vigente) laws in relevance ranking
-            should_clauses = [{"term": {"status": {"value": "vigente", "boost": 1.5}}}]
+            should_clauses = [
+                {"term": {"status": {"value": "vigente", "boost": 1.5}}},
+                {"match_phrase": {"text": {"query": query, "boost": 3.0, "slop": 1}}},
+                {
+                    "match_phrase": {
+                        "law_name": {"query": query, "boost": 5.0, "slop": 0}
+                    }
+                },
+            ]
 
             # Add filter clauses
             filter_clauses = []
@@ -229,6 +237,29 @@ class SearchView(APIView):
             # Calculate pagination
             offset = (page - 1) * page_size
 
+            # Wrap in function_score for recency boost (relevance sort only)
+            if sort_by == "relevance":
+                es_query = {
+                    "function_score": {
+                        "query": es_query,
+                        "functions": [
+                            {
+                                "gauss": {
+                                    "publication_date": {
+                                        "origin": "now",
+                                        "scale": "1825d",
+                                        "offset": "365d",
+                                        "decay": 0.5,
+                                    }
+                                },
+                                "weight": 1.5,
+                            }
+                        ],
+                        "score_mode": "sum",
+                        "boost_mode": "multiply",
+                    }
+                }
+
             # Build search kwargs (ES 8 keyword args)
             search_kwargs = {
                 "index": INDEX_NAME,
@@ -257,6 +288,40 @@ class SearchView(APIView):
             res = es.search(**search_kwargs)
             hits = res["hits"]["hits"]
             total = res["hits"]["total"]["value"]
+
+            # Zero-result rescue: retry with relaxed query on relevance sort
+            rescued = False
+            if total == 0 and sort_by == "relevance":
+                rescue_must = [
+                    {
+                        "multi_match": {
+                            "query": query,
+                            "fields": [
+                                "law_name^3",
+                                "law_name.keyword^5",
+                                "text^1",
+                                "tags^0.5",
+                            ],
+                            "fuzziness": "2",
+                            "prefix_length": 2,
+                            "operator": "or",
+                            "minimum_should_match": "50%",
+                        }
+                    }
+                ]
+                rescue_query = {
+                    "bool": {
+                        "must": rescue_must,
+                        "should": should_clauses,
+                    }
+                }
+                if filter_clauses:
+                    rescue_query["bool"]["filter"] = filter_clauses
+                search_kwargs["query"] = rescue_query
+                res = es.search(**search_kwargs)
+                hits = res["hits"]["hits"]
+                total = res["hits"]["total"]["value"]
+                rescued = True
 
             # Parse aggregation facets
             facets = {
@@ -298,17 +363,18 @@ class SearchView(APIView):
             # Calculate pagination metadata
             total_pages = math.ceil(total / page_size) if total > 0 else 0
 
-            response = Response(
-                {
-                    "results": results,
-                    "total": total,
-                    "page": page,
-                    "page_size": page_size,
-                    "max_page_size": max_page_size,
-                    "total_pages": total_pages,
-                    "facets": facets,
-                }
-            )
+            response_data = {
+                "results": results,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "max_page_size": max_page_size,
+                "total_pages": total_pages,
+                "facets": facets,
+            }
+            if rescued:
+                response_data["rescued"] = True
+            response = Response(response_data)
             response["Cache-Control"] = "public, max-age=300"
 
             # Log search query for analytics (fire-and-forget)

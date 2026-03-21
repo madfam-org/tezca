@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
 
 export const metadata: Metadata = {
     title: 'Buscar Leyes — Tezca',
@@ -11,6 +12,20 @@ export const metadata: Metadata = {
     },
 };
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
+
 export default function SearchLayout({ children }: { children: React.ReactNode }) {
-    return children;
+    return (
+        <>
+            <JsonLd data={{
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+                    { '@type': 'ListItem', position: 2, name: 'Busqueda', item: `${siteUrl}/busqueda` },
+                ],
+            }} />
+            {children}
+        </>
+    );
 }

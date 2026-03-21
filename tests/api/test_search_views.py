@@ -40,6 +40,14 @@ def _extract_es_kwargs(mock_search):
     return body
 
 
+def _unwrap_bool_query(body):
+    """Unwrap bool query from a function_score wrapper if present."""
+    query = body["query"]
+    if "function_score" in query:
+        return query["function_score"]["query"]["bool"]
+    return query["bool"]
+
+
 def _build_es_response(hits, total=None, aggregations=None):
     """Helper to build a realistic ES search response."""
     if total is None:
@@ -251,7 +259,8 @@ class TestSearchViewFilters:
         self.client.get(url, {"q": "prueba", "category": "ley"})
 
         body = _extract_es_kwargs(mock_es.search)
-        filters = body["query"]["bool"].get("filter", [])
+        bool_query = _unwrap_bool_query(body)
+        filters = bool_query.get("filter", [])
         assert any(f.get("term", {}).get("category") == "ley" for f in filters)
 
     @patch("apps.api.search_views.es_client")
@@ -274,7 +283,8 @@ class TestSearchViewFilters:
         self.client.get(url, {"q": "prueba", "law_type": "legislative"})
 
         body = _extract_es_kwargs(mock_es.search)
-        filters = body["query"]["bool"].get("filter", [])
+        bool_query = _unwrap_bool_query(body)
+        filters = bool_query.get("filter", [])
         assert any(f.get("term", {}).get("law_type") == "legislative" for f in filters)
 
     @patch("apps.api.search_views.es_client")
@@ -297,7 +307,8 @@ class TestSearchViewFilters:
         self.client.get(url, {"q": "prueba", "status": "vigente"})
 
         body = _extract_es_kwargs(mock_es.search)
-        filters = body["query"]["bool"].get("filter", [])
+        bool_query = _unwrap_bool_query(body)
+        filters = bool_query.get("filter", [])
         assert any(f.get("term", {}).get("status") == "vigente" for f in filters)
 
 
@@ -488,3 +499,61 @@ class TestSearchViewPagination:
 
         data = response.json()
         assert data["page"] == 1
+
+
+@pytest.mark.django_db
+class TestSearchViewZeroResultRescue:
+    """Zero-result rescue retries with relaxed query."""
+
+    def setup_method(self):
+        self.client = APIClient()
+
+    @patch("apps.api.search_views.es_client")
+    def test_zero_result_rescue_retries(self, mock_es):
+        """When first search returns 0 results on relevance sort, retry with fuzzy query."""
+        mock_es.ping.return_value = True
+        empty_aggs = {
+            "by_tier": {"buckets": []},
+            "by_category": {"buckets": []},
+            "by_status": {"buckets": []},
+            "by_law_type": {"buckets": []},
+            "by_state": {"buckets": []},
+        }
+        rescued_hit = _make_hit("doc-r", "cpeum", "1", "Articulo rescatado.")
+        mock_es.search.side_effect = [
+            _build_es_response([], total=0, aggregations=empty_aggs),
+            _build_es_response([rescued_hit], total=1, aggregations=empty_aggs),
+        ]
+
+        url = reverse("search")
+        response = self.client.get(url, {"q": "constitucion"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1
+        assert data.get("rescued") is True
+        assert mock_es.search.call_count == 2
+
+    @patch("apps.api.search_views.es_client")
+    def test_no_rescue_with_date_sort(self, mock_es):
+        """Rescue should NOT trigger on non-relevance sorts."""
+        mock_es.ping.return_value = True
+        empty_aggs = {
+            "by_tier": {"buckets": []},
+            "by_category": {"buckets": []},
+            "by_status": {"buckets": []},
+            "by_law_type": {"buckets": []},
+            "by_state": {"buckets": []},
+        }
+        mock_es.search.return_value = _build_es_response(
+            [], total=0, aggregations=empty_aggs
+        )
+
+        url = reverse("search")
+        response = self.client.get(url, {"q": "xyz", "sort": "date_desc"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 0
+        assert data.get("rescued") is None
+        assert mock_es.search.call_count == 1

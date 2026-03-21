@@ -235,6 +235,8 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - **Alias strategy**: `articles` is an alias pointing to a versioned concrete index (`articles_v{timestamp}`). Zero-downtime reindex via `index_laws --reindex` creates a new versioned index, indexes into it, then atomically swaps the alias. One-time migration from concrete to alias via `manage_es_alias --migrate` or `index_laws --migrate-alias`
 - **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
 - **Graceful degradation**: When ES is unavailable, `law_articles` and `law_stats` return HTTP 200 with `degraded: true` and empty/partial data instead of 500. Frontend shows an "articles unavailable" banner via `articlesDegraded` state in `LawDetail.tsx`.
+- **Search relevance**: `function_score` with Gaussian decay on `publication_date` (5-year half-life, 1-year offset) applied on relevance sort only. `match_phrase` should clauses boost exact phrase matches in `text` (3.0) and `law_name` (5.0). Zero-result rescue retries with `fuzziness: "2"` and `minimum_should_match: "50%"` when first query returns 0 hits.
+- **Synonyms**: 52 synonym pairs in `spanish_legal_synonyms` filter covering legal terminology, procedural, constitutional, commercial, tax, and administrative domains. Changes require `--reindex`.
 
 ### Quality Quarantine
 
@@ -244,6 +246,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - `index_laws` excludes quarantined laws by default; `--include-quarantined` overrides
 - Law detail API exposes `grade`/`score` from latest version
 - Admin endpoint `GET /api/v1/admin/quarantined/` lists quarantined laws (protected)
+- Admin endpoint `GET /api/v1/admin/task-health/` returns per-operation scraper health: last_run, run_count, success_rate, staleness detection (protected)
 
 ### Celery
 
@@ -251,7 +254,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
-- 20 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER/municipal scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct)
+- 20 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct), `check-scraper-health-daily` (daily 08:00, logs stale/failing scrapers)
 
 ### Storage
 
@@ -277,6 +280,7 @@ All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from
 - **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
 - **`TierComparison`** — Feature comparison table across Community/Essentials/Academic/Institutional tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
 - **`LinkifiedArticle`** — Cross-references are loaded in batch by `ArticleViewer` via `useBatchCrossRefs` hook (eliminates N+1). Individual articles receive refs via `preloadedRefs` prop. The `crossRefsDisabled` prop defaults to `false` when batch refs are available. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) for custom integrations.
+- **`JsonLd`** — Shared component for injecting `<script type="application/ld+json">` structured data. Used for BreadcrumbList (9 pages), FAQPage (`/precios`), Dataset (`/cobertura`), and CollectionPage (`/categorias/[category]`).
 
 ### Colors
 
@@ -387,6 +391,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `scripts/scraping/wayback_bulk_recovery.py` | CDX API bulk mining for dead legal domains |
 | `scripts/scraping/dof_historical_scan.py` | DOF 2000-2026 scan for gap-filling + NOM detection + checkpointing + cross-reference |
 | `scripts/scraping/probe_datos_gob.py` | datos.gob.mx CKAN API probe, resource download, and legal relevance assessment |
+| `apps/api/search_views.py` | Full-text search with function_score recency boost, phrase matching, zero-result rescue |
+| `apps/api/admin_views.py` | Admin endpoints: metrics, jobs, config, pipeline, coverage, quarantine, task-health |
+| `apps/web/components/JsonLd.tsx` | Shared JSON-LD structured data component (used across 10+ pages) |
 
 ---
 

@@ -4,6 +4,9 @@ import { Card, CardContent } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import type { Metadata } from 'next';
 import { CoverageDashboard } from '@/components/coverage/CoverageDashboard';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 export const metadata: Metadata = {
   title: 'Cobertura de Datos — Tezca',
@@ -120,6 +123,25 @@ export default async function CoberturaPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+          { '@type': 'ListItem', position: 2, name: 'Cobertura', item: `${siteUrl}/cobertura` },
+        ],
+      }} />
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        name: 'Tezca — Legislacion Mexicana',
+        description: 'Mas de 30,000 leyes y 3.5 millones de articulos del marco juridico mexicano.',
+        url: `${siteUrl}/cobertura`,
+        license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+        creator: { '@type': 'Organization', name: 'Tezca', url: siteUrl },
+        spatialCoverage: { '@type': 'Place', name: 'Mexico' },
+        temporalCoverage: '1917/..',
+      }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 px-4 sm:px-6 py-16 sm:py-24">
         <div className="absolute inset-0 bg-grid-pattern opacity-10" />

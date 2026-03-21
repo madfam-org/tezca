@@ -15,6 +15,7 @@ from .admin_views import (
     roadmap,
     system_config,
     system_metrics,
+    task_health,
 )
 from .analytics_views import search_analytics
 from .annotation_views import annotation_detail, annotation_list
@@ -121,6 +122,11 @@ urlpatterns = [
         "admin/quarantined/",
         _protected(quarantined_laws),
         name="admin-quarantined",
+    ),
+    path(
+        "admin/task-health/",
+        _protected(task_health),
+        name="admin-task-health",
     ),
     path(
         "admin/analytics/search/",

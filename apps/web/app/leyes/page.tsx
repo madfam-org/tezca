@@ -11,6 +11,9 @@ import { Pagination } from '@/components/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tezca/ui';
 import type { Lang } from '@/components/providers/LanguageContext';
 import { Suspense } from 'react';
+import { JsonLd } from '@/components/JsonLd';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
 const content = {
     es: {
@@ -238,8 +241,18 @@ function LawsBrowseContent() {
 
 export default function LawsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-pulse h-8 bg-muted rounded w-48" /></div>}>
-            <LawsBrowseContent />
-        </Suspense>
+        <>
+            <JsonLd data={{
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+                    { '@type': 'ListItem', position: 2, name: 'Leyes', item: `${siteUrl}/leyes` },
+                ],
+            }} />
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-pulse h-8 bg-muted rounded w-48" /></div>}>
+                <LawsBrowseContent />
+            </Suspense>
+        </>
     );
 }

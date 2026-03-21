@@ -130,6 +130,28 @@ class Command(BaseCommand):
                                     "sanción, multa, penalidad",
                                     "contrato, convenio, acuerdo",
                                     "propiedad, dominio, posesión",
+                                    # Procedural
+                                    "actor, demandante, promovente",
+                                    "demandado, emplazado, parte contraria",
+                                    "auto, providencia, acuerdo judicial",
+                                    "notificación, emplazamiento, citación",
+                                    "prueba, evidencia, medio probatorio",
+                                    # Constitutional
+                                    "garantías, derechos humanos, derechos fundamentales",
+                                    "federalismo, pacto federal, sistema federal",
+                                    "soberanía, poder constituyente, supremacía",
+                                    # Commercial
+                                    "sociedad, empresa, persona moral",
+                                    "quiebra, concurso mercantil, insolvencia",
+                                    "pagaré, título de crédito, letra de cambio",
+                                    "marca, patente, propiedad industrial",
+                                    # Tax
+                                    "contribución, impuesto, tributo, gravamen",
+                                    "deducción, acreditamiento, compensación",
+                                    "contribuyente, sujeto pasivo, causante",
+                                    # Administrative
+                                    "licitación, concurso, adjudicación",
+                                    "concesión, permiso, autorización, licencia",
                                 ],
                             },
                             "spanish_stop": {

@@ -12,6 +12,41 @@ from celery import shared_task
 logger = logging.getLogger(__name__)
 
 
+def _start_log(operation, parameters=None):
+    """Create AcquisitionLog entry at task start."""
+    try:
+        from django.utils import timezone
+
+        from apps.scraper.dataops.models import AcquisitionLog
+
+        return AcquisitionLog.objects.create(
+            operation=operation,
+            parameters=parameters or {},
+            started_at=timezone.now(),
+        )
+    except Exception:
+        return None
+
+
+def _finish_log(log_entry, found=0, downloaded=0, failed=0, ingested=0, error=""):
+    """Update AcquisitionLog on task completion."""
+    if log_entry is None:
+        return
+    try:
+        from django.utils import timezone
+
+        log_entry.finished_at = timezone.now()
+        log_entry.found = found
+        log_entry.downloaded = downloaded
+        log_entry.failed = failed
+        log_entry.ingested = ingested
+        if error:
+            log_entry.error_summary = error[:2000]
+        log_entry.save()
+    except Exception:
+        pass
+
+
 @shared_task(name="dataops.run_health_checks")
 def run_health_checks(sources="critical"):
     """Run health checks on data sources.
@@ -453,6 +488,10 @@ def run_conamer_playwright(max_pages=None, resume_from_page=0):
         max_pages: Max pages to scrape (None for all)
         resume_from_page: Page to resume from
     """
+    log_entry = _start_log(
+        "conamer_playwright_scrape",
+        {"max_pages": max_pages, "resume_from": resume_from_page},
+    )
     try:
         from apps.scraper.federal.conamer_playwright import ConamerPlaywrightScraper
 
@@ -468,24 +507,16 @@ def run_conamer_playwright(max_pages=None, resume_from_page=0):
             result.get("total_after_dedup", 0),
         )
 
-        try:
-            from apps.scraper.dataops.models import AcquisitionLog
-
-            AcquisitionLog.objects.create(
-                operation="conamer_playwright_scrape",
-                parameters={"max_pages": max_pages, "resume_from": resume_from_page},
-                found=result.get("total_items", 0),
-                downloaded=result.get("total_after_dedup", 0),
-                failed=0,
-                ingested=0,
-            )
-        except Exception:
-            pass
-
+        _finish_log(
+            log_entry,
+            found=result.get("total_items", 0),
+            downloaded=result.get("total_after_dedup", 0),
+        )
         return result
 
     except Exception as e:
         logger.error("CONAMER Playwright scraper failed: %s", e)
+        _finish_log(log_entry, error=str(e))
         return {"error": str(e)}
 
 
@@ -498,6 +529,10 @@ def scrape_scjn_playwright(max_items=5000, epoca=11, tipo="jurisprudencia"):
         epoca: Judicial epoch (default: 11)
         tipo: "jurisprudencia" or "tesis_aislada"
     """
+    log_entry = _start_log(
+        f"scjn_playwright_{tipo}",
+        {"max_items": max_items, "epoca": epoca, "tipo": tipo},
+    )
     try:
         from apps.scraper.judicial.scjn_playwright import ScjnPlaywrightScraper
 
@@ -515,24 +550,16 @@ def scrape_scjn_playwright(max_items=5000, epoca=11, tipo="jurisprudencia"):
             result.get("total_items", 0),
         )
 
-        try:
-            from apps.scraper.dataops.models import AcquisitionLog
-
-            AcquisitionLog.objects.create(
-                operation=f"scjn_playwright_{tipo}",
-                parameters={"max_items": max_items, "epoca": epoca, "tipo": tipo},
-                found=result.get("total_items", 0),
-                downloaded=result.get("total_items", 0),
-                failed=0,
-                ingested=0,
-            )
-        except Exception:
-            pass
-
+        _finish_log(
+            log_entry,
+            found=result.get("total_items", 0),
+            downloaded=result.get("total_items", 0),
+        )
         return result
 
     except Exception as e:
         logger.error("SCJN Playwright scraper failed: %s", e)
+        _finish_log(log_entry, error=str(e))
         return {"error": str(e)}
 
 
@@ -657,9 +684,10 @@ def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
         epoca: Epoca filter (default: 10 for Décima Época)
         mode: "jurisprudencia" or "tesis"
     """
-    import json
-    from pathlib import Path
-
+    log_entry = _start_log(
+        f"scjn_{mode}_scrape",
+        {"max_items": max_items, "epoca": epoca, "mode": mode},
+    )
     try:
         from apps.scraper.judicial.scjn_scraper import ScjnScraper
 
@@ -677,23 +705,98 @@ def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
             result.get("total_scraped", 0),
         )
 
-        # Log to AcquisitionLog
-        try:
-            from apps.scraper.dataops.models import AcquisitionLog
-
-            AcquisitionLog.objects.create(
-                operation=f"scjn_{mode}_scrape",
-                parameters={"max_items": max_items, "epoca": epoca, "mode": mode},
-                found=result.get("total_scraped", 0),
-                downloaded=result.get("total_scraped", 0),
-                failed=result.get("failed", 0),
-                ingested=0,
-            )
-        except Exception:
-            pass
-
+        _finish_log(
+            log_entry,
+            found=result.get("total_scraped", 0),
+            downloaded=result.get("total_scraped", 0),
+            failed=result.get("failed", 0),
+        )
         return result
 
     except Exception as e:
         logger.error("SCJN scraper failed: %s", e)
+        _finish_log(log_entry, error=str(e))
         return {"error": str(e)}
+
+
+# Expected run intervals (hours) for staleness detection
+_EXPECTED_INTERVALS = {
+    "dof_daily_check": 24,
+    "conamer_cnartys_scrape": 7 * 24,
+    "conamer_playwright_scrape": 7 * 24,
+    "scjn_jurisprudencia_scrape": 7 * 24,
+    "scjn_playwright_jurisprudencia": 7 * 24,
+}
+
+
+@shared_task(name="dataops.check_scraper_health")
+def check_scraper_health():
+    """Check scraper health: flag stale and failing scrapers.
+
+    Logs WARNING for scrapers with no run in 2x expected interval
+    or 3+ failures in the last 7 days.
+    """
+    from datetime import timedelta
+
+    from django.db.models import Count, Q
+    from django.utils import timezone
+
+    try:
+        from apps.scraper.dataops.models import AcquisitionLog
+    except ImportError:
+        logger.warning("AcquisitionLog not available — skipping scraper health check")
+        return {"error": "AcquisitionLog not available"}
+
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+    results = {}
+
+    # Check all known operations
+    operations = (
+        AcquisitionLog.objects.values_list("operation", flat=True)
+        .distinct()
+        .order_by("operation")
+    )
+
+    for op in operations:
+        last_run = (
+            AcquisitionLog.objects.filter(operation=op).order_by("-started_at").first()
+        )
+        recent_failures = (
+            AcquisitionLog.objects.filter(
+                operation=op,
+                started_at__gte=seven_days_ago,
+            )
+            .filter(Q(error_summary__isnull=False) & ~Q(error_summary=""))
+            .count()
+        )
+
+        is_stale = False
+        expected_hours = _EXPECTED_INTERVALS.get(op)
+        if expected_hours and last_run and last_run.started_at:
+            staleness_threshold = now - timedelta(hours=expected_hours * 2)
+            is_stale = last_run.started_at < staleness_threshold
+
+        if is_stale:
+            logger.warning(
+                "Scraper STALE: %s — last run %s (expected every %dh)",
+                op,
+                last_run.started_at.isoformat() if last_run else "never",
+                expected_hours or 0,
+            )
+
+        if recent_failures >= 3:
+            logger.warning(
+                "Scraper FAILING: %s — %d failures in last 7 days",
+                op,
+                recent_failures,
+            )
+
+        results[op] = {
+            "last_run": last_run.started_at.isoformat() if last_run else None,
+            "is_stale": is_stale,
+            "recent_failures": recent_failures,
+        }
+
+    logger.info("Scraper health check complete: %d operations checked", len(results))
+    return results
