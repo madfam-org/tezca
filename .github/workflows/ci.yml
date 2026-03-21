@@ -80,11 +80,12 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      # Lockfile generated on macOS omits Linux optional deps (npm/cli#4828).
-      # Deleting it lets npm resolve platform-native binaries (e.g. lightningcss).
-      run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+      run: npm ci --legacy-peer-deps
+
+    - name: Fix cross-platform native bindings
+      # npm ci may skip platform-specific optional deps (npm/cli#4828)
+      # when lockfile was generated on a different OS.
+      run: npm install --no-save lightningcss-linux-x64-gnu@1.30.2 2>/dev/null || true
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -164,9 +165,10 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+      run: npm ci --legacy-peer-deps
+
+    - name: Fix cross-platform native bindings
+      run: npm install --no-save lightningcss-linux-x64-gnu@1.30.2 2>/dev/null || true
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps
