@@ -1,19 +1,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-const mockSignIn = vi.fn();
-const mockSignInWithOAuth = vi.fn();
 const mockReplace = vi.fn();
 const mockGet = vi.fn(() => null);
 const mockUseAuth = vi.fn(() => ({
-    auth: {
-        signIn: mockSignIn,
-        signInWithOAuth: mockSignInWithOAuth,
-    },
-    user: null,
-    session: null,
     isAuthenticated: false,
     isLoading: false,
-    signOut: vi.fn(),
+}));
+
+vi.mock('@/lib/auth', () => ({
+    useAuth: () => mockUseAuth(),
+}));
+
+vi.mock('@janua/ui/components/auth', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SignIn: (props: any) => (
+        <div data-testid="janua-sign-in" data-api-url={props.apiUrl} />
+    ),
 }));
 
 vi.mock('@janua/nextjs', () => ({
@@ -48,26 +50,15 @@ vi.mock('lucide-react', () => ({
     Shield: () => <svg data-testid="shield-icon" />,
 }));
 
-// TODO: Sign-in tests are broken due to dynamic import + jsdom label
-// rendering issues. Pre-existing on main — fix tracked separately.
-describe.skip('SignInPage', () => {
+describe('SignInPage', () => {
     const originalEnv = process.env;
 
     beforeEach(() => {
-        mockSignIn.mockReset();
-        mockSignInWithOAuth.mockReset();
         mockReplace.mockReset();
         mockGet.mockReturnValue(null);
         mockUseAuth.mockReturnValue({
-            auth: {
-                signIn: mockSignIn,
-                signInWithOAuth: mockSignInWithOAuth,
-            },
-            user: null,
-            session: null,
             isAuthenticated: false,
             isLoading: false,
-            signOut: vi.fn(),
         });
     });
 
@@ -76,7 +67,7 @@ describe.skip('SignInPage', () => {
         vi.resetModules();
     });
 
-    it('always renders SSO button and email/password form', async () => {
+    it('renders SSO button, divider, and Janua SignIn component', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
@@ -85,9 +76,7 @@ describe.skip('SignInPage', () => {
         expect(screen.getByText('Iniciar sesión con Janua SSO')).toBeInTheDocument();
         expect(screen.getByText(/proveedor de identidad/)).toBeInTheDocument();
         expect(screen.getByText('o usa correo y contraseña')).toBeInTheDocument();
-        expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument();
-        expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument();
+        expect(screen.getByTestId('janua-sign-in')).toBeInTheDocument();
     });
 
     it('navigates to /api/auth/sso on SSO button click', async () => {
@@ -125,73 +114,14 @@ describe.skip('SignInPage', () => {
     it('shows loading spinner while auth is loading', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
         mockUseAuth.mockReturnValue({
-            auth: {
-                signIn: mockSignIn,
-                signInWithOAuth: mockSignInWithOAuth,
-            },
-            user: null,
-            session: null,
             isAuthenticated: false,
             isLoading: true,
-            signOut: vi.fn(),
         });
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
         render(<SignInPage />);
 
         expect(screen.getByText('Cargando...')).toBeInTheDocument();
-    });
-
-    it('shows error message on failed email/password sign-in', async () => {
-        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-
-        const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-            new Response(JSON.stringify({ error: 'Credenciales inválidas' }), {
-                status: 401,
-                headers: { 'Content-Type': 'application/json' },
-            })
-        );
-
-        const { default: SignInPage } = await import('@/app/sign-in/page');
-        render(<SignInPage />);
-
-        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
-            target: { value: 'test@example.com' },
-        });
-        fireEvent.change(screen.getByLabelText('Contraseña'), {
-            target: { value: 'wrong' },
-        });
-        fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
-
-        await waitFor(() => {
-            expect(screen.getByRole('alert')).toHaveTextContent('Credenciales inválidas');
-        });
-
-        mockFetch.mockRestore();
-    });
-
-    it('shows loading state during email/password submission', async () => {
-        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-
-        // fetch that never resolves to keep the form in submitting state
-        const mockFetch = vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
-
-        const { default: SignInPage } = await import('@/app/sign-in/page');
-        render(<SignInPage />);
-
-        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
-            target: { value: 'test@example.com' },
-        });
-        fireEvent.change(screen.getByLabelText('Contraseña'), {
-            target: { value: 'pass' },
-        });
-        fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
-
-        await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Iniciando sesión...' })).toBeDisabled();
-        });
-
-        mockFetch.mockRestore();
     });
 
     it('renders fallback message when Janua is not configured', async () => {
@@ -228,76 +158,11 @@ describe.skip('SignInPage', () => {
         expect(screen.getByText(/JANUA_SECRET_KEY/)).toBeInTheDocument();
     });
 
-    it('shows SSO hint when SSO domain email is entered', async () => {
-        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-
-        const { default: SignInPage } = await import('@/app/sign-in/page');
-        render(<SignInPage />);
-
-        // Initially password field is visible
-        expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
-
-        // Type an SSO domain email
-        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
-            target: { value: 'admin@madfam.io' },
-        });
-
-        // Password field replaced with SSO hint
-        expect(screen.queryByLabelText('Contraseña')).not.toBeInTheDocument();
-        expect(screen.getByText(/Cuenta de organización/)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Continuar con SSO' })).toBeInTheDocument();
-    });
-
-    it('keeps password field for non-SSO domain emails', async () => {
-        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-
-        const { default: SignInPage } = await import('@/app/sign-in/page');
-        render(<SignInPage />);
-
-        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
-            target: { value: 'user@example.com' },
-        });
-
-        expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument();
-        expect(screen.queryByText(/Cuenta de organización/)).not.toBeInTheDocument();
-    });
-
-    it('redirects SSO domain emails to /api/auth/sso on form submit', async () => {
-        process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
-
-        const originalLocation = window.location;
-        // @ts-expect-error — override for test
-        delete window.location;
-        window.location = { ...originalLocation, origin: 'http://localhost:3000', href: '' } as Location;
-
-        const { default: SignInPage } = await import('@/app/sign-in/page');
-        render(<SignInPage />);
-
-        fireEvent.change(screen.getByLabelText('Correo electrónico'), {
-            target: { value: 'admin@madfam.io' },
-        });
-        fireEvent.submit(screen.getByRole('button', { name: 'Continuar con SSO' }).closest('form')!);
-
-        await waitFor(() => {
-            expect(window.location.href).toBe('/api/auth/sso');
-        });
-
-        window.location = originalLocation;
-    });
-
     it('redirects to / when already authenticated', async () => {
         process.env = { ...originalEnv, NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY: 'jnc_test_key' };
         mockUseAuth.mockReturnValue({
-            auth: {
-                signIn: mockSignIn,
-                signInWithOAuth: mockSignInWithOAuth,
-            },
-            user: { id: '1', email: 'test@example.com' },
-            session: {},
             isAuthenticated: true,
             isLoading: false,
-            signOut: vi.fn(),
         });
 
         const { default: SignInPage } = await import('@/app/sign-in/page');
