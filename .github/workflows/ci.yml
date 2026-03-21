@@ -83,9 +83,9 @@ jobs:
       run: npm ci --legacy-peer-deps
 
     - name: Fix native bindings (npm/cli#4828)
-      # macOS lockfile omits Linux optional deps. Reinstall lightningcss
-      # so npm resolves the native binary for the current platform.
-      run: npm install --no-package-lock --legacy-peer-deps lightningcss@1.30.2
+      # macOS lockfile omits Linux optional deps. Install only the
+      # platform-specific binary — avoids version drift in other deps.
+      run: npm install --no-package-lock --no-save lightningcss-linux-x64-gnu@1.30.2 || true
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -168,7 +168,7 @@ jobs:
       run: npm ci --legacy-peer-deps
 
     - name: Fix native bindings (npm/cli#4828)
-      run: npm install --no-package-lock --legacy-peer-deps lightningcss@1.30.2
+      run: npm install --no-package-lock --no-save lightningcss-linux-x64-gnu@1.30.2 || true
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps
