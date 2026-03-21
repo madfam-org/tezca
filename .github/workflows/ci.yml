@@ -80,11 +80,14 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      # npm ci/install with a macOS lockfile skips Linux optional deps
-      # (npm/cli#4828). Fresh resolve gets correct platform binaries.
+      run: npm ci --legacy-peer-deps
+
+    - name: Fix native bindings (npm/cli#4828)
+      # macOS lockfile omits Linux optional deps. Force-install just
+      # the platform-specific package lightningcss needs at runtime.
       run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+        node -e "try{require('lightningcss')}catch(e){process.exit(1)}" 2>/dev/null || \
+          npm install --no-package-lock --legacy-peer-deps lightningcss@1.30.2
 
     - name: Lint web
       run: npm run lint --workspace=web
@@ -164,9 +167,12 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Fix native bindings (npm/cli#4828)
       run: |
-        rm -f package-lock.json
-        npm install --legacy-peer-deps
+        node -e "try{require('lightningcss')}catch(e){process.exit(1)}" 2>/dev/null || \
+          npm install --no-package-lock --legacy-peer-deps lightningcss@1.30.2
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps
