@@ -82,6 +82,21 @@ jobs:
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
 
+    - name: Fix native bindings (npm/cli#4828)
+      # macOS lockfile omits Linux optional deps. Extract platform
+      # binaries directly into node_modules to avoid version drift.
+      run: |
+        extract_pkg() {
+          local pkg="$1" dir="$2"
+          local tarball=$(npm pack "$pkg" 2>/dev/null)
+          mkdir -p "node_modules/$dir"
+          tar -xzf "$tarball" -C "node_modules/$dir" --strip-components=1
+          rm -f "$tarball"
+        }
+        extract_pkg "lightningcss-linux-x64-gnu@1.30.2" "lightningcss-linux-x64-gnu"
+        extract_pkg "@tailwindcss/oxide-linux-x64-gnu@4.1.18" "@tailwindcss/oxide-linux-x64-gnu"
+        extract_pkg "@unrs/resolver-binding-linux-x64-gnu@1.11.1" "@unrs/resolver-binding-linux-x64-gnu"
+
     - name: Lint web
       run: npm run lint --workspace=web
 
@@ -161,6 +176,19 @@ jobs:
 
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
+
+    - name: Fix native bindings (npm/cli#4828)
+      run: |
+        extract_pkg() {
+          local pkg="$1" dir="$2"
+          local tarball=$(npm pack "$pkg" 2>/dev/null)
+          mkdir -p "node_modules/$dir"
+          tar -xzf "$tarball" -C "node_modules/$dir" --strip-components=1
+          rm -f "$tarball"
+        }
+        extract_pkg "lightningcss-linux-x64-gnu@1.30.2" "lightningcss-linux-x64-gnu"
+        extract_pkg "@tailwindcss/oxide-linux-x64-gnu@4.1.18" "@tailwindcss/oxide-linux-x64-gnu"
+        extract_pkg "@unrs/resolver-binding-linux-x64-gnu@1.11.1" "@unrs/resolver-binding-linux-x64-gnu"
 
     - name: Install Playwright Chromium
       run: npx playwright install chromium --with-deps

@@ -9,6 +9,7 @@ coverage/
 .pytest_cache/
 htmlcov/
 .coverage
+coverage.json
 *.cover
 .hypothesis/
 test-results/

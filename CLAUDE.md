@@ -82,7 +82,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1294 tests)
+# Backend (pytest + django, 1308 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -346,7 +346,6 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/trial_views.py` | Trial start/status endpoints, duration constants from settings |
 | `apps/web/lib/billing.ts` | Checkout URL builders (`getCheckoutUrl`, `getTrialCheckoutUrl`, `hasPaidAccess`) |
 | `apps/web/lib/pricing.ts` | Pricing constants (PRICING, PROMO) for frontend tier cards |
-| `apps/api/utils/responses.py` | `error_response()` helper — standard `{"error": ...}` format |
 | `apps/api/utils/url_validation.py` | Webhook SSRF protection — validates URLs against private/reserved IPs |
 | `apps/api/storage.py` | StorageBackend (local + R2) |
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
