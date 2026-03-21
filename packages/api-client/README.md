@@ -13,7 +13,11 @@ npm install @tezca/api-client --registry https://npm.madfam.io
 ```typescript
 import { TezcaClient } from "@tezca/api-client";
 
+// API key auth (for programmatic access)
 const tezca = new TezcaClient({ apiKey: "tzk_..." });
+
+// JWT auth (for user-specific endpoints)
+const tezca = new TezcaClient({ token: "eyJ..." });
 
 // List laws
 const laws = await tezca.laws.list({ domain: "finance" });
@@ -34,19 +38,23 @@ const articles = await tezca.laws.articles("ley-federal-del-trabajo");
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | `string` | required | API key with `tzk_` prefix |
+| `apiKey` | `string?` | -- | API key with `tzk_` prefix |
+| `token` | `string?` | -- | Janua JWT token |
 | `baseUrl` | `string` | `https://tezca.mx/api/v1` | API base URL |
 | `timeout` | `number` | `30000` | Request timeout in ms |
+
+At least one of `apiKey` or `token` is required.
 
 ### Laws
 
 ```typescript
-tezca.laws.list(params?)     // Paginated law list with filters
-tezca.laws.get(lawId)        // Full law detail
-tezca.laws.articles(lawId)   // Law articles
-tezca.laws.search(lawId, q)  // Search within a law
-tezca.laws.related(lawId)    // Related laws
-tezca.laws.structure(lawId)  // Hierarchical structure
+tezca.laws.list(params?)       // Paginated law list with filters
+tezca.laws.get(lawId)          // Full law detail
+tezca.laws.articles(lawId)     // Law articles
+tezca.laws.search(lawId, q)    // Search within a law
+tezca.laws.related(lawId)      // Related laws
+tezca.laws.structure(lawId)    // Hierarchical structure
+tezca.laws.references(lawId)   // Cross-references from a law
 ```
 
 ### Search
@@ -54,6 +62,37 @@ tezca.laws.structure(lawId)  // Hierarchical structure
 ```typescript
 tezca.search(query, params?)  // Full-text search across all articles
 tezca.suggest(query)          // Autocomplete suggestions
+```
+
+### Categories & Coverage
+
+```typescript
+tezca.categories.list()               // Law categories with counts
+tezca.categories.states()             // States with laws
+tezca.categories.municipalities(state?) // Municipalities (optionally by state)
+tezca.coverage.get()                  // Platform coverage statistics
+```
+
+### Graph
+
+```typescript
+tezca.graph.ego(lawId, params?)    // Ego graph for a law
+tezca.graph.overview(params?)      // Global graph overview
+tezca.graph.showcase()             // Public showcase (top 50 nodes)
+```
+
+### Judicial Records
+
+```typescript
+tezca.judicial.search(params)  // Search jurisprudencia and tesis aisladas
+tezca.judicial.stats()         // Counts by tipo, materia, epoca
+```
+
+### Cross-References
+
+```typescript
+tezca.references.forLaw(lawId)             // All refs from a law
+tezca.references.batch(lawId, articleIds)  // Batch refs (chunks at 200 IDs)
 ```
 
 ### Bulk Data
@@ -82,6 +121,30 @@ tezca.webhooks.create({ url, events })  // Subscribe to events
 tezca.webhooks.list()                   // List subscriptions
 tezca.webhooks.delete(id)               // Remove subscription
 tezca.webhooks.test(id)                 // Send test event
+```
+
+### User (JWT auth only)
+
+```typescript
+tezca.user.preferences()              // Get preferences, bookmarks, recently viewed
+tezca.user.addBookmark(lawId)          // Add bookmark
+tezca.user.removeBookmark(lawId)       // Remove bookmark
+tezca.user.recordView(lawId)           // Record a view
+
+// Annotations
+tezca.user.annotations.list(lawId?)    // List annotations
+tezca.user.annotations.create(params)  // Create annotation
+tezca.user.annotations.update(id, text) // Update text
+tezca.user.annotations.delete(id)      // Delete
+
+// Alerts
+tezca.user.alerts.list()               // List alert subscriptions
+tezca.user.alerts.create(params)       // Create alert
+tezca.user.alerts.delete(id)           // Delete alert
+
+// Notifications
+tezca.user.notifications.list()        // List notifications
+tezca.user.notifications.markRead(ids?) // Mark as read
 ```
 
 ### Changelog

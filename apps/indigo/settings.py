@@ -254,6 +254,11 @@ if SENTRY_DSN:
     except ImportError:
         pass  # sentry-sdk not installed (optional dependency)
 
+# ── Quality Quarantine ────────────────────────────────────────────────────
+QUALITY_QUARANTINE_GRADES = os.environ.get("QUALITY_QUARANTINE_GRADES", "D,F").split(
+    ","
+)
+
 # ── Trial Configuration ──────────────────────────────────────────────────
 TRIAL_DURATION_NO_CC_DAYS = int(os.environ.get("TRIAL_DURATION_NO_CC_DAYS", "3"))
 TRIAL_DURATION_WITH_CC_DAYS = int(os.environ.get("TRIAL_DURATION_WITH_CC_DAYS", "21"))

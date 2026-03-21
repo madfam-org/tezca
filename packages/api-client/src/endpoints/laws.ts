@@ -2,7 +2,7 @@
  * Laws endpoint methods.
  */
 
-import type { Law, LawListItem, PaginatedResponse, LawListParams, PaginationOptions } from "../types";
+import type { Law, LawListItem, PaginatedResponse, LawListParams, PaginationOptions, CrossReferenceData, BatchRefsResponse } from "../types";
 
 export class LawsEndpoint {
   constructor(private request: <T>(path: string, params?: Record<string, string>) => Promise<T>) {}
@@ -55,6 +55,11 @@ export class LawsEndpoint {
     structure: { label: string; children: unknown[] }[];
   }> {
     return this.request(`/laws/${encodeURIComponent(lawId)}/structure/`);
+  }
+
+  /** Get all cross-references originating from a law. */
+  async references(lawId: string): Promise<CrossReferenceData[]> {
+    return this.request(`/laws/${encodeURIComponent(lawId)}/references/`);
   }
 
   private buildQuery(params?: Record<string, unknown>): string {

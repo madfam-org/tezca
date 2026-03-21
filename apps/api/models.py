@@ -91,6 +91,21 @@ class LawVersion(models.Model):
     # Metadata
     change_summary = models.TextField(blank=True, null=True)
 
+    # Quality metrics (populated by parser pipeline)
+    quality_grade = models.CharField(
+        max_length=2,
+        null=True,
+        blank=True,
+        db_index=True,
+        choices=[("A", "A"), ("B", "B"), ("C", "C"), ("D", "D"), ("F", "F")],
+        help_text="Parser quality grade. D/F are quarantined.",
+    )
+    quality_score = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="Overall quality score 0-100.",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

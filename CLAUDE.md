@@ -73,6 +73,7 @@ npm run dev:all                     # both concurrently
 | `TEZCA_ADMIN_USER_IDS` | `""` | Comma-separated Janua user IDs allowed admin access |
 | `DHANAM_CHECKOUT_URL` | `https://dhanam.madfam.io/checkout` | Billing checkout URL (used by tier gates) |
 | `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
+| `QUALITY_QUARANTINE_GRADES` | `D,F` | Comma-separated quality grades to quarantine from indexing |
 
 ---
 
@@ -81,7 +82,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1234 tests)
+# Backend (pytest + django, 1284 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -229,6 +230,15 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
 - **Graceful degradation**: When ES is unavailable, `law_articles` and `law_stats` return HTTP 200 with `degraded: true` and empty/partial data instead of 500. Frontend shows an "articles unavailable" banner via `articlesDegraded` state in `LawDetail.tsx`.
 
+### Quality Quarantine
+
+- `LawVersion.quality_grade` (A-F) and `quality_score` (0-100) populated by parser pipeline
+- Pipeline gate (Stage 4.5): D/F grades are quarantined — `result.success = False`, XML preserved for review
+- `QUALITY_QUARANTINE_GRADES` setting (env var, default `D,F`) controls which grades are blocked
+- `index_laws` excludes quarantined laws by default; `--include-quarantined` overrides
+- Law detail API exposes `grade`/`score` from latest version
+- Admin endpoint `GET /api/v1/admin/quarantined/` lists quarantined laws (protected)
+
 ### Celery
 
 - Broker and result backend: Redis
@@ -350,7 +360,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/app/global-error.tsx` | Layout-level catch-all (raw styles, Sentry) |
 | `apps/api/management/commands/spot_check.py` | Data integrity spot-check (samples laws, traces DB→file→ES→API) |
 | `apps/parsers/error_tracker.py` | ErrorTracker + ErrorRecord for pipeline error logging |
-| `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality) with ErrorTracker |
+| `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality→Quarantine) with ErrorTracker |
+| `apps/ingestion/db_saver.py` | DatabaseSaver — persists law versions with quality metrics to Django DB |
 | `apps/api/management/commands/retry_failed_non_leg.py` | Retry failed non-leg state law downloads |
 | `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
 | `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |

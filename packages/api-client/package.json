@@ -1,6 +1,6 @@
 {
   "name": "@tezca/api-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript SDK for the Tezca API — Mexico's open law platform",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

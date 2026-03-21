@@ -27,6 +27,28 @@ export type {
   PaginatedResponse,
   PaginationOptions,
   CursorPaginationOptions,
+  // New types
+  CategoryItem,
+  CoverageTier,
+  CoverageResponse,
+  GraphNode,
+  GraphEdge,
+  GraphResponse,
+  GraphParams,
+  GraphOverviewParams,
+  JudicialRecord,
+  JudicialSearchParams,
+  JudicialSearchResponse,
+  JudicialStatsResponse,
+  CrossReferenceData,
+  IncomingCrossReference,
+  BatchRefsResponse,
+  AnnotationData,
+  CreateAnnotationParams,
+  NotificationData,
+  AlertData,
+  CreateAlertParams,
+  UserPreferences,
 } from "./types";
 
 // Re-export shared types from @tezca/lib
