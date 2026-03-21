@@ -1,5 +1,5 @@
 import { render, renderHook } from '@testing-library/react';
-import { setTokenSource, api, APIError } from '@/lib/api';
+import { setTokenSource, api } from '@/lib/api';
 
 // Mock @janua/nextjs since it's not installed in test env
 vi.mock('@janua/nextjs', () => ({

@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { SignIn } from "@janua/ui/components/auth";
 import { Shield } from "lucide-react";
 
 const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
-
-/** Email domains that require SSO login (no email/password fallback). */
-const SSO_DOMAINS = ["madfam.io"];
 
 export default function SignInPage() {
     const router = useRouter();
@@ -40,21 +38,13 @@ function SignInFormContent({
 }) {
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const searchParams = useSearchParams();
-    const [ssoError, setSsoError] = useState<string | null>(null);
+    const ssoError = searchParams.get("sso_error");
 
     useEffect(() => {
         if (isAuthenticated && !authLoading) {
             router.replace("/");
         }
     }, [isAuthenticated, authLoading, router]);
-
-    // Pick up SSO errors from callback redirect
-    useEffect(() => {
-        const error = searchParams.get("sso_error");
-        if (error) {
-            setSsoError(error);
-        }
-    }, [searchParams]);
 
     function handleSsoLogin() {
         // Navigate to the server-side OIDC initiation route
@@ -201,12 +191,12 @@ function UnconfiguredFallback() {
 NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=jnc_...
 JANUA_SECRET_KEY=jns_...`}
                 </pre>
-                <a
+                <Link
                     href="/"
                     className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                     Continuar sin autenticación
-                </a>
+                </Link>
             </div>
         </PageShell>
     );

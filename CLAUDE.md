@@ -82,7 +82,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1284 tests)
+# Backend (pytest + django, 1294 tests)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -102,6 +102,12 @@ cd packages/mcp-server && uv run pytest tests/ -v
 # Data recovery
 python manage.py retry_failed_non_leg --dry-run          # report retryable non-leg gaps
 python manage.py retry_failed_non_leg --all --batch-size 50  # retry with enhanced timeout
+
+# Quality backfill
+python manage.py backfill_quality_scores --all --dry-run     # preview
+python manage.py backfill_quality_scores --all               # backfill all
+python manage.py backfill_quality_scores --law-id cpeum      # single law
+python manage.py backfill_quality_scores --all --force        # rescore
 
 # E2E (89 tests across 15 specs, 4 browser projects)
 cd apps/web && npx playwright test
@@ -363,6 +369,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/parsers/pipeline.py` | Ingestion pipeline (Download→Extract→Parse→Validate→Quality→Quarantine) with ErrorTracker |
 | `apps/ingestion/db_saver.py` | DatabaseSaver — persists law versions with quality metrics to Django DB |
 | `apps/api/management/commands/retry_failed_non_leg.py` | Retry failed non-leg state law downloads |
+| `apps/api/management/commands/backfill_quality_scores.py` | Backfill quality_grade/quality_score for existing LawVersion records |
 | `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
 | `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |

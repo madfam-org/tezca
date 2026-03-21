@@ -5,9 +5,11 @@ Tests initialization, configuration, and method interfaces without
 requiring an actual browser (Playwright is an optional dependency).
 """
 
-import json
-
 import pytest
+
+pytest.importorskip("playwright")
+
+import json
 
 
 class TestPlaywrightBase:
