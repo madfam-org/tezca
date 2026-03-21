@@ -520,3 +520,78 @@ class TestRetryFailedNonLeg:
 
         assert "Retryable gaps found: 1" in captured.out
         assert "Dry run complete" in captured.out
+
+    @patch("apps.api.management.commands.retry_failed_non_leg.data_exists")
+    @patch("apps.api.management.commands.retry_failed_non_leg.read_metadata_json")
+    def test_state_filter(self, mock_read_meta, mock_data_exists, capsys):
+        """--state filters gaps to only the specified state."""
+        mock_read_meta.return_value = {
+            "laws": [
+                {
+                    "official_id": "col_1",
+                    "law_name": "Colima Law",
+                    "state": "Colima",
+                    "url": "http://example.com/col.pdf",
+                    "text_file": "",
+                },
+                {
+                    "official_id": "son_1",
+                    "law_name": "Sonora Law",
+                    "state": "Sonora",
+                    "url": "http://example.com/son.pdf",
+                    "text_file": "",
+                },
+            ],
+        }
+        mock_data_exists.return_value = False
+
+        call_command("retry_failed_non_leg", "--state", "colima", "--dry-run")
+        captured = capsys.readouterr()
+
+        assert "Retryable gaps found: 1" in captured.out
+        assert "Colima" in captured.out
+
+    @patch("apps.api.management.commands.retry_failed_non_leg.data_exists")
+    @patch("apps.api.management.commands.retry_failed_non_leg.read_metadata_json")
+    def test_handles_no_gaps(self, mock_read_meta, mock_data_exists, capsys):
+        """No gaps found leads to clean exit."""
+        mock_read_meta.return_value = {
+            "laws": [
+                {
+                    "official_id": "ok_1",
+                    "law_name": "Good Law",
+                    "state": "Colima",
+                    "url": "http://example.com/ok.pdf",
+                    "text_file": "state/colima/ok.txt",
+                },
+            ],
+        }
+        mock_data_exists.return_value = True
+
+        call_command("retry_failed_non_leg", "--all", "--dry-run")
+        captured = capsys.readouterr()
+
+        assert "Retryable gaps found: 0" in captured.out
+        assert "No gaps found" in captured.out
+
+    @patch("apps.api.management.commands.retry_failed_non_leg.data_exists")
+    @patch("apps.api.management.commands.retry_failed_non_leg.read_metadata_json")
+    def test_limit_flag(self, mock_read_meta, mock_data_exists, capsys):
+        """--limit caps the number of gaps to retry."""
+        laws = [
+            {
+                "official_id": f"gap_{i}",
+                "law_name": f"Gap Law {i}",
+                "state": "Jalisco",
+                "url": f"http://example.com/gap{i}.pdf",
+                "text_file": "",
+            }
+            for i in range(5)
+        ]
+        mock_read_meta.return_value = {"laws": laws}
+        mock_data_exists.return_value = False
+
+        call_command("retry_failed_non_leg", "--all", "--dry-run", "--limit", "2")
+        captured = capsys.readouterr()
+
+        assert "Retryable gaps found: 2" in captured.out

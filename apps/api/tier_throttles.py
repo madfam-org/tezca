@@ -1,8 +1,7 @@
 """
 Tier-aware rate limiting using Django cache (Redis sliding window).
 
-Replaces the default AnonRateThrottle and SearchRateThrottle with a single
-throttle class that respects the user's API key tier.
+Tier-aware rate limiter that respects the user's API key tier.
 """
 
 import logging
