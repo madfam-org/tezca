@@ -71,27 +71,36 @@ def changelog(request):
     category = request.query_params.get("category")
     tier = request.query_params.get("tier")
 
-    categories = None
-    if domain and domain in DOMAIN_MAP:
-        categories = DOMAIN_MAP[domain]
+    from django.db import connection
+    from django.db.models import Q
+
+    if domain:
+        target_domains = DOMAIN_MAP.get(domain) if domain in DOMAIN_MAP else [domain]
+        if target_domains:
+            domain_q = Q(law__category__in=target_domains)
+            if connection.vendor == "postgresql":
+                for sub in target_domains:
+                    domain_q |= Q(law__domains__contains=[sub])
+            versions_qs = versions_qs.filter(domain_q)
     elif category:
         categories = [c.strip() for c in category.split(",") if c.strip()]
+        if categories:
+            versions_qs = versions_qs.filter(law__category__in=categories)
 
-    if categories:
-        versions_qs = versions_qs.filter(law__category__in=categories)
     if tier:
         versions_qs = versions_qs.filter(law__tier=tier)
 
     # Domain access check for API keys
     allowed = getattr(user, "allowed_domains", [])
     if allowed:
-        allowed_categories = set()
+        allowed_q = Q()
         for d in allowed:
-            if d in DOMAIN_MAP:
-                allowed_categories.update(DOMAIN_MAP[d])
-            else:
-                allowed_categories.add(d)
-        versions_qs = versions_qs.filter(law__category__in=list(allowed_categories))
+            target = DOMAIN_MAP.get(d, [d])
+            allowed_q |= Q(law__category__in=target)
+            if connection.vendor == "postgresql":
+                for sub in target:
+                    allowed_q |= Q(law__domains__contains=[sub])
+        versions_qs = versions_qs.filter(allowed_q)
 
     # Limit to 500 results
     versions = versions_qs[:500]

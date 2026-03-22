@@ -48,7 +48,9 @@ class SearchView(APIView):
         responses={200: SearchResponseSchema, 400: ErrorSchema, 500: ErrorSchema},
     )
     def get(self, request):
-        query = request.query_params.get("q", "")
+        query = request.query_params.get("q", "") or request.query_params.get(
+            "search", ""
+        )
         if not query:
             return Response({"results": [], "total": 0})
 
@@ -107,10 +109,13 @@ class SearchView(APIView):
             # Add filter clauses
             filter_clauses = []
 
-            # Domain filter (maps to multiple categories)
+            # Domain filter (uses domains field in ES)
             domain = request.query_params.get("domain")
-            if domain and domain in DOMAIN_MAP:
-                filter_clauses.append({"terms": {"category": DOMAIN_MAP[domain]}})
+            if domain:
+                if domain in DOMAIN_MAP:
+                    filter_clauses.append({"terms": {"domains": DOMAIN_MAP[domain]}})
+                else:
+                    filter_clauses.append({"term": {"domains": domain}})
 
             # Category filter (supports comma-separated)
             if category and category != "all":

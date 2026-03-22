@@ -43,7 +43,7 @@ class TestChangelog:
             official_id="lft",
             name="Ley Federal del Trabajo",
             tier="federal",
-            category="laboral",
+            category="labor",
             status="vigente",
         )
 

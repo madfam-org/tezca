@@ -6,14 +6,19 @@ from apps.api.constants import DOMAIN_MAP
 class TestDomainMap:
     """Validate DOMAIN_MAP structure and SCIAN-aligned entries."""
 
+    # Valid categories match actual production DB values (English branch names
+    # + document types). See CLAUDE.md constants section.
     VALID_CATEGORIES = {
         "civil",
-        "penal",
+        "criminal",
         "fiscal",
-        "mercantil",
-        "laboral",
-        "administrativo",
-        "constitucional",
+        "financial",
+        "commercial",
+        "labor",
+        "administrative",
+        "constitutional",
+        "constitucion",
+        "environmental",
     }
 
     def test_all_values_are_valid_categories(self):
@@ -48,35 +53,43 @@ class TestDomainMap:
             assert key in DOMAIN_MAP, f"Missing SCIAN domain '{key}'"
 
     def test_manufacturing_categories(self):
-        """SCIAN 31-33 manufacturing maps to laboral+administrativo+mercantil."""
+        """SCIAN 31-33 manufacturing maps to labor+administrative+commercial."""
         assert set(DOMAIN_MAP["manufacturing"]) == {
-            "laboral",
-            "administrativo",
-            "mercantil",
+            "labor",
+            "administrative",
+            "commercial",
         }
 
     def test_commerce_categories(self):
-        """SCIAN 43+46 commerce maps to mercantil+fiscal+administrativo."""
-        assert set(DOMAIN_MAP["commerce"]) == {"mercantil", "fiscal", "administrativo"}
+        """SCIAN 43+46 commerce maps to commercial+fiscal+administrative."""
+        assert set(DOMAIN_MAP["commerce"]) == {
+            "commercial",
+            "fiscal",
+            "administrative",
+        }
 
     def test_foreign_trade_categories(self):
-        """Foreign trade maps to fiscal+mercantil+administrativo."""
+        """Foreign trade maps to fiscal+commercial+administrative."""
         assert set(DOMAIN_MAP["foreign_trade"]) == {
             "fiscal",
-            "mercantil",
-            "administrativo",
+            "commercial",
+            "administrative",
         }
 
     def test_financial_services_categories(self):
-        """SCIAN 52 financial services maps to fiscal+mercantil."""
-        assert set(DOMAIN_MAP["financial_services"]) == {"fiscal", "mercantil"}
+        """SCIAN 52 financial services maps to fiscal+financial+commercial."""
+        assert set(DOMAIN_MAP["financial_services"]) == {
+            "fiscal",
+            "financial",
+            "commercial",
+        }
 
     def test_professional_services_categories(self):
-        """SCIAN 54 professional services maps to civil+administrativo+laboral."""
+        """SCIAN 54 professional services maps to civil+administrative+labor."""
         assert set(DOMAIN_MAP["professional_services"]) == {
             "civil",
-            "administrativo",
-            "laboral",
+            "administrative",
+            "labor",
         }
 
     def test_consumer_domains_present(self):
@@ -85,20 +98,24 @@ class TestDomainMap:
             assert key in DOMAIN_MAP, f"Missing consumer domain '{key}'"
 
     def test_training_categories(self):
-        """Training domain maps to laboral+administrativo."""
-        assert set(DOMAIN_MAP["training"]) == {"laboral", "administrativo"}
+        """Training domain maps to labor+administrative."""
+        assert set(DOMAIN_MAP["training"]) == {"labor", "administrative"}
 
     def test_customs_categories(self):
-        """Customs domain maps to fiscal+mercantil+administrativo."""
+        """Customs domain maps to fiscal+commercial+administrative."""
         assert set(DOMAIN_MAP["customs"]) == {
             "fiscal",
-            "mercantil",
-            "administrativo",
+            "commercial",
+            "administrative",
         }
 
     def test_safety_categories(self):
-        """Safety domain maps to laboral+administrativo."""
-        assert set(DOMAIN_MAP["safety"]) == {"laboral", "administrativo"}
+        """Safety domain maps to labor+administrative+environmental."""
+        assert set(DOMAIN_MAP["safety"]) == {
+            "labor",
+            "administrative",
+            "environmental",
+        }
 
     def test_no_empty_domain_values(self):
         """No domain maps to an empty list."""

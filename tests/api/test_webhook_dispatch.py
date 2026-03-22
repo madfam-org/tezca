@@ -165,7 +165,10 @@ class TestDispatchFiltering:
         )
         from apps.api.webhooks import dispatch_webhook_event
 
-        dispatch_webhook_event("law.updated", {"law_id": "cpf", "category": "penal"})
+        dispatch_webhook_event(
+            "law.updated",
+            {"law_id": "cpf", "category": "penal", "domains": ["criminal"]},
+        )
         assert not mock_delay.called
 
     @patch("apps.api.tasks.deliver_webhook.delay")
@@ -180,7 +183,10 @@ class TestDispatchFiltering:
         )
         from apps.api.webhooks import dispatch_webhook_event
 
-        dispatch_webhook_event("law.updated", {"law_id": "cff", "category": "fiscal"})
+        dispatch_webhook_event(
+            "law.updated",
+            {"law_id": "cff", "category": "fiscal", "domains": ["fiscal"]},
+        )
         assert mock_delay.called
 
     @patch("apps.api.tasks.deliver_webhook.delay")
@@ -229,9 +235,15 @@ class TestDispatchFiltering:
         from apps.api.webhooks import dispatch_webhook_event
 
         # Matching domain but wrong law_id → skipped
-        dispatch_webhook_event("law.updated", {"law_id": "liva", "category": "fiscal"})
+        dispatch_webhook_event(
+            "law.updated",
+            {"law_id": "liva", "category": "fiscal", "domains": ["fiscal"]},
+        )
         assert not mock_delay.called
 
         # Matching both → delivered
-        dispatch_webhook_event("law.updated", {"law_id": "cff", "category": "fiscal"})
+        dispatch_webhook_event(
+            "law.updated",
+            {"law_id": "cff", "category": "fiscal", "domains": ["fiscal"]},
+        )
         assert mock_delay.called

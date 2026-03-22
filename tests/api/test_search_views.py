@@ -137,6 +137,32 @@ class TestSearchViewBasic:
         assert data["total"] == 0
 
     @patch("apps.api.search_views.es_client")
+    def test_search_param_alias(self, mock_es):
+        """GET /search/?search=amparo works as alias for ?q=amparo."""
+        mock_es.ping.return_value = True
+        hits = [
+            _make_hit("doc-1", "cpeum", "107", "Juicio de amparo.", score=8.0),
+        ]
+        mock_es.search.return_value = _build_es_response(
+            hits,
+            total=1,
+            aggregations={
+                "by_tier": {"buckets": []},
+                "by_category": {"buckets": []},
+                "by_status": {"buckets": []},
+                "by_law_type": {"buckets": []},
+                "by_state": {"buckets": []},
+            },
+        )
+
+        url = reverse("search")
+        response = self.client.get(url, {"search": "amparo"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1
+
+    @patch("apps.api.search_views.es_client")
     def test_search_with_query_returns_results(self, mock_es):
         """Search with a valid query returns formatted results."""
         mock_es.ping.return_value = True

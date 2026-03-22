@@ -23,6 +23,11 @@ class Law(models.Model):
     name = models.CharField(max_length=2000, help_text="Full name of the law")
     short_name = models.CharField(max_length=200, blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    domains = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Legal branches: ["labor", "fiscal", "criminal", ...]',
+    )
     tier = models.CharField(max_length=50, blank=True, null=True, db_index=True)
     municipality = models.CharField(
         max_length=100,

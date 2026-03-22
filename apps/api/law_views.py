@@ -92,6 +92,7 @@ class LawDetailView(APIView):
             "name": law.name,
             "short_name": law.short_name,
             "category": law.category,
+            "domains": law.domains or [],
             "tier": law.tier,
             "law_type": law.law_type,
             "state": state,
@@ -164,10 +165,17 @@ class LawListView(APIView):
         if state:
             qs = qs.filter(state__iexact=state)
 
-        # Domain filter (maps to multiple categories)
+        # Domain filter (checks Law.domains JSONField + category fallback)
         domain = request.query_params.get("domain")
-        if domain and domain in DOMAIN_MAP:
-            qs = qs.filter(category__in=DOMAIN_MAP[domain])
+        if domain:
+            target_domains = DOMAIN_MAP.get(domain, [domain])
+            from django.db import connection
+
+            domain_q = Q(category__in=target_domains)
+            if connection.vendor == "postgresql":
+                for sub in target_domains:
+                    domain_q |= Q(domains__contains=[sub])
+            qs = qs.filter(domain_q)
 
         category = request.query_params.get("category")
         if category:
@@ -186,7 +194,7 @@ class LawListView(APIView):
         if law_type and law_type != "all":
             qs = qs.filter(law_type=law_type)
 
-        q = request.query_params.get("q")
+        q = request.query_params.get("q") or request.query_params.get("search")
         if q:
             qs = qs.filter(name__icontains=q)
 
@@ -200,6 +208,7 @@ class LawListView(APIView):
                 "tier": law.tier,
                 "law_type": law.law_type,
                 "category": law.category,
+                "domains": law.domains or [],
                 "status": law.status,
                 "versions": law.version_count,
             }

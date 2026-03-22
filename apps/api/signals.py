@@ -8,13 +8,17 @@ from django.dispatch import receiver
 logger = logging.getLogger(__name__)
 
 
-def _resolve_domains(category: str) -> list[str]:
-    """Return domain keys whose category lists include the given category."""
+def _resolve_domains(law) -> list[str]:
+    """Return domains from the law's domains field, with DOMAIN_MAP fallback."""
+    if law.domains:
+        return law.domains
+    # Fallback for unclassified laws
     from .constants import DOMAIN_MAP
 
+    category = law.category or ""
     if not category:
         return []
-    return [domain for domain, cats in DOMAIN_MAP.items() if category in cats]
+    return [d for d, cats in DOMAIN_MAP.items() if category in cats]
 
 
 @receiver(post_save, sender="api.Law")
@@ -31,7 +35,7 @@ def law_changed(sender, instance, created, **kwargs):
             "category": instance.category or "",
             "tier": instance.tier or "",
             "law_type": instance.law_type or "",
-            "domains": _resolve_domains(instance.category or ""),
+            "domains": _resolve_domains(instance),
         },
     )
 
@@ -52,6 +56,6 @@ def version_created(sender, instance, created, **kwargs):
             "category": instance.law.category or "",
             "publication_date": str(instance.publication_date),
             "law_type": instance.law.law_type or "",
-            "domains": _resolve_domains(instance.law.category or ""),
+            "domains": _resolve_domains(instance.law),
         },
     )

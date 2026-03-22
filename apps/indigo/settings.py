@@ -398,4 +398,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=2, minute=0, day_of_month="15"),
         "kwargs": {"priority_only": False, "max_results": 5000},
     },
+    # ── Phase: Judicial auto-ingest + domain classification ──────────
+    "judicial-ingest-weekly": {
+        "task": "dataops.ingest_judicial_batches",
+        "schedule": crontab(hour=2, minute=0, day_of_week="sunday"),
+    },
+    "classify-domains-weekly": {
+        "task": "dataops.classify_law_domains",
+        "schedule": crontab(hour=5, minute=30, day_of_week="monday"),
+    },
 }

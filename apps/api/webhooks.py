@@ -27,10 +27,12 @@ def dispatch_webhook_event(event: str, payload: dict):
     subscriptions = [s for s in all_subs if event in (s.events or [])]
 
     for sub in subscriptions:
-        # Check domain filter
+        # Check domain filter against the domains array
         if sub.domain_filter:
-            event_category = payload.get("category", "")
-            if event_category and event_category not in sub.domain_filter:
+            event_domains = payload.get("domains", [])
+            if not event_domains or not any(
+                d in sub.domain_filter for d in event_domains
+            ):
                 continue
 
         # Check law_id filter

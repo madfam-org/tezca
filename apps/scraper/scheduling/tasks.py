@@ -730,6 +730,38 @@ def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
         return {"error": str(e)}
 
 
+@shared_task(name="dataops.ingest_judicial_batches")
+def ingest_judicial_batches():
+    """Auto-ingest SCJN judicial records from batch directory."""
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    batch_dir = Path("data/judicial/batches")
+    if not batch_dir.exists() or not list(batch_dir.glob("*.json")):
+        logger.info("No judicial batch files to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("judicial_batch_ingest")
+    try:
+        call_command("ingest_judicial", dir=str(batch_dir), batch_size=500)
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("Judicial batch ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
+@shared_task(name="dataops.classify_law_domains")
+def classify_law_domains_task():
+    """Weekly domain classification for newly added laws."""
+    from django.core.management import call_command
+
+    call_command("classify_law_domains", all=True, batch_size=500)
+    return {"status": "completed"}
+
+
 # Expected run intervals (hours) for staleness detection
 _EXPECTED_INTERVALS = {
     "dof_daily_check": 24,

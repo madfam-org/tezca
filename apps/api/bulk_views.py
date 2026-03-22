@@ -113,7 +113,17 @@ def bulk_articles(request):
     filter_clauses = []
 
     if categories:
-        filter_clauses.append({"terms": {"category": categories}})
+        filter_clauses.append(
+            {
+                "bool": {
+                    "should": [
+                        {"terms": {"category": categories}},
+                        {"terms": {"domains": categories}},
+                    ],
+                    "minimum_should_match": 1,
+                }
+            }
+        )
 
     tier = request.query_params.get("tier")
     if tier:

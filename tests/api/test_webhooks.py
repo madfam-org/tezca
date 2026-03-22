@@ -216,6 +216,7 @@ class TestWebhookDispatch:
             {
                 "law_id": "cpf",
                 "category": "penal",
+                "domains": ["criminal"],
             },
         )
 

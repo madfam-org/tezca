@@ -247,22 +247,24 @@ class TestDomainFilter:
         url = reverse("search")
         self.client.get(url, {"q": "impuesto", "domain": "finance"})
 
-        # Verify ES was called with terms filter for fiscal+mercantil
+        # Verify ES was called with terms filter for domains field
         call_args = mock_es.search.call_args
         # ES 8 uses keyword args (query=, not body=)
         kwargs = call_args[1]
         query = kwargs.get("query", kwargs.get("body", {}).get("query", {}))
         filters = query.get("bool", {}).get("filter", [])
 
-        domain_filter = [
-            f for f in filters if "terms" in f and "category" in f["terms"]
-        ]
+        domain_filter = [f for f in filters if "terms" in f and "domains" in f["terms"]]
         assert len(domain_filter) == 1
-        assert set(domain_filter[0]["terms"]["category"]) == {"fiscal", "mercantil"}
+        assert set(domain_filter[0]["terms"]["domains"]) == {
+            "fiscal",
+            "financial",
+            "commercial",
+        }
 
     @patch("apps.api.search_views.es_client")
     def test_search_scian_manufacturing_domain(self, mock_es):
-        """SCIAN 'manufacturing' domain maps to laboral+administrativo+mercantil."""
+        """SCIAN 'manufacturing' domain maps to labor+administrative+commercial."""
         mock_es.ping.return_value = True
         mock_es.search.return_value = {
             "hits": {"total": {"value": 0}, "hits": []},
@@ -277,24 +279,22 @@ class TestDomainFilter:
         query = kwargs.get("query", kwargs.get("body", {}).get("query", {}))
         filters = query.get("bool", {}).get("filter", [])
 
-        domain_filter = [
-            f for f in filters if "terms" in f and "category" in f["terms"]
-        ]
+        domain_filter = [f for f in filters if "terms" in f and "domains" in f["terms"]]
         assert len(domain_filter) == 1
-        assert set(domain_filter[0]["terms"]["category"]) == {
-            "laboral",
-            "administrativo",
-            "mercantil",
+        assert set(domain_filter[0]["terms"]["domains"]) == {
+            "labor",
+            "administrative",
+            "commercial",
         }
 
     def test_law_list_domain_manufacturing(self):
-        """?domain=manufacturing filters to laboral+administrativo+mercantil only."""
+        """?domain=manufacturing filters to labor+administrative+commercial only."""
         laboral_id = f"fed_lab_{uuid.uuid4().hex[:8]}"
         Law.objects.create(
             official_id=laboral_id,
             name="Ley Federal del Trabajo Test",
             tier="federal",
-            category="laboral",
+            category="labor",
         )
 
         url = reverse("law-list")

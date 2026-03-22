@@ -109,6 +109,15 @@ python manage.py backfill_quality_scores --all               # backfill all
 python manage.py backfill_quality_scores --law-id cpeum      # single law
 python manage.py backfill_quality_scores --all --force        # rescore
 
+# Domain classification
+python manage.py classify_law_domains --all --dry-run        # preview
+python manage.py classify_law_domains --all                  # classify all
+python manage.py classify_law_domains --law-id cpeum         # single law
+
+# Cross-reference backfill
+python manage.py backfill_cross_references --all --dry-run   # preview
+python manage.py backfill_cross_references --all --batch-size 50  # backfill
+
 # DOF health verification
 python manage.py verify_dof_health                           # 7-day report
 python manage.py verify_dof_health --days 30 --json          # 30-day JSON report
@@ -231,6 +240,17 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
+### Domain Taxonomy
+
+- `Law.category` stores document type: `ley`, `acuerdo`, `reglamento`, `decreto`, `codigo`, `constitucion`, etc.
+- `Law.domains` (JSONField, list of strings) stores legal branch classification: `labor`, `fiscal`, `criminal`, `civil`, `commercial`, `administrative`, `constitutional`, `environmental`, `health`, `education`
+- A law can belong to multiple domains (e.g. `["labor", "administrative"]`)
+- `classify_law_domains` management command populates `domains` via keyword matching against `Law.name`
+- `DOMAIN_MAP` in `constants.py` maps composite domains (e.g. `manufacturing`, `customs`) to lists of base domains for filtering
+- Domain filtering (`?domain=labor`) checks both `Law.domains` (JSONField) and `Law.category` (fallback for unclassified laws)
+- ES index includes `domains` keyword field on both `laws` and `articles` indices
+- Webhook `domain_filter` matches against the `domains` array in event payloads
+
 ### Elasticsearch
 
 - Singleton client in `apps/api/config.py` (`es_client`)
@@ -259,7 +279,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
-- 21 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct), `check-scraper-health-daily` (daily 08:00, logs stale/failing scrapers), `nom-monthly-full` (15th, full-agency NOM scan with `priority_only=False`)
+- 23 scheduled tasks: health checks (daily/weekly), staleness detection, DOF daily, treaty/NOM/CONAMER scraping, coverage reports, parser pipeline (weekly), `state-guerrero-monthly` and `state-nuevo-leon-monthly` (monthly state scraping), `scjn-weekly-scrape` (SCJN judicial corpus, Sunday midnight), `scjn-playwright-weekly` (Saturday 22:00), `conamer-playwright-weekly` (Friday 23:00), `ojn-recovery-monthly` (10th), `wayback-recovery-monthly` (20th), `dof-historical-quarterly` (Jan/Apr/Jul/Oct), `check-scraper-health-daily` (daily 08:00, logs stale/failing scrapers), `nom-monthly-full` (15th, full-agency NOM scan with `priority_only=False`), `judicial-ingest-weekly` (Sunday 02:00, auto-ingests SCJN batches), `classify-domains-weekly` (Monday 05:30, classifies new laws into legal domains)
 
 ### Storage
 
@@ -342,7 +362,7 @@ type Lang = 'es' | 'en' | 'nah';
 | File | Purpose |
 |------|---------|
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
-| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety). Category values must match actual DB data: English branch names (`labor`, `fiscal`, `commercial`, `environmental`, `administrative`, `criminal`, `civil`, `constitutional`) plus document types (`ley`, `acuerdo`, `reglamento`, `decreto`, `codigo`, `constitucion`, etc.) |
+| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety). Used for composite domain expansion (e.g. `manufacturing` → `["labor", "administrative", "commercial"]`). The `Law.domains` JSONField is the canonical source for legal branch classification; `Law.category` stores document type (`ley`, `acuerdo`, `reglamento`, etc.) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits. Re-exports `RequireTier`, `RequireFeature`, `check_feature`, `get_effective_tier` from middleware |
@@ -378,6 +398,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/ingestion/db_saver.py` | DatabaseSaver — persists law versions with quality metrics to Django DB |
 | `apps/api/management/commands/retry_failed_non_leg.py` | Retry failed non-leg state law downloads |
 | `apps/api/management/commands/backfill_quality_scores.py` | Backfill quality_grade/quality_score for existing LawVersion records |
+| `apps/api/management/commands/classify_law_domains.py` | Keyword-based domain classification for Law.domains JSONField |
+| `apps/api/management/commands/backfill_cross_references.py` | Cross-reference detection backfill for existing laws |
 | `apps/api/management/commands/verify_dof_health.py` | DOF daily task health report (last N days, optional `--run-now`) |
 | `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
 | `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |

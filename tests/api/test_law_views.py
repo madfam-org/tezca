@@ -203,6 +203,15 @@ class TestLawListFiltering:
         for item in data["results"]:
             assert "guadalajara" in item["name"].lower()
 
+    def test_filter_by_search_alias(self):
+        """?search= works as alias for ?q= on law list."""
+        response = self.client.get(self.url, {"search": "Guadalajara"})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["count"] >= 1
+        for item in data["results"]:
+            assert "guadalajara" in item["name"].lower()
+
     def test_sort_name_desc(self):
         response = self.client.get(self.url, {"sort": "name_desc"})
         assert response.status_code == 200

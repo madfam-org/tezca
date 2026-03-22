@@ -37,7 +37,10 @@ def _build_law_slug_index() -> Dict[str, str]:
 
 
 def detect_and_store_cross_references(
-    law_slug: str, xml_path: Path, detector: CrossReferenceDetector = None
+    law_slug: str,
+    xml_path: Path,
+    detector: CrossReferenceDetector = None,
+    slug_index: Dict[str, str] = None,
 ) -> int:
     """
     Detect cross-references in a parsed law's XML and store them in the database.
@@ -46,6 +49,7 @@ def detect_and_store_cross_references(
         law_slug: The law's slug identifier
         xml_path: Path to the Akoma Ntoso XML file
         detector: Optional detector instance (will create if not provided)
+        slug_index: Optional pre-built slug index (avoids rebuilding per call)
 
     Returns:
         Number of cross-references detected and stored
@@ -55,8 +59,8 @@ def detect_and_store_cross_references(
     if detector is None:
         detector = CrossReferenceDetector()
 
-    # Build slug lookup index once per law
-    slug_index = _build_law_slug_index()
+    if slug_index is None:
+        slug_index = _build_law_slug_index()
 
     # Parse XML
     tree = etree.parse(str(xml_path))
