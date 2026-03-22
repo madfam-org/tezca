@@ -8,6 +8,8 @@ import { useAuth } from '@/components/providers/AuthContext';
 import { TierComparison } from '@/components/TierComparison';
 import { PRICING, PROMO } from '@/lib/pricing';
 import { getTrialCheckoutUrl } from '@/lib/billing';
+import { MONETIZATION_ENABLED } from '@/lib/config';
+import { InterestGate } from '@/components/InterestGate';
 import { JsonLd } from '@/components/JsonLd';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
@@ -145,6 +147,24 @@ const content = {
     },
 };
 
+const preMonetizationSubtitle = {
+    es: 'Próximamente — regístrate para acceso anticipado.',
+    en: 'Coming soon — sign up for early access.',
+    nah: 'Hualaz niman — xicmotocāyōti.',
+};
+
+const TIER_FEATURE_KEY: Record<string, string> = {
+    essentials: 'advanced_search',
+    academic: 'latex_export',
+    institutional: 'webhooks',
+};
+
+const comingSoonLabel = {
+    es: 'Próximamente',
+    en: 'Coming soon',
+    nah: 'Hualaz niman',
+};
+
 type TierKey = 'free_member' | 'essentials' | 'academic' | 'institutional';
 
 function FaqSection({ faq, title }: { faq: { q: string; a: string }[]; title: string }) {
@@ -232,13 +252,17 @@ export default function PreciosPage() {
             {/* Header */}
             <div className="bg-gradient-to-b from-primary/5 to-background pt-16 pb-8 text-center px-4">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">{t.title}</h1>
-                <p className="mt-3 text-muted-foreground max-w-xl mx-auto">{t.subtitle}</p>
+                <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+                    {MONETIZATION_ENABLED ? t.subtitle : preMonetizationSubtitle[lang]}
+                </p>
 
-                {/* Promo banner */}
-                <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                    <Sparkles className="h-4 w-4" />
-                    {t.promoBanner}
-                </div>
+                {/* Promo banner — only when monetization is enabled */}
+                {MONETIZATION_ENABLED && (
+                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+                        <Sparkles className="h-4 w-4" />
+                        {t.promoBanner}
+                    </div>
+                )}
             </div>
 
             {/* Pricing cards */}
@@ -262,38 +286,56 @@ export default function PreciosPage() {
                                         </Badge>
                                     </div>
                                 )}
+                                {!MONETIZATION_ENABLED && key !== 'free_member' && (
+                                    <div className="absolute -top-3 right-4">
+                                        <Badge variant="outline" className="text-xs px-2 bg-background">
+                                            {comingSoonLabel[lang]}
+                                        </Badge>
+                                    </div>
+                                )}
                                 <CardContent className="flex flex-col flex-1 p-6">
                                     <h3 className="font-bold text-lg">{getTierName(key)}</h3>
                                     <p className="mt-1 text-sm text-muted-foreground">
                                         {getTierDesc(key)}
                                     </p>
 
-                                    {/* Price */}
-                                    <div className="mt-4 mb-4">
-                                        {price ? (
-                                            <>
+                                    {/* Price — only when monetization is enabled */}
+                                    {MONETIZATION_ENABLED && (
+                                        <div className="mt-4 mb-4">
+                                            {price ? (
+                                                <>
+                                                    <div className="flex items-baseline gap-1">
+                                                        <span className="text-3xl font-bold">
+                                                            ${price.promo}
+                                                        </span>
+                                                        <span className="text-sm text-muted-foreground">
+                                                            {price.currency}
+                                                            {t.perMonth}
+                                                        </span>
+                                                        <span className="text-xs text-muted-foreground">*</span>
+                                                    </div>
+                                                    <p className="mt-1 text-xs text-muted-foreground">
+                                                        {t.promoFootnote(price.monthly)}
+                                                    </p>
+                                                </>
+                                            ) : (
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-3xl font-bold">
-                                                        ${price.promo}
+                                                        {t.freeMemberPrice}
                                                     </span>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        {price.currency}
-                                                        {t.perMonth}
-                                                    </span>
-                                                    <span className="text-xs text-muted-foreground">*</span>
                                                 </div>
-                                                <p className="mt-1 text-xs text-muted-foreground">
-                                                    {t.promoFootnote(price.monthly)}
-                                                </p>
-                                            </>
-                                        ) : (
+                                            )}
+                                        </div>
+                                    )}
+                                    {!MONETIZATION_ENABLED && key === 'free_member' && (
+                                        <div className="mt-4 mb-4">
                                             <div className="flex items-baseline gap-1">
                                                 <span className="text-3xl font-bold">
                                                     {t.freeMemberPrice}
                                                 </span>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
 
                                     {/* Feature list */}
                                     <ul className="space-y-2 mb-6 flex-1">
@@ -306,15 +348,24 @@ export default function PreciosPage() {
                                     </ul>
 
                                     {/* CTA */}
-                                    <Link href={getCtaHref(key)}>
-                                        <Button
-                                            className="w-full gap-2 group"
-                                            variant={isPopular ? 'default' : 'outline'}
-                                        >
-                                            {getCtaLabel(key)}
-                                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                                        </Button>
-                                    </Link>
+                                    {MONETIZATION_ENABLED || key === 'free_member' ? (
+                                        <Link href={getCtaHref(key)}>
+                                            <Button
+                                                className="w-full gap-2 group"
+                                                variant={isPopular ? 'default' : 'outline'}
+                                            >
+                                                {getCtaLabel(key)}
+                                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                                            </Button>
+                                        </Link>
+                                    ) : (
+                                        <InterestGate
+                                            variant="inline"
+                                            featureKey={TIER_FEATURE_KEY[key] ?? 'advanced_search'}
+                                            sourcePage="pricing"
+                                            showUseCase={false}
+                                        />
+                                    )}
                                 </CardContent>
                             </Card>
                         );
@@ -325,7 +376,7 @@ export default function PreciosPage() {
             {/* Detailed comparison */}
             <div className="container mx-auto px-4 sm:px-6 mt-16">
                 <h2 className="text-2xl font-bold text-center mb-8">{t.compareTitle}</h2>
-                <TierComparison showPricing />
+                <TierComparison showPricing={MONETIZATION_ENABLED} />
             </div>
 
             {/* FAQ */}

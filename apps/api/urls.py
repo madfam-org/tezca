@@ -8,6 +8,7 @@ from .admin_views import (
     gap_records,
     health_check,
     health_sources,
+    interest_stats,
     job_status,
     list_jobs,
     pipeline_status,
@@ -66,6 +67,7 @@ from .law_views import (
 )
 from .middleware.admin_permission import IsTezcaAdmin
 from .middleware.janua_auth import JanuaJWTAuthentication
+from .interest_views import register_interest
 from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
 from .notification_views import (
     alert_delete,
@@ -132,6 +134,11 @@ urlpatterns = [
         "admin/analytics/search/",
         _protected(search_analytics),
         name="admin-search-analytics",
+    ),
+    path(
+        "admin/interests/",
+        _protected(interest_stats),
+        name="admin-interests",
     ),
     # API Key management (Janua-protected)
     path("admin/apikeys/", _protected(create_api_key), name="admin-apikey-create"),
@@ -219,6 +226,8 @@ urlpatterns = [
         newsletter_unsubscribe,
         name="newsletter-unsubscribe",
     ),
+    # ── Feature interest (public) ─────────────────────────────────────
+    path("interest/", register_interest, name="register-interest"),
     # ── Billing (server-to-server) ──────────────────────────────────────
     path("billing/webhook/", billing_webhook, name="billing-webhook"),
     # ── Trial (auth required) ──────────────────────────────────────────

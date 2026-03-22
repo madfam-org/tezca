@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 from .config import ES_HOST, es_client
 from .ingestion_manager import IngestionManager
-from .models import Law, LawVersion
+from .models import FeatureInterest, Law, LawVersion
 from .schema import (
     ErrorSchema,
     HealthCheckSchema,
@@ -668,3 +668,15 @@ def task_health(request):
             "checked_at": now.isoformat(),
         }
     )
+
+
+@api_view(["GET"])
+def interest_stats(request):
+    """Feature interest counts by feature_key."""
+    stats = list(
+        FeatureInterest.objects.values("feature_key")
+        .annotate(count=Count("id"))
+        .order_by("-count")
+    )
+    total = sum(s["count"] for s in stats)
+    return Response({"total": total, "by_feature": stats})

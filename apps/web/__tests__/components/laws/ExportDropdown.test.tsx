@@ -12,6 +12,7 @@ vi.mock('@/components/providers/AuthContext', () => ({
 
 vi.mock('@/lib/config', () => ({
     API_BASE_URL: 'http://localhost:8000',
+    MONETIZATION_ENABLED: true,
 }));
 
 vi.mock('@/lib/billing', () => ({

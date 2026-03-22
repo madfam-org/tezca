@@ -15,6 +15,8 @@ import { trackEvent } from '@/lib/analytics/posthog';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { TierGate } from '@/components/TierGate';
+import { InterestGate } from '@/components/InterestGate';
+import { MONETIZATION_ENABLED } from '@/lib/config';
 import type { SearchResult, FacetBucket } from "@tezca/lib";
 
 const content = {
@@ -511,23 +513,36 @@ function SearchContent() {
                                     ))}
                                 </div>
 
-                                {/* Tier gate for limited search results */}
+                                {/* Tier gate / interest gate for limited search results */}
                                 {maxPageSize != null && maxPageSize < 100 && (
                                     <div className="mt-6">
-                                        <TierGate
-                                            variant="card"
-                                            requiredTier="academic"
-                                            feature={lang === 'en'
-                                                ? `You're viewing the first ${maxPageSize} results. With Academic, explore up to 100 per page.`
-                                                : lang === 'nah'
-                                                ? `Ticmotta in achtopa ${maxPageSize} tlanextīliztli. Ica Academic, xictlapo 100 ipan cē āmoxihuitl.`
-                                                : `Estás viendo los primeros ${maxPageSize} resultados. Con Academic, explora hasta 100 por página.`}
-                                            benefits={lang === 'en'
-                                                ? ['100 results per page', 'LaTeX export', 'Search analytics']
-                                                : lang === 'nah'
-                                                ? ['100 tlanextīliztli', 'LaTeX tēmōhuiliztli', 'Tlanextīliztli tlaixmatiliztli']
-                                                : ['100 resultados por página', 'Exportar LaTeX', 'Análisis de búsqueda']}
-                                        />
+                                        {MONETIZATION_ENABLED ? (
+                                            <TierGate
+                                                variant="card"
+                                                requiredTier="academic"
+                                                feature={lang === 'en'
+                                                    ? `You're viewing the first ${maxPageSize} results. With Academic, explore up to 100 per page.`
+                                                    : lang === 'nah'
+                                                    ? `Ticmotta in achtopa ${maxPageSize} tlanextīliztli. Ica Academic, xictlapo 100 ipan cē āmoxihuitl.`
+                                                    : `Estás viendo los primeros ${maxPageSize} resultados. Con Academic, explora hasta 100 por página.`}
+                                                benefits={lang === 'en'
+                                                    ? ['100 results per page', 'LaTeX export', 'Search analytics']
+                                                    : lang === 'nah'
+                                                    ? ['100 tlanextīliztli', 'LaTeX tēmōhuiliztli', 'Tlanextīliztli tlaixmatiliztli']
+                                                    : ['100 resultados por página', 'Exportar LaTeX', 'Análisis de búsqueda']}
+                                            />
+                                        ) : (
+                                            <InterestGate
+                                                variant="card"
+                                                featureKey="advanced_search"
+                                                sourcePage="search"
+                                                benefits={lang === 'en'
+                                                    ? ['100 results per page', 'LaTeX export', 'Search analytics']
+                                                    : lang === 'nah'
+                                                    ? ['100 tlanextīliztli', 'LaTeX tēmōhuiliztli', 'Tlanextīliztli tlaixmatiliztli']
+                                                    : ['100 resultados por página', 'Exportar LaTeX', 'Análisis de búsqueda']}
+                                            />
+                                        )}
                                     </div>
                                 )}
 

@@ -53,6 +53,16 @@ vi.mock('@/components/TierComparison', () => ({
     ),
 }));
 
+vi.mock('@/lib/config', () => ({
+    MONETIZATION_ENABLED: true,
+}));
+
+vi.mock('@/components/InterestGate', () => ({
+    InterestGate: ({ featureKey }: any) => (
+        <div data-testid="interest-gate" data-feature={featureKey} />
+    ),
+}));
+
 import PreciosPage from '@/app/precios/page';
 
 describe('PreciosPage', () => {

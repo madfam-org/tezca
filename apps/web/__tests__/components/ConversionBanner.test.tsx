@@ -17,6 +17,11 @@ vi.mock('@/lib/billing', () => ({
         ['essentials', 'academic', 'institutional', 'madfam'].includes(tier),
 }));
 
+// Default: monetization enabled (tests original behavior)
+vi.mock('@/lib/config', () => ({
+    MONETIZATION_ENABLED: true,
+}));
+
 vi.mock('next/link', () => ({
     default: ({ children, href, ...props }: any) => (
         <a href={href} {...props}>{children}</a>
@@ -41,6 +46,7 @@ vi.mock('lucide-react', () => ({
     Search: ({ className }: any) => <span data-testid="search" className={className} />,
     Download: ({ className }: any) => <span data-testid="download" className={className} />,
     Code: ({ className }: any) => <span data-testid="code" className={className} />,
+    Users: ({ className }: any) => <span data-testid="users" className={className} />,
 }));
 
 import { ConversionBanner } from '@/components/ConversionBanner';

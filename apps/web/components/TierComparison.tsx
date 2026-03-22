@@ -6,7 +6,14 @@ import { Button, Badge, Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
+import { MONETIZATION_ENABLED } from '@/lib/config';
 import { PRICING } from '@/lib/pricing';
+
+const comingSoonLabel = {
+    es: 'Próximamente',
+    en: 'Coming soon',
+    nah: 'Hualaz niman',
+};
 
 const content = {
     es: {
@@ -243,16 +250,22 @@ export function TierComparison({ className = '', compact = false, showPricing = 
                             {tiers.map((planTier) => (
                                 <td key={planTier} className="pt-4 text-center">
                                     {!isDowngrade(planTier) && (
-                                        <Link href={getCheckoutHref(planTier)}>
-                                            <Button
-                                                size="sm"
-                                                variant={planTier === 'academic' ? 'default' : 'outline'}
-                                                className="gap-1"
-                                            >
-                                                <Sparkles className="h-3 w-3" />
-                                                {!isAuthenticated ? t.ctaFree : t.ctaUpgrade}
-                                            </Button>
-                                        </Link>
+                                        !MONETIZATION_ENABLED && planTier !== 'free_member' ? (
+                                            <Badge variant="outline" className="text-xs">
+                                                {comingSoonLabel[lang]}
+                                            </Badge>
+                                        ) : (
+                                            <Link href={getCheckoutHref(planTier)}>
+                                                <Button
+                                                    size="sm"
+                                                    variant={planTier === 'academic' ? 'default' : 'outline'}
+                                                    className="gap-1"
+                                                >
+                                                    <Sparkles className="h-3 w-3" />
+                                                    {!isAuthenticated ? t.ctaFree : t.ctaUpgrade}
+                                                </Button>
+                                            </Link>
+                                        )
                                     )}
                                 </td>
                             ))}
@@ -306,17 +319,23 @@ export function TierComparison({ className = '', compact = false, showPricing = 
                                     })}
                                 </ul>
                                 {!isDowngrade(planTier) && (
-                                    <Link href={getCheckoutHref(planTier)} className="block">
-                                        <Button
-                                            size="sm"
-                                            variant={isHighlighted ? 'default' : 'outline'}
-                                            className="w-full gap-1"
-                                        >
-                                            <Sparkles className="h-3 w-3" />
-                                            {!isAuthenticated ? t.ctaFree : t.ctaUpgrade}
-                                            <ArrowRight className="h-3 w-3" />
-                                        </Button>
-                                    </Link>
+                                    !MONETIZATION_ENABLED && planTier !== 'free_member' ? (
+                                        <Badge variant="outline" className="text-xs">
+                                            {comingSoonLabel[lang]}
+                                        </Badge>
+                                    ) : (
+                                        <Link href={getCheckoutHref(planTier)} className="block">
+                                            <Button
+                                                size="sm"
+                                                variant={isHighlighted ? 'default' : 'outline'}
+                                                className="w-full gap-1"
+                                            >
+                                                <Sparkles className="h-3 w-3" />
+                                                {!isAuthenticated ? t.ctaFree : t.ctaUpgrade}
+                                                <ArrowRight className="h-3 w-3" />
+                                            </Button>
+                                        </Link>
+                                    )
                                 )}
                             </CardContent>
                         </Card>

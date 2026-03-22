@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { Download, FileText, FileDown, Code, BookOpen, Braces, FileSpreadsheet, Loader2, Lock } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth, type UserTier } from '@/components/providers/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_BASE_URL, MONETIZATION_ENABLED } from '@/lib/config';
 import { getAuthToken } from '@/lib/auth-token';
 import { trackEvent } from '@/lib/analytics/posthog';
 import { TierGate } from '@/components/TierGate';
+import { InterestGate } from '@/components/InterestGate';
 
 type ExportFormat = 'txt' | 'pdf' | 'latex' | 'docx' | 'epub' | 'json';
 
@@ -28,6 +29,15 @@ const TIER_RANK: Record<UserTier, number> = {
     academic: 3,
     institutional: 4,
     madfam: 5,
+};
+
+const FORMAT_FEATURE_KEY: Record<ExportFormat, string> = {
+    txt: '',
+    pdf: '',
+    json: '',
+    latex: 'latex_export',
+    docx: 'docx_export',
+    epub: 'epub_export',
 };
 
 const content = {
@@ -124,6 +134,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
     const [message, setMessage] = useState<string | null>(null);
     const [showGate, setShowGate] = useState(false);
     const [gateRequiredTier, setGateRequiredTier] = useState<'academic' | 'institutional'>('academic');
+    const [gatedFormat, setGatedFormat] = useState<ExportFormat | null>(null);
     const [rateLimitSecs, setRateLimitSecs] = useState<number | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +164,7 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
         if (!canAccess(format)) {
             const requiredTier = FORMAT_TIERS[format];
             setGateRequiredTier(TIER_RANK[requiredTier] >= TIER_RANK['institutional'] ? 'institutional' : 'academic');
+            setGatedFormat(format);
             setShowGate(true);
             trackEvent('export.tier_gated', { format, required_tier: requiredTier, user_tier: tier });
             return;
@@ -263,21 +275,30 @@ export function ExportDropdown({ lawId }: ExportDropdownProps) {
                         })}
                     </div>
 
-                    {/* Tier gate for locked formats / rate limits */}
+                    {/* Tier gate / interest gate for locked formats / rate limits */}
                     {showGate && (
                         <div className="border-t p-2">
-                            <TierGate
-                                variant="inline"
-                                requiredTier={gateRequiredTier}
-                                feature={rateLimitSecs != null
-                                    ? undefined
-                                    : (isAuthenticated
-                                        ? (lang === 'en' ? `Requires ${gateRequiredTier} tier` : lang === 'nah' ? `Monequi ${gateRequiredTier}` : `Requiere plan ${gateRequiredTier}`)
-                                        : (lang === 'en' ? 'Create your free account to download PDF' : lang === 'nah' ? 'Xictlālia mocuenta ic PDF' : 'Crea tu cuenta gratuita para descargar en PDF'))}
-                                showCountdown={rateLimitSecs != null}
-                                retryAfterSeconds={rateLimitSecs ?? undefined}
-                                onDismiss={() => { setShowGate(false); setRateLimitSecs(null); }}
-                            />
+                            {rateLimitSecs != null || MONETIZATION_ENABLED ? (
+                                <TierGate
+                                    variant="inline"
+                                    requiredTier={gateRequiredTier}
+                                    feature={rateLimitSecs != null
+                                        ? undefined
+                                        : (isAuthenticated
+                                            ? (lang === 'en' ? `Requires ${gateRequiredTier} tier` : lang === 'nah' ? `Monequi ${gateRequiredTier}` : `Requiere plan ${gateRequiredTier}`)
+                                            : (lang === 'en' ? 'Create your free account to download PDF' : lang === 'nah' ? 'Xictlālia mocuenta ic PDF' : 'Crea tu cuenta gratuita para descargar en PDF'))}
+                                    showCountdown={rateLimitSecs != null}
+                                    retryAfterSeconds={rateLimitSecs ?? undefined}
+                                    onDismiss={() => { setShowGate(false); setRateLimitSecs(null); }}
+                                />
+                            ) : (
+                                <InterestGate
+                                    variant="inline"
+                                    featureKey={FORMAT_FEATURE_KEY[gatedFormat ?? 'latex'] || 'latex_export'}
+                                    sourcePage="export_dropdown"
+                                    onDismiss={() => { setShowGate(false); setGatedFormat(null); }}
+                                />
+                            )}
                         </div>
                     )}
                 </div>

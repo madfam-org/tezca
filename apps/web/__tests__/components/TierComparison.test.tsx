@@ -23,6 +23,10 @@ vi.mock('@/lib/billing', () => ({
     ),
 }));
 
+vi.mock('@/lib/config', () => ({
+    MONETIZATION_ENABLED: true,
+}));
+
 vi.mock('next/link', () => ({
     default: ({ children, href, ...props }: any) => (
         <a href={href} {...props}>

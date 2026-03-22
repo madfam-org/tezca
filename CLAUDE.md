@@ -74,6 +74,7 @@ npm run dev:all                     # both concurrently
 | `DHANAM_CHECKOUT_URL` | `https://dhanam.madfam.io/checkout` | Billing checkout URL (used by tier gates) |
 | `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
 | `QUALITY_QUARANTINE_GRADES` | `D,F` | Comma-separated quality grades to quarantine from indexing |
+| `NEXT_PUBLIC_MONETIZATION_ENABLED` | `false` | When `true`, enables full tier checkout flows. When `false` (default), shows interest-capture forms instead of paywalls |
 
 ---
 
@@ -215,6 +216,12 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Feature flags and limits defined in `apps/api/tiers.json`
 - `normalize_tier()` handles legacy names: `free`→`essentials`, `premium`/`enterprise`/`pro`→`academic`, `internal`→`madfam`
 - `get_effective_tier()` caps tier at academic in self-hosted mode (`TEZCA_DEPLOYMENT=self-hosted`)
+
+### Monetization
+
+- **Monetization is currently disabled** (`NEXT_PUBLIC_MONETIZATION_ENABLED` defaults to `false`). Gated features show `InterestGate` (email capture) instead of `TierGate` (checkout). Set `NEXT_PUBLIC_MONETIZATION_ENABLED=true` to enable full tier checkout flows.
+- `FeatureInterest` model collects email + feature intent signals at `POST /api/v1/interest/`
+- Admin stats: `GET /api/v1/admin/interests/` (protected) returns counts by feature_key
 
 ### Billing
 
@@ -380,12 +387,15 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/graph_views.py` | Law graph API (ego graph + global overview + public showcase for Sigma.js) |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
-| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord |
+| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord, FeatureInterest |
+| `apps/api/interest_views.py` | Feature interest capture endpoint (`POST /api/v1/interest/`) — email + feature_key collection before monetization |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
+| `apps/web/components/InterestGate.tsx` | Pre-monetization interest-capture component (4 variants, email form, i18n). Shown when `MONETIZATION_ENABLED=false` |
+| `apps/web/lib/feature-labels.ts` | Feature key → i18n display labels for InterestGate |
 | `apps/web/components/TierComparison.tsx` | Tier feature comparison table |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
 | `apps/web/lib/sentry.ts` | Sentry init + `captureError()` (conditional on `@sentry/nextjs`) |

@@ -421,6 +421,58 @@ class NewsletterSubscription(models.Model):
         return f"{self.email} ({status})"
 
 
+class FeatureInterest(models.Model):
+    """Captures user interest in gated features before monetization is enabled."""
+
+    ALLOWED_FEATURES = [
+        "latex_export",
+        "docx_export",
+        "epub_export",
+        "webhooks",
+        "graph_api",
+        "bulk_download",
+        "search_analytics",
+        "advanced_search",
+    ]
+    ALLOWED_USE_CASES = ["research", "work", "personal", "government", "education"]
+
+    email = models.EmailField(db_index=True)
+    feature_key = models.CharField(
+        max_length=50,
+        db_index=True,
+        help_text="latex_export, docx_export, epub_export, webhooks, graph_api, bulk_download, search_analytics, advanced_search",
+    )
+    use_case = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+        help_text="research, work, personal, government, education",
+    )
+    janua_user_id = models.CharField(max_length=255, blank=True, default="")
+    source_page = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="export_dropdown, pricing, search, graph",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["feature_key", "created_at"]),
+            models.Index(fields=["email", "feature_key"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "feature_key"],
+                name="unique_email_feature_interest",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.email} → {self.feature_key}"
+
+
 class Contribution(models.Model):
     """Community data contribution submissions."""
 
