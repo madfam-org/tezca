@@ -201,6 +201,16 @@ export async function mockApiRoutes(page: Page) {
         ] } })
     );
 
+    // Interest capture
+    await page.route(`${API}/interest/`, (route) =>
+        route.fulfill({ status: 201, json: { id: 'mock', created: true } })
+    );
+
+    // Related laws
+    await page.route(new RegExp('/api/v1/laws/[^/]+/related/'), (route) =>
+        route.fulfill({ json: { law_id: 'ley-federal-del-trabajo', related: [] } })
+    );
+
     // Law-specific graph
     await page.route(new RegExp('/api/v1/laws/[^/]+/graph/'), (route) =>
         route.fulfill({ json: MOCK_LAW_GRAPH })

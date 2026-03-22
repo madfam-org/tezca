@@ -60,6 +60,16 @@ export interface AlertData {
     created_at: string;
 }
 
+export interface ApiKeyData {
+    prefix: string;
+    name: string;
+    tier: string;
+    scopes: string[];
+    is_active: boolean;
+    created_at: string;
+    last_used_at: string | null;
+}
+
 import { API_BASE_URL } from './config';
 
 class APIError extends Error {
@@ -487,6 +497,40 @@ export const api = {
 
     deleteAlert: async (token: string, id: number) => {
         return fetcher<void>(`/user/alerts/${id}/`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    // ── User API Keys ────────────────────────────────────────────────
+
+    getUserApiKeys: async (token: string) => {
+        return fetcher<{
+            keys: ApiKeyData[];
+            total: number;
+        }>('/user/apikeys/', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    },
+
+    createUserApiKey: async (token: string, data: { name: string }) => {
+        return fetcher<ApiKeyData & { key: string }>('/user/apikeys/', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+    },
+
+    updateUserApiKey: async (token: string, prefix: string, data: { name: string }) => {
+        return fetcher<ApiKeyData>(`/user/apikeys/${prefix}/`, {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+    },
+
+    revokeUserApiKey: async (token: string, prefix: string) => {
+        return fetcher<void>(`/user/apikeys/${prefix}/revoke/`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
         });

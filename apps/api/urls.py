@@ -21,6 +21,7 @@ from .admin_views import (
 from .analytics_views import search_analytics
 from .annotation_views import annotation_detail, annotation_list
 from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
+from .user_apikey_views import user_apikey_list_create, user_apikey_update, user_apikey_revoke
 from .billing_views import billing_webhook
 from .bulk_views import bulk_articles
 from .changelog_views import changelog
@@ -219,6 +220,14 @@ urlpatterns = [
     ),
     path("user/alerts/", alert_list, name="alert-list"),
     path("user/alerts/<int:alert_id>/", alert_delete, name="alert-delete"),
+    # ── User API keys (self-serve) ───────────────────────────────────
+    path("user/apikeys/", user_apikey_list_create, name="user-apikey-list-create"),
+    path("user/apikeys/<str:prefix>/", user_apikey_update, name="user-apikey-update"),
+    path(
+        "user/apikeys/<str:prefix>/revoke/",
+        user_apikey_revoke,
+        name="user-apikey-revoke",
+    ),
     # ── Newsletter (public) ────────────────────────────────────────────
     path("newsletter/subscribe/", newsletter_subscribe, name="newsletter-subscribe"),
     path(

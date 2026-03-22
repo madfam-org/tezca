@@ -245,8 +245,8 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 ### Route Conventions
 
-- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`, `/login/`
+- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`, `/api/v1/user/apikeys/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`, `/login/`, `/cuenta/apikeys/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Domain Taxonomy
@@ -394,6 +394,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord, FeatureInterest (with wishlist field) |
 | `apps/api/interest_views.py` | Feature interest capture endpoint (`POST /api/v1/interest/`) — email + feature_key + wishlist collection before monetization |
+| `apps/api/user_apikey_views.py` | Self-serve API key CRUD (`GET/POST /api/v1/user/apikeys/`, `PATCH ./<prefix>/`, `DELETE ./<prefix>/revoke/`) — tier-inherited, max 5 keys |
 | `apps/api/crm_sync.py` | CRM webhook dispatch — sends interest.created events to phyne-crm (no-ops when CRM_WEBHOOK_URL not set) |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
@@ -402,6 +403,8 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
 | `apps/web/components/InterestGate.tsx` | Pre-monetization interest-capture component (4 variants, email form, wishlist, i18n). Shown when `MONETIZATION_ENABLED=false` |
 | `apps/web/app/login/page.tsx` | Login/signup page — renders Janua SignIn/SignUp with redirect support |
+| `apps/web/app/cuenta/page.tsx` | Account page — profile card, quick links (bookmarks, notes, alerts, API keys), tier comparison |
+| `apps/web/app/cuenta/apikeys/page.tsx` | Self-serve API key management — list, create, copy secret, revoke. InterestGate for anon |
 | `apps/web/lib/feature-labels.ts` | Feature key → i18n display labels for InterestGate |
 | `apps/web/components/TierComparison.tsx` | Tier feature comparison table |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
