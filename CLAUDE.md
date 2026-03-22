@@ -342,7 +342,7 @@ type Lang = 'es' | 'en' | 'nah';
 | File | Purpose |
 |------|---------|
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
-| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety) |
+| `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety). Category values must match actual DB data: English branch names (`labor`, `fiscal`, `commercial`, `environmental`, `administrative`, `criminal`, `civil`, `constitutional`) plus document types (`ley`, `acuerdo`, `reglamento`, `decreto`, `codigo`, `constitucion`, etc.) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
 | `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits. Re-exports `RequireTier`, `RequireFeature`, `check_feature`, `get_effective_tier` from middleware |

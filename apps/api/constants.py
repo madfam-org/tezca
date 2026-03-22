@@ -7,23 +7,27 @@
 #   manufacturing (31-33), commerce (43+46), foreign_trade,
 #   financial_services (52), professional_services (54)
 DOMAIN_MAP = {
-    # Generic (backward-compatible)
-    "finance": ["fiscal", "mercantil"],
-    "criminal": ["penal"],
-    "labor": ["laboral"],
+    # Generic domains — values must match actual Law.category in the DB.
+    # Production categories: ley, acuerdo, reglamento, decreto, codigo,
+    # constitucion, ley_organica, manual, lineamientos, circular, otros,
+    # plus English branch names: fiscal, labor, commercial, environmental,
+    # administrative, criminal, civil, constitutional, etc.
+    "finance": ["fiscal", "financial", "commercial"],
+    "criminal": ["criminal"],
+    "labor": ["labor"],
     "civil": ["civil"],
-    "administrative": ["administrativo"],
-    "constitutional": ["constitucional"],
+    "administrative": ["administrative"],
+    "constitutional": ["constitutional", "constitucion"],
     # SCIAN 2023-aligned
-    "manufacturing": ["laboral", "administrativo", "mercantil"],
-    "commerce": ["mercantil", "fiscal", "administrativo"],
-    "foreign_trade": ["fiscal", "mercantil", "administrativo"],
-    "financial_services": ["fiscal", "mercantil"],
-    "professional_services": ["civil", "administrativo", "laboral"],
+    "manufacturing": ["labor", "administrative", "commercial"],
+    "commerce": ["commercial", "fiscal", "administrative"],
+    "foreign_trade": ["fiscal", "commercial", "administrative"],
+    "financial_services": ["fiscal", "financial", "commercial"],
+    "professional_services": ["civil", "administrative", "labor"],
     # Consumer-facing composite domains
-    "training": ["laboral", "administrativo"],
-    "customs": ["fiscal", "mercantil", "administrativo"],
-    "safety": ["laboral", "administrativo"],
+    "training": ["labor", "administrative"],
+    "customs": ["fiscal", "commercial", "administrative"],
+    "safety": ["labor", "administrative", "environmental"],
 }
 
 KNOWN_STATES = {
