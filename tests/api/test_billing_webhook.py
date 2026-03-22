@@ -425,3 +425,72 @@ class TestBillingWebhook:
         assert response.status_code == 200
         assert response.data["keys_updated"] == 0
         assert response.data["tier"] == "essentials"
+
+    # ------------------------------------------------------------------
+    # PostHog tracking tests
+    # ------------------------------------------------------------------
+
+    @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
+    @patch("apps.api.billing_views.track")
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_upgrade_tracks_posthog_event(self, mock_qs, mock_track):
+        """Successful upgrade fires tier.upgraded PostHog event."""
+        mock_qs.filter.return_value.update.return_value = 2
+        data = {
+            "event": "subscription.activated",
+            "plan": "tezca_academic",
+            "user_id": "usr_ph_up",
+        }
+        request = self._post(data)
+        billing_webhook(request)
+        mock_track.assert_called_once_with(
+            "usr_ph_up",
+            "tier.upgraded",
+            {"plan": "tezca_academic", "new_tier": "academic", "keys_updated": 2},
+        )
+
+    @override_settings(DHANAM_WEBHOOK_SECRET=TEST_SECRET)
+    @patch("apps.api.billing_views.track")
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_downgrade_tracks_posthog_event(self, mock_qs, mock_track):
+        """Successful downgrade fires tier.downgraded PostHog event."""
+        mock_qs.filter.return_value.update.return_value = 1
+        data = {
+            "event": "subscription.cancelled",
+            "plan": "tezca_academic",
+            "user_id": "usr_ph_down",
+        }
+        request = self._post(data)
+        billing_webhook(request)
+        mock_track.assert_called_once_with(
+            "usr_ph_down",
+            "tier.downgraded",
+            {"previous_tier": "tezca_academic", "keys_updated": 1},
+        )
+
+    @override_settings(
+        DHANAM_WEBHOOK_SECRET=TEST_SECRET, TRIAL_DURATION_WITH_CC_DAYS=21
+    )
+    @patch("apps.api.billing_views.track")
+    @patch("apps.api.billing_views.APIKey.objects")
+    def test_cc_provided_tracks_posthog_event(self, mock_qs, mock_track):
+        """trial.cc_provided fires trial.cc_provided PostHog event."""
+        trial_start = datetime(2026, 3, 10, 12, 0, 0, tzinfo=timezone.utc)
+        mock_key = MagicMock()
+        mock_key.trial_started_at = trial_start
+        mock_key.trial_cc_provided = False
+        mock_key.trial_ends_at = trial_start + timedelta(days=3)
+        mock_qs.filter.return_value = [mock_key]
+
+        data = {
+            "event": "trial.cc_provided",
+            "plan": "tezca_academic",
+            "user_id": "usr_ph_cc",
+        }
+        request = self._post(data)
+        billing_webhook(request)
+        mock_track.assert_called_once_with(
+            "usr_ph_cc",
+            "trial.cc_provided",
+            {"keys_updated": 1},
+        )

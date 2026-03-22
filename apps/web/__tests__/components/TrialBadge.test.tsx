@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mockAuth } from '../helpers/auth-mock';
 
@@ -10,6 +10,11 @@ vi.mock('@/components/providers/LanguageContext', () => ({
 const mockUseAuth = vi.fn(() => mockAuth({ isOnTrial: false }));
 vi.mock('@/components/providers/AuthContext', () => ({
     useAuth: (...args: any[]) => mockUseAuth(...args),
+}));
+
+const mockTrackEvent = vi.fn();
+vi.mock('@/lib/analytics/posthog', () => ({
+    trackEvent: (...args: any[]) => mockTrackEvent(...args),
 }));
 
 vi.mock('next/link', () => ({
@@ -116,5 +121,21 @@ describe('TrialBadge', () => {
         }));
         render(<TrialBadge />);
         expect(screen.getByText(/Yeyecoliztli: 2d 0h/)).toBeDefined();
+    });
+
+    it('tracks trial_badge.clicked on click', () => {
+        const trialEndsAt = new Date('2026-03-12T18:00:00Z'); // 2d 6h
+        mockUseAuth.mockReturnValue(mockAuth({
+            isOnTrial: true,
+            trialEndsAt,
+            trialTier: 'essentials',
+        }));
+        render(<TrialBadge />);
+        fireEvent.click(screen.getByRole('link'));
+        expect(mockTrackEvent).toHaveBeenCalledWith('trial_badge.clicked', {
+            trial_tier: 'essentials',
+            days_remaining: 2,
+            is_urgent: false,
+        });
     });
 });

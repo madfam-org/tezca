@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { LawGraphContainer } from '@/components/graph/LawGraphContainer';
+import { GraphTierMessage } from '@/components/graph/GraphTierMessage';
 import { JsonLd } from '@/components/JsonLd';
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function GrafoPage() {
                     { '@type': 'ListItem', position: 2, name: 'Grafo', item: `${siteUrl}/grafo` },
                 ],
             }} />
+            <GraphTierMessage />
             <LawGraphContainer mode="fullscreen" />
         </>
     );

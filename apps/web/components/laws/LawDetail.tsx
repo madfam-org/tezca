@@ -14,6 +14,7 @@ import { LawDetailSkeleton } from '@/components/skeletons/LawDetailSkeleton';
 import { ArticleSearch } from './ArticleSearch';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
 import { RelatedLaws } from './RelatedLaws';
+import { ConversionBanner } from '@/components/ConversionBanner';
 import { CrossReferencePanel } from './CrossReferencePanel';
 import { LawGraphContainer } from '@/components/graph/LawGraphContainer';
 import { VersionTimeline } from './VersionTimeline';
@@ -250,6 +251,7 @@ export function LawDetail({ lawId }: LawDetailProps) {
                     <LawGraphContainer lawId={lawId} />
                     <VersionTimeline versions={data.versions} />
                     <RelatedLaws lawId={lawId} />
+                    <ConversionBanner />
                 </main>
             </div>
 

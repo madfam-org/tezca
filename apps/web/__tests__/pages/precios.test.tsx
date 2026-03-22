@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockAuth } from '../helpers/auth-mock';
 
@@ -61,6 +61,11 @@ vi.mock('@/components/InterestGate', () => ({
     InterestGate: ({ featureKey }: any) => (
         <div data-testid="interest-gate" data-feature={featureKey} />
     ),
+}));
+
+const mockTrackEvent = vi.fn();
+vi.mock('@/lib/analytics/posthog', () => ({
+    trackEvent: (...args: any[]) => mockTrackEvent(...args),
 }));
 
 import PreciosPage from '@/app/precios/page';
@@ -126,5 +131,23 @@ describe('PreciosPage', () => {
         render(<PreciosPage />);
         const tierComp = screen.getByTestId('tier-comparison');
         expect(tierComp.getAttribute('data-show-pricing')).toBe('true');
+    });
+
+    it('tracks pricing.page_viewed on mount', () => {
+        render(<PreciosPage />);
+        expect(mockTrackEvent).toHaveBeenCalledWith('pricing.page_viewed', {
+            is_authenticated: false,
+            tier: 'anon',
+            monetization_enabled: true,
+        });
+    });
+
+    it('tracks pricing.cta_clicked on CTA click', () => {
+        render(<PreciosPage />);
+        fireEvent.click(screen.getByText('Crear cuenta'));
+        expect(mockTrackEvent).toHaveBeenCalledWith('pricing.cta_clicked', {
+            tier_key: 'free_member',
+            is_authenticated: false,
+        });
     });
 });

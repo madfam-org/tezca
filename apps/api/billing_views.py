@@ -20,6 +20,7 @@ from rest_framework.decorators import (
 from rest_framework.response import Response
 
 from .models import APIKey
+from .posthog_analytics import track
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,11 @@ def billing_webhook(request):
             new_tier,
             updated,
         )
+        track(
+            user_id,
+            "tier.upgraded",
+            {"plan": plan, "new_tier": new_tier, "keys_updated": updated},
+        )
         return Response({"status": "ok", "tier": new_tier, "keys_updated": updated})
 
     elif event in DOWNGRADE_EVENTS:
@@ -138,6 +144,9 @@ def billing_webhook(request):
             tier="free_member"
         )
         logger.info("Billing downgrade: user=%s keys_updated=%d", user_id, updated)
+        track(
+            user_id, "tier.downgraded", {"previous_tier": plan, "keys_updated": updated}
+        )
         return Response(
             {"status": "ok", "tier": "free_member", "keys_updated": updated}
         )
@@ -158,6 +167,7 @@ def billing_webhook(request):
                 key.save(update_fields=["trial_cc_provided", "trial_ends_at"])
                 updated += 1
         logger.info("Trial CC provided: user=%s keys_updated=%d", user_id, updated)
+        track(user_id, "trial.cc_provided", {"keys_updated": updated})
         return Response({"status": "ok", "event": event, "keys_updated": updated})
 
     else:

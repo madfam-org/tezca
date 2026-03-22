@@ -28,6 +28,10 @@ vi.mock('@/lib/analytics/posthog', () => ({
     trackEvent: (...args: any[]) => mockTrackEvent(...args),
 }));
 
+vi.mock('next/navigation', () => ({
+    usePathname: () => '/test-page',
+}));
+
 vi.mock('next/link', () => ({
     default: ({ children, href, ...props }: any) => (
         <a href={href} {...props}>{children}</a>
@@ -122,6 +126,15 @@ describe('ConversionBanner', () => {
         expect(mockTrackEvent).toHaveBeenCalledWith('conversion_banner.cta_clicked', {
             mode: 'pricing',
             href: '/precios',
+        });
+    });
+
+    it('tracks conversion_banner.viewed on mount', () => {
+        mockUseAuth.mockReturnValue(mockAuth({ tier: 'anon' }));
+        render(<ConversionBanner />);
+        expect(mockTrackEvent).toHaveBeenCalledWith('conversion_banner.viewed', {
+            page: '/test-page',
+            mode: 'pricing',
         });
     });
 });

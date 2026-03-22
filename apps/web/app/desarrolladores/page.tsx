@@ -4,6 +4,7 @@ import { Card, CardContent } from '@tezca/ui';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
+import { DevApiCta } from '@/components/DevApiCta';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
@@ -513,6 +514,8 @@ export default async function DesarrolladoresPage({
             </table>
           </div>
         </section>
+
+        <DevApiCta />
 
         {/* Endpoints */}
         <section className="mt-14 sm:mt-20 pt-12 border-t border-border space-y-6">

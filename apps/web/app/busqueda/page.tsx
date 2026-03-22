@@ -230,6 +230,7 @@ function SearchContent() {
             if (err instanceof APIError && err.status === 429) {
                 setRateLimitRetry(err.retryAfter ?? 300);
                 setError(null);
+                trackEvent('search.rate_limited', { tier, retry_after: err.retryAfter ?? 300 });
             } else {
                 setError(t.searchError);
                 setResults([]);

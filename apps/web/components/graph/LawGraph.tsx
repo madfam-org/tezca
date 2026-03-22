@@ -6,6 +6,7 @@ import Graph from 'graphology';
 import Sigma from 'sigma';
 import FA2Layout from 'graphology-layout-forceatlas2/worker';
 import type { GraphResponse, GraphNode as APIGraphNode } from '@/lib/api';
+import { trackEvent } from '@/lib/analytics/posthog';
 import { GraphTooltip } from './GraphTooltip';
 import {
     type ColorMode,
@@ -310,6 +311,7 @@ export function LawGraph({
         });
 
         renderer.on('clickNode', ({ node }) => {
+            trackEvent('graph.node_clicked', { node_id: node });
             router.push(`/leyes/${node}`);
         });
 

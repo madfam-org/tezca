@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Clock } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const content = {
     es: { trial: 'Prueba' },
@@ -13,7 +14,7 @@ const content = {
 };
 
 export function TrialBadge() {
-    const { isOnTrial, trialEndsAt } = useAuth();
+    const { isOnTrial, trialEndsAt, trialTier } = useAuth();
     const { lang } = useLang();
     const t = content[lang];
     const [now, setNow] = useState(() => new Date());
@@ -39,6 +40,7 @@ export function TrialBadge() {
     return (
         <Link
             href="/precios"
+            onClick={() => trackEvent('trial_badge.clicked', { trial_tier: trialTier, days_remaining: diffDays, is_urgent: isUrgent })}
             className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                 isUrgent
                     ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 animate-pulse'

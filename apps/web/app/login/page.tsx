@@ -88,7 +88,11 @@ export default function LoginPage() {
 
                     <div className="mt-4 text-center">
                         <button
-                            onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
+                            onClick={() => {
+                                const newMode = mode === 'signin' ? 'signup' : 'signin';
+                                trackEvent('auth.mode_switched', { from: mode, to: newMode });
+                                setMode(newMode);
+                            }}
                             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                             {mode === 'signin' ? t.switchToSignUp : t.switchToSignIn}

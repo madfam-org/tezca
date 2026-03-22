@@ -313,6 +313,9 @@ All UI primitives come from `@tezca/ui` (Card, Badge, Button, etc.). Import from
 
 - **`TierGate`** — Conditional upgrade prompt based on user tier. 4 variants: `inline` (compact banner), `overlay` (blur backdrop), `card` (standalone with benefits), `toast` (slide-in for rate limits). Supports countdown timer, i18n, and dismiss. Replaces the deprecated `UpgradeBanner`.
 - **`TierComparison`** — Feature comparison table across Community/Essentials/Academic/Institutional tiers. Desktop table + mobile stacked cards. Use `compact` prop for inline usage.
+- **`ConversionBanner`** — CTA banner for non-paid users. Self-hides via `hasPaidAccess(tier)`. Placed on homepage and law detail (after RelatedLaws). Tracks `conversion_banner.viewed` on mount and `conversion_banner.cta_clicked` on CTA.
+- **`GraphTierMessage`** — Institutional tier messaging for graph page. Shows `InterestGate` (pre-monetization) or `TierGate` (monetization enabled) for non-institutional users. Tracks `graph_tier_message.shown`.
+- **`DevApiCta`** — API access CTA for developer docs page. Shows for unauthenticated or unpaid users. Tracks `dev_docs.cta_clicked`.
 - **`LinkifiedArticle`** — Cross-references are loaded in batch by `ArticleViewer` via `useBatchCrossRefs` hook (eliminates N+1). Individual articles receive refs via `preloadedRefs` prop. The `crossRefsDisabled` prop defaults to `false` when batch refs are available. Use the batch endpoint (`POST /api/v1/laws/{law_id}/articles/references/batch/`) for custom integrations.
 - **`JsonLd`** — Shared component for injecting `<script type="application/ld+json">` structured data. Used for BreadcrumbList (9 pages), FAQPage (`/precios`), Dataset (`/cobertura`), and CollectionPage (`/categorias/[category]`).
 
@@ -404,7 +407,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
 | `apps/web/lib/sentry.ts` | Sentry init + `captureError()` (conditional on `@sentry/nextjs`) |
 | `apps/web/components/ErrorBoundary.tsx` | Class-based error boundary (wraps layout children), reports to Sentry |
-| `apps/web/components/RouteError.tsx` | Shared i18n route error component (used by 11 route `error.tsx` files) |
+| `apps/web/components/RouteError.tsx` | Shared i18n route error component (used by 20 route `error.tsx` files) |
 | `apps/web/app/global-error.tsx` | Layout-level catch-all (raw styles, Sentry) |
 | `apps/api/management/commands/spot_check.py` | Data integrity spot-check (samples laws, traces DB→file→ES→API) |
 | `apps/parsers/error_tracker.py` | ErrorTracker + ErrorRecord for pipeline error logging |
@@ -426,7 +429,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/graph/GraphSearch.tsx` | Node search with autocomplete and camera animation |
 | `apps/web/components/graph/GraphFilters.tsx` | Category filter pills for graph visualization |
 | `apps/web/components/graph/GraphStats.tsx` | Collapsible graph statistics panel |
+| `apps/web/components/graph/GraphTierMessage.tsx` | Institutional tier messaging for graph page (InterestGate or TierGate) |
 | `apps/web/components/graph/useGraphExport.ts` | PNG export via Sigma canvas compositing |
+| `apps/web/components/DevApiCta.tsx` | Developer docs API access CTA for non-paid users |
 | `apps/scraper/playwright_base.py` | Shared Playwright ABC for browser-automated scrapers |
 | `apps/scraper/judicial/scjn_playwright.py` | SJF browser scraper (Playwright, 4 extraction strategies + detail page enrichment) |
 | `scripts/scraping/ojn_multipath_recovery.py` | OJN 3-path waterfall recovery for failed downloads (partial result persistence) |

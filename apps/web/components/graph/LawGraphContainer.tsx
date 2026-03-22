@@ -121,8 +121,10 @@ export function LawGraphContainer({ lawId, mode = 'embedded' }: LawGraphContaine
             const next = new Set(prev);
             if (next.has(cat)) {
                 next.delete(cat);
+                trackEvent('graph.filter_toggled', { category: cat, action: 'show' });
             } else {
                 next.add(cat);
+                trackEvent('graph.filter_toggled', { category: cat, action: 'hide' });
             }
             return next;
         });
@@ -130,6 +132,7 @@ export function LawGraphContainer({ lawId, mode = 'embedded' }: LawGraphContaine
 
     const showAllCategories = useCallback(() => {
         setHiddenCategories(new Set());
+        trackEvent('graph.filter_reset', {});
     }, []);
 
     const handleResetView = useCallback(() => {

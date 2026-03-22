@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Sparkles, ArrowRight, Search, Download, Code, Users } from 'lucide-react';
 import { Button, Card, CardContent } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
@@ -51,11 +53,19 @@ const PRE_MONETIZATION_PILL_ICONS = [Search, Sparkles, Users];
 export function ConversionBanner() {
     const { lang } = useLang();
     const { tier } = useAuth();
+    const pathname = usePathname();
+    const isPreMonetization = !MONETIZATION_ENABLED;
+
+    useEffect(() => {
+        if (!hasPaidAccess(tier)) {
+            trackEvent('conversion_banner.viewed', { page: pathname, mode: isPreMonetization ? 'community' : 'pricing' });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- track once on mount
+    }, []);
 
     // Don't show for paid users
     if (hasPaidAccess(tier)) return null;
 
-    const isPreMonetization = !MONETIZATION_ENABLED;
     const t = isPreMonetization ? preMonetizationContent[lang] : content[lang];
     const icons = isPreMonetization ? PRE_MONETIZATION_PILL_ICONS : PILL_ICONS;
     const ctaHref = isPreMonetization ? '/login' : '/precios';

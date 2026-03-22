@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Check, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, Badge, Button } from '@tezca/ui';
@@ -11,6 +12,7 @@ import { getTrialCheckoutUrl } from '@/lib/billing';
 import { MONETIZATION_ENABLED } from '@/lib/config';
 import { InterestGate } from '@/components/InterestGate';
 import { JsonLd } from '@/components/JsonLd';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
@@ -190,8 +192,13 @@ function FaqSection({ faq, title }: { faq: { q: string; a: string }[]; title: st
 
 export default function PreciosPage() {
     const { lang } = useLang();
-    const { userId, isAuthenticated } = useAuth();
+    const { userId, isAuthenticated, tier } = useAuth();
     const t = content[lang];
+
+    useEffect(() => {
+        trackEvent('pricing.page_viewed', { is_authenticated: isAuthenticated, tier, monetization_enabled: MONETIZATION_ENABLED });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- track once on mount
+    }, []);
 
     const tiers: { key: TierKey; isPopular?: boolean }[] = [
         { key: 'free_member' },
@@ -349,7 +356,7 @@ export default function PreciosPage() {
 
                                     {/* CTA */}
                                     {MONETIZATION_ENABLED || key === 'free_member' ? (
-                                        <Link href={getCtaHref(key)}>
+                                        <Link href={getCtaHref(key)} onClick={() => trackEvent('pricing.cta_clicked', { tier_key: key, is_authenticated: isAuthenticated })}>
                                             <Button
                                                 className="w-full gap-2 group"
                                                 variant={isPopular ? 'default' : 'outline'}

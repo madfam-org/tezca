@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
-import { identifyUser, resetUser } from '@/lib/analytics/posthog';
+import { identifyUser, resetUser, trackEvent } from '@/lib/analytics/posthog';
 
 export type UserTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
 
@@ -69,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }>({ trialTier: null, trialEndsAt: null, trialCcProvided: false });
 
     const handleSignOut = useCallback(() => {
+        trackEvent('auth.signed_out', {});
         resetUser();
         client?.signOut?.();
         window.location.assign('/');

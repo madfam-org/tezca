@@ -50,13 +50,13 @@ describe('LoginPage', () => {
 
     it('renders sign-in form by default', () => {
         render(<LoginPage />);
-        expect(screen.getByText('Iniciar sesión')).toBeDefined();
+        expect(screen.getByText('Iniciar sesi\u00f3n')).toBeDefined();
         expect(screen.getByTestId('sign-in')).toBeDefined();
     });
 
     it('toggles to sign-up mode', () => {
         render(<LoginPage />);
-        fireEvent.click(screen.getByText('¿No tienes cuenta? Regístrate'));
+        fireEvent.click(screen.getByText('\u00bfNo tienes cuenta? Reg\u00edstrate'));
         expect(screen.getByText('Crear cuenta')).toBeDefined();
         expect(screen.getByTestId('sign-up')).toBeDefined();
     });
@@ -82,5 +82,14 @@ describe('LoginPage', () => {
     it('tracks login page viewed event', () => {
         render(<LoginPage />);
         expect(mockTrackEvent).toHaveBeenCalledWith('auth.login_page_viewed', { mode: 'signin' });
+    });
+
+    it('tracks auth.mode_switched when toggling to signup', () => {
+        render(<LoginPage />);
+        fireEvent.click(screen.getByText('\u00bfNo tienes cuenta? Reg\u00edstrate'));
+        expect(mockTrackEvent).toHaveBeenCalledWith('auth.mode_switched', {
+            from: 'signin',
+            to: 'signup',
+        });
     });
 });
