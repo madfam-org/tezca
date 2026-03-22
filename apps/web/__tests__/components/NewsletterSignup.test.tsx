@@ -6,6 +6,12 @@ vi.mock('@/components/providers/LanguageContext', () => ({
     useLang: vi.fn(() => ({ lang: 'es', setLang: vi.fn() })),
 }));
 
+// Mock PostHog
+const mockTrackEvent = vi.fn();
+vi.mock('@/lib/analytics/posthog', () => ({
+    trackEvent: (...args: any[]) => mockTrackEvent(...args),
+}));
+
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
     Mail: ({ className }: any) => <span data-testid="mail-icon" className={className} />,
@@ -245,6 +251,82 @@ describe('NewsletterSignup', () => {
             const status = screen.getByRole('status');
             expect(status).toBeInTheDocument();
             expect(status.textContent).toBe('Suscripción exitosa.');
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 15. PostHog tracking on submit
+    // ---------------------------------------------------------------
+    it('tracks newsletter.submitted on form submit', async () => {
+        fetchSpy.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ status: 'subscribed' }),
+        });
+
+        render(<NewsletterSignup />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@test.com' } });
+        fireEvent.click(screen.getByText('Suscribirse'));
+
+        await waitFor(() => {
+            expect(mockTrackEvent).toHaveBeenCalledWith('newsletter.submitted', {});
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 16. PostHog tracking on success
+    // ---------------------------------------------------------------
+    it('tracks newsletter.subscribed on success', async () => {
+        fetchSpy.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ status: 'subscribed' }),
+        });
+
+        render(<NewsletterSignup />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@test.com' } });
+        fireEvent.click(screen.getByText('Suscribirse'));
+
+        await waitFor(() => {
+            expect(mockTrackEvent).toHaveBeenCalledWith('newsletter.subscribed', {});
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 17. PostHog tracking on already subscribed
+    // ---------------------------------------------------------------
+    it('tracks newsletter.already_subscribed when already subscribed', async () => {
+        fetchSpy.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ status: 'already_subscribed' }),
+        });
+
+        render(<NewsletterSignup />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'existing@test.com' } });
+        fireEvent.click(screen.getByText('Suscribirse'));
+
+        await waitFor(() => {
+            expect(mockTrackEvent).toHaveBeenCalledWith('newsletter.already_subscribed', {});
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 18. PostHog tracking on error
+    // ---------------------------------------------------------------
+    it('tracks newsletter.error on API failure', async () => {
+        fetchSpy.mockResolvedValue({
+            ok: false,
+            json: () => Promise.resolve({ error: 'Internal error' }),
+        });
+
+        render(<NewsletterSignup />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@test.com' } });
+        fireEvent.click(screen.getByText('Suscribirse'));
+
+        await waitFor(() => {
+            expect(mockTrackEvent).toHaveBeenCalledWith('newsletter.error', {});
         });
     });
 });

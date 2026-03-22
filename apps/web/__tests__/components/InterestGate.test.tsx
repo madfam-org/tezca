@@ -278,4 +278,112 @@ describe('InterestGate', () => {
             expect(input.value).toBe('auth@example.com');
         });
     });
+
+    describe('wishlist capture', () => {
+        it('renders wishlist textarea on card variant when showWishlist is true', () => {
+            render(
+                <InterestGate variant="card" featureKey="latex_export" showWishlist />
+            );
+            expect(screen.getByLabelText('¿Qué necesitas de Tezca?')).toBeDefined();
+        });
+
+        it('does NOT render wishlist on inline variant even when showWishlist is true', () => {
+            render(
+                <InterestGate variant="inline" featureKey="latex_export" showWishlist />
+            );
+            expect(screen.queryByLabelText('¿Qué necesitas de Tezca?')).toBeNull();
+        });
+
+        it('does NOT render wishlist on toast variant even when showWishlist is true', () => {
+            render(
+                <InterestGate variant="toast" featureKey="latex_export" showWishlist />
+            );
+            expect(screen.queryByLabelText('¿Qué necesitas de Tezca?')).toBeNull();
+        });
+
+        it('sends wishlist in POST body', async () => {
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+                status: 201,
+            });
+
+            render(
+                <InterestGate variant="card" featureKey="latex_export" showWishlist sourcePage="pricing" />
+            );
+
+            fireEvent.change(screen.getByPlaceholderText('tu@correo.com'), {
+                target: { value: 'test@example.com' },
+            });
+            fireEvent.change(screen.getByLabelText('¿Qué necesitas de Tezca?'), {
+                target: { value: 'Need bulk export' },
+            });
+            fireEvent.submit(screen.getByPlaceholderText('tu@correo.com').closest('form')!);
+
+            await waitFor(() => {
+                const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+                const body = JSON.parse(fetchCall[1].body);
+                expect(body.wishlist).toBe('Need bulk export');
+            });
+        });
+    });
+
+    describe('tell us more', () => {
+        it('shows tell-more link after successful submission on card variant', async () => {
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+                status: 201,
+            });
+
+            render(<InterestGate variant="card" featureKey="latex_export" />);
+
+            fireEvent.change(screen.getByPlaceholderText('tu@correo.com'), {
+                target: { value: 'test@example.com' },
+            });
+            fireEvent.submit(screen.getByPlaceholderText('tu@correo.com').closest('form')!);
+
+            await waitFor(() => {
+                expect(screen.getByText('Cuéntanos más')).toBeDefined();
+            });
+        });
+
+        it('tracks tell_more_clicked event', async () => {
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+                status: 201,
+            });
+
+            render(<InterestGate variant="card" featureKey="latex_export" />);
+
+            fireEvent.change(screen.getByPlaceholderText('tu@correo.com'), {
+                target: { value: 'test@example.com' },
+            });
+            fireEvent.submit(screen.getByPlaceholderText('tu@correo.com').closest('form')!);
+
+            await waitFor(() => {
+                expect(screen.getByText('Cuéntanos más')).toBeDefined();
+            });
+
+            mockTrackEvent.mockClear();
+            fireEvent.click(screen.getByText('Cuéntanos más'));
+            expect(mockTrackEvent).toHaveBeenCalledWith('interest_gate.tell_more_clicked', {
+                feature_key: 'latex_export',
+            });
+        });
+
+        it('does NOT show tell-more link on inline variant', async () => {
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+                status: 201,
+            });
+
+            render(<InterestGate variant="inline" featureKey="latex_export" />);
+
+            fireEvent.change(screen.getByPlaceholderText('tu@correo.com'), {
+                target: { value: 'test@example.com' },
+            });
+            fireEvent.submit(screen.getByPlaceholderText('tu@correo.com').closest('form')!);
+
+            await waitFor(() => {
+                expect(screen.getByText('¡Listo! Te avisaremos.')).toBeDefined();
+            });
+
+            expect(screen.queryByText('Cuéntanos más')).toBeNull();
+        });
+    });
 });

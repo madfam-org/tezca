@@ -678,6 +678,61 @@ def deliver_webhook(self, subscription_id: int, event: str, payload: dict):
 
 
 # ---------------------------------------------------------------------------
+# CRM webhook delivery
+# ---------------------------------------------------------------------------
+
+CRM_WEBHOOK_TIMEOUT = 10
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=5)
+def deliver_crm_webhook(self, event: str, payload: dict):
+    """Deliver a CRM webhook with HMAC signature. Retries via Celery."""
+    from django.conf import settings
+
+    url = getattr(settings, "CRM_WEBHOOK_URL", "")
+    secret = getattr(settings, "CRM_WEBHOOK_SECRET", "")
+    if not url or not secret:
+        return
+
+    body = json.dumps(
+        {
+            "event": event,
+            "timestamp": timezone.now().isoformat(),
+            "data": payload,
+        },
+        ensure_ascii=False,
+    )
+
+    signature = hmac.new(
+        secret.encode(),
+        body.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-Webhook-Signature": f"sha256={signature}",
+        "X-Webhook-Timestamp": timezone.now().isoformat(),
+        "User-Agent": "Tezca-CRM-Sync/1.0",
+    }
+
+    try:
+        resp = http_requests.post(
+            url, data=body, headers=headers, timeout=CRM_WEBHOOK_TIMEOUT
+        )
+        if resp.status_code < 400:
+            logger.info("CRM webhook delivered: event=%s", event)
+            return
+        error_msg = f"HTTP {resp.status_code}"
+    except http_requests.RequestException as exc:
+        error_msg = str(exc)
+
+    logger.warning("CRM webhook failed: event=%s error=%s", event, error_msg)
+    if self.request.retries < self.max_retries:
+        raise self.retry(exc=Exception(error_msg))
+
+
+# ---------------------------------------------------------------------------
 # Trial expiry
 # ---------------------------------------------------------------------------
 

@@ -39,6 +39,7 @@ def register_interest(request):
     use_case = (request.data.get("use_case") or "").strip()
     janua_user_id = (request.data.get("janua_user_id") or "").strip()
     source_page = (request.data.get("source_page") or "").strip()
+    wishlist = (request.data.get("wishlist") or "").strip()[:2000]
 
     interest, created = FeatureInterest.objects.get_or_create(
         email=email,
@@ -47,6 +48,7 @@ def register_interest(request):
             "use_case": use_case,
             "janua_user_id": janua_user_id,
             "source_page": source_page,
+            "wishlist": wishlist,
         },
     )
 
@@ -61,6 +63,9 @@ def register_interest(request):
             updated = True
         if source_page and not interest.source_page:
             interest.source_page = source_page
+            updated = True
+        if wishlist and not interest.wishlist:
+            interest.wishlist = wishlist
             updated = True
         if updated:
             interest.save()

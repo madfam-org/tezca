@@ -49,6 +49,7 @@ def newsletter_subscribe(request):
 
 
 @api_view(["POST"])
+@throttle_classes([NewsletterThrottle])
 def newsletter_unsubscribe(request):
     """Unsubscribe from the newsletter."""
     email = (request.data.get("email") or "").strip().lower()

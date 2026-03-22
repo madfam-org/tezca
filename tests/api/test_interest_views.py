@@ -210,3 +210,88 @@ class TestRegisterInterest:
         assert interest.use_case == ""
         assert interest.janua_user_id == ""
         assert interest.source_page == ""
+        assert interest.wishlist == ""
+
+    def test_wishlist_field_accepted(self):
+        """POST with wishlist field stores it correctly."""
+        response = self.client.post(
+            self.url,
+            {
+                "email": "user@example.com",
+                "feature_key": "webhooks",
+                "wishlist": "I need real-time notifications for legislative changes",
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        interest = FeatureInterest.objects.get(email="user@example.com")
+        assert (
+            interest.wishlist
+            == "I need real-time notifications for legislative changes"
+        )
+
+    def test_wishlist_capped_at_2000_chars(self):
+        """Wishlist text is truncated to 2000 characters."""
+        long_text = "x" * 3000
+        response = self.client.post(
+            self.url,
+            {
+                "email": "user@example.com",
+                "feature_key": "webhooks",
+                "wishlist": long_text,
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        interest = FeatureInterest.objects.get(email="user@example.com")
+        assert len(interest.wishlist) == 2000
+
+    def test_wishlist_filled_on_reregistration(self):
+        """Re-registration fills in wishlist when previously empty."""
+        FeatureInterest.objects.create(
+            email="user@example.com",
+            feature_key="webhooks",
+            wishlist="",
+        )
+
+        response = self.client.post(
+            self.url,
+            {
+                "email": "user@example.com",
+                "feature_key": "webhooks",
+                "wishlist": "Need webhook filtering by domain",
+            },
+            format="json",
+        )
+
+        assert response.status_code == 200
+        interest = FeatureInterest.objects.get(
+            email="user@example.com", feature_key="webhooks"
+        )
+        assert interest.wishlist == "Need webhook filtering by domain"
+
+    def test_wishlist_not_overwritten_on_reregistration(self):
+        """Re-registration does not overwrite existing wishlist."""
+        FeatureInterest.objects.create(
+            email="user@example.com",
+            feature_key="webhooks",
+            wishlist="Original wishlist text",
+        )
+
+        response = self.client.post(
+            self.url,
+            {
+                "email": "user@example.com",
+                "feature_key": "webhooks",
+                "wishlist": "New text",
+            },
+            format="json",
+        )
+
+        assert response.status_code == 200
+        interest = FeatureInterest.objects.get(
+            email="user@example.com", feature_key="webhooks"
+        )
+        assert interest.wishlist == "Original wishlist text"

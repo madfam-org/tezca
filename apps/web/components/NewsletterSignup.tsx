@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
+import { trackEvent } from '@/lib/analytics/posthog';
 
 const content = {
     es: {
@@ -47,6 +48,7 @@ export function NewsletterSignup() {
         if (!email.trim()) return;
 
         setStatus('loading');
+        trackEvent('newsletter.submitted', {});
         try {
             const res = await fetch(`${API_BASE}/newsletter/subscribe/`, {
                 method: 'POST',
@@ -56,14 +58,18 @@ export function NewsletterSignup() {
             const data = await res.json();
             if (data.status === 'already_subscribed') {
                 setStatus('already');
+                trackEvent('newsletter.already_subscribed', {});
             } else if (res.ok) {
                 setStatus('success');
                 setEmail('');
+                trackEvent('newsletter.subscribed', {});
             } else {
                 setStatus('error');
+                trackEvent('newsletter.error', {});
             }
         } catch {
             setStatus('error');
+            trackEvent('newsletter.error', {});
         }
     };
 

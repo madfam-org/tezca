@@ -29,6 +29,12 @@ const content = {
             government: 'Gobierno',
             education: 'Educación',
         },
+        wishlistLabel: '¿Qué necesitas de Tezca?',
+        wishlistPlaceholder: 'Las funciones que más te importan...',
+        tellMore: 'Cuéntanos más',
+        tellMorePrompt: '¿Cómo usarías Tezca en tu trabajo diario?',
+        tellMoreSubmit: 'Enviar',
+        tellMoreSuccess: '¡Gracias por tus comentarios!',
     },
     en: {
         comingSoon: 'Coming soon',
@@ -47,6 +53,12 @@ const content = {
             government: 'Government',
             education: 'Education',
         },
+        wishlistLabel: 'What do you need from Tezca?',
+        wishlistPlaceholder: 'The features that matter most to you...',
+        tellMore: 'Tell us more',
+        tellMorePrompt: 'How would you use Tezca in your daily workflow?',
+        tellMoreSubmit: 'Submit',
+        tellMoreSuccess: 'Thanks for your feedback!',
     },
     nah: {
         comingSoon: 'Hualaz niman',
@@ -65,6 +77,12 @@ const content = {
             government: 'Tlatocayotl',
             education: 'Tlamachtiliztli',
         },
+        wishlistLabel: 'Tlein ticnequi?',
+        wishlistPlaceholder: 'In tlamantli tlen ohcuēli mitzpactia...',
+        tellMore: 'Xitech ilhui occequi',
+        tellMorePrompt: 'Quēnin ticchīhuaz Tezca mo tequitl?',
+        tellMoreSubmit: 'Xictitlani',
+        tellMoreSuccess: 'Tlazohcāmati!',
     },
 };
 
@@ -75,10 +93,12 @@ interface InterestGateProps {
     featureKey: string;
     featureLabel?: string;
     showUseCase?: boolean;
+    showWishlist?: boolean;
     sourcePage?: string;
     benefits?: string[];
     onDismiss?: () => void;
     onSubmitted?: () => void;
+    onTellMore?: () => void;
     className?: string;
 }
 
@@ -87,10 +107,12 @@ export function InterestGate({
     featureKey,
     featureLabel,
     showUseCase = false,
+    showWishlist = false,
     sourcePage = '',
     benefits,
     onDismiss,
     onSubmitted,
+    onTellMore,
     className = '',
 }: InterestGateProps) {
     const { lang } = useLang();
@@ -99,8 +121,12 @@ export function InterestGate({
 
     const [email, setEmail] = useState(userEmail ?? '');
     const [useCase, setUseCase] = useState('');
+    const [wishlist, setWishlist] = useState('');
     const [state, setState] = useState<SubmitState>('idle');
     const [dismissed, setDismissed] = useState(false);
+    const [tellMoreOpen, setTellMoreOpen] = useState(false);
+    const [tellMoreText, setTellMoreText] = useState('');
+    const [tellMoreState, setTellMoreState] = useState<'idle' | 'submitting' | 'success'>('idle');
 
     const label = featureLabel ?? getFeatureLabel(featureKey, lang);
 
@@ -141,6 +167,7 @@ export function InterestGate({
                 email,
                 feature_key: featureKey,
                 use_case: useCase,
+                wishlist,
                 janua_user_id: userId ?? '',
                 source_page: sourcePage,
             }),
@@ -188,6 +215,87 @@ export function InterestGate({
                 <option key={key} value={key}>{label}</option>
             ))}
         </select>
+    ) : null;
+
+    const wishlistTextarea = showWishlist && (variant === 'card' || variant === 'overlay') ? (
+        <textarea
+            value={wishlist}
+            onChange={(e) => setWishlist(e.target.value)}
+            placeholder={t.wishlistPlaceholder}
+            maxLength={2000}
+            rows={2}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+            aria-label={t.wishlistLabel}
+        />
+    ) : null;
+
+    const handleTellMore = () => {
+        trackEvent('interest_gate.tell_more_clicked', { feature_key: featureKey });
+        if (onTellMore) {
+            onTellMore();
+            return;
+        }
+        setTellMoreOpen(true);
+    };
+
+    const handleTellMoreSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!tellMoreText.trim() || tellMoreState === 'submitting') return;
+        setTellMoreState('submitting');
+
+        const res = await fetch(`${API_BASE_URL}/interest/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email,
+                feature_key: featureKey,
+                wishlist: tellMoreText.trim(),
+                janua_user_id: userId ?? '',
+                source_page: sourcePage,
+            }),
+        }).catch(() => null);
+
+        if (res && res.status <= 201) {
+            setTellMoreState('success');
+            trackEvent('interest_gate.wishlist_submitted', {
+                feature_key: featureKey,
+                wishlist_length: tellMoreText.trim().length,
+            });
+        } else {
+            setTellMoreState('idle');
+        }
+    };
+
+    const tellMoreSection = isComplete && (variant === 'card' || variant === 'overlay') ? (
+        <div className="mt-3">
+            {tellMoreState === 'success' ? (
+                <p className="text-sm text-primary">{t.tellMoreSuccess}</p>
+            ) : tellMoreOpen ? (
+                <form onSubmit={handleTellMoreSubmit} className="space-y-2">
+                    <textarea
+                        value={tellMoreText}
+                        onChange={(e) => setTellMoreText(e.target.value)}
+                        placeholder={t.tellMorePrompt}
+                        maxLength={2000}
+                        rows={3}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                    <Button type="submit" size="sm" disabled={tellMoreState === 'submitting' || !tellMoreText.trim()}>
+                        {tellMoreState === 'submitting' ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : null}
+                        {t.tellMoreSubmit}
+                    </Button>
+                </form>
+            ) : (
+                <button
+                    onClick={handleTellMore}
+                    className="text-sm text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                >
+                    {t.tellMore}
+                </button>
+            )}
+        </div>
     ) : null;
 
     const submitButton = (
@@ -298,14 +406,18 @@ export function InterestGate({
                     )}
 
                     {isComplete ? (
-                        <div className="flex items-center justify-center gap-1.5 text-sm text-primary">
-                            <Check className="h-4 w-4" />
-                            {successMessage}
+                        <div>
+                            <div className="flex items-center justify-center gap-1.5 text-sm text-primary">
+                                <Check className="h-4 w-4" />
+                                {successMessage}
+                            </div>
+                            {tellMoreSection}
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-3">
                             {emailInput}
                             {useCaseSelect}
+                            {wishlistTextarea}
                             {submitButton}
                         </form>
                     )}
@@ -331,13 +443,17 @@ export function InterestGate({
                         {t.notifyMe}
                     </p>
                     {isComplete ? (
-                        <div className="flex items-center justify-center gap-1.5 text-sm text-primary">
-                            <Check className="h-4 w-4" />
-                            {successMessage}
+                        <div>
+                            <div className="flex items-center justify-center gap-1.5 text-sm text-primary">
+                                <Check className="h-4 w-4" />
+                                {successMessage}
+                            </div>
+                            {tellMoreSection}
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-2">
                             {emailInput}
+                            {wishlistTextarea}
                             {submitButton}
                         </form>
                     )}

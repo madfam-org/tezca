@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockAuth } from '../helpers/auth-mock';
 
@@ -20,6 +20,12 @@ vi.mock('@/lib/billing', () => ({
 // Default: monetization enabled (tests original behavior)
 vi.mock('@/lib/config', () => ({
     MONETIZATION_ENABLED: true,
+}));
+
+// Mock PostHog
+const mockTrackEvent = vi.fn();
+vi.mock('@/lib/analytics/posthog', () => ({
+    trackEvent: (...args: any[]) => mockTrackEvent(...args),
 }));
 
 vi.mock('next/link', () => ({
@@ -107,5 +113,15 @@ describe('ConversionBanner', () => {
         mockUseAuth.mockReturnValue(mockAuth({ tier: 'anon' }));
         render(<ConversionBanner />);
         expect(screen.getByText('Xicyeyeco tlaxtlahuilli 3 tonalli')).toBeDefined();
+    });
+
+    it('tracks CTA click event', () => {
+        mockUseAuth.mockReturnValue(mockAuth({ tier: 'anon' }));
+        render(<ConversionBanner />);
+        fireEvent.click(screen.getByText('Ver planes'));
+        expect(mockTrackEvent).toHaveBeenCalledWith('conversion_banner.cta_clicked', {
+            mode: 'pricing',
+            href: '/precios',
+        });
     });
 });

@@ -193,6 +193,10 @@ TEZCA_ADMIN_USER_IDS = set(
 # ── Deployment Mode ──────────────────────────────────────────────────
 TEZCA_DEPLOYMENT = os.environ.get("TEZCA_DEPLOYMENT", "self-hosted")
 
+# ── CRM Sync (Phyne-CRM) ────────────────────────────────────────────
+CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
+CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")
+
 # ── Dhanam Billing ───────────────────────────────────────────────────
 DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
 DHANAM_CHECKOUT_URL = os.environ.get(

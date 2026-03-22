@@ -455,6 +455,11 @@ class FeatureInterest(models.Model):
         default="",
         help_text="export_dropdown, pricing, search, graph",
     )
+    wishlist = models.TextField(
+        blank=True,
+        default="",
+        help_text="Free-text: what the user needs for full adoption",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

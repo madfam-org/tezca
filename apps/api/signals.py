@@ -59,3 +59,25 @@ def version_created(sender, instance, created, **kwargs):
             "domains": _resolve_domains(instance.law),
         },
     )
+
+
+@receiver(post_save, sender="api.FeatureInterest")
+def interest_created(sender, instance, created, **kwargs):
+    """Dispatch CRM event when a new FeatureInterest is created."""
+    if not created:
+        return
+
+    from .crm_sync import dispatch_crm_event
+
+    dispatch_crm_event(
+        "interest.created",
+        {
+            "email": instance.email,
+            "feature_key": instance.feature_key,
+            "use_case": instance.use_case,
+            "wishlist": instance.wishlist,
+            "janua_user_id": instance.janua_user_id,
+            "source_page": instance.source_page,
+            "created_at": instance.created_at.isoformat(),
+        },
+    )

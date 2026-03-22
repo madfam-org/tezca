@@ -679,4 +679,7 @@ def interest_stats(request):
         .order_by("-count")
     )
     total = sum(s["count"] for s in stats)
-    return Response({"total": total, "by_feature": stats})
+    wishlist_count = FeatureInterest.objects.exclude(wishlist="").count()
+    return Response(
+        {"total": total, "by_feature": stats, "wishlist_count": wishlist_count}
+    )

@@ -75,6 +75,8 @@ npm run dev:all                     # both concurrently
 | `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
 | `QUALITY_QUARANTINE_GRADES` | `D,F` | Comma-separated quality grades to quarantine from indexing |
 | `NEXT_PUBLIC_MONETIZATION_ENABLED` | `false` | When `true`, enables full tier checkout flows. When `false` (default), shows interest-capture forms instead of paywalls |
+| `CRM_WEBHOOK_URL` | `""` | Phyne-CRM webhook URL (e.g. `https://crm.madfam.io/api/webhooks/tezca`). No-ops when empty |
+| `CRM_WEBHOOK_SECRET` | `""` | HMAC-SHA256 secret for CRM webhook signing. No-ops when empty |
 
 ---
 
@@ -244,7 +246,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 ### Route Conventions
 
 - **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`, `/login/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Domain Taxonomy
@@ -387,14 +389,16 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/export_views.py` | PDF/TXT/LaTeX/DOCX/EPUB/JSON export |
 | `apps/api/graph_views.py` | Law graph API (ego graph + global overview + public showcase for Sigma.js) |
 | `apps/api/export_throttles.py` | Export-specific rate limits by tier (imports from tier_permissions) |
-| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord, FeatureInterest |
-| `apps/api/interest_views.py` | Feature interest capture endpoint (`POST /api/v1/interest/`) — email + feature_key collection before monetization |
+| `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord, FeatureInterest (with wishlist field) |
+| `apps/api/interest_views.py` | Feature interest capture endpoint (`POST /api/v1/interest/`) — email + feature_key + wishlist collection before monetization |
+| `apps/api/crm_sync.py` | CRM webhook dispatch — sends interest.created events to phyne-crm (no-ops when CRM_WEBHOOK_URL not set) |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
-| `apps/web/components/InterestGate.tsx` | Pre-monetization interest-capture component (4 variants, email form, i18n). Shown when `MONETIZATION_ENABLED=false` |
+| `apps/web/components/InterestGate.tsx` | Pre-monetization interest-capture component (4 variants, email form, wishlist, i18n). Shown when `MONETIZATION_ENABLED=false` |
+| `apps/web/app/login/page.tsx` | Login/signup page — renders Janua SignIn/SignUp with redirect support |
 | `apps/web/lib/feature-labels.ts` | Feature key → i18n display labels for InterestGate |
 | `apps/web/components/TierComparison.tsx` | Tier feature comparison table |
 | `apps/web/contexts/LanguageContext.tsx` | i18n with LOCALE_MAP |
