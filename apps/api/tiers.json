@@ -125,5 +125,25 @@
     "graph_api": true,
     "annotations": true,
     "newsletter": true
+  },
+  "internal": {
+    "search_results_per_query": 50,
+    "api_requests_per_day": -1,
+    "rate_limit_per_minute": 200,
+    "export_formats": ["json"],
+    "search_analytics": false,
+    "newsletter_access": false,
+    "api_key_access": true,
+    "bulk_download": false,
+    "pdf_export": false,
+    "json_export": true,
+    "latex_export": false,
+    "docx_export": false,
+    "epub_export": false,
+    "webhooks": false,
+    "graph_api": false,
+    "annotations": false,
+    "newsletter": false,
+    "text_snippet_max_chars": 500
   }
 }

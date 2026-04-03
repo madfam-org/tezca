@@ -342,15 +342,20 @@ class SearchView(APIView):
                 source = hit["_source"]
                 hit_highlight = hit.get("highlight", {})
                 highlight = hit_highlight.get("text", [source["text"][:200]])[0]
+                # Cap article text for internal tier to prevent LLM context blowout
+                raw_text = source.get("text", "")
+                if tier == "internal":
+                    raw_text = raw_text[:500]
                 results.append(
                     {
                         "id": hit["_id"],
                         "law_id": source.get("law_id"),
                         "law_name": source.get(
                             "law_name", source.get("law_id")
-                        ),  # Fallback to ID if name missing
+                        ),
                         "article": f"Art. {source.get('article', source.get('article_id'))}",
                         "snippet": highlight,
+                        "text": raw_text,
                         "date": source.get("publication_date"),
                         "score": hit["_score"],
                         "tier": source.get("tier"),
