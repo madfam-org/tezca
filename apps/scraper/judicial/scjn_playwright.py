@@ -39,6 +39,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeout
 
 from apps.scraper.judicial.scjn_scraper import EPOCAS, ScjnScraper
 from apps.scraper.playwright_base import PlaywrightBase
+from apps.scraper.client.madfam_bridge import MadfamBridge
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         self._total_items = 0
         self._epoca: int = 10
         self._tipo: str = "jurisprudencia"
+        self.madfam = MadfamBridge()
 
     # ------------------------------------------------------------------
     # Search form interaction
@@ -496,134 +498,36 @@ class ScjnPlaywrightScraper(PlaywrightBase):
 
     def _fetch_detail_page(self, registro: str) -> Dict[str, str]:
         """Fetch and parse a single SJF detail page for full record fields.
-
-        Navigates to sjfsemanal.scjn.gob.mx/detalle/tesis/{registro} and
-        extracts labeled fields from the rendered page text.
-
-        Args:
-            registro: The registro digital number.
-
-        Returns:
-            Dict of extracted fields (materia, tesis_num, instancia, ponente,
-            rubro, texto). Empty strings for fields not found.
+        
+        Delegates the immense layout inconsistencies and Regex requirements entirely
+        to madfam-crawler, which returns standard JSON structured_data immediately.
         """
-        if not self._page:
-            return {}
-
         url = f"{SJF_DETAIL_URL}/{registro}"
-        fields: Dict[str, str] = {}
-
-        try:
-            self._page.goto(url, wait_until="networkidle", timeout=30_000)
-            time.sleep(3)  # SPA rendering time
-
-            raw_text = self._page.inner_text("body")
-            if not raw_text or len(raw_text) < 100:
-                logger.debug("Detail page empty for registro %s", registro)
-                return fields
-
-            # Extract labeled fields via regex
-            label_patterns = {
-                "materia": r"Materia\(s\):\s*(.+)",
-                "tesis_num": r"Tesis:\s*(.+)",
-                "instancia": r"Instancia:\s*(.+)",
-                "ponente": r"Ponente:\s*(.+)",
-                "tipo_tesis": r"Tipo:\s*(.+)",
-            }
-            for key, pattern in label_patterns.items():
-                match = re.search(pattern, raw_text)
-                if match:
-                    fields[key] = match.group(1).strip()
-
-            # Extract rubro: first ALL-CAPS paragraph after metadata section.
-            # Typically appears after "Fuente:" or the publication timestamp line.
-            lines = raw_text.split("\n")
-            rubro_start = None
-            rubro_lines: List[str] = []
-            in_rubro = False
-
-            for i, line in enumerate(lines):
-                stripped = line.strip()
-                if not stripped:
-                    if in_rubro and rubro_lines:
-                        break  # end of rubro block
-                    continue
-
-                # Skip metadata labels
-                if any(
-                    stripped.startswith(lbl)
-                    for lbl in (
-                        "Registro digital:",
-                        "Materia(s):",
-                        "Tesis:",
-                        "Instancia:",
-                        "Tipo:",
-                        "Fuente:",
-                        "Publicación:",
-                        "Ponente:",
-                    )
-                ):
-                    continue
-
-                # Detect rubro: paragraph that is mostly uppercase, length > 20
-                if (
-                    not in_rubro
-                    and len(stripped) > 20
-                    and sum(1 for c in stripped if c.isupper()) / max(len(stripped), 1)
-                    > 0.6
-                ):
-                    in_rubro = True
-                    rubro_start = i
-                    rubro_lines.append(stripped)
-                elif in_rubro:
-                    # Continue rubro if still mostly uppercase or continuation
-                    if (
-                        sum(1 for c in stripped if c.isupper()) / max(len(stripped), 1)
-                        > 0.5
-                        or len(stripped) < 30
-                    ):
-                        rubro_lines.append(stripped)
-                    else:
-                        break
-
-            if rubro_lines:
-                fields["rubro"] = " ".join(rubro_lines)
-
-            # Extract texto: content between rubro and the court name line
-            # Court name lines: "PLENO.", "PRIMERA SALA.", "SEGUNDA SALA.", etc.
-            court_pattern = re.compile(
-                r"^(PLENO|PRIMERA SALA|SEGUNDA SALA|"
-                r"TRIBUNAL COLEGIADO|TRIBUNAL PLENO)\.",
-                re.IGNORECASE,
-            )
-            if rubro_start is not None:
-                texto_lines: List[str] = []
-                started = False
-                for line in lines[rubro_start + len(rubro_lines) :]:
-                    stripped = line.strip()
-                    if not stripped:
-                        if started:
-                            texto_lines.append("")
-                        continue
-                    if court_pattern.match(stripped):
-                        break
-                    started = True
-                    texto_lines.append(stripped)
-                texto = "\n".join(texto_lines).strip()
-                if texto and len(texto) > 50:
-                    fields["texto"] = texto
-
-            # Debug screenshot on first successful extraction
-            if fields.get("rubro") and not hasattr(self, "_detail_screenshot_taken"):
-                self._screenshot("detail_enrichment_sample")
-                self._detail_screenshot_taken = True
-
-        except PlaywrightTimeout:
-            logger.debug("Detail page timeout for registro %s", registro)
-        except Exception:
-            logger.debug("Detail page error for registro %s", registro, exc_info=True)
-
-        return fields
+        
+        logger.info(f"Delegating detail extraction to madfam-crawler for {url}")
+        prompt = "Extract the specific case details, identifying metadata like materia, tesis, instancia, ponente, and tipo. Capture the 'rubro' (the title/summary paragraph) and the core legal 'texto' body."
+        
+        schema = {
+            "materia": "str",
+            "tesis_num": "str",
+            "instancia": "str",
+            "ponente": "str",
+            "tipo_tesis": "str",
+            "rubro": "str",
+            "texto": "str"
+        }
+        
+        result = self.madfam.extract_sync(
+            url=url,
+            extraction_prompt=prompt,
+            schema_definition=schema,
+            timeout=120.0
+        )
+        
+        if result and "tesis" in result: # Map potential 'tesis' key back to original expected 'tesis_num' 
+            result["tesis_num"] = result.pop("tesis")
+            
+        return result if result else {}
 
     def _enrich_records(self, records: List[Dict]) -> List[Dict]:
         """Enrich records by fetching detail pages for those missing texto.
