@@ -77,6 +77,7 @@ from .notification_views import (
     notification_mark_read,
 )
 from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
+from .resolve_views import resolve
 from .search_views import SearchView
 from .trial_views import trial_start, trial_status
 from .views import IngestionView
@@ -157,6 +158,7 @@ urlpatterns = [
     path("ingest/", _protected(IngestionView.as_view()), name="ingest"),
     # ── Public endpoints (no auth) ────────────────────────────────────
     path("search/", SearchView.as_view(), name="search"),
+    path("resolve/", resolve, name="resolve"),
     path("stats/", law_stats, name="law-stats"),
     path("laws/exists/", laws_exist, name="laws-exist"),
     path("laws/", LawListView.as_view(), name="law-list"),
