@@ -51,6 +51,11 @@ const FEATURE_LABELS: Record<string, Record<Lang, string>> = {
         en: 'Platform access',
         nah: 'Tlahtōlcalli',
     },
+    early_access: {
+        es: 'Acceso anticipado',
+        en: 'Early access',
+        nah: 'Achto calaquiliztli',
+    },
 };
 
 export function getFeatureLabel(featureKey: string, lang: Lang): string {

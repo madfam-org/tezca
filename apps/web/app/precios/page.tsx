@@ -156,9 +156,9 @@ const preMonetizationSubtitle = {
 };
 
 const TIER_FEATURE_KEY: Record<string, string> = {
-    essentials: 'advanced_search',
-    academic: 'latex_export',
-    institutional: 'webhooks',
+    essentials: 'early_access',
+    academic: 'early_access',
+    institutional: 'early_access',
 };
 
 const comingSoonLabel = {

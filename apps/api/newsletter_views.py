@@ -45,6 +45,18 @@ def newsletter_subscribe(request):
             return Response({"status": "resubscribed"})
         return Response({"status": "already_subscribed"})
 
+    # Dispatch CRM event for new subscriptions
+    from .crm_sync import dispatch_crm_event
+
+    dispatch_crm_event(
+        "newsletter.subscribed",
+        {
+            "email": email,
+            "topics": topics,
+            "source_page": request.data.get("source_page", ""),
+        },
+    )
+
     return Response({"status": "subscribed"}, status=status.HTTP_201_CREATED)
 
 

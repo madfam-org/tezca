@@ -434,6 +434,7 @@ class FeatureInterest(models.Model):
         "search_analytics",
         "advanced_search",
         "platform_access",
+        "early_access",
     ]
     ALLOWED_USE_CASES = ["research", "work", "personal", "government", "education"]
 
@@ -441,7 +442,7 @@ class FeatureInterest(models.Model):
     feature_key = models.CharField(
         max_length=50,
         db_index=True,
-        help_text="latex_export, docx_export, epub_export, webhooks, graph_api, bulk_download, search_analytics, advanced_search",
+        help_text="latex_export, docx_export, epub_export, webhooks, graph_api, bulk_download, search_analytics, advanced_search, platform_access, early_access",
     )
     use_case = models.CharField(
         max_length=50,

@@ -180,6 +180,9 @@ export function InterestGate({
 
         if (res.status === 201) {
             setState('success');
+            if (featureKey === 'early_access') {
+                trackEvent('funnel.premium_interest', { source_page: sourcePage });
+            }
             onSubmitted?.();
         } else if (res.status === 200) {
             setState('already_registered');

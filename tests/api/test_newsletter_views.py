@@ -101,6 +101,45 @@ class TestNewsletterSubscribe:
         sub = NewsletterSubscription.objects.get(email="user@example.com")
         assert sub.topics == []
 
+    @pytest.mark.parametrize("topics", [["federal"], []])
+    def test_subscribe_dispatches_crm_event(self, topics):
+        """New subscription dispatches newsletter.subscribed CRM event."""
+        from unittest.mock import patch
+
+        with patch("apps.api.crm_sync.dispatch_crm_event") as mock_dispatch:
+            response = self.client.post(
+                self.url,
+                {"email": "crm@example.com", "topics": topics, "source_page": "bienvenida"},
+                format="json",
+            )
+
+            assert response.status_code == 201
+            mock_dispatch.assert_called_once_with(
+                "newsletter.subscribed",
+                {
+                    "email": "crm@example.com",
+                    "topics": topics,
+                    "source_page": "bienvenida",
+                },
+            )
+
+    def test_subscribe_does_not_dispatch_crm_on_duplicate(self):
+        """Already-subscribed email does NOT dispatch CRM event."""
+        from unittest.mock import patch
+
+        NewsletterSubscription.objects.create(
+            email="user@example.com", is_active=True, topics=["federal"]
+        )
+
+        with patch("apps.api.crm_sync.dispatch_crm_event") as mock_dispatch:
+            response = self.client.post(
+                self.url, {"email": "user@example.com"}, format="json"
+            )
+
+            assert response.status_code == 200
+            assert response.json()["status"] == "already_subscribed"
+            mock_dispatch.assert_not_called()
+
 
 @pytest.mark.django_db
 class TestNewsletterUnsubscribe:

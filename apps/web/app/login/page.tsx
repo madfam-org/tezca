@@ -58,6 +58,9 @@ export default function LoginPage() {
     const title = mode === 'signin' ? t.signIn : t.signUp;
 
     const afterAuth = () => {
+        if (mode === 'signup') {
+            trackEvent('funnel.account_created', {});
+        }
         window.location.assign(redirectTo);
     };
 
