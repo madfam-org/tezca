@@ -433,6 +433,7 @@ class FeatureInterest(models.Model):
         "bulk_download",
         "search_analytics",
         "advanced_search",
+        "platform_access",
     ]
     ALLOWED_USE_CASES = ["research", "work", "personal", "government", "education"]
 

@@ -73,6 +73,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Include laws with quarantined quality grades (D/F) in indexing",
         )
+        parser.add_argument(
+            "--with-embeddings",
+            action="store_true",
+            help="Generate text embeddings for semantic search (requires sentence-transformers)",
+        )
 
     def _create_indices(self, es):
         """Create Elasticsearch indices with proper mappings."""
@@ -217,6 +222,12 @@ class Command(BaseCommand):
                         "suggest": {
                             "type": "completion",
                             "analyzer": "simple",
+                        },
+                        "text_embedding": {
+                            "type": "dense_vector",
+                            "dims": 768,
+                            "index": True,
+                            "similarity": "cosine",
                         },
                     }
                 },
@@ -398,7 +409,7 @@ class Command(BaseCommand):
 
         return 1
 
-    def index_law(self, law, es, dry_run=False):
+    def index_law(self, law, es, dry_run=False, embedding_generator=None):
         """Index a single law with articles or raw text fallback."""
         version = law.versions.last()
         if not version or not version.xml_file_path:
@@ -473,6 +484,13 @@ class Command(BaseCommand):
                     "status": law.status or "unknown",
                 },
             }
+            # Add embedding if generator is available
+            if embedding_generator and art["text"]:
+                try:
+                    doc["_source"]["text_embedding"] = embedding_generator.generate(art["text"])
+                except Exception:
+                    pass  # Skip embedding on failure, article is still indexed
+
             actions.append(doc)
 
         if actions:
@@ -576,6 +594,24 @@ class Command(BaseCommand):
             reindex_new_index = None
             reindex_old_index = None
 
+        # Initialize embedding generator if requested
+        embedding_generator = None
+        if options.get("with_embeddings"):
+            try:
+                from apps.parsers.embeddings import EmbeddingGenerator
+                embedding_generator = EmbeddingGenerator()
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"Embedding generator loaded ({embedding_generator.dimensions}-dim)"
+                    )
+                )
+            except ImportError:
+                self.stderr.write(
+                    "sentence-transformers not installed. "
+                    "Run: poetry install -E embeddings"
+                )
+                return
+
         # Select Laws
         if options["law_id"]:
             laws = Law.objects.filter(official_id=options["law_id"])
@@ -624,7 +660,7 @@ class Command(BaseCommand):
 
         for law in laws:
             try:
-                n = self.index_law(law, es, options["dry_run"])
+                n = self.index_law(law, es, options["dry_run"], embedding_generator)
                 if n == 0:
                     skipped += 1
                 else:

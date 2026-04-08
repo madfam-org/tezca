@@ -195,3 +195,162 @@ class TestIndexLawsCommand:
                 doc = actions[0]
                 assert doc["_source"]["municipality"] == "Guadalajara"
                 assert doc["_source"]["tier"] == "municipal"
+
+    def test_with_embeddings_adds_text_embedding(self, command):
+        """When embedding_generator is provided, articles get text_embedding field."""
+        # Fixed 768-dim vector for deterministic assertion
+        fake_vector = [0.01] * 768
+
+        mock_embedding_gen = MagicMock()
+        mock_embedding_gen.generate.return_value = fake_vector
+
+        # Mock Law object
+        mock_law = MagicMock()
+        mock_law.official_id = "test_embed_law"
+        mock_law.name = "Ley de Prueba Embeddings"
+        mock_law.category = "Ley"
+        mock_law.tier = "federal"
+        mock_law.municipality = ""
+        mock_law.state = ""
+        mock_law.status = "vigente"
+        mock_law.domains = []
+        mock_law.law_type = "legislative"
+        mock_law.short_name = None
+
+        # Mock Version
+        mock_version = MagicMock()
+        mock_version.xml_file_path = "path/to/embed_xml"
+        mock_version.publication_date.isoformat.return_value = "2024-06-01"
+        mock_law.versions.last.return_value = mock_version
+
+        # Mock ES client
+        mock_es = MagicMock()
+
+        with pytest.MonkeyPatch.context() as m:
+            # Mock read_data_content to return our test XML
+            from apps.api.management.commands import index_laws
+
+            m.setattr(index_laws, "read_data_content", lambda path: MINIMAL_V2_XML)
+
+            mock_helpers = MagicMock()
+            m.setattr(index_laws, "helpers", mock_helpers)
+
+            # Call index_law directly with embedding_generator
+            count = command.index_law(
+                mock_law, mock_es, dry_run=False, embedding_generator=mock_embedding_gen
+            )
+
+            # Should have indexed 2 articles
+            assert count == 2
+
+            # Verify embedding generator was called for each article
+            assert mock_embedding_gen.generate.call_count == 2
+
+            # Verify bulk was called; first call is article actions, second is law doc
+            assert mock_helpers.bulk.call_count == 2
+            article_call_args = mock_helpers.bulk.call_args_list[0]
+            actions = article_call_args[0][1]
+
+            assert len(actions) == 2
+            for doc in actions:
+                assert "text_embedding" in doc["_source"], (
+                    f"Article {doc['_id']} missing text_embedding"
+                )
+                assert doc["_source"]["text_embedding"] == fake_vector
+                assert len(doc["_source"]["text_embedding"]) == 768
+
+    def test_without_embeddings_no_text_embedding_field(self, command):
+        """When no embedding_generator is provided, articles lack text_embedding."""
+        # Mock Law object
+        mock_law = MagicMock()
+        mock_law.official_id = "test_no_embed"
+        mock_law.name = "Ley Sin Embeddings"
+        mock_law.category = "Ley"
+        mock_law.tier = "federal"
+        mock_law.municipality = ""
+        mock_law.state = ""
+        mock_law.status = "vigente"
+        mock_law.domains = []
+        mock_law.law_type = "legislative"
+        mock_law.short_name = None
+
+        # Mock Version
+        mock_version = MagicMock()
+        mock_version.xml_file_path = "path/to/xml"
+        mock_version.publication_date.isoformat.return_value = "2024-06-01"
+        mock_law.versions.last.return_value = mock_version
+
+        mock_es = MagicMock()
+
+        with pytest.MonkeyPatch.context() as m:
+            from apps.api.management.commands import index_laws
+
+            m.setattr(index_laws, "read_data_content", lambda path: MINIMAL_V2_XML)
+
+            mock_helpers = MagicMock()
+            m.setattr(index_laws, "helpers", mock_helpers)
+
+            # Call index_law WITHOUT embedding_generator
+            count = command.index_law(mock_law, mock_es, dry_run=False)
+
+            assert count == 2
+            assert mock_helpers.bulk.call_count == 2
+
+            # First bulk call is article actions
+            article_call_args = mock_helpers.bulk.call_args_list[0]
+            actions = article_call_args[0][1]
+
+            for doc in actions:
+                assert "text_embedding" not in doc["_source"], (
+                    f"Article {doc['_id']} should not have text_embedding"
+                )
+
+    def test_embedding_failure_skips_gracefully(self, command):
+        """When embedding generation fails for an article, it is still indexed without embedding."""
+        mock_embedding_gen = MagicMock()
+        mock_embedding_gen.generate.side_effect = RuntimeError("Model error")
+
+        # Mock Law object
+        mock_law = MagicMock()
+        mock_law.official_id = "test_embed_fail"
+        mock_law.name = "Ley Embed Failure"
+        mock_law.category = "Ley"
+        mock_law.tier = "federal"
+        mock_law.municipality = ""
+        mock_law.state = ""
+        mock_law.status = "vigente"
+        mock_law.domains = []
+        mock_law.law_type = "legislative"
+        mock_law.short_name = None
+
+        mock_version = MagicMock()
+        mock_version.xml_file_path = "path/to/xml"
+        mock_version.publication_date.isoformat.return_value = "2024-06-01"
+        mock_law.versions.last.return_value = mock_version
+
+        mock_es = MagicMock()
+
+        with pytest.MonkeyPatch.context() as m:
+            from apps.api.management.commands import index_laws
+
+            m.setattr(index_laws, "read_data_content", lambda path: MINIMAL_V2_XML)
+
+            mock_helpers = MagicMock()
+            m.setattr(index_laws, "helpers", mock_helpers)
+
+            # Call index_law with a failing embedding generator
+            count = command.index_law(
+                mock_law, mock_es, dry_run=False, embedding_generator=mock_embedding_gen
+            )
+
+            # Articles should still be indexed despite embedding failures
+            assert count == 2
+            assert mock_helpers.bulk.call_count == 2
+
+            # First bulk call is article actions
+            article_call_args = mock_helpers.bulk.call_args_list[0]
+            actions = article_call_args[0][1]
+
+            # Embedding generation failed, so text_embedding should NOT be present
+            for doc in actions:
+                assert "text_embedding" not in doc["_source"]

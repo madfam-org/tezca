@@ -46,6 +46,11 @@ const FEATURE_LABELS: Record<string, Record<Lang, string>> = {
         en: 'Advanced search',
         nah: 'Huēyi tlatemoliztli',
     },
+    platform_access: {
+        es: 'Acceso a la plataforma',
+        en: 'Platform access',
+        nah: 'Tlahtōlcalli',
+    },
 };
 
 export function getFeatureLabel(featureKey: string, lang: Lang): string {

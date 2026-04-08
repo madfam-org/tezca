@@ -79,6 +79,7 @@ from .notification_views import (
 from .preference_views import user_bookmarks, user_preferences, user_recently_viewed
 from .resolve_views import resolve
 from .search_views import SearchView
+from .semantic_search_views import semantic_search
 from .trial_views import trial_start, trial_status
 from .views import IngestionView
 from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
@@ -158,6 +159,7 @@ urlpatterns = [
     path("ingest/", _protected(IngestionView.as_view()), name="ingest"),
     # ── Public endpoints (no auth) ────────────────────────────────────
     path("search/", SearchView.as_view(), name="search"),
+    path("search/semantic/", semantic_search, name="semantic-search"),
     path("resolve/", resolve, name="resolve"),
     path("stats/", law_stats, name="law-stats"),
     path("laws/exists/", laws_exist, name="laws-exist"),

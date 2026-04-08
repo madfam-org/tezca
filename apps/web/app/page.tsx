@@ -4,6 +4,7 @@ import { DashboardStatsGrid, RecentLawsList } from '@/components/DashboardStats'
 import { PopularLaws } from '@/components/PopularLaws';
 import { DynamicFeatures } from '@/components/DynamicFeatures';
 import { ConversionBanner } from '@/components/ConversionBanner';
+import { InterestGate } from '@/components/InterestGate';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
 import { FeaturedLaws } from '@/components/FeaturedLaws';
@@ -94,6 +95,18 @@ export default function HomePage() {
 
         {/* Features section - dynamically populated from API */}
         <DynamicFeatures />
+
+        <InterestGate
+          variant="card"
+          featureKey="platform_access"
+          sourcePage="homepage"
+          showUseCase
+          benefits={[
+            'Acceso anticipado a funciones premium',
+            'Búsqueda semántica con IA',
+            'Exportaciones avanzadas',
+          ]}
+        />
 
         <ConversionBanner />
       </div>
