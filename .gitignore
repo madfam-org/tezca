@@ -197,3 +197,8 @@ data/conamer/discovered_conamer.json
 # Judicial metadata
 !data/judicial/probe_results.json
 audit/
+*.pem
+*.key
+*.p12
+*.pfx
+.env.production
