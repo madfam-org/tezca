@@ -733,6 +733,31 @@ def deliver_crm_webhook(self, event: str, payload: dict):
 
 
 # ---------------------------------------------------------------------------
+# Billing event stream consumer
+# ---------------------------------------------------------------------------
+
+
+@shared_task(name="apps.api.tasks.poll_billing_stream")
+def poll_billing_stream():
+    """Poll the MADFAM billing event stream and process pending events.
+
+    Runs every 30 seconds via Celery Beat. Reads from the
+    ``madfam:billing-events`` Redis Stream using consumer group
+    ``tezca-consumers``.
+    """
+    from .billing_stream_consumer import poll_billing_events
+
+    result = poll_billing_events()
+    if result.get("processed", 0) > 0 or result.get("errors", 0) > 0:
+        logger.info(
+            "Billing stream poll: processed=%d errors=%d",
+            result["processed"],
+            result["errors"],
+        )
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Trial expiry
 # ---------------------------------------------------------------------------
 

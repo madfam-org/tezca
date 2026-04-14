@@ -293,6 +293,11 @@ CELERY_TASK_TRACK_STARTED = True
 from celery.schedules import crontab  # noqa: E402
 
 CELERY_BEAT_SCHEDULE = {
+    # ── Billing event bus consumer ──────────────────────────────────────
+    "poll-billing-stream": {
+        "task": "apps.api.tasks.poll_billing_stream",
+        "schedule": 30.0,  # Every 30 seconds
+    },
     "health-check-critical-daily": {
         "task": "dataops.run_health_checks",
         "schedule": crontab(hour=6, minute=0),
