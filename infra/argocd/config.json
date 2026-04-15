@@ -1,0 +1,9 @@
+{
+  "name": "tezca",
+  "repoURL": "https://github.com/madfam-org/tezca.git",
+  "branch": "main",
+  "manifestPath": "k8s/production",
+  "namespace": "tezca",
+  "partOf": "tezca",
+  "ignoreExtraneous": true
+}
