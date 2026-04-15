@@ -111,6 +111,19 @@ class LawVersion(models.Model):
         help_text="Overall quality score 0-100.",
     )
 
+    # Amendment tracking (2026 compliance)
+    amendment_year = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Year of the amendment (extracted from publication_date).",
+    )
+    amendment_tags = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Tags for regulatory categorization, e.g. ['digital_services', 'cff_30b'].",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

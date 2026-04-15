@@ -123,6 +123,37 @@ DOMAIN_KEYWORDS = {
         "académi",
         "academi",
     ],
+    "fintech": [
+        "fintech",
+        "tecnología financiera",
+        "tecnologia financiera",
+        "institución de tecnología financiera",
+        "institucion de tecnologia financiera",
+        " itf ",
+        "cnbv",
+        "sandbox regulatorio",
+        "activos virtuales",
+        "criptomoneda",
+    ],
+    "digital_services": [
+        "plataforma digital",
+        "intermediación digital",
+        "intermediacion digital",
+        "servicio digital",
+        "comercio electrónico",
+        "comercio electronico",
+        "economía digital",
+        "economia digital",
+    ],
+    "data_protection": [
+        "datos personales",
+        "privacidad",
+        "lfpdppp",
+        "protección de datos",
+        "proteccion de datos",
+        " arco ",
+        "aviso de privacidad",
+    ],
 }
 
 
