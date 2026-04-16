@@ -203,12 +203,49 @@ export function Footer() {
           <div className="text-center sm:text-left">
             <p>
               {t.copyrightPre}
-              <a href="https://madfam.io" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">MADFAM</a>
+              <a href="https://madfam.io" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">Innovaciones MADFAM</a>
               {t.copyrightPost}
             </p>
             <p className="mt-1">{t.ip}</p>
           </div>
-          <LanguageToggle />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <a
+                href="https://madfam.io/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                Privacy Policy
+              </a>
+              <span aria-hidden="true">&middot;</span>
+              <a
+                href="https://madfam.io/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                Terms of Service
+              </a>
+              <span aria-hidden="true">&middot;</span>
+              <a
+                href="https://status.madfam.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                Status
+              </a>
+            </div>
+            <LanguageToggle />
+          </div>
+        </div>
+        {/* Ecosystem */}
+        <div className="container mx-auto px-4 sm:px-6 pb-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+          <span>Ecosystem:</span>
+          <a href="https://karafiel.mx" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Karafiel</a>
+          <span aria-hidden="true">&middot;</span>
+          <a href="https://dhan.am" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Dhanam</a>
         </div>
       </div>
     </footer>

@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     title: 'Tezca — El Espejo de la Ley',
     description: 'Plataforma de legislación mexicana abierta. 30,000+ leyes federales, estatales y municipales con búsqueda avanzada.',
     type: 'website',
-    siteName: 'Tezca',
+    siteName: 'Tezca by MADFAM',
     url: SITE_URL,
   },
 };
