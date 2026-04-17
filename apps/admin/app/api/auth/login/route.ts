@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
-const JANUA_BASE_URL =
-    process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
-const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_BASE_URL;
+const JANUA_ISSUER_URL =
+    process.env.NEXT_PUBLIC_JANUA_ISSUER_URL ||
+    process.env.NEXT_PUBLIC_JANUA_BASE_URL ||
+    "https://auth.madfam.io";
+const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_ISSUER_URL;
 const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
 
 /**

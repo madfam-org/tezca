@@ -187,7 +187,7 @@ function UnconfiguredFallback() {
                     variables:
                 </p>
                 <pre className="text-xs bg-muted p-3 rounded overflow-x-auto">
-                    {`NEXT_PUBLIC_JANUA_BASE_URL=https://auth.madfam.io
+                    {`NEXT_PUBLIC_JANUA_ISSUER_URL=https://auth.madfam.io
 NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=jnc_...
 JANUA_SECRET_KEY=jns_...`}
                 </pre>

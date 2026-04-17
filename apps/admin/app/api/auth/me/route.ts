@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
-const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
+const JANUA_SECRET_KEY = process.env.JANUA_SECRET_KEY || "";
 
 /**
  * GET /api/auth/me — server-side session check.
  *
- * Reads the janua-session cookie and validates it locally (HS256),
- * avoiding a browser XHR to auth.madfam.io that would fail with CORS.
+ * Reads the janua-session cookie, verifies the HS256 JWT locally,
+ * and returns the authenticated user info for client-side hydration.
+ *
+ * Uses the same cookie format as @janua/nextjs JanuaServerClient.
  */
 export async function GET() {
     const cookieStore = await cookies();
@@ -21,7 +23,7 @@ export async function GET() {
         );
     }
 
-    if (!CLIENT_SECRET) {
+    if (!JANUA_SECRET_KEY) {
         return NextResponse.json(
             { authenticated: false, error: "Server not configured" },
             { status: 500 }
@@ -29,7 +31,7 @@ export async function GET() {
     }
 
     try {
-        const secret = new TextEncoder().encode(CLIENT_SECRET);
+        const secret = new TextEncoder().encode(JANUA_SECRET_KEY);
         const { payload } = await jwtVerify(sessionCookie, secret);
         const data = payload.data as {
             user: {

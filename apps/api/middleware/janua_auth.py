@@ -30,10 +30,10 @@ def _get_jwks():
         if _jwks_cache["keys"] and (now - _jwks_cache["fetched_at"]) < JWKS_CACHE_TTL:
             return _jwks_cache["keys"]
 
-    base_url = getattr(settings, "JANUA_BASE_URL", "")
+    base_url = getattr(settings, "JANUA_ISSUER_URL", "") or getattr(settings, "JANUA_BASE_URL", "")
     if not base_url:
         raise AuthenticationFailed(
-            "Janua auth is not configured (JANUA_BASE_URL missing)"
+            "Janua auth is not configured (JANUA_ISSUER_URL missing)"
         )
 
     jwks_url = f"{base_url.rstrip('/')}/.well-known/jwks.json"
@@ -119,7 +119,7 @@ class JanuaJWTAuthentication(BaseAuthentication):
 
         public_key = _get_public_key(token)
         audience = getattr(settings, "JANUA_AUDIENCE", "tezca-api")
-        issuer = getattr(settings, "JANUA_BASE_URL", "")
+        issuer = getattr(settings, "JANUA_ISSUER_URL", "") or getattr(settings, "JANUA_BASE_URL", "")
 
         try:
             claims = jwt.decode(

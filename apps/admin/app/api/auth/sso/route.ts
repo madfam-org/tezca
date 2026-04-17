@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const JANUA_BASE_URL = process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
+const JANUA_ISSUER_URL =
+    process.env.NEXT_PUBLIC_JANUA_ISSUER_URL ||
+    process.env.NEXT_PUBLIC_JANUA_BASE_URL ||
+    "https://auth.madfam.io";
 const CLIENT_ID = process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "";
 
 function getOrigin(request: Request): string {
@@ -32,6 +35,12 @@ function base64UrlEncode(buffer: Uint8Array): string {
     return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+/**
+ * GET /api/auth/sso — OIDC Authorization Code flow with PKCE.
+ *
+ * Stores state + code_verifier in httpOnly cookies (5 min TTL),
+ * then redirects the browser to Janua's /authorize endpoint.
+ */
 export async function GET(request: Request) {
     if (!CLIENT_ID) {
         return NextResponse.json({ error: "Janua not configured" }, { status: 503 });
@@ -40,29 +49,20 @@ export async function GET(request: Request) {
     const origin = getOrigin(request);
     const redirectUri = `${origin}/api/auth/callback`;
 
-    // Generate state for CSRF protection
     const state = crypto.randomUUID();
-
-    // Generate PKCE code verifier and challenge
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    // Store state and code_verifier in short-lived cookies
     const cookieStore = await cookies();
-    cookieStore.set("janua-oauth-state", state, {
+    const cookieOpts = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "lax" as const,
         path: "/",
-        maxAge: 300, // 5 minutes
-    });
-    cookieStore.set("janua-pkce-verifier", codeVerifier, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 300, // 5 minutes
-    });
+        maxAge: 300,
+    };
+    cookieStore.set("janua-oauth-state", state, cookieOpts);
+    cookieStore.set("janua-pkce-verifier", codeVerifier, cookieOpts);
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
@@ -75,6 +75,6 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.redirect(
-        `${JANUA_BASE_URL}/api/v1/oauth/authorize?${params.toString()}`
+        `${JANUA_ISSUER_URL}/api/v1/oauth/authorize?${params.toString()}`
     );
 }

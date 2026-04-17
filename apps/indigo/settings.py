@@ -182,7 +182,8 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # ── Janua Auth ────────────────────────────────────────────────────────
-JANUA_BASE_URL = os.environ.get("JANUA_BASE_URL", "")
+JANUA_ISSUER_URL = os.environ.get("JANUA_ISSUER_URL", "") or os.environ.get("JANUA_BASE_URL", "")
+JANUA_BASE_URL = JANUA_ISSUER_URL  # backwards compat alias
 JANUA_AUDIENCE = os.environ.get("JANUA_AUDIENCE", "tezca-api")
 
 # ── Admin Access ─────────────────────────────────────────────────────

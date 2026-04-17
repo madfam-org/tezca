@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
-const JANUA_BASE_URL = process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io";
-const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_BASE_URL;
+const JANUA_ISSUER_URL =
+    process.env.NEXT_PUBLIC_JANUA_ISSUER_URL ||
+    process.env.NEXT_PUBLIC_JANUA_BASE_URL ||
+    "https://auth.madfam.io";
+const JANUA_SERVER_URL = process.env.JANUA_INTERNAL_URL || JANUA_ISSUER_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "";
 const CLIENT_SECRET = process.env.JANUA_SECRET_KEY || "";
 
@@ -14,6 +17,11 @@ function getOrigin(request: Request): string {
     return `${proto}://${host}`;
 }
 
+/**
+ * GET /api/auth/callback — OAuth 2.0 Authorization Code callback with PKCE.
+ *
+ * Creates a janua-session cookie compatible with @janua/nextjs middleware.
+ */
 export async function GET(request: Request) {
     const url = new URL(request.url);
     const origin = getOrigin(request);
@@ -30,11 +38,10 @@ export async function GET(request: Request) {
 
     if (!code || !state) {
         return NextResponse.redirect(
-            `${origin}/sign-in?sso_error=${encodeURIComponent("Respuesta de autenticación incompleta")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Respuesta de autenticacion incompleta")}`
         );
     }
 
-    // Validate state and retrieve PKCE verifier
     const cookieStore = await cookies();
     const storedState = cookieStore.get("janua-oauth-state")?.value;
     const codeVerifier = cookieStore.get("janua-pkce-verifier")?.value;
@@ -43,13 +50,18 @@ export async function GET(request: Request) {
 
     if (!storedState || storedState !== state) {
         return NextResponse.redirect(
-            `${origin}/sign-in?sso_error=${encodeURIComponent("Estado de sesión inválido. Intenta de nuevo.")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Estado de sesion invalido. Intenta de nuevo.")}`
         );
     }
 
     // Exchange authorization code for tokens
     const redirectUri = `${origin}/api/auth/callback`;
-    let tokenData;
+    let tokenData: {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+    };
+
     try {
         const tokenRes = await fetch(`${JANUA_SERVER_URL}/api/v1/oauth/token`, {
             method: "POST",
@@ -68,7 +80,7 @@ export async function GET(request: Request) {
             const body = await tokenRes.text();
             console.error("Token exchange failed:", tokenRes.status, body);
             return NextResponse.redirect(
-                `${origin}/sign-in?sso_error=${encodeURIComponent("Error al intercambiar código de autorización")}`
+                `${origin}/sign-in?sso_error=${encodeURIComponent("Error al intercambiar codigo de autorizacion")}`
             );
         }
 
@@ -76,25 +88,33 @@ export async function GET(request: Request) {
     } catch (err) {
         console.error("Token exchange error:", err);
         return NextResponse.redirect(
-            `${origin}/sign-in?sso_error=${encodeURIComponent("Error de conexión con el servidor de autenticación")}`
+            `${origin}/sign-in?sso_error=${encodeURIComponent("Error de conexion con el servidor de autenticacion")}`
         );
     }
 
     // Fetch user info
-    let userInfo;
+    let userInfo: {
+        sub?: string;
+        email?: string;
+        given_name?: string;
+        family_name?: string;
+        email_verified?: boolean;
+        picture?: string;
+    } | null = null;
+
     try {
         const userRes = await fetch(`${JANUA_SERVER_URL}/api/v1/oauth/userinfo`, {
             headers: { Authorization: `Bearer ${tokenData.access_token}` },
         });
-
         if (userRes.ok) {
             userInfo = await userRes.json();
         }
     } catch {
-        // userinfo is optional, continue without it
+        // userinfo is optional
     }
 
-    // Build session data matching JanuaServerClient format
+    // Build session data matching @janua/nextjs JanuaServerClient format
+    const expiresIn = tokenData.expires_in || 3600;
     const sessionData = {
         user: userInfo
             ? {
@@ -112,16 +132,14 @@ export async function GET(request: Request) {
             is_current: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            expires_at: new Date(
-                Date.now() + (tokenData.expires_in || 3600) * 1000
-            ).toISOString(),
+            expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
             last_activity: new Date().toISOString(),
         },
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token,
     };
 
-    // Create janua-session cookie (HS256 JWT matching middleware expectations)
+    // Sign session JWT (HS256, 7d TTL) — same format as @janua/nextjs middleware expects
     const secret = new TextEncoder().encode(CLIENT_SECRET);
     const sessionJwt = await new SignJWT({ data: sessionData })
         .setProtectedHeader({ alg: "HS256" })
@@ -134,20 +152,17 @@ export async function GET(request: Request) {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: 60 * 60 * 24 * 7,
     });
 
-    // Set tokens in a JS-readable cookie for client-side SDK hydration.
-    // Short-lived (60s) — the client reads and deletes it immediately.
+    // Token bridge for client-side SDK hydration (short-lived, JS-readable)
     const tokenBridge = JSON.stringify({
         access_token: tokenData.access_token,
         refresh_token: tokenData.refresh_token || "",
-        expires_at: Math.floor(
-            Date.now() / 1000 + (tokenData.expires_in || 3600)
-        ),
+        expires_at: Math.floor(Date.now() / 1000 + expiresIn),
     });
     cookieStore.set("janua-sso-tokens", tokenBridge, {
-        httpOnly: false, // must be readable by client JS
+        httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",

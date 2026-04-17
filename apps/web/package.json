@@ -36,7 +36,8 @@
     "react-dom": "19.2.3",
     "react-intersection-observer": "^10.0.2",
     "sigma": "^3.0.2",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",

@@ -70,9 +70,10 @@ import { Navbar } from "@/components/Navbar";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { BackToTop } from "@/components/BackToTop";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { Toaster } from "sonner";
 
 const januaConfig = {
-  baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || 'https://auth.madfam.io',
+  baseURL: process.env.NEXT_PUBLIC_JANUA_ISSUER_URL || process.env.NEXT_PUBLIC_JANUA_BASE_URL || 'https://auth.madfam.io',
   apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || '',
 };
 
@@ -112,6 +113,7 @@ export default function RootLayout({
                           <Footer />
                           <ComparisonFloatingBar />
                           <BackToTop />
+                          <Toaster theme="system" position="top-right" richColors />
                         </PostHogProvider>
                       </Suspense>
                     </ComparisonProvider>

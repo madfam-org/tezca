@@ -26,7 +26,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 const januaConfigured = !!process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY;
 
 const januaConfig = {
-    baseURL: process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io",
+    baseURL: process.env.NEXT_PUBLIC_JANUA_ISSUER_URL || process.env.NEXT_PUBLIC_JANUA_BASE_URL || "https://auth.madfam.io",
     apiKey: process.env.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY || "",
     autoRefreshTokens: true,
     skipRemoteAuth: true,
