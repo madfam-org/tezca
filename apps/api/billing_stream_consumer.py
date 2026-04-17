@@ -52,7 +52,9 @@ PLAN_TO_TIER = {
 
 def _get_redis_client():
     """Create a synchronous Redis client from REDIS_URL."""
-    url = os.environ.get("REDIS_URL", os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0"))
+    url = os.environ.get(
+        "REDIS_URL", os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+    )
     return redis.Redis.from_url(url, decode_responses=True)
 
 
@@ -111,9 +113,9 @@ def _on_subscription_created(data):
         )
         return
 
-    updated = APIKey.objects.filter(
-        janua_user_id=user_id, is_active=True
-    ).update(tier=new_tier)
+    updated = APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
+        tier=new_tier
+    )
 
     logger.info(
         "Billing stream: subscription created user=%s plan=%s tier=%s keys_updated=%d",
@@ -132,9 +134,9 @@ def _on_subscription_cancelled(data):
     if not user_id:
         return
 
-    updated = APIKey.objects.filter(
-        janua_user_id=user_id, is_active=True
-    ).update(tier="free_member")
+    updated = APIKey.objects.filter(janua_user_id=user_id, is_active=True).update(
+        tier="free_member"
+    )
 
     logger.info(
         "Billing stream: subscription cancelled user=%s reason=%s keys_updated=%d",
@@ -239,9 +241,7 @@ def poll_billing_events():
                 errors += 1
                 continue
 
-            event_type = event_data.get(
-                "event_type", event_data.get("type", "")
-            )
+            event_type = event_data.get("event_type", event_data.get("type", ""))
 
             try:
                 _process_event(event_type, event_data)
@@ -254,9 +254,7 @@ def poll_billing_events():
                     pending = client.xpending_range(
                         STREAM_KEY, GROUP_NAME, msg_id, msg_id, 1
                     )
-                    retry_count = (
-                        pending[0].get("times_delivered", 0) if pending else 0
-                    )
+                    retry_count = pending[0].get("times_delivered", 0) if pending else 0
                 except Exception:
                     retry_count = MAX_RETRIES  # Assume exhausted on error
 

@@ -21,7 +21,6 @@ from .admin_views import (
 from .analytics_views import search_analytics
 from .annotation_views import annotation_detail, annotation_list
 from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_api_key
-from .user_apikey_views import user_apikey_list_create, user_apikey_update, user_apikey_revoke
 from .billing_views import billing_webhook
 from .bulk_views import bulk_articles
 from .changelog_views import changelog
@@ -46,6 +45,7 @@ from .export_views import (
     export_txt,
 )
 from .graph_views import graph_overview, graph_public_showcase, law_graph
+from .interest_views import register_interest
 from .judicial_views import (
     judicial_detail,
     judicial_list,
@@ -68,7 +68,6 @@ from .law_views import (
 )
 from .middleware.admin_permission import IsTezcaAdmin
 from .middleware.janua_auth import JanuaJWTAuthentication
-from .interest_views import register_interest
 from .newsletter_views import newsletter_subscribe, newsletter_unsubscribe
 from .notification_views import (
     alert_delete,
@@ -81,6 +80,11 @@ from .resolve_views import resolve
 from .search_views import SearchView
 from .semantic_search_views import semantic_search
 from .trial_views import trial_start, trial_status
+from .user_apikey_views import (
+    user_apikey_list_create,
+    user_apikey_revoke,
+    user_apikey_update,
+)
 from .views import IngestionView
 from .webhook_views import create_webhook, delete_webhook, list_webhooks, test_webhook
 
