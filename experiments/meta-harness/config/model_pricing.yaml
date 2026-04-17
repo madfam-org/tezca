@@ -1,0 +1,103 @@
+# Model pricing table for Meta-Harness budget estimation.
+#
+# Prices in USD per million tokens. VERIFY MONTHLY against current vendor pages
+# before approving any non-trivial run. The gate will trust this file, so a
+# stale entry here understates cost.
+#
+# Last verified: 2026-04-16 (please update timestamp + diff on each verification)
+#
+# Sources:
+#   anthropic.com/pricing
+#   openrouter.ai/models
+#   platform.openai.com/pricing
+
+models:
+  # --- Anthropic (routed via Selva) -----------------------------------------
+  claude-opus-4-7:
+    input_usd_per_mtok: 15.00
+    output_usd_per_mtok: 75.00
+    vendor: anthropic
+    notes: "Newest Opus — reserve for proposer; avoid for inner-loop eval."
+
+  claude-sonnet-4-6:
+    input_usd_per_mtok: 3.00
+    output_usd_per_mtok: 15.00
+    vendor: anthropic
+    notes: "Good balance for proposer + mid-tier inner-loop."
+
+  claude-haiku-4-5:
+    input_usd_per_mtok: 1.00
+    output_usd_per_mtok: 5.00
+    vendor: anthropic
+    notes: "Cheapest Anthropic — preferred for bulk classification inner-loop."
+
+  # --- OpenAI (routed via Selva) --------------------------------------------
+  gpt-4o:
+    input_usd_per_mtok: 2.50
+    output_usd_per_mtok: 10.00
+    vendor: openai
+
+  gpt-4o-mini:
+    input_usd_per_mtok: 0.15
+    output_usd_per_mtok: 0.60
+    vendor: openai
+
+  # --- OpenRouter-hosted open models (what the paper's text_classification
+  #     reference example uses by default) -------------------------------------
+  openrouter/openai/gpt-oss-120b:
+    input_usd_per_mtok: 0.10
+    output_usd_per_mtok: 0.30
+    vendor: openrouter
+    notes: "Meta-Harness text_classification reference default."
+
+  openrouter/meta-llama/llama-3.1-70b-instruct:
+    input_usd_per_mtok: 0.52
+    output_usd_per_mtok: 0.75
+    vendor: openrouter
+
+  # --- DeepInfra-hosted open models (bridge while Anthropic is paused) ------
+  # Source: https://deepinfra.com/models?type=text-generation — verify monthly.
+  meta-llama/Llama-3.3-70B-Instruct:
+    input_usd_per_mtok: 0.23
+    output_usd_per_mtok: 0.40
+    vendor: deepinfra
+    notes: "CRM / research / fast_coding default during bridge."
+
+  meta-llama/Llama-3.1-8B-Instruct:
+    input_usd_per_mtok: 0.03
+    output_usd_per_mtok: 0.05
+    vendor: deepinfra
+    notes: "Cheapest pick for support / high-volume classification inner-loops."
+
+  meta-llama/Llama-3.2-90B-Vision-Instruct:
+    input_usd_per_mtok: 0.35
+    output_usd_per_mtok: 0.40
+    vendor: deepinfra
+    notes: "Vision-capable. Used for tasks touching image inputs."
+
+  Qwen/Qwen2.5-72B-Instruct:
+    input_usd_per_mtok: 0.23
+    output_usd_per_mtok: 0.40
+    vendor: deepinfra
+    notes: "Strong reasoning; bridge 'review' assignment."
+
+  Qwen/Qwen2.5-Coder-32B-Instruct:
+    input_usd_per_mtok: 0.08
+    output_usd_per_mtok: 0.18
+    vendor: deepinfra
+    notes: "Coding-specialized. Bridge 'coding' assignment."
+
+  deepseek-ai/DeepSeek-R1-Distill-Llama-70B:
+    input_usd_per_mtok: 0.23
+    output_usd_per_mtok: 0.69
+    vendor: deepinfra
+    notes: "Reasoning model; bridge 'planning' assignment. Output tokens can spike on long chains."
+
+# --- Safety defaults applied when a model is not listed --------------------
+unknown_model_fallback:
+  # Use pessimistic pricing so the estimate overstates, never understates.
+  # If you see these numbers in an estimate, you must add the real model
+  # to the table before approving.
+  input_usd_per_mtok: 15.00
+  output_usd_per_mtok: 75.00
+  vendor: unknown

@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+uv.lock
+
+# Upstream reference repo cloned by scripts/bootstrap.sh — not checked in
+upstream/
+
+# Per-run artifacts
+approvals/*.json
+!approvals/.gitkeep
+logs/*.jsonl
+!logs/.gitkeep
