@@ -42,7 +42,9 @@ def semantic_search(request):
         query_embedding = generator.generate(query)
     except ImportError:
         return Response(
-            {"error": "Semantic search is not available — embedding model not installed"},
+            {
+                "error": "Semantic search is not available — embedding model not installed"
+            },
             status=503,
         )
     except Exception as e:

@@ -487,7 +487,9 @@ class Command(BaseCommand):
             # Add embedding if generator is available
             if embedding_generator and art["text"]:
                 try:
-                    doc["_source"]["text_embedding"] = embedding_generator.generate(art["text"])
+                    doc["_source"]["text_embedding"] = embedding_generator.generate(
+                        art["text"]
+                    )
                 except Exception:
                     pass  # Skip embedding on failure, article is still indexed
 
@@ -599,6 +601,7 @@ class Command(BaseCommand):
         if options.get("with_embeddings"):
             try:
                 from apps.parsers.embeddings import EmbeddingGenerator
+
                 embedding_generator = EmbeddingGenerator()
                 self.stdout.write(
                     self.style.SUCCESS(

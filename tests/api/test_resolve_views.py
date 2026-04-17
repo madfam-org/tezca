@@ -24,7 +24,6 @@ from rest_framework.test import APIClient
 
 from apps.api.models import JudicialRecord
 
-
 # ── Helpers ───────────────────────────────────────────────────────────
 
 
@@ -191,7 +190,15 @@ class TestResolveValidQuery:
 
         data = response.json()
         art = data["articles"][0]
-        expected_fields = {"law_id", "law_name", "article", "snippet", "score", "tier", "domains"}
+        expected_fields = {
+            "law_id",
+            "law_name",
+            "article",
+            "snippet",
+            "score",
+            "tier",
+            "domains",
+        }
         assert expected_fields.issubset(set(art.keys()))
 
     @patch("apps.api.resolve_views.es_client")
@@ -270,12 +277,14 @@ class TestResolveDomainFiltering:
         mock_es.search.return_value = _build_es_response([])
 
         # Create records with different materias
-        _create_judicial_record(query_term="despido", materia="laboral", uid_suffix="lab1")
-        _create_judicial_record(query_term="despido", materia="civil", uid_suffix="civ1")
-
-        response = self.client.get(
-            self.url, {"q": "despido", "domain": "laboral"}
+        _create_judicial_record(
+            query_term="despido", materia="laboral", uid_suffix="lab1"
         )
+        _create_judicial_record(
+            query_term="despido", materia="civil", uid_suffix="civ1"
+        )
+
+        response = self.client.get(self.url, {"q": "despido", "domain": "laboral"})
 
         data = response.json()
         # Only the laboral record should appear
@@ -288,7 +297,9 @@ class TestResolveDomainFiltering:
         mock_es.ping.return_value = True
         mock_es.search.return_value = _build_es_response([])
 
-        _create_judicial_record(query_term="constitucion", materia="civil", uid_suffix="nd1")
+        _create_judicial_record(
+            query_term="constitucion", materia="civil", uid_suffix="nd1"
+        )
         _create_judicial_record(
             query_term="constitucion", materia="constitucional", uid_suffix="nd2"
         )

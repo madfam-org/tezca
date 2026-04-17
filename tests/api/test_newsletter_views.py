@@ -109,7 +109,11 @@ class TestNewsletterSubscribe:
         with patch("apps.api.crm_sync.dispatch_crm_event") as mock_dispatch:
             response = self.client.post(
                 self.url,
-                {"email": "crm@example.com", "topics": topics, "source_page": "bienvenida"},
+                {
+                    "email": "crm@example.com",
+                    "topics": topics,
+                    "source_page": "bienvenida",
+                },
                 format="json",
             )
 

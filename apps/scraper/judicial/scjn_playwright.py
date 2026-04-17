@@ -37,9 +37,9 @@ from typing import Any, Dict, List, Optional
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeout
 
+from apps.scraper.client.madfam_bridge import MadfamBridge
 from apps.scraper.judicial.scjn_scraper import EPOCAS, ScjnScraper
 from apps.scraper.playwright_base import PlaywrightBase
-from apps.scraper.client.madfam_bridge import MadfamBridge
 
 logger = logging.getLogger(__name__)
 
@@ -498,15 +498,15 @@ class ScjnPlaywrightScraper(PlaywrightBase):
 
     def _fetch_detail_page(self, registro: str) -> Dict[str, str]:
         """Fetch and parse a single SJF detail page for full record fields.
-        
+
         Delegates the immense layout inconsistencies and Regex requirements entirely
         to madfam-crawler, which returns standard JSON structured_data immediately.
         """
         url = f"{SJF_DETAIL_URL}/{registro}"
-        
+
         logger.info(f"Delegating detail extraction to madfam-crawler for {url}")
         prompt = "Extract the specific case details, identifying metadata like materia, tesis, instancia, ponente, and tipo. Capture the 'rubro' (the title/summary paragraph) and the core legal 'texto' body."
-        
+
         schema = {
             "materia": "str",
             "tesis_num": "str",
@@ -514,19 +514,18 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             "ponente": "str",
             "tipo_tesis": "str",
             "rubro": "str",
-            "texto": "str"
+            "texto": "str",
         }
-        
+
         result = self.madfam.extract_sync(
-            url=url,
-            extraction_prompt=prompt,
-            schema_definition=schema,
-            timeout=120.0
+            url=url, extraction_prompt=prompt, schema_definition=schema, timeout=120.0
         )
-        
-        if result and "tesis" in result: # Map potential 'tesis' key back to original expected 'tesis_num' 
+
+        if (
+            result and "tesis" in result
+        ):  # Map potential 'tesis' key back to original expected 'tesis_num'
             result["tesis_num"] = result.pop("tesis")
-            
+
         return result if result else {}
 
     def _enrich_records(self, records: List[Dict]) -> List[Dict]:

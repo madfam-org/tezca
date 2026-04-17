@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 # SAT RMF Source URLs
 # ---------------------------------------------------------------------------
 
-SAT_RMF_BASE = "https://www.sat.gob.mx/normatividad/22702/resoluciones-miscelaneas-fiscales"
+SAT_RMF_BASE = (
+    "https://www.sat.gob.mx/normatividad/22702/resoluciones-miscelaneas-fiscales"
+)
 SAT_RMF_ANNEXES = "https://www.sat.gob.mx/normatividad/22703/anexos-de-la-resolucion-miscelanea-fiscal"
 
 

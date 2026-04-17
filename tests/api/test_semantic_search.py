@@ -79,12 +79,18 @@ class TestSemanticSearch:
         mock_embeddings_module.EmbeddingGenerator.return_value = mock_generator
 
         hits = [
-            _make_semantic_hit("cpeum-1", "cpeum", "1", "La soberania nacional reside en el pueblo."),
-            _make_semantic_hit("cff-5", "cff", "5", "Son contribuciones los impuestos.", score=0.88),
+            _make_semantic_hit(
+                "cpeum-1", "cpeum", "1", "La soberania nacional reside en el pueblo."
+            ),
+            _make_semantic_hit(
+                "cff-5", "cff", "5", "Son contribuciones los impuestos.", score=0.88
+            ),
         ]
         mock_es.search.return_value = {"hits": {"hits": hits}}
 
-        with patch.dict(sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}):
+        with patch.dict(
+            sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}
+        ):
             response = self.client.get(self.url, {"q": "soberania del pueblo"})
 
         assert response.status_code == 200
@@ -126,7 +132,9 @@ class TestSemanticSearch:
 
         mock_es.search.return_value = {"hits": {"hits": []}}
 
-        with patch.dict(sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}):
+        with patch.dict(
+            sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}
+        ):
             response = self.client.get(self.url, {"q": "test", "limit": "5"})
 
         assert response.status_code == 200
@@ -148,7 +156,9 @@ class TestSemanticSearch:
 
         mock_es.search.return_value = {"hits": {"hits": []}}
 
-        with patch.dict(sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}):
+        with patch.dict(
+            sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}
+        ):
             response = self.client.get(self.url, {"q": "test", "limit": "200"})
 
         assert response.status_code == 200
@@ -180,7 +190,9 @@ class TestSemanticSearch:
             message="Connection refused", meta=MagicMock(), body=None
         )
 
-        with patch.dict(sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}):
+        with patch.dict(
+            sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}
+        ):
             response = self.client.get(self.url, {"q": "impuestos"})
 
         assert response.status_code == 503
@@ -195,7 +207,9 @@ class TestSemanticSearch:
         mock_embeddings_module = MagicMock()
         mock_embeddings_module.EmbeddingGenerator.return_value = mock_generator
 
-        with patch.dict(sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}):
+        with patch.dict(
+            sys.modules, {"apps.parsers.embeddings": mock_embeddings_module}
+        ):
             response = self.client.get(self.url, {"q": "derechos humanos"})
 
         assert response.status_code == 500

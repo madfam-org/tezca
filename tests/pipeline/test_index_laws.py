@@ -253,9 +253,9 @@ class TestIndexLawsCommand:
 
             assert len(actions) == 2
             for doc in actions:
-                assert "text_embedding" in doc["_source"], (
-                    f"Article {doc['_id']} missing text_embedding"
-                )
+                assert (
+                    "text_embedding" in doc["_source"]
+                ), f"Article {doc['_id']} missing text_embedding"
                 assert doc["_source"]["text_embedding"] == fake_vector
                 assert len(doc["_source"]["text_embedding"]) == 768
 
@@ -301,9 +301,9 @@ class TestIndexLawsCommand:
             actions = article_call_args[0][1]
 
             for doc in actions:
-                assert "text_embedding" not in doc["_source"], (
-                    f"Article {doc['_id']} should not have text_embedding"
-                )
+                assert (
+                    "text_embedding" not in doc["_source"]
+                ), f"Article {doc['_id']} should not have text_embedding"
 
     def test_embedding_failure_skips_gracefully(self, command):
         """When embedding generation fails for an article, it is still indexed without embedding."""

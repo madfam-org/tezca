@@ -350,9 +350,7 @@ class SearchView(APIView):
                     {
                         "id": hit["_id"],
                         "law_id": source.get("law_id"),
-                        "law_name": source.get(
-                            "law_name", source.get("law_id")
-                        ),
+                        "law_name": source.get("law_name", source.get("law_id")),
                         "article": f"Art. {source.get('article', source.get('article_id'))}",
                         "snippet": highlight,
                         "text": raw_text,
