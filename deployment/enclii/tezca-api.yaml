@@ -50,7 +50,7 @@ env:
     value: "redis://tezca-redis.tezca.svc.cluster.local:6379/0"
   - name: ES_HOST
     value: "http://tezca-es.tezca.svc.cluster.local:9200"
-  - name: JANUA_BASE_URL
-    value: "https://auth.madfam.dev"
+  - name: JANUA_ISSUER_URL
+    value: "https://auth.madfam.io"
   - name: JANUA_AUDIENCE
     value: "tezca-api"

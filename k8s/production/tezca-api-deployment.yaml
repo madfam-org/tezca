@@ -122,7 +122,7 @@ spec:
               value: "api.tezca.mx"
             - name: CORS_ALLOWED_ORIGINS
               value: "https://tezca.mx,https://www.tezca.mx,https://admin.tezca.mx"
-            - name: JANUA_BASE_URL
+            - name: JANUA_ISSUER_URL
               value: "https://auth.madfam.io"
             - name: JANUA_AUDIENCE
               value: "tezca-api"
