@@ -601,7 +601,13 @@ class PNTMunicipalScraper(MunicipalScraper):
         if self.is_pdf(url):
             try:
                 self._rate_limit()
-                response = self.session.get(url, timeout=120, verify=False)
+                # Audit 2026-04-23 H7: defer TLS verification to the
+                # session-level INSECURE_HOSTS allowlist in
+                # apps/scraper/http.py rather than blanket-disabling
+                # per-request. Callers that get a pnt.gob.mx-style cert
+                # issue should add the host to INSECURE_HOSTS, not
+                # sprinkle verify=False throughout the code.
+                response = self.session.get(url, timeout=120)
                 response.raise_for_status()
                 return {
                     "url": url,

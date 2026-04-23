@@ -38,6 +38,9 @@ INSECURE_HOSTS: frozenset[str] = frozenset(
         "cnartys.conamer.gob.mx",
         "tratados.sre.gob.mx",
         "sjf.scjn.gob.mx",
+        # pnt_scraper.py downloads PDFs from the Plataforma Nacional de
+        # Transparencia; its certificate chain has been chronically broken.
+        "consultapublica.plataformadetransparencia.org.mx",
     }
 )
 

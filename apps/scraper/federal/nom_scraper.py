@@ -269,8 +269,26 @@ class NomScraper:
                 "Accept-Language": "es-MX,es;q=0.9,en;q=0.5",
             }
         )
-        # DOF has chronic SSL certificate issues — disable verification
-        session.verify = False
+        # Audit 2026-04-23 H7: route verify=False decisions through the
+        # centralized INSECURE_HOSTS allowlist in apps/scraper/http.py
+        # rather than blanket-disabling for the whole session. Callers
+        # that hit dof.gob.mx (the DOF host currently in the allowlist)
+        # will still get verify=False per allowlist rule; callers that
+        # accidentally route elsewhere now get proper TLS verification.
+        from apps.scraper.http import INSECURE_HOSTS
+        from urllib.parse import urlparse
+
+        def _pick_verify(url: str | bytes) -> bool:
+            host = urlparse(url if isinstance(url, str) else url.decode()).hostname or ""
+            return host not in INSECURE_HOSTS
+
+        _original_request = session.request
+
+        def _request_with_allowlist(method, url, **kwargs):
+            kwargs.setdefault("verify", _pick_verify(url))
+            return _original_request(method, url, **kwargs)
+
+        session.request = _request_with_allowlist  # type: ignore[assignment]
         return session
 
     def _rate_limit(self) -> None:
