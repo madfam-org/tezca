@@ -47,7 +47,16 @@ class APIKeyCORSMiddleware:
         return response
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
-        """Handle preflight OPTIONS requests for API key consumers."""
+        """Handle preflight OPTIONS requests for API key consumers.
+
+        Audit 2026-04-23 H2: an earlier implementation fell back to
+        ``origin = request.META.get("HTTP_ORIGIN", "*")`` — so an OPTIONS
+        request with no ``Origin`` header got ``Access-Control-Allow-Origin: *``
+        and could be used by any page to probe the API-key surface. Browsers
+        always send Origin on preflight; a missing Origin here is either a
+        non-browser caller (shouldn't need CORS at all) or a misbehaving
+        client (also doesn't deserve a permissive response).
+        """
         if request.method != "OPTIONS":
             return None
         if not request.path.startswith("/api/"):
@@ -61,7 +70,12 @@ class APIKeyCORSMiddleware:
 
         from django.http import HttpResponse
 
-        origin = request.META.get("HTTP_ORIGIN", "*")
+        origin = request.META.get("HTTP_ORIGIN")
+        if not origin:
+            # No Origin header → not a real browser preflight. Refuse rather
+            # than echoing a wildcard.
+            return HttpResponse(status=403)
+
         response = HttpResponse()
         response["Access-Control-Allow-Origin"] = origin
         response["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
@@ -69,5 +83,6 @@ class APIKeyCORSMiddleware:
             "X-API-Key, Content-Type, Accept, Authorization"
         )
         response["Access-Control-Max-Age"] = "86400"
+        response["Vary"] = "Origin"
         response.status_code = 204
         return response
