@@ -505,3 +505,12 @@ type Lang = 'es' | 'en' | 'nah';
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers
+
+## Known Issues — Audit 2026-04-23
+
+See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the full ecosystem audit.
+
+- ~~**🟠 H2: CORS echoes `*` when `Origin` header missing on API-key preflight**~~ — Fixed 2026-04-23: missing Origin now 403s, allowed Origins echo back with `Vary: Origin`.
+- **🟠 H7: TLS verification disabled on government scrapers** — `apps/scraper/http.py:79`, `federal/nom_scraper.py:273`, `municipal/pnt_scraper.py:604`. MITM risk — attacker can forge compliance evidence flowing into Karafiel. Pin CA bundles; if gov sites use old certs, narrow `verify=False` to specific hostnames with cert-fingerprint pinning.
+- **🟡 M3: `DEBUG=True` in `.env`** — `.env:3`. If mounted into prod workload, Django serves debug page on 500. Never commit `.env`; prod should use `.env.production` with `DEBUG=False`.
+- **🟡 H13: `.env` committed** — git rm, rotate secrets.
