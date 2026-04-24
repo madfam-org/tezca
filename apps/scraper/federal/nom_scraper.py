@@ -275,8 +275,9 @@ class NomScraper:
         # that hit dof.gob.mx (the DOF host currently in the allowlist)
         # will still get verify=False per allowlist rule; callers that
         # accidentally route elsewhere now get proper TLS verification.
-        from apps.scraper.http import INSECURE_HOSTS
         from urllib.parse import urlparse
+
+        from apps.scraper.http import INSECURE_HOSTS
 
         def _pick_verify(url: str | bytes) -> bool:
             host = (
