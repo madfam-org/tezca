@@ -279,7 +279,9 @@ class NomScraper:
         from urllib.parse import urlparse
 
         def _pick_verify(url: str | bytes) -> bool:
-            host = urlparse(url if isinstance(url, str) else url.decode()).hostname or ""
+            host = (
+                urlparse(url if isinstance(url, str) else url.decode()).hostname or ""
+            )
             return host not in INSECURE_HOSTS
 
         _original_request = session.request
