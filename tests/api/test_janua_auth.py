@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 import jwt as pyjwt
 import pytest
 import requests
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from jwt.algorithms import RSAAlgorithm
 from rest_framework.exceptions import AuthenticationFailed
@@ -75,6 +74,7 @@ class TestGetJwks:
     @patch("apps.api.middleware.janua_auth.requests.get")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_fetches_and_caches_jwks(self, mock_settings, mock_get):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_resp = MagicMock()
         mock_resp.json.return_value = {"keys": [_public_jwk]}
@@ -92,6 +92,7 @@ class TestGetJwks:
     @patch("apps.api.middleware.janua_auth.requests.get")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_stale_fallback_on_network_failure(self, mock_settings, mock_get):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         # Populate cache
         _jwks_cache["keys"] = [_public_jwk]
@@ -104,6 +105,7 @@ class TestGetJwks:
     @patch("apps.api.middleware.janua_auth.requests.get")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_raises_when_no_cache_and_network_fails(self, mock_settings, mock_get):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_get.side_effect = requests.RequestException("network error")
 
@@ -113,6 +115,7 @@ class TestGetJwks:
     @patch("apps.api.middleware.janua_auth.requests.get")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_ttl_refresh(self, mock_settings, mock_get):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_resp = MagicMock()
         mock_resp.json.return_value = {"keys": [_public_jwk]}
@@ -155,6 +158,7 @@ class TestJanuaAuthentication:
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_valid_token_returns_janua_user(self, mock_settings, mock_get_jwks):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
@@ -172,6 +176,7 @@ class TestJanuaAuthentication:
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_expired_token_raises(self, mock_settings, mock_get_jwks):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
@@ -187,6 +192,7 @@ class TestJanuaAuthentication:
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_invalid_audience_raises(self, mock_settings, mock_get_jwks):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
@@ -199,6 +205,7 @@ class TestJanuaAuthentication:
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_invalid_issuer_raises(self, mock_settings, mock_get_jwks):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
@@ -214,6 +221,7 @@ class TestJanuaAuthentication:
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
     def test_unknown_kid_raises(self, mock_settings, mock_get_jwks):
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
@@ -260,6 +268,7 @@ class TestCombinedAuthTierExtraction:
         """Helper: create a JWT with extra_claims and run CombinedAuthentication."""
         from apps.api.middleware.combined_auth import CombinedAuthentication
 
+        mock_settings.JANUA_ISSUER_URL = ""
         mock_settings.JANUA_BASE_URL = JANUA_BASE_URL
         mock_settings.JANUA_AUDIENCE = "tezca-api"
         mock_get_jwks.return_value = [_public_jwk]
