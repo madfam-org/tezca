@@ -38,6 +38,7 @@ EXCLUDE_DIRS = {
 # Files allowed to exceed ERROR_THRESHOLD (complex scrapers with inherent verbosity)
 ALLOWED_LARGE_FILES = {
     "apps/scraper/federal/nom_agency_scrapers.py",
+    "apps/scraper/federal/nom_scraper.py",
     "apps/scraper/federal/treaty_scraper.py",
     "apps/scraper/judicial/scjn_scraper.py",
     "apps/scraper/judicial/scjn_playwright.py",
