@@ -224,6 +224,8 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - **Monetization is currently disabled** (`NEXT_PUBLIC_MONETIZATION_ENABLED` defaults to `false`). Gated features show `InterestGate` (email capture) instead of `TierGate` (checkout). Set `NEXT_PUBLIC_MONETIZATION_ENABLED=true` to enable full tier checkout flows.
 - `FeatureInterest` model collects email + feature intent signals at `POST /api/v1/interest/`
 - Admin stats: `GET /api/v1/admin/interests/` (protected) returns counts by feature_key
+- **Pricing source-of-truth**: `internal-devops/decisions/2026-04-25-tulana-ecosystem-pricing.md`. Tezca tiers: Community 199 / Essentials 599 / Institutional 1,999 MXN/mo. Anchored on Tulana v0.1 competitor band (vLex, Doctrina AI, LegalTracker MX). **Confidence: low** — pending v0.2 WTP automation.
+- **PMF measurement**: per RFC 0013, NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*` endpoints. Composite PMF Score gates the `MONETIZATION_ENABLED` flip from InterestGate → checkout.
 
 ### Billing
 
