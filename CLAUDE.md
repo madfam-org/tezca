@@ -226,6 +226,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Admin stats: `GET /api/v1/admin/interests/` (protected) returns counts by feature_key
 - **Pricing source-of-truth**: `internal-devops/decisions/2026-04-25-tulana-ecosystem-pricing.md`. Tezca tiers: Community 199 / Essentials 599 / Institutional 1,999 MXN/mo. Anchored on Tulana v0.1 competitor band (vLex, Doctrina AI, LegalTracker MX). **Confidence: low** — pending v0.2 WTP automation.
 - **PMF measurement**: per RFC 0013, NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*` endpoints. Composite PMF Score gates the `MONETIZATION_ENABLED` flip from InterestGate → checkout.
+- **Monetization architecture (full ecosystem)**: `internal-devops/ecosystem/monetization-architecture-2026-04-26.md`. Tezca enforces tiers via `SubscriptionThrottleGuard` but does not mint them — Dhanam owns subscription state and fans out `subscription.activated|upgraded|cancelled` events. Tezca tier names are defined in Dhanam catalog (`tezca-free`, `tezca-pro`, `tezca-enterprise`).
 
 ### Billing
 
