@@ -35,11 +35,36 @@
  */
 
 import { useEffect, useState, type ComponentType } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthContext';
 
 const FLAG_ENABLED = process.env.NEXT_PUBLIC_PMF_WIDGET_ENABLED === 'true';
 const TULANA_API_URL =
   process.env.NEXT_PUBLIC_TULANA_API_URL || 'https://api.tulana.madfam.io';
+
+/**
+ * Route prefixes where the PMF widget MUST NOT render. PMF signal is only
+ * meaningful on the post-login product surface; rendering on auth pages,
+ * the UTM-aware onboarding landing, or the internal admin app would either
+ * (a) distort the signal (first-session noise) or (b) confuse internal
+ * staff into submitting feedback as if they were customers.
+ *
+ * Marketing/public pages (homepage, /precios, /leyes, etc.) are implicitly
+ * excluded by the `auth.isAuthenticated` gate below — anonymous traffic
+ * never sees the widget regardless of pathname.
+ */
+const EXCLUDED_PATH_PREFIXES = [
+  '/login',       // Janua sign-in / sign-up flow
+  '/bienvenida',  // UTM-aware onboarding landing — first-session, would distort signal
+  '/admin',       // Internal admin surface (not customer product)
+];
+
+function isExcludedPath(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return EXCLUDED_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
 
 // Minimal structural type matching @madfam/pmf-widget's PMFWidgetProps.
 // Kept narrow so we only depend on the props we actually pass; the real
@@ -63,11 +88,15 @@ type PmfWidgetModule = {
 
 export function PmfWidgetMount() {
   const auth = useAuth();
+  const pathname = usePathname();
   const [Widget, setWidget] = useState<ComponentType<PmfWidgetComponentProps> | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
 
+  const pathExcluded = isExcludedPath(pathname);
+
   useEffect(() => {
     if (!FLAG_ENABLED) return;
+    if (pathExcluded) return;
     if (!auth.isAuthenticated || !auth.userId) return;
 
     let cancelled = false;
@@ -91,9 +120,10 @@ export function PmfWidgetMount() {
     return () => {
       cancelled = true;
     };
-  }, [auth.isAuthenticated, auth.userId]);
+  }, [auth.isAuthenticated, auth.userId, pathExcluded]);
 
   if (!FLAG_ENABLED) return null;
+  if (pathExcluded) return null;
   if (loadFailed) return null;
   if (!Widget) return null;
   if (!auth.isAuthenticated || !auth.userId) return null;
