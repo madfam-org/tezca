@@ -7,6 +7,25 @@ metadata:
   name: tezca-api
   project: tezca
 spec:
+  status:
+    enabled: true
+    entries:
+      - name: Tezca Web
+        url: https://tezca.mx
+        group: Tezca
+        family: MADFAM Platform
+        description: Legal intelligence platform
+      - name: Tezca API
+        url: https://api.tezca.mx/health
+        href: https://api.tezca.mx
+        group: Tezca
+        family: MADFAM Platform
+        description: Legal data API
+      - name: Tezca Admin
+        url: https://admin.tezca.mx
+        group: Tezca
+        family: MADFAM Platform
+        description: Legal ops console
   runtime:
     port: 8000
   domains:
