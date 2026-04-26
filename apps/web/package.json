@@ -14,6 +14,7 @@
   "dependencies": {
     "@janua/nextjs": "^0.1.5",
     "@janua/ui": "^0.1.1",
+    "@madfam/pmf-widget": "^0.1.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-sigma/core": "^5.0.6",
     "@react-sigma/layout-forceatlas2": "^5.0.6",
