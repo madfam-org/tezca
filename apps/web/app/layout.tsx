@@ -70,6 +70,7 @@ import { Navbar } from "@/components/Navbar";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { BackToTop } from "@/components/BackToTop";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { PmfWidgetMount } from "@/components/pmf/PmfWidgetMount";
 import { Toaster } from "sonner";
 
 const januaConfig = {
@@ -114,6 +115,7 @@ export default function RootLayout({
                           <ComparisonFloatingBar />
                           <BackToTop />
                           <Toaster theme="system" position="top-right" richColors />
+                          <PmfWidgetMount />
                         </PostHogProvider>
                       </Suspense>
                     </ComparisonProvider>
