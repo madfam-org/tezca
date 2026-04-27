@@ -47,11 +47,11 @@ jobs:
       run: poetry run python scripts/utils/audit_silent_excepts.py
 
     - name: Run Pytest with coverage
-      # Coverage floor: ratcheted 44 → 48 → 51 as WS1 Phases 1A/1B/1C
+      # Coverage floor: ratcheted 44 → 48 → 51 → 54 as WS1 Phases 1A/1B/1C
       # closed scheduling, parser pipeline, scjn, treaty, playwright_base,
-      # law_registry, sinec, and pnt coverage gaps. Headroom: actual is ~56%.
-      # Next ratchet target: 55% once two more 0% scraper modules cross 50%.
-      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=51
+      # law_registry, sinec, pnt, and 5 state scrapers (cdmx, edomex,
+      # michoacan, slp, zacatecas). Actual is ~59%. Next target: 60%.
+      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=54
       env:
         PYTHONPATH: apps:.
 
