@@ -28,6 +28,15 @@ spec:
         description: Legal ops console
   runtime:
     port: 8000
+    # TODO (Track 6, post-RFC-0014): once Switchyard's
+    # runtime.databases[] schema is live, declare the CNPG dependency
+    # here so the cutover (DB_HOST flip) is a one-line change.
+    # See docs/strategy/CNPG_MIGRATION_PREP_2026-04-27.md §1.2.
+    #
+    # databases:
+    #   - name: tezca
+    #     cluster: postgres-ha
+    #     access: read-write
   domains:
     - name: api.tezca.mx
       environment: production
