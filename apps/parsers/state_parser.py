@@ -8,6 +8,7 @@ calculates quality metrics, and optionally detects cross-references.
 Unlike the federal IngestionPipeline, this does NOT download from URLs.
 """
 
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -16,6 +17,8 @@ from typing import Any, Dict, Optional
 
 from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
 from apps.parsers.quality import QualityCalculator, QualityMetrics
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -255,7 +258,14 @@ class StateLawParser:
 
                 detect_and_store_cross_references(official_id, akn_path)
             except Exception:
-                pass
+                # Cross-ref detection is non-fatal — the law is parsed +
+                # quality-graded successfully without it. Log so a curious
+                # operator can see the failure rate.
+                logger.debug(
+                    "Cross-reference detection failed for %s",
+                    official_id,
+                    exc_info=True,
+                )
 
             result.success = True
             result.duration_seconds = time.time() - start_time

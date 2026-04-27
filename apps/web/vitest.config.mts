@@ -19,17 +19,28 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
-            // NOTE: thresholds below cover only files imported by tests
-            // (the v8 default). Switching to `all: true` would widen the
-            // denominator across the whole project — currently ~15% of
-            // components have unit tests so the gate would instantly fail.
-            // Plan: backfill component tests, then flip `all: true` and
-            // ratchet these numbers up. Tracked as a follow-up.
+            // `all: true` widens the denominator to every source file under
+            // the project, not just files imported by tests. Thresholds are
+            // pinned to the observed floor minus ~5pp so unrelated PRs don't
+            // trip the gate; ratchet up as component coverage grows.
+            // Observed floor (2026-04-27, all:true with full include scope):
+            // stmts 56.44, branches 49.68, funcs 52.09, lines 57.66.
+            all: true,
+            include: ['app/**', 'components/**', 'hooks/**', 'lib/**', 'contexts/**'],
+            exclude: [
+                '**/*.d.ts',
+                '**/*.config.*',
+                '**/node_modules/**',
+                '**/.next/**',
+                '**/__tests__/**',
+                '**/__mocks__/**',
+                'e2e/**',
+            ],
             thresholds: {
-                statements: 70,
-                branches: 60,
-                functions: 70,
-                lines: 70,
+                statements: 51,
+                branches: 44,
+                functions: 47,
+                lines: 52,
             },
         },
         alias: {

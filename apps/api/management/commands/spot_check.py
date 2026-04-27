@@ -268,6 +268,13 @@ class Command(BaseCommand):
                 if resp.get("count", 0) == 0:
                     return version.law
             except Exception:
+                # ES count probe — if it fails, just try the next version.
+                # The whole spot-check is best-effort.
+                logger.debug(
+                    "ES count probe failed for %s",
+                    version.law.official_id,
+                    exc_info=True,
+                )
                 continue
 
         # Fallback: any law with 0 versions

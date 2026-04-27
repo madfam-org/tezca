@@ -245,6 +245,10 @@ class ConamerPlaywrightScraper(PlaywrightBase):
                     }
                 )
             except Exception:
+                logger.debug(
+                    "Fallback link extraction skipped one element",
+                    exc_info=True,
+                )
                 continue
 
         if items:

@@ -1,8 +1,11 @@
 """PostHog analytics for Tezca -- graceful no-op when API key is empty."""
 
 import hashlib
+import logging
 import os
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 _client: Optional[object] = None
 
@@ -53,7 +56,9 @@ def track(distinct_id: str, event: str, properties: Optional[dict] = None) -> No
     try:
         _client.capture(distinct_id, event, properties=properties or {})
     except Exception:
-        pass
+        # Telemetry must never break a request. Log at debug for visibility
+        # without polluting production logs with PostHog network blips.
+        logger.debug("PostHog track() failed for event=%s", event, exc_info=True)
 
 
 def identify(distinct_id: str, properties: Optional[dict] = None) -> None:
@@ -62,7 +67,7 @@ def identify(distinct_id: str, properties: Optional[dict] = None) -> None:
     try:
         _client.identify(distinct_id, properties=properties or {})
     except Exception:
-        pass
+        logger.debug("PostHog identify() failed", exc_info=True)
 
 
 def shutdown() -> None:
@@ -71,4 +76,4 @@ def shutdown() -> None:
     try:
         _client.shutdown()
     except Exception:
-        pass
+        logger.debug("PostHog shutdown() failed", exc_info=True)
