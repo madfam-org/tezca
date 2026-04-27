@@ -20,6 +20,10 @@ This directory holds Tezca's product/architectural strategy. If you're new to th
 7. **[CNPG_MIGRATION_PREP_2026-04-27.md](./CNPG_MIGRATION_PREP_2026-04-27.md)** — Track 6. Tezca-side connection-pool knobs (already shipped) plus the cutover runbook. Gated on RFC 0012 (`madfam-org/enclii`) shipping the cluster.
 8. **[DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md](./DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md)** — Track 7. Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027). Architecture, repo layout, RFC 0014 onboarding command, pricing tiers anchored on Buho Legal.
 
+## Quality / stability
+
+9. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — 8-workstream plan to take the codebase from B+/B to A+ across 9 dimensions (test discipline, coverage, architectural integrity, code-debt, infra resilience, production validation, security, observability). Grounded in real coverage data; includes a 16-week sequenced timeline + a "5 cheapest highest-leverage items" subset for opportunistic execution.
+
 ## Subdirectories
 
 - **[partnerships/](./partnerships/)** — Partner-specific integration agreements (legal-ops, MADFAM ecosystem, etc.)
