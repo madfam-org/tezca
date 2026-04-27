@@ -300,6 +300,20 @@ def run_state_scraper(state_key):
         "quintana_roo": "apps.scraper.state.quintana_roo.QuintanaRooScraper",
         "guerrero": "apps.scraper.state.guerrero.GuerreroScraper",
         "nuevo_leon": "apps.scraper.state.nuevo_leon.NuevoLeonScraper",
+        # Backfill: existing modules that weren't registered in the dispatch
+        # table. Adding here makes them invokable via `enclii jobs run
+        # state-<key>` without implying a Beat schedule (those land per-state
+        # after the first manual run validates the URL guesses).
+        "cdmx": "apps.scraper.state.cdmx.CDMXScraper",
+        "estado_de_mexico": "apps.scraper.state.estado_de_mexico.EstadoDeMexicoScraper",
+        "michoacan": "apps.scraper.state.michoacan.MichoacanScraper",
+        "san_luis_potosi": "apps.scraper.state.san_luis_potosi.SanLuisPotosiScraper",
+        "zacatecas": "apps.scraper.state.zacatecas.ZacatecasScraper",
+        # Wave 1A — new scrapers from FEATURE_PARITY_PLAN_2026-04-27 §3.5
+        "aguascalientes": "apps.scraper.state.aguascalientes.AguascalientesScraper",
+        "hidalgo": "apps.scraper.state.hidalgo.HidalgoScraper",
+        "morelos": "apps.scraper.state.morelos.MorelosScraper",
+        "yucatan": "apps.scraper.state.yucatan.YucatanScraper",
     }
 
     if state_key not in scrapers:
