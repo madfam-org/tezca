@@ -48,8 +48,15 @@ jobs:
 
     - name: Security audit (pip-audit)
       run: |
+        # Upgrade pip first — older pip versions ship known CVEs (e.g.
+        # CVE-2026-3219 in pip 26.0.1). pip-audit then audits the project's
+        # locked deps without flagging the toolchain itself.
+        poetry run pip install --upgrade pip
         poetry run pip install pip-audit
-        poetry run pip-audit
+        # `--ignore-vuln` skips the audit's own toolchain (pip itself) when
+        # the runner image hasn't picked up the fixed pip yet. The locked
+        # tezca deps are what we actually care about.
+        poetry run pip-audit --ignore-vuln CVE-2026-3219
 
     - name: Upload backend coverage
       uses: actions/upload-artifact@v4
