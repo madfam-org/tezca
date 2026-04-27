@@ -15,7 +15,7 @@ django-cors-headers = "^4.3.1"
 celery = "^5.3"
 redis = "^5.0"
 # XML Processing
-lxml = "^5.1"
+lxml = "^6.1"  # ^5 had CVE-2026-41066 (XML processing vulnerability); 6.1+ patched
 # Search
 elasticsearch = "^8.0"
 # NLP
@@ -63,7 +63,7 @@ analytics = ["posthog"]
 production = ["boto3", "sentry-sdk", "weasyprint", "python-docx", "ebooklib", "jinja2", "pytesseract", "pdf2image", "openpyxl", "posthog"]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0"
+pytest = "^9.0"  # ^8 had CVE-2025-71176; 9.0+ patched
 pytest-cov = "^4.1"
 pytest-django = "^4.7"
 black = "^26.0"
