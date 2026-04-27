@@ -169,6 +169,19 @@ npm run lint:admin
 npm run lint:all
 ```
 
+### Quality audits (CI-enforced)
+
+```bash
+# Block silent bare-except blocks (`except Exception: pass` etc.)
+poetry run python scripts/utils/audit_silent_excepts.py
+
+# Block files >800 LOC (with explicit allowlist for known mega-scrapers)
+poetry run python scripts/utils/audit_file_sizes.py
+
+# Capture a TLS fingerprint for a host (for HOST_FINGERPRINTS pinning)
+poetry run python scripts/utils/capture_tls_fingerprint.py <host>
+```
+
 ### Build
 
 ```bash
@@ -505,6 +518,10 @@ type Lang = 'es' | 'en' | 'nah';
 | `scripts/scraping/wayback_bulk_recovery.py` | CDX API bulk mining for dead legal domains |
 | `scripts/scraping/dof_historical_scan.py` | DOF 2000-2026 scan for gap-filling + NOM detection + checkpointing + cross-reference |
 | `scripts/scraping/probe_datos_gob.py` | datos.gob.mx CKAN API probe, resource download, and legal relevance assessment |
+| `scripts/utils/audit_silent_excepts.py` | AST-based scanner that fails CI on `except Exception: pass`-style swallows missing `# noqa: BLE001` |
+| `scripts/utils/audit_file_sizes.py` | File-size audit with allowlist; fails CI on files >800 LOC outside the allowlist |
+| `scripts/utils/capture_tls_fingerprint.py` | Captures leaf-cert SHA-256 fingerprint for `HOST_FINGERPRINTS` pinning |
+| `apps/scraper/http.py` | Two-layer TLS trust: `HOST_FINGERPRINTS` (pinned) + `INSECURE_HOSTS` (verify=False fallback). `_FingerprintPinnedAdapter` validates leaf cert via urllib3 `assert_fingerprint`. |
 | `apps/api/search_views.py` | Full-text search with function_score recency boost, phrase matching, zero-result rescue |
 | `apps/api/admin_views.py` | Admin endpoints: metrics, jobs, config, pipeline, coverage, quarantine, task-health |
 | `apps/web/components/JsonLd.tsx` | Shared JSON-LD structured data component (used across 10+ pages) |
@@ -569,6 +586,22 @@ type Lang = 'es' | 'en' | 'nah';
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers
 
+### Quality gates (PR-blocking)
+
+These gates run as discrete CI steps and fail the merge on regression:
+
+| Gate | Threshold | Source |
+|---|---|---|
+| Backend coverage | `--cov-fail-under=56` (actual ~61%) | `.github/workflows/ci.yml` |
+| Frontend coverage (`all: true`) | stmts 53 / branches 46 / funcs 49 / lines 54 (floor−3pp) | `apps/web/vitest.config.mts` |
+| Silent bare-except | 0 findings | `scripts/utils/audit_silent_excepts.py` |
+| File size | 0 files >800 LOC outside allowlist | `scripts/utils/audit_file_sizes.py` |
+| pip-audit | 0 high-severity CVEs in locked deps | CI step |
+| npm audit | 0 high-severity CVEs (`--audit-level=high`) | CI step |
+| CodeQL | 0 new alerts on PR | weekly + on-push |
+
+Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 across PRs #56, #77–80. Next target: 60% per `docs/strategy/A_PLUS_PROGRESS_2026-04-27.md` WS-R1.
+
 ## Strategy Documentation
 
 `docs/strategy/` is the authoritative home for product/architectural strategy. Read these before assuming a feature priority. Index: [`docs/strategy/INDEX.md`](docs/strategy/INDEX.md).
@@ -583,9 +616,13 @@ type Lang = 'es' | 'en' | 'nah';
 | `SELVA_ONBOARDING_TICKET_2026-04-27.md` | Operator-side spec for provisioning the Selva relay client (unblocks `CHAT_BACKEND=selva`) |
 | `CNPG_MIGRATION_PREP_2026-04-27.md` | Tezca-side connection-pool prep + cutover runbook (gated on RFC 0012 cluster) |
 | `DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md` | Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027) |
+| `A_PLUS_REMEDIATION_PLAN_2026-04-27.md` | Original 8-workstream A+ plan + rubric (still authoritative on dimensions) |
+| `A_PLUS_PROGRESS_2026-04-27.md` | **Live A+ progress + forward plan.** Tracks PRs #55–80 (44%→61% backend coverage, 0 silent excepts, TLS pinning architecture). 6 remaining workstreams (WS-R1…WS-R6) with sequencing |
 | `partnerships/` | Partner-specific integration agreements |
 
 **Tracks shipped 2026-04-27 (PRs #46–52):** RMF scraper, `/preguntar` chat scaffold, state scrapers Wave 1A (4 states), `/cuenta/billing` scaffold, Karafiel audit doc, CNPG settings prep, docket-watcher spec, Selva onboarding ticket spec.
+
+**A+ remediation shipped 2026-04-27 (PRs #55, #56, #75–80):** backend coverage 44%→61%, 0 silent bare-except, 0 files >800 LOC, TLS fingerprint pinning architecture, frontend `vitest all:true` gates, silent-except CI gate, file-size CI gate, CVE SLO + Dependabot, scraper first-run checklist. Composite grade B+/B → **B+/A−**. Remaining work in `A_PLUS_PROGRESS_2026-04-27.md`.
 
 ## Known Issues
 
