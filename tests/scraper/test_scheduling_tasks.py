@@ -475,8 +475,14 @@ class TestRunParserPipeline:
 
 try:
     import playwright  # noqa: F401
+    import playwright.sync_api as _pw_sync_check
 
-    HAS_PLAYWRIGHT = True
+    # If sync_playwright is a MagicMock (shimmed by another test file), treat
+    # playwright as not installed for the purposes of these tests.
+    _real = callable(getattr(_pw_sync_check, "sync_playwright", None)) and (
+        type(_pw_sync_check.sync_playwright).__name__ != "MagicMock"
+    )
+    HAS_PLAYWRIGHT = _real
 except ImportError:
     HAS_PLAYWRIGHT = False
 
