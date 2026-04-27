@@ -59,7 +59,7 @@ jobs:
         poetry run pip-audit --ignore-vuln CVE-2026-3219
 
     - name: Upload backend coverage
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: backend-coverage-py${{ matrix.python-version }}
@@ -132,7 +132,7 @@ jobs:
       run: npm audit --production --audit-level=high
 
     - name: Upload frontend coverage
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: frontend-coverage-node${{ matrix.node-version }}
@@ -220,7 +220,7 @@ jobs:
       working-directory: apps/web
 
     - name: Upload Playwright report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: playwright-report-node${{ matrix.node-version }}
