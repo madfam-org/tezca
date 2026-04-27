@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { MetricCard } from './MetricCard';
 import { BookOpen, Award, Activity, Clock, TrendingUp } from 'lucide-react';
 import { api } from '@/lib/api';
+import { ADMIN_METRICS_POLL_MS } from '@/lib/constants';
 
 interface SystemMetrics {
     totalLaws: number;
@@ -47,8 +48,7 @@ export function SystemMetrics() {
     useEffect(() => {
         fetchMetrics();
         
-        // Refresh every 30 seconds
-        const interval = setInterval(fetchMetrics, 30000);
+        const interval = setInterval(fetchMetrics, ADMIN_METRICS_POLL_MS);
         return () => clearInterval(interval);
     }, []);
 

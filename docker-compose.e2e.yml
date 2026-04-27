@@ -52,6 +52,10 @@ services:
       - cluster.name=e2e-cluster
       - discovery.type=single-node
       - bootstrap.memory_lock=true
+      # E2E stack: throwaway test data, no host port exposed, lifetime is one
+      # CI run. Auth disabled to keep startup under the 30s healthcheck window
+      # and avoid leaking creds through CI env. Production / dev compose
+      # enables xpack.security.
       - xpack.security.enabled=false
       - xpack.security.enrollment.enabled=false
       - "ES_JAVA_OPTS=-Xms384m -Xmx384m"

@@ -7,6 +7,7 @@ import { Card, CardContent, Badge } from '@tezca/ui';
 import { BookOpen, Scale, Building2, Calendar, FileText, ArrowRight, Landmark, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { useLang, LOCALE_MAP, type Lang } from '@/components/providers/LanguageContext';
+import { DASHBOARD_STATS_TTL_MS } from '@/lib/constants';
 
 /** Format dates neutrally (YYYY-MM-DD) for Nahuatl, locale-aware for es/en. */
 function formatDate(date: Date, lang: Lang, opts?: Intl.DateTimeFormatOptions): string {
@@ -20,8 +21,7 @@ let _statsPromise: Promise<DashboardStats> | null = null;
 export function getSharedStats(): Promise<DashboardStats> {
     if (!_statsPromise) {
         _statsPromise = api.getStats();
-        // Allow refetch after 5 minutes
-        setTimeout(() => { _statsPromise = null; }, 5 * 60 * 1000);
+        setTimeout(() => { _statsPromise = null; }, DASHBOARD_STATS_TTL_MS);
     }
     return _statsPromise;
 }

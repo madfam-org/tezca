@@ -82,7 +82,7 @@ export function ConversionBanner() {
                         {t.pills.map((pill, i) => {
                             const Icon = icons[i];
                             return (
-                                <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
+                                <span key={pill} className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                                     <Icon className="h-3.5 w-3.5" />
                                     {pill}
                                 </span>

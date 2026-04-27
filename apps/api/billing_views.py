@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import json
 import logging
+import re
 
 from django.conf import settings
 from rest_framework import status
@@ -23,6 +24,13 @@ from .models import APIKey
 from .posthog_analytics import track
 
 logger = logging.getLogger(__name__)
+
+# Format guard for the X-Dhanam-Signature header. Reject anything that doesn't
+# match before invoking constant-time comparison — protects compare_digest from
+# pathologically long or malformed input and gives clearer failure logs.
+_SIGNATURE_PREFIX = "sha256="
+_SHA256_HEX_LENGTH = 64
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 
 # Map Dhanam plan IDs to Tezca tier names
 PLAN_TO_TIER = {
@@ -49,13 +57,19 @@ TRIAL_EVENTS = {"trial.cc_provided"}
 
 
 def _verify_signature(payload_body: bytes, signature_header: str, secret: str) -> bool:
-    """Verify HMAC-SHA256 signature from Dhanam."""
+    """Verify HMAC-SHA256 signature from Dhanam.
+
+    Expected format: "sha256=<64 lowercase hex chars>". Anything else is
+    rejected before HMAC computation so we don't waste cycles on garbage
+    input or risk subtle compare_digest behaviour with off-spec strings.
+    """
     if not signature_header or not secret:
         return False
-    # Expected format: "sha256=<hex digest>"
-    if not signature_header.startswith("sha256="):
+    if not signature_header.startswith(_SIGNATURE_PREFIX):
         return False
-    expected = signature_header[7:]
+    expected = signature_header[len(_SIGNATURE_PREFIX) :]
+    if len(expected) != _SHA256_HEX_LENGTH or not _SHA256_HEX_RE.match(expected):
+        return False
     computed = hmac.new(
         secret.encode("utf-8"), payload_body, hashlib.sha256
     ).hexdigest()

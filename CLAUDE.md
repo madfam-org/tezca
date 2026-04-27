@@ -510,11 +510,14 @@ type Lang = 'es' | 'en' | 'nah';
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers
 
-## Known Issues — Audit 2026-04-23
+## Known Issues
 
-See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the full ecosystem audit.
+See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the original ecosystem audit.
 
-- ~~**🟠 H2: CORS echoes `*` when `Origin` header missing on API-key preflight**~~ — Fixed 2026-04-23: missing Origin now 403s, allowed Origins echo back with `Vary: Origin`.
+Open:
 - **🟠 H7: TLS verification disabled on government scrapers** — `apps/scraper/http.py:79`, `federal/nom_scraper.py:273`, `municipal/pnt_scraper.py:604`. MITM risk — attacker can forge compliance evidence flowing into Karafiel. Pin CA bundles; if gov sites use old certs, narrow `verify=False` to specific hostnames with cert-fingerprint pinning.
-- **🟡 M3: `DEBUG=True` in `.env`** — `.env:3`. If mounted into prod workload, Django serves debug page on 500. Never commit `.env`; prod should use `.env.production` with `DEBUG=False`.
-- **🟡 H13: `.env` committed** — git rm, rotate secrets.
+
+Resolved:
+- ~~**🟠 H2: CORS echoes `*` when `Origin` header missing on API-key preflight**~~ — Fixed 2026-04-23 (#37, #40): missing Origin now 403s, allowed Origins echo back with `Vary: Origin`.
+- ~~**🟡 M3: `DEBUG=True` in `.env`**~~ — Resolved 2026-04-27: `.env` is not tracked and not present in repo; `.env.example` ships `DEBUG=False`. No prod workload risk from this vector.
+- ~~**🟡 H13: `.env` committed**~~ — Resolved: `.gitignore` covers `.env`, `.env.local`, `.env.*.local`, `.env.production`. Verified absent from `git ls-files`.

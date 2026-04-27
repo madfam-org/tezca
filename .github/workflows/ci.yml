@@ -162,14 +162,19 @@ jobs:
       run: uv run pytest tests/ -v
 
   test-e2e:
-    name: E2E Tests (Playwright)
+    name: E2E Tests (Playwright, Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     needs: [test-frontend, test-backend]
     # E2E Phase 3 (active): docker-compose.e2e.yml with seeded DB + ES, blocking gate.
     # Playwright retries (2 in CI) handle transient flakes.
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22']
     env:
       NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      INTERNAL_API_URL: http://api:8000/api/v1
       PLAYWRIGHT_BASE_URL: http://localhost:3000
 
     steps:
@@ -178,7 +183,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
     - name: Install dependencies
@@ -218,7 +223,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: playwright-report-node${{ matrix.node-version }}
         path: apps/web/playwright-report/
 
     - name: Stop E2E infrastructure

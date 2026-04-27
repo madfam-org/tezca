@@ -7,6 +7,8 @@ import { Badge } from '@tezca/ui';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
 import type { Lang } from '@/components/providers/LanguageContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import { SEARCH_DEBOUNCE_MS } from '@/lib/constants';
 
 interface Suggestion {
     id: string;
@@ -35,7 +37,7 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
     const containerRef = useRef<HTMLDivElement>(null);
     const listboxId = 'search-autocomplete-listbox';
 
@@ -57,12 +59,8 @@ export function SearchAutocomplete({ onSearch, placeholder, className, defaultVa
     }, []);
 
     useEffect(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => fetchSuggestions(query), 300);
-        return () => {
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-        };
-    }, [query, fetchSuggestions]);
+        void fetchSuggestions(debouncedQuery);
+    }, [debouncedQuery, fetchSuggestions]);
 
     // Close on outside click
     useEffect(() => {

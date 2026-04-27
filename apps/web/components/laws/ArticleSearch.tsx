@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { api } from '@/lib/api';
 import { useLang } from '@/components/providers/LanguageContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import { SEARCH_DEBOUNCE_MS } from '@/lib/constants';
 
 const content = {
     es: {
@@ -49,7 +51,7 @@ export function ArticleSearch({ lawId, onResultClick }: ArticleSearchProps) {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
 
     const doSearch = useCallback(async (q: string) => {
         if (!q.trim()) {
@@ -73,10 +75,12 @@ export function ArticleSearch({ lawId, onResultClick }: ArticleSearchProps) {
         }
     }, [lawId]);
 
+    useEffect(() => {
+        void doSearch(debouncedQuery);
+    }, [debouncedQuery, doSearch]);
+
     const handleChange = (value: string) => {
         setQuery(value);
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => doSearch(value), 300);
     };
 
     const handleClear = () => {

@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/components/providers/LanguageContext';
-import { API_BASE_URL } from '@/lib/config';
 import type { CrossReferenceData } from '@/lib/api';
 
 const content = {
@@ -39,34 +37,31 @@ interface CrossReference {
 }
 
 interface LinkifiedArticleProps {
-    lawId: string;
-    articleId: string;
+    /** @deprecated Unused now that data is always preloaded; safe to omit. */
+    lawId?: string;
+    /** @deprecated Unused now that data is always preloaded; safe to omit. */
+    articleId?: string;
+    /** @deprecated Refs are always caller-supplied; this prop has no effect. */
+    crossRefsDisabled?: boolean;
     text: string;
     minConfidence?: number;
-    crossRefsDisabled?: boolean;
     /** Pre-fetched outgoing cross-references from the batch endpoint.
-     *  When provided, the per-article fetch is skipped entirely. */
+     *  `undefined` or empty array → renders plain text. The component never
+     *  fetches on its own — call sites must batch refs via useBatchCrossRefs
+     *  (or equivalent) to avoid N+1 traffic. */
     preloadedRefs?: CrossReferenceData[];
 }
 
 /**
- * LinkifiedArticle - Renders article text with clickable cross-references.
+ * LinkifiedArticle — renders article text with clickable cross-references.
  *
- * Supports two data-loading strategies:
- *
- * 1. **Batch (preferred):** Parent passes `preloadedRefs` from the batch
- *    endpoint. No per-article network request is made.
- *
- * 2. **Per-article (legacy fallback):** When `preloadedRefs` is not provided
- *    and `crossRefsDisabled` is false, fires an individual GET request.
- *    This causes N+1 on pages with many articles; avoid when possible.
+ * Pure presentational component. Refs are passed in by the caller (typically
+ * ArticleViewer's batch hook). Removing the per-article fetch path eliminates
+ * the N+1 trap that was the original H3 audit finding.
  */
 export function LinkifiedArticle({
-    lawId,
-    articleId,
     text: rawText,
     minConfidence = 0.6,
-    crossRefsDisabled = true,
     preloadedRefs,
 }: LinkifiedArticleProps) {
     const { lang } = useLang();
@@ -75,46 +70,11 @@ export function LinkifiedArticle({
     // Strip leading "Articulo N." from body since the heading already shows it
     const text = rawText.replace(/^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w]*\.?\s*/i, '').trim();
 
-    const hasPreloaded = preloadedRefs !== undefined;
-
-    // When no preloaded data and fetch is enabled, start in loading state
-    const shouldFetch = !hasPreloaded && !crossRefsDisabled;
-    const [fetchedReferences, setFetchedReferences] = useState<CrossReference[]>([]);
-    const [loading, setLoading] = useState(shouldFetch);
-
-    useEffect(() => {
-        // Skip fetch entirely when preloaded data is available
-        if (hasPreloaded) return;
-        if (crossRefsDisabled) return;
-
-        let cancelled = false;
-        const apiUrl = API_BASE_URL;
-
-        fetch(`${apiUrl}/laws/${lawId}/articles/${articleId}/references/`)
-            .then(r => r.ok ? r.json() : { outgoing: [] })
-            .then(data => {
-                if (!cancelled) {
-                    setFetchedReferences(data.outgoing || []);
-                    setLoading(false);
-                }
-            })
-            .catch(() => {
-                if (!cancelled) setLoading(false);
-            });
-
-        return () => { cancelled = true; };
-    }, [lawId, articleId, crossRefsDisabled, hasPreloaded]);
-
-    // Merge sources: preloaded takes priority over fetched
-    const allReferences: CrossReference[] = hasPreloaded
-        ? (preloadedRefs as CrossReference[])
-        : fetchedReferences;
-
-    // Filter by confidence threshold
+    const allReferences: CrossReference[] = (preloadedRefs as CrossReference[] | undefined) ?? [];
     const references = allReferences.filter(ref => ref.confidence >= minConfidence);
 
     const buildLinkifiedText = () => {
-        if (!references.length || loading) {
+        if (!references.length) {
             return <p className="whitespace-pre-wrap leading-relaxed">{text}</p>;
         }
 
@@ -123,10 +83,14 @@ export function LinkifiedArticle({
 
         const sorted = [...references].sort((a, b) => a.startPos - b.startPos);
 
-        sorted.forEach((ref, i) => {
+        sorted.forEach((ref) => {
+            // Stable keys based on text position — survives reordering and
+            // confidence-filter changes without React reconciliation glitches.
+            const refKey = `${ref.startPos}-${ref.endPos}`;
+
             if (ref.startPos > lastIndex) {
                 parts.push(
-                    <span key={`text-${i}`}>
+                    <span key={`text-${refKey}`}>
                         {text.substring(lastIndex, ref.startPos)}
                     </span>
                 );
@@ -135,7 +99,7 @@ export function LinkifiedArticle({
             if (ref.targetUrl) {
                 parts.push(
                     <Link
-                        key={`ref-${i}`}
+                        key={`ref-${refKey}`}
                         href={ref.targetUrl}
                         className="text-primary underline decoration-dotted hover:decoration-solid hover:bg-primary/5 rounded px-0.5 transition-colors"
                         title={t.viewRef(ref.text)}
@@ -146,7 +110,7 @@ export function LinkifiedArticle({
             } else {
                 parts.push(
                     <span
-                        key={`ref-${i}`}
+                        key={`ref-${refKey}`}
                         className="font-semibold text-primary/70"
                         title={t.refLabel(ref.text)}
                     >

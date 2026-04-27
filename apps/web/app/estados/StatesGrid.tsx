@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@tezca/ui';
 import { api } from '@/lib/api';
 import { useLang, type Lang } from '@/components/providers/LanguageContext';
+import { DEFAULT_FETCH_TIMEOUT_MS } from '@/lib/constants';
 
 const content: Record<Lang, {
     heading: string;
@@ -79,7 +80,7 @@ export function StatesGrid() {
 
     useEffect(() => {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const timeout = setTimeout(() => controller.abort(), DEFAULT_FETCH_TIMEOUT_MS);
         fetchStates(controller.signal);
         return () => {
             clearTimeout(timeout);

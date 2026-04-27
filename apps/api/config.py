@@ -19,11 +19,21 @@ ES_TIMEOUT = int(os.getenv("ES_TIMEOUT", "30"))
 ES_MAX_RETRIES = int(os.getenv("ES_MAX_RETRIES", "3"))
 ES_RETRY_ON_TIMEOUT = os.getenv("ES_RETRY_ON_TIMEOUT", "true").lower() == "true"
 
+# Optional basic-auth credentials. When unset the client connects without auth,
+# preserving the legacy compose-stack behaviour. When set (recommended in any
+# environment with xpack.security.enabled), the client authenticates as that
+# user.
+ES_USERNAME = os.getenv("ES_USERNAME") or None
+ES_PASSWORD = os.getenv("ES_PASSWORD") or None
+
+_es_kwargs = {
+    "request_timeout": ES_TIMEOUT,
+    "max_retries": ES_MAX_RETRIES,
+    "retry_on_timeout": ES_RETRY_ON_TIMEOUT,
+    "sniff_on_start": False,
+}
+if ES_USERNAME and ES_PASSWORD:
+    _es_kwargs["basic_auth"] = (ES_USERNAME, ES_PASSWORD)
+
 # Singleton ES client with retry and timeout (ES 8.x)
-es_client = Elasticsearch(
-    [ES_HOST],
-    request_timeout=ES_TIMEOUT,
-    max_retries=ES_MAX_RETRIES,
-    retry_on_timeout=ES_RETRY_ON_TIMEOUT,
-    sniff_on_start=False,
-)
+es_client = Elasticsearch([ES_HOST], **_es_kwargs)

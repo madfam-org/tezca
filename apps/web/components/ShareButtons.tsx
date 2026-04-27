@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { Link2, Check } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 const labels = {
     es: { copied: 'Copiado!', copy: 'Copiar enlace', share: 'Compartir' },
@@ -18,28 +18,14 @@ interface ShareButtonsProps {
 export function ShareButtons({ title, className = '' }: ShareButtonsProps) {
     const { lang } = useLang();
     const t = labels[lang];
-    const [copied, setCopied] = useState(false);
+    const { copied, copy } = useCopyToClipboard();
 
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const encodedUrl = encodeURIComponent(url);
     const encodedTitle = encodeURIComponent(title);
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(url);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch {
-            // Fallback for older browsers
-            const textarea = document.createElement('textarea');
-            textarea.value = url;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }
+    const handleCopy = () => {
+        void copy(url);
     };
 
     const btnClass = 'inline-flex items-center justify-center rounded-md border border-input bg-background p-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors print:hidden';

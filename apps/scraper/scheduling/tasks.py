@@ -6,17 +6,25 @@ in settings.py.
 """
 
 import logging
+import shlex
 
 from celery import shared_task
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
+# Cap for AcquisitionLog.error_summary persisted in DB
+MAX_ERROR_LENGTH = 2000
+
 
 def _start_log(operation, parameters=None):
-    """Create AcquisitionLog entry at task start."""
-    try:
-        from django.utils import timezone
+    """Create AcquisitionLog entry at task start.
 
+    Returns None on any DB failure so callers can no-op cleanly. The
+    operational pipeline must not be blocked by AcquisitionLog plumbing
+    failures, but we still log them so they're visible in the worker output.
+    """
+    try:
         from apps.scraper.dataops.models import AcquisitionLog
 
         return AcquisitionLog.objects.create(
@@ -25,6 +33,7 @@ def _start_log(operation, parameters=None):
             started_at=timezone.now(),
         )
     except Exception:
+        logger.exception("Failed to create AcquisitionLog for %s", operation)
         return None
 
 
@@ -33,18 +42,17 @@ def _finish_log(log_entry, found=0, downloaded=0, failed=0, ingested=0, error=""
     if log_entry is None:
         return
     try:
-        from django.utils import timezone
-
         log_entry.finished_at = timezone.now()
         log_entry.found = found
         log_entry.downloaded = downloaded
         log_entry.failed = failed
         log_entry.ingested = ingested
         if error:
-            log_entry.error_summary = error[:2000]
+            log_entry.error_summary = error[:MAX_ERROR_LENGTH]
         log_entry.save()
     except Exception:
-        pass
+        # Never raise from log finalization — the work is already done.
+        logger.exception("Failed to finalize AcquisitionLog %s", log_entry.pk)
 
 
 @shared_task(name="dataops.run_health_checks")
@@ -252,7 +260,9 @@ def check_dof_daily():
             log_entry.error_summary = f"{len(changes)} law changes detected"
         log_entry.finish()
     except Exception:
-        pass
+        # Log persistence failure — don't fail the actual DOF check, but
+        # surface it so AcquisitionLog gaps don't go unnoticed.
+        logger.exception("Failed to persist AcquisitionLog for dof_daily_check")
 
     if changes:
         logger.warning(
@@ -327,7 +337,9 @@ def run_state_scraper(state_key):
             ingested=0,
         )
     except Exception:
-        pass
+        logger.exception(
+            "Failed to persist AcquisitionLog for state_scraper_%s", state_key
+        )
 
     return {"state": state_key, "laws_found": len(catalog)}
 
@@ -367,7 +379,7 @@ def run_conamer_scraper(max_pages=None, resume_from_page=0):
             ingested=0,
         )
     except Exception:
-        pass
+        logger.exception("Failed to persist AcquisitionLog for conamer_cnartys_scrape")
 
     return result
 
@@ -444,8 +456,20 @@ def replicate_batch(prefix, ingest_command=None):
 
     # Step 2: Trigger ingestion if specified
     if ingest_command:
+        # Use shlex.split() to safely tokenize the command — handles quoted
+        # arguments and prevents naive .split() from breaking on paths with
+        # spaces or shell-significant characters that an operator might pass.
+        try:
+            ingest_argv = shlex.split(ingest_command)
+        except ValueError as exc:
+            logger.error("Invalid ingest_command for %s: %s", prefix, exc)
+            return {
+                "success": False,
+                "stage": "ingestion",
+                "error": f"Invalid ingest_command: {exc}",
+            }
         ingest_result = subprocess.run(
-            ["python", "manage.py"] + ingest_command.split(),
+            ["python", "manage.py", *ingest_argv],
             capture_output=True,
             text=True,
             timeout=1800,

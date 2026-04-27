@@ -7,6 +7,8 @@ import { Badge } from '@tezca/ui';
 import { api } from '@/lib/api';
 import { trackEvent } from '@/lib/analytics/posthog';
 import { useLang, type Lang } from '@/components/providers/LanguageContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import { SEARCH_DEBOUNCE_MS } from '@/lib/constants';
 
 const content = {
     es: {
@@ -99,7 +101,7 @@ function CommandSearchDialog({ onClose }: { onClose: () => void }) {
     const [loading, setLoading] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [searched, setSearched] = useState(false);
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
 
     // Focus input on mount
     useEffect(() => {
@@ -142,12 +144,8 @@ function CommandSearchDialog({ onClose }: { onClose: () => void }) {
     }, []);
 
     useEffect(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => fetchSuggestions(query), 300);
-        return () => {
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-        };
-    }, [query, fetchSuggestions]);
+        void fetchSuggestions(debouncedQuery);
+    }, [debouncedQuery, fetchSuggestions]);
 
     const navigate = (path: string) => {
         onClose();
