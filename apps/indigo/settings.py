@@ -396,6 +396,19 @@ CELERY_BEAT_SCHEDULE = {
         ),
         "kwargs": {"mode": "noms"},
     },
+    # SAT publishes RMF + quarterly modifications + annex revisions on a
+    # roughly quarterly cadence, with the annual RMF dropping in late
+    # December. Run the 8th of every quarter month at 03:00 to catch any
+    # publication from the prior quarter without colliding with the DOF
+    # 1st-of-quarter task above. Required by Karafiel's compliance feed
+    # (FEATURE_PARITY_PLAN_2026-04-27 §3.6).
+    "rmf-quarterly-scrape": {
+        "task": "dataops.run_rmf_scraper",
+        "schedule": crontab(
+            hour=3, minute=0, day_of_month="8", month_of_year="1,4,7,10"
+        ),
+        "kwargs": {"include_annexes": True, "download_documents": True},
+    },
     "conamer-playwright-weekly": {
         "task": "dataops.run_conamer_playwright",
         "schedule": crontab(hour=23, minute=0, day_of_week="friday"),
