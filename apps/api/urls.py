@@ -24,6 +24,7 @@ from .apikey_views import create_api_key, list_api_keys, revoke_api_key, update_
 from .billing_views import billing_webhook
 from .bulk_views import bulk_articles
 from .changelog_views import changelog
+from .chat.views import preguntar
 from .contribution_views import (
     list_contributions,
     submit_contribution,
@@ -198,6 +199,8 @@ urlpatterns = [
     path("suggest/", suggest, name="law-suggest"),
     # ── Bulk data access (API key required) ──────────────────────────────
     path("bulk/articles/", bulk_articles, name="bulk-articles"),
+    # ── Chat (essentials+ tier required, gated by CHAT_ENABLED env) ──────
+    path("chat/preguntar/", preguntar, name="chat-preguntar"),
     path("changelog/", changelog, name="changelog"),
     path("coverage/", public_coverage, name="public-coverage"),
     path("graph/overview/", graph_overview, name="graph-overview"),

@@ -70,7 +70,9 @@
     "webhooks": false,
     "graph_api": false,
     "annotations": true,
-    "newsletter": true
+    "newsletter": true,
+    "chat": true,
+    "chat_messages_per_day": 30
   },
   "academic": {
     "search_results_per_query": 100,
@@ -88,7 +90,9 @@
     "webhooks": false,
     "graph_api": false,
     "annotations": true,
-    "newsletter": true
+    "newsletter": true,
+    "chat": true,
+    "chat_messages_per_day": 100
   },
   "institutional": {
     "search_results_per_query": 1000,
@@ -106,7 +110,9 @@
     "webhooks": true,
     "graph_api": true,
     "annotations": true,
-    "newsletter": true
+    "newsletter": true,
+    "chat": true,
+    "chat_messages_per_day": 1000
   },
   "madfam": {
     "search_results_per_query": 1000,
@@ -124,7 +130,9 @@
     "webhooks": true,
     "graph_api": true,
     "annotations": true,
-    "newsletter": true
+    "newsletter": true,
+    "chat": true,
+    "chat_messages_per_day": -1
   },
   "internal": {
     "search_results_per_query": 50,
