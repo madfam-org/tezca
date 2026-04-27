@@ -426,6 +426,65 @@ def run_treaty_scraper(fetch_details=False, max_details=50):
     return result
 
 
+@shared_task(name="dataops.run_rmf_scraper")
+def run_rmf_scraper(year=None, include_annexes=True, download_documents=True):
+    """Run SAT Resolución Miscelánea Fiscal scraper.
+
+    Karafiel's compliance use case (per FEATURE_PARITY_PLAN_2026-04-27 §3.6)
+    depends on this feed being fresh — RMF + quarterly modifications +
+    annexes carry the SAT-administrative rules that implement CFF.
+
+    Args:
+        year: Fiscal year (default: current year).
+        include_annexes: Walk the annexes index too.
+        download_documents: When True, fetch each document's bytes. The
+            quarterly Beat schedule sets this to True so we have the
+            source files on disk; manual reruns can pass False to do a
+            fast catalog-only sweep.
+    """
+    import datetime
+
+    from apps.scraper.federal.rmf_scraper import RmfScraper
+
+    target_year = year if year is not None else datetime.date.today().year
+
+    log_entry = _start_log(
+        "rmf_scrape",
+        {
+            "year": target_year,
+            "include_annexes": include_annexes,
+            "download_documents": download_documents,
+        },
+    )
+    try:
+        scraper = RmfScraper()
+        result = scraper.run(
+            year=target_year,
+            include_annexes=include_annexes,
+            download_documents=download_documents,
+        )
+
+        logger.info(
+            "RMF scraper (year=%d): %d documents (%s)",
+            target_year,
+            result.get("total", 0),
+            result.get("by_type", {}),
+        )
+
+        _finish_log(
+            log_entry,
+            found=result.get("total", 0),
+            downloaded=result.get("downloaded", 0),
+            failed=result.get("errors", 0),
+        )
+        return result
+
+    except Exception as exc:
+        logger.exception("RMF scraper failed for year=%s", target_year)
+        _finish_log(log_entry, error=str(exc))
+        return {"error": str(exc), "year": target_year}
+
+
 @shared_task(name="dataops.replicate_batch")
 def replicate_batch(prefix, ingest_command=None):
     """Replicate a scraped batch to R2 and trigger prod ingestion.
