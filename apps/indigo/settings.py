@@ -134,6 +134,30 @@ WSGI_APPLICATION = "apps.indigo.wsgi.application"
 if os.environ.get("DATABASE_URL") or os.environ.get("DB_ENGINE", "").startswith(
     "django.db.backends.postgresql"
 ):
+    # Per FEATURE_PARITY_PLAN_2026-04-27 §3.2 / RFC 0012, the production
+    # Postgres is migrating to a CloudNativePG cluster (postgres-ha-rw
+    # service for writes, postgres-ha-ro for reads). The cutover requires
+    # no client code change — only DB_HOST flips to the new Service. But
+    # a few connection-pool knobs improve survival during the <60s
+    # failover window:
+    #
+    # - connect_timeout=5: fail fast on a dead primary so PgBouncer's
+    #   queue rotates rather than blocking on a TCP timeout that defaults
+    #   to system-wide minutes.
+    # - keepalives_idle=30: detect dropped connections faster than the
+    #   Linux default ~2h, so stale conns don't outlive a failover.
+    # - CONN_MAX_AGE: 0 means "no connection persistence" — Django opens
+    #   and closes a fresh connection per request. Combined with
+    #   PgBouncer transaction-pooling, this is the simplest configuration
+    #   that survives primary promotion without a Django reload.
+    _pg_options: dict = {
+        "connect_timeout": int(os.environ.get("DB_CONNECT_TIMEOUT", "5")),
+        "keepalives": 1,
+        "keepalives_idle": int(os.environ.get("DB_KEEPALIVES_IDLE", "30")),
+        "keepalives_interval": 10,
+        "keepalives_count": 3,
+    }
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -142,6 +166,8 @@ if os.environ.get("DATABASE_URL") or os.environ.get("DB_ENGINE", "").startswith(
             "PASSWORD": os.environ.get("DB_PASSWORD", ""),
             "HOST": os.environ.get("DB_HOST", "localhost"),
             "PORT": os.environ.get("DB_PORT", "5432"),
+            "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "0")),
+            "OPTIONS": _pg_options,
         }
     }
 else:
