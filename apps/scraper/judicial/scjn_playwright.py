@@ -144,6 +144,10 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                     form_filled = True
                     break
                 except Exception:
+                    # Selector probe — known might fail, try the next
+                    logger.debug(
+                        "Epoca selector probe failed: %s", selector, exc_info=True
+                    )
                     continue
 
             if not form_filled:
@@ -157,7 +161,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                             form_filled = True
                             break
                 except Exception:
-                    pass
+                    logger.debug("Generic dropdown fallback failed", exc_info=True)
 
             # Try to set tipo (jurisprudencia vs tesis aislada)
             tipo_value = "J" if tipo == "jurisprudencia" else "TA"
@@ -171,6 +175,9 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                     self._page.locator(selector).first.click(timeout=3000)
                     break
                 except Exception:
+                    logger.debug(
+                        "Tipo selector probe failed: %s", selector, exc_info=True
+                    )
                     continue
 
             # Submit the form
@@ -190,6 +197,9 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                         logger.info("Search submitted via: %s", selector)
                         return True
                 except Exception:
+                    logger.debug(
+                        "Submit selector probe failed: %s", selector, exc_info=True
+                    )
                     continue
 
             # If no submit button found, try pressing Enter
@@ -197,7 +207,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                 self._page.keyboard.press("Enter")
                 return True
             except Exception:
-                pass
+                logger.debug("Enter-key submit fallback failed", exc_info=True)
 
             logger.warning("Could not find or submit search form")
             self._screenshot("no_search_form")
@@ -240,6 +250,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             except PlaywrightTimeout:
                 continue
             except Exception:
+                logger.debug("Result wait probe failed for %s", selector, exc_info=True)
                 continue
 
         logger.debug("No results appeared within timeout")
@@ -316,6 +327,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                         self._make_record(rubro=text, registro=registro, url=url)
                     )
             except Exception:
+                logger.debug("Per-row tesis extraction failed", exc_info=True)
                 continue
 
         return items
@@ -467,7 +479,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
                     if sibling:
                         return sibling.strip()
         except Exception:
-            pass
+            logger.debug("Label sibling lookup failed for %s", label, exc_info=True)
         return ""
 
     def _make_record(self, **kwargs) -> Dict[str, Any]:

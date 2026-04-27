@@ -511,6 +511,7 @@ class NomScraper:
                         }
                     )
                 except Exception:
+                    logger.debug("Per-row NOM extraction failed", exc_info=True)
                     continue
 
         return results
