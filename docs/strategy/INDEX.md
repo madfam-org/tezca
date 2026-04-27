@@ -22,7 +22,8 @@ This directory holds Tezca's product/architectural strategy. If you're new to th
 
 ## Quality / stability
 
-9. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — 8-workstream plan to take the codebase from B+/B to A+ across 9 dimensions (test discipline, coverage, architectural integrity, code-debt, infra resilience, production validation, security, observability). Grounded in real coverage data; includes a 16-week sequenced timeline + a "5 cheapest highest-leverage items" subset for opportunistic execution.
+9. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — Original 8-workstream plan with the rubric and rationale. Still authoritative on the dimension definitions.
+10. **[A_PLUS_PROGRESS_2026-04-27.md](./A_PLUS_PROGRESS_2026-04-27.md)** — **Live progress doc.** What shipped in PRs #55–80 (44%→61% backend coverage, 0 silent excepts, 0 files >800 LOC, TLS pinning architecture, frontend `all:true` gates). Consolidates remaining work into 6 forward workstreams (WS-R1…WS-R6) with sequencing and DoD verification commands. Read this for the *current* state.
 
 ## Subdirectories
 
@@ -58,14 +59,37 @@ These cannot be done by an agent — listed in priority order for revenue impact
 7. CNPG cluster shipping in `madfam-org/enclii` (RFC 0012)
 8. `gh repo create madfam-org/docket-watcher` + `enclii onboard` (Q1-2027)
 
+### A+ remediation — PRs #55–80 (this session)
+
+| PR | Workstream | Coverage move |
+|---|---|---|
+| #55 | WS1 1A | `scheduling/tasks.py` 0% → 73% |
+| #56 | WS3 + WS4 + WS5 + WS6 bundle | bare-except cleanup; vitest `all:true`; CVE SLO; Dependabot; scraper checklist |
+| #75 | WS3 + WS7 H7 | silent-except CI gate; TLS fingerprint pinning architecture |
+| #76 | WS1 1B | `parsers/pipeline.py` 0% → 76% |
+| #77 | WS1 1C/1D | playwright_base 0→96, scjn 22→71, treaty 14→59; gate 44→48 |
+| #78 | WS1 1C + WS2 2B | law_registry 0→71, sinec 0→69, pnt 0→66; gate 48→51; FE 51/44/47/52 → 53/46/49/54 |
+| #79 | WS1 1C/1D | 5 state scrapers 0→60-70%; gate 51→54 |
+| #80 | WS1 1C/1D | state_congress_municipal 0→55, scjn_playwright 0→36; gate 54→56 |
+
+Backend coverage: 44% → 61% (gate at 56% with 5pp headroom). 0 silent bare-except. 0 files >800 LOC. Frontend gates active at floor−3pp. Composite grade: B+/B → **B+/A−**.
+
 ### What's still pending an agent (i.e., Tezca-side engineering work)
 
+**A+ remediation (see `A_PLUS_PROGRESS_2026-04-27.md`):**
+- **WS-R1** — push backend coverage 61% → 65% (~3-5 days, no blockers)
+- **WS-R2** — frontend tests to ≥65% statements; lock at floor−2pp (~1-2 weeks)
+- **WS-R3a** — operator runs TLS fingerprint capture sweep (~1 day)
+- **WS-R4** — synthetic monitoring + Karafiel-test integration (~1-2 weeks)
+- **WS-R5** — PG/ES/Redis HA cutover (~6-8 weeks platform team)
+- **WS-R6** — Grafana dashboards + SLO board (~2-3 weeks)
+
+**Feature parity / state coverage:**
 - **Wave 1B state scrapers** — 8 medium-complexity states (Coahuila, Guanajuato, Jalisco, Puebla, Sonora, Tamaulipas, Veracruz, Sinaloa). 16/32 → 24/32 progression.
 - **Wave 1C state scrapers** — 8 hostile states needing Playwright/madfam-crawler delegation.
 - **`/preguntar` chat UI** — backend ready in #47; frontend `apps/web/app/preguntar/page.tsx` is a follow-up PR.
 - **Coverage dashboard tile flip per state** — manual per-state validation post-deploy.
 - **Public quality dashboard** — A-F grade distribution + last-update-timestamps publicized for the moat.
-- **ES HA project** — sister of RFC 0012; not yet planned.
 - **ROADMAP.md refresh** — last touched 2026-03-20; Q3-2026 → Q1-2027 priorities now in the parity plan need to land in ROADMAP.md too.
 
 ---

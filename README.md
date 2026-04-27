@@ -60,7 +60,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech (paginated, filtered, rate-limited)
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
-- ✅ **Production Ready** - Full-stack testing (223 web Vitest + 76 admin Vitest + 493 Pytest)
+- ✅ **Production Ready** - Full-stack testing (1991+ Pytest + 761 web Vitest + 82 admin Vitest); backend coverage ≥61%, frontend with `all: true` denominator
 - ✅ **OpenAPI Documentation** - Swagger UI, ReDoc at `/api/docs/`
 - ✅ **Background Processing** - Celery + Redis for ingestion jobs
 - ✅ **Cross-References** - Automatic detection and linking between laws
