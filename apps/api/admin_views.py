@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 
 from django.conf import settings as django_settings
 from django.db import connection
@@ -29,6 +30,33 @@ from .schema import (
 from .tasks import PIPELINE_STATUS_FILE
 
 logger = logging.getLogger(__name__)
+
+
+# `AcquisitionLog.error_summary` can contain raw exception text from the
+# scraper pipeline (file paths, stack frames, occasionally credentials echoed
+# back from a misconfigured request). The admin DOF endpoint exposes it to
+# operators — never to end users — but even admin payloads should not carry
+# stack traces, both as defense-in-depth and to avoid surprising consumers
+# of the audit log. This helper keeps the human-readable first line of the
+# summary and drops any traceback markers. CodeQL alert: py/stack-trace-exposure.
+_TRACEBACK_MARKER = re.compile(r"(traceback|file \"|line \d+, in )", re.IGNORECASE)
+
+
+def _safe_error_summary(raw: str | None) -> str:
+    """Return a sanitized one-line summary suitable for API exposure.
+
+    - ``None`` or empty → ``"No changes detected"`` (preserves prior behavior).
+    - Single-line summaries (no traceback markers) pass through unchanged,
+      truncated to 500 chars.
+    - Multi-line content with a traceback collapses to the first line plus a
+      generic ``"... (details redacted)"`` suffix.
+    """
+    if not raw:
+        return "No changes detected"
+    first_line = raw.split("\n", 1)[0].strip()
+    if _TRACEBACK_MARKER.search(raw):
+        return f"{first_line[:300]} ... (details redacted)"
+    return first_line[:500]
 
 
 @extend_schema(
@@ -409,7 +437,7 @@ def dof_summary(request):
                 latest_dof.parameters.get("date") if latest_dof.parameters else None
             ),
             "total_entries": latest_dof.found,
-            "law_changes_summary": latest_dof.error_summary or "No changes detected",
+            "law_changes_summary": _safe_error_summary(latest_dof.error_summary),
             "checked_at": (
                 latest_dof.started_at.isoformat() if latest_dof.started_at else None
             ),
