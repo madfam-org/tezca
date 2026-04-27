@@ -77,6 +77,16 @@ npm run dev:all                     # both concurrently
 | `NEXT_PUBLIC_MONETIZATION_ENABLED` | `false` | When `true`, enables full tier checkout flows. When `false` (default), shows interest-capture forms instead of paywalls |
 | `CRM_WEBHOOK_URL` | `""` | Phyne-CRM webhook URL (e.g. `https://crm.madfam.io/api/webhooks/tezca`). No-ops when empty |
 | `CRM_WEBHOOK_SECRET` | `""` | HMAC-SHA256 secret for CRM webhook signing. No-ops when empty |
+| `CHAT_ENABLED` | `false` | Master kill-switch for `/api/v1/chat/preguntar/`. Flip to `true` once Selva onboarding lands |
+| `CHAT_BACKEND` | `mock` | `mock` (deterministic, dev/test) or `selva` (production OpenAI-compatible /v1) |
+| `SELVA_API_URL` | `https://agents-api.madfam.io/v1` | Selva endpoint when `CHAT_BACKEND=selva`. Post-cutover: `https://api.selva.town/v1` |
+| `SELVA_API_TOKEN` | `""` | Janua-relayed bearer token for the `tezca-selva-relay` client |
+| `SELVA_DEFAULT_MODEL` | `claude-haiku-4-5` | Default LLM model for chat completions |
+| `ES_USERNAME` | `""` | Elasticsearch basic-auth user (required when `xpack.security.enabled=true`, default in compose) |
+| `ES_PASSWORD` | `""` | Elasticsearch basic-auth password — override `changeme-dev-only` for any non-throwaway env |
+| `DB_CONNECT_TIMEOUT` | `5` | Postgres connect timeout in seconds. Tighter than kernel default to fail-fast on dead primary during CNPG failover |
+| `DB_KEEPALIVES_IDLE` | `30` | TCP keepalive idle (seconds). Detect dropped conns within ~60s vs Linux default ~2h |
+| `DB_CONN_MAX_AGE` | `0` | Django `CONN_MAX_AGE`. 0 = open/close per request (PgBouncer fronts the cluster) |
 
 ---
 
@@ -85,7 +95,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1332 tests)
+# Backend (pytest + django, 1527 tests as of 2026-04-27)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -93,7 +103,7 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 684 tests across 78 files)
+# Web (vitest, 761 tests across 85 files as of 2026-04-27)
 cd apps/web && npx vitest run
 
 # Admin (vitest, 82 tests across 12 files)
@@ -120,6 +130,18 @@ python manage.py classify_law_domains --law-id cpeum         # single law
 # Cross-reference backfill
 python manage.py backfill_cross_references --all --dry-run   # preview
 python manage.py backfill_cross_references --all --batch-size 50  # backfill
+
+# RMF (Resolución Miscelánea Fiscal) — SAT regulatory feed for Karafiel
+python -m apps.scraper.federal.rmf_scraper --year 2026                # discover only
+python -m apps.scraper.federal.rmf_scraper --year 2026 --download      # discover + fetch PDFs
+python manage.py ingest_rmf --catalog data/rmf/catalog.json            # upsert into Law table
+python manage.py ingest_rmf --catalog data/rmf/catalog.json --dry-run  # preview
+
+# State scrapers (manual run via Celery dispatch — useful before flipping a Beat schedule)
+python manage.py shell -c "from apps.scraper.scheduling.tasks import run_state_scraper; print(run_state_scraper('hidalgo'))"
+# State keys registered: baja_california, durango, quintana_roo, guerrero,
+# nuevo_leon, cdmx, estado_de_mexico, michoacan, san_luis_potosi, zacatecas,
+# aguascalientes, hidalgo, morelos, yucatan (14 of 32; coverage 14/32 → 16/32 with Wave 1A)
 
 # DOF health verification
 python manage.py verify_dof_health                           # 7-day report
@@ -247,15 +269,40 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - CC extension: `trial.cc_provided` Dhanam webhook event extends trial to 21 days from start
 - Frontend: `TrialBadge` (countdown in Navbar), `ConversionBanner` (CTA for non-paid users), `/precios` pricing page
 
+### AI Chat (`/preguntar`)
+
+- `POST /api/v1/chat/preguntar/` — first-party RAG-over-corpus chat assistant (Track 2 of `docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md` §3.1).
+- Four gating layers in `apps/api/chat/views.py:preguntar`: (1) `CHAT_ENABLED` env, (2) authenticated user, (3) `RequireFeature.of("chat")` (essentials+ tier), (4) daily-message budget per `chat_messages_per_day` in `tiers.json` (essentials=30, academic=100, institutional=1000, madfam=-1).
+- Tezca holds **zero** OpenAI/Anthropic API keys. Every LLM call routes through Selva at `/v1` (OpenAI-compatible) per the MADFAM ECOSYSTEM convention. Configurable via `CHAT_BACKEND` (`mock` for dev/test, `selva` for production).
+- RAG pipeline: ES BM25 retrieval (top-5, 800-char snippets) → system prompt with `[law_id#article_id]` citation format → Selva chat-completion → cited response with `/leyes/{id}#article-{N}` links rendered via the existing `LinkifiedArticle` component.
+- Failure-tolerant: ES down → empty context, polite reply, no Selva call. Selva down → 502 to user, no budget burn.
+- Usage logged to `APIUsageLog` rows tagged `endpoint='chat.preguntar'`. Budget reset is UTC 00:00.
+- Operator unblocker (Track 8): Selva must provision the `tezca-selva-relay` Janua client. Spec at `docs/strategy/SELVA_ONBOARDING_TICKET_2026-04-27.md`.
+
+### RMF (Resolución Miscelánea Fiscal)
+
+- SAT-published annual fiscal resolution + quarterly modifications + ~31 annexes per year. Required by Karafiel's Wave-1 GTM compliance feed (Track 1 / `docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md` §3.6).
+- Scraper: `apps/scraper/federal/rmf_scraper.py` (`RmfScraper` class). Requests-first against `www.sat.gob.mx`, polite 1 req/sec rate-limit, classifies anchors into annual / modification / annex documents.
+- Celery task: `dataops.run_rmf_scraper` — scheduled `rmf-quarterly-scrape` (8th of Jan/Apr/Jul/Oct, 03:00). Offset from `dof-historical-quarterly` (1st of same months).
+- Ingest: `python manage.py ingest_rmf --catalog data/rmf/catalog.json` upserts Law + LawVersion with `category="resolución_miscelánea_fiscal"` and `domains=["fiscal"]`.
+- Karafiel's webhook subscription `domain_filter: ["fiscal"]` will receive `law.created` / `law.updated` events for these via the standard `apps/api/webhooks.py` dispatch — no Karafiel-specific code in tezca.
+
+### Billing UI (`/cuenta/billing`)
+
+- Customer-facing billing surface delegating to Dhanam (Track 4 / `docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md` §3.3).
+- Tezca holds **zero** Stripe keys. Tezca calls `api.dhan.am/v1/portal` and `api.dhan.am/v1/invoices`; Dhanam owns subscription state.
+- Two display modes: `MONETIZATION_ENABLED=false` → InterestGate fallback; `MONETIZATION_ENABLED=true` → current-plan card + customer-portal CTA + invoice history table (PDF + CFDI 4.0 XML download links).
+- Webhook flow handled by `apps/api/billing_stream_consumer.py` (Redis stream `madfam:billing-events`, consumer group `tezca-consumers`). `subscription.activated|cancelled` events map to `APIKey.tier` updates.
+
 ### Route Conventions
 
-- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`, `/api/v1/user/apikeys/`
-- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/precios/`, `/bienvenida/`, `/login/`, `/cuenta/apikeys/`
+- **API endpoints are English:** `/api/v1/laws/`, `/api/v1/search/`, `/api/v1/categories/`, `/api/v1/coverage/`, `/api/v1/contributions/`, `/api/v1/judicial/`, `/api/v1/trial/`, `/api/v1/billing/`, `/api/v1/chat/preguntar/`, `/api/v1/user/apikeys/`
+- **Web routes are Spanish:** `/leyes/`, `/busqueda/`, `/comparar/`, `/categorias/`, `/estados/`, `/cobertura/`, `/contribuir/`, `/convocatoria/`, `/jurisprudencia/`, `/desarrolladores/`, `/grafo/`, `/preguntar/` (chat UI, follow-up PR), `/precios/`, `/bienvenida/`, `/login/`, `/cuenta/apikeys/`, `/cuenta/billing/`
 - 301 redirects exist from old English web routes (`/laws/` -> `/leyes/`)
 
 ### Domain Taxonomy
 
-- `Law.category` stores document type: `ley`, `acuerdo`, `reglamento`, `decreto`, `codigo`, `constitucion`, etc.
+- `Law.category` stores document type: `ley`, `acuerdo`, `reglamento`, `decreto`, `codigo`, `constitucion`, `resolución_miscelánea_fiscal` (RMF), etc.
 - `Law.domains` (JSONField, list of strings) stores legal branch classification: `labor`, `fiscal`, `criminal`, `civil`, `commercial`, `administrative`, `constitutional`, `environmental`, `health`, `education`
 - A law can belong to multiple domains (e.g. `["labor", "administrative"]`)
 - `classify_law_domains` management command populates `domains` via keyword matching against `Law.name`
@@ -428,6 +475,18 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/management/commands/verify_dof_health.py` | DOF daily task health report (last N days, optional `--run-now`) |
 | `apps/scraper/state/guerrero.py` | Guerrero state congress scraper |
 | `apps/scraper/state/nuevo_leon.py` | Nuevo Leon state congress scraper |
+| `apps/scraper/state/aguascalientes.py` | Aguascalientes state congress scraper (Wave 1A — `congresoags.gob.mx`) |
+| `apps/scraper/state/hidalgo.py` | Hidalgo state congress scraper (Wave 1A — `congreso-hidalgo.gob.mx`) |
+| `apps/scraper/state/morelos.py` | Morelos state congress scraper (Wave 1A — `congresomorelos.gob.mx`) |
+| `apps/scraper/state/yucatan.py` | Yucatán state congress scraper (Wave 1A — `congresoyucatan.gob.mx`) |
+| `apps/scraper/federal/rmf_scraper.py` | SAT Resolución Miscelánea Fiscal scraper (annual + quarterly mods + annexes; tags `domains=["fiscal"]` for Karafiel webhook fanout) |
+| `apps/api/management/commands/ingest_rmf.py` | Upserts RMF catalog into `Law` + `LawVersion` (sister to `ingest_non_legislative_laws`) |
+| `apps/api/chat/__init__.py` | First-party AI assistant package — exports `SelvaClient`, `MockSelvaClient`, `get_selva_client()` |
+| `apps/api/chat/selva_client.py` | OpenAI-compatible HTTP client + mock; selected via `CHAT_BACKEND` env. Tezca holds zero LLM API keys |
+| `apps/api/chat/retriever.py` | RAG retrieval over articles ES index; builds system prompt with `[law_id#article_id]` citation format |
+| `apps/api/chat/views.py` | `POST /api/v1/chat/preguntar/` view with 4 gating layers (CHAT_ENABLED → auth → RequireFeature("chat") → daily budget) |
+| `apps/api/billing_stream_consumer.py` | Redis Streams consumer for `madfam:billing-events` (subscription.activated|cancelled → APIKey.tier) |
+| `apps/web/app/cuenta/billing/page.tsx` | Customer-facing billing page — Dhanam-delegated portal CTA + invoice history (PDF + CFDI). Two modes via `MONETIZATION_ENABLED` |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
 | `apps/api/es_index_manager.py` | ES alias management (zero-downtime reindex) |
@@ -510,14 +569,38 @@ type Lang = 'es' | 'en' | 'nah';
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers
 
+## Strategy Documentation
+
+`docs/strategy/` is the authoritative home for product/architectural strategy. Read these before assuming a feature priority. Index: [`docs/strategy/INDEX.md`](docs/strategy/INDEX.md).
+
+| Doc | Purpose |
+|---|---|
+| `STRATEGIC_OVERVIEW.md` | High-level product vision (legacy, refresh pending) |
+| `PRD.md` | Product requirements (legacy, refresh pending) |
+| `COMPETITIVE_BENCHMARK_2026-04-27.md` | Tezca vs Buho/vLex/Tirant/Lexius/Help-AI gap analysis |
+| `FEATURE_PARITY_PLAN_2026-04-27.md` | Gap-by-gap implementation plan, ecosystem-anchored. Source-of-truth for which tracks are in flight |
+| `KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md` | Tezca-side readiness for Karafiel as anchor paying customer; P0 SQL queries for operator |
+| `SELVA_ONBOARDING_TICKET_2026-04-27.md` | Operator-side spec for provisioning the Selva relay client (unblocks `CHAT_BACKEND=selva`) |
+| `CNPG_MIGRATION_PREP_2026-04-27.md` | Tezca-side connection-pool prep + cutover runbook (gated on RFC 0012 cluster) |
+| `DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md` | Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027) |
+| `partnerships/` | Partner-specific integration agreements |
+
+**Tracks shipped 2026-04-27 (PRs #46–52):** RMF scraper, `/preguntar` chat scaffold, state scrapers Wave 1A (4 states), `/cuenta/billing` scaffold, Karafiel audit doc, CNPG settings prep, docket-watcher spec, Selva onboarding ticket spec.
+
 ## Known Issues
 
 See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the original ecosystem audit.
 
 Open:
 - **🟠 H7: TLS verification disabled on government scrapers** — `apps/scraper/http.py:79`, `federal/nom_scraper.py:273`, `municipal/pnt_scraper.py:604`. MITM risk — attacker can forge compliance evidence flowing into Karafiel. Pin CA bundles; if gov sites use old certs, narrow `verify=False` to specific hostnames with cert-fingerprint pinning.
+- **🟡 State coverage incomplete** — 16 of 32 states have scrapers (Wave 1A added Aguascalientes, Hidalgo, Morelos, Yucatán). Wave 1B/1C remaining for full parity claim per `FEATURE_PARITY_PLAN_2026-04-27.md` §3.5.
+- **🟡 ES single-node** — Postgres HA prep done (Track 6); ES HA is a separate pending project.
+- **🟡 First-paid-customer blockers** — Selva onboarding (CHAT_BACKEND flip), Stripe live keys + Tezca price IDs in Dhanam (MONETIZATION_ENABLED flip), and Karafiel team's Wave 1 Month 1 deliverables. All operator-side; specs are landed.
 
 Resolved:
 - ~~**🟠 H2: CORS echoes `*` when `Origin` header missing on API-key preflight**~~ — Fixed 2026-04-23 (#37, #40): missing Origin now 403s, allowed Origins echo back with `Vary: Origin`.
 - ~~**🟡 M3: `DEBUG=True` in `.env`**~~ — Resolved 2026-04-27: `.env` is not tracked and not present in repo; `.env.example` ships `DEBUG=False`. No prod workload risk from this vector.
 - ~~**🟡 H13: `.env` committed**~~ — Resolved: `.gitignore` covers `.env`, `.env.local`, `.env.*.local`, `.env.production`. Verified absent from `git ls-files`.
+- ~~**🟡 RMF scraper stub deleted with no replacement**~~ — Resolved 2026-04-27 (#46): full RMF scraper + ingest command + Celery beat schedule. SAT regulatory feed available for Karafiel's compliance use case.
+- ~~**🟡 No first-party AI assistant**~~ — Resolved 2026-04-27 (#47, #49): `/api/v1/chat/preguntar/` scaffold ships behind `CHAT_ENABLED=false`. Selva onboarding ticket spec landed; flip is one env-var change once Selva provisions `tezca-selva-relay`.
+- ~~**🟡 No subscription billing UI**~~ — Resolved 2026-04-27 (#51): `/cuenta/billing` scaffold ships behind `MONETIZATION_ENABLED=false`. Tezca delegates to Dhanam — zero Stripe keys held.

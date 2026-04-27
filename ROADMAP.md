@@ -1,10 +1,11 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-03-20
+**Last Updated**: 2026-04-27
 **Current Status**: 35,277 laws, 3.5M+ ES articles, 33,380+ cross-references
 **Data Motor**: Pipeline fix complete (state/municipal AKN parsing + unified indexer)
 **DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
 **Codebase Audit**: Full audit completed 2026-03-20 — see [Codebase Audit](#codebase-audit-2026-03-20) section
+**Strategy Layer**: Feature-parity plan landed 2026-04-27 — see [`docs/strategy/INDEX.md`](docs/strategy/INDEX.md) for the canonical source of "what's in flight." Tracks 1–8 (PRs #46–52) shipped same day.
 
 ---
 
@@ -14,7 +15,7 @@
 
 ---
 
-## Current Status (Mar 2026)
+## Current Status (Apr 2026)
 
 ### ✅ Achievements
 - **35,277 laws** in database (1,931 federal + 30,907 state + 2,439 municipal)
@@ -22,17 +23,23 @@
 - **98.9% parser accuracy** (world-class quality)
 - **3.5M+ articles** indexed in Elasticsearch
 - **Production-ready** backend infrastructure (K8s, HPA, cosign-signed images)
-- **Full-stack Testing** (1,234 backend + 643 web Vitest + 72 admin Vitest + 89 E2E + 18 MCP)
+- **Full-stack Testing** (**1,527** backend + **761** web Vitest + 82 admin Vitest + 89 E2E + 18 MCP — as of 2026-04-27)
 - **6-tier access control** with billing (Dhanam), trials, webhooks, API keys
 - **16-tool MCP server** published to PyPI for AI agent consumption
-- **20 Celery Beat tasks** automating scraping, pipeline, health checks, trials
+- **24+ Celery Beat tasks** including new `rmf-quarterly-scrape` (Track 1)
 - **Graph visualization** (Sigma.js, ego graph, global overview, public showcase)
 - **Judicial corpus** (SCJN jurisprudencia + tesis aisladas via API + Playwright scrapers)
+- **First-party AI assistant** scaffold (`/api/v1/chat/preguntar/`, Selva-routed, gated by `CHAT_ENABLED=false` until Selva onboarding lands)
+- **SAT regulatory feed** (`apps/scraper/federal/rmf_scraper.py`) — annual RMF + quarterly modifications + annexes; Karafiel-ready
+- **Customer billing UI** scaffold (`/cuenta/billing`) — Dhanam-delegated, gated by `MONETIZATION_ENABLED=false`
+- **State coverage** at 16/32 (Wave 1A added Aguascalientes, Hidalgo, Morelos, Yucatán)
 
 ### 🔄 In Progress
-- Tezca production deployment (infrastructure code done, manual provisioning remaining)
+- Operator unblockers: Stripe live keys, Selva onboarding, classify_law_domains backfill verification
+- Wave 1B state scrapers (8 medium-complexity states → 16/32 to 24/32)
+- `/preguntar` chat UI (frontend follow-up; backend ready)
 - Municipal pilot planning (Tier 1: 6 major cities)
-- State scraper expansion (~12 of 32 states have dedicated scrapers)
+- Karafiel integration runtime test (joint with Karafiel team)
 
 ---
 
@@ -257,6 +264,57 @@
 - ✅ Dynamic OG images per law (Next.js ImageResponse)
 - ✅ Homepage refresh: FeaturedLaws, QuickLinks, trilingual headings
 - ✅ About page (/acerca-de) with data sources, methodology, contact
+
+---
+
+## Completed Sprint: Q3-2026 Feature Parity (Tracks 1–8, 2026-04-27) ✅
+
+**Sprint Goal**: Close the parity gaps identified in the 2026-04-27 competitive benchmark by leveraging MADFAM ecosystem primitives (Selva, Dhanam, CNPG, Karafiel-as-customer) instead of building greenfield. Source-of-truth: [`docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md`](docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md).
+
+### Shipped (8 PRs, single session — #46 through #52)
+
+| Track | PR | Deliverable |
+|---|---|---|
+| 1 — RMF recovery | #46 | SAT scraper + ingest command + quarterly Celery beat + 20 tests. Karafiel's compliance feed unblocked. |
+| 2 — `/preguntar` chat | #47 | Selva-routed RAG-over-corpus chat at `/api/v1/chat/preguntar/`. Four gating layers, mockable client, 19 tests. |
+| 3 — State scrapers Wave 1A | #50 | Aguascalientes, Hidalgo, Morelos, Yucatán. Coverage 12/32 → 16/32. 45 parametrized tests. |
+| 4 — Billing UI | #51 | `/cuenta/billing` with Dhanam-delegated portal + invoice history. 11 tests. Tezca holds zero Stripe keys. |
+| 5 — Karafiel integration audit | #48 | Tezca-side readiness verified. P0: domain-classification ≥95% before Karafiel goes live (operator SQL queries provided). |
+| 6 — CNPG migration prep | #52 | Postgres connection-pool knobs (connect_timeout, keepalives, CONN_MAX_AGE). Cutover runbook. Gated on RFC 0012. |
+| 7 — docket-watcher bootstrap | #52 | Spec for `madfam-org/docket-watcher` sibling repo (Q1-2027 scheduled). Architecture, layout, pricing tiers. |
+| 8 — Selva onboarding ticket | #49 | Operator-side spec for `tezca-selva-relay` Janua client. Unblocks `CHAT_BACKEND=selva` flip. |
+
+### Strategic outcome
+
+Tezca closes every "missing-vs-competitors" capability while preserving every "unique-to-Tezca" moat (MCP, public API at low tiers, A-F quality grading, AGPL self-hosting, cross-reference graph, trilingual UI). The remaining work is operator-only: Stripe credentialing, Selva provisioning, Karafiel timeline, RFC 0012 cluster shipping.
+
+### Cross-references
+- [`docs/strategy/INDEX.md`](docs/strategy/INDEX.md) — strategy doc index
+- [`docs/strategy/COMPETITIVE_BENCHMARK_2026-04-27.md`](docs/strategy/COMPETITIVE_BENCHMARK_2026-04-27.md) — gap analysis
+- [`docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md`](docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md) — track-by-track plan
+
+---
+
+## Next Sprint: Wave 1B — State Coverage 16/32 → 24/32
+
+**Sprint Goal**: Continue closing the state-scraper gap. 8 medium-complexity states (HTML + JS-rendered, no WAFs).
+
+### Targets (suggested)
+
+| State | Portal | Complexity |
+|---|---|---|
+| Coahuila | congresocoahuila.gob.mx | Medium |
+| Guanajuato | congresogto.gob.mx | Medium |
+| Jalisco | congresojal.gob.mx | Medium |
+| Puebla | congresopuebla.gob.mx | Medium |
+| Sinaloa | congresosinaloa.gob.mx | Medium |
+| Sonora | congresoson.gob.mx | Medium |
+| Tamaulipas | congresotamaulipas.gob.mx | Medium |
+| Veracruz | legisver.gob.mx | Medium |
+
+Each state follows the existing `apps/scraper/state/baja_california.py` template + Wave 1A extension. Add to `run_state_scraper` dispatch table; flip Beat schedules per-state after first manual green run.
+
+**Wave 1C** (Q1-2027 scheduled): 8 hostile states needing Playwright/madfam-crawler delegation.
 
 ---
 
