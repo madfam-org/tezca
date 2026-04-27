@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell, Key } from 'lucide-react';
+import { BookmarkCheck, Clock, LogOut, MessageSquare, Bell, Key, CreditCard } from 'lucide-react';
 import { Protect } from '@janua/nextjs';
 import { Button } from '@tezca/ui';
 import { useAuth } from '@/components/providers/AuthContext';
@@ -19,6 +19,7 @@ const content = {
         notes: 'Mis notas',
         alerts: 'Mis alertas',
         apiKeys: 'Llaves de API',
+        billing: 'Facturación',
         preferences: 'Preferencias',
         signOut: 'Cerrar sesión',
         greeting: 'Bienvenido',
@@ -38,6 +39,7 @@ const content = {
         notes: 'My Notes',
         alerts: 'My Alerts',
         apiKeys: 'API Keys',
+        billing: 'Billing',
         preferences: 'Preferences',
         signOut: 'Sign Out',
         greeting: 'Welcome',
@@ -57,6 +59,7 @@ const content = {
         notes: 'Notlahcuilōlhuān',
         alerts: 'Notēnahuatīlhuān',
         apiKeys: 'API tlaneltōquiliztli',
+        billing: 'Tlatlaxtlahuīliztli',
         preferences: 'Tlanequiliztli',
         signOut: 'Xiquīza',
         greeting: 'Ximopanōlti',
@@ -161,6 +164,11 @@ export default function CuentaPage() {
                         href="/cuenta/apikeys"
                         icon={<Key className="h-5 w-5" />}
                         label={t.apiKeys}
+                    />
+                    <QuickLinkCard
+                        href="/cuenta/billing"
+                        icon={<CreditCard className="h-5 w-5" />}
+                        label={t.billing}
                     />
                 </div>
 
