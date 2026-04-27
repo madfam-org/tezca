@@ -590,4 +590,3 @@ class TestSafeErrorSummary:
         raw = "x" * 1000
         result = _safe_error_summary(raw)
         assert len(result) == 500
-
