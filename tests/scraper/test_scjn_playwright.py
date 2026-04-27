@@ -9,6 +9,20 @@ import pytest
 
 pytest.importorskip("playwright")
 
+# Skip if a shimmed playwright was loaded by another test file rather than the
+# real package. The real ``sync_playwright`` is a callable that returns a
+# context manager; the shim is a MagicMock.
+import playwright.sync_api as _pw_sync  # noqa: E402
+
+if (
+    not callable(getattr(_pw_sync, "sync_playwright", None))
+    or type(_pw_sync.sync_playwright).__name__ == "MagicMock"
+):
+    pytest.skip(
+        "Playwright not installed (shimmed by another test file)",
+        allow_module_level=True,
+    )
+
 import json
 
 
