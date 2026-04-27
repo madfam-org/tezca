@@ -543,3 +543,51 @@ class TestTaskHealthEndpoint:
         assert job["found"] == 5
         assert job["downloaded"] == 3
         assert job["failed"] == 2
+
+
+class TestSafeErrorSummary:
+    """Coverage for the stack-trace sanitizer fronting `dof_summary`.
+
+    See CodeQL alert py/stack-trace-exposure on `admin/dof/`. The endpoint is
+    admin-only but admin payloads should still not carry tracebacks (avoids
+    accidental leak of file paths or credentials echoed in exceptions).
+    """
+
+    def test_none_returns_default(self):
+        from apps.api.admin_views import _safe_error_summary
+
+        assert _safe_error_summary(None) == "No changes detected"
+
+    def test_empty_string_returns_default(self):
+        from apps.api.admin_views import _safe_error_summary
+
+        assert _safe_error_summary("") == "No changes detected"
+
+    def test_single_line_passes_through(self):
+        from apps.api.admin_views import _safe_error_summary
+
+        assert _safe_error_summary("3 law changes detected") == "3 law changes detected"
+
+    def test_traceback_redacts_after_first_line(self):
+        from apps.api.admin_views import _safe_error_summary
+
+        raw = (
+            "DOF download failed for 2026-04-26\n"
+            "Traceback (most recent call last):\n"
+            '  File "/app/scraper/dof.py", line 42, in fetch\n'
+            "    response.raise_for_status()\n"
+            "ConnectionError: api-key=secret123 leaked into stack"
+        )
+        result = _safe_error_summary(raw)
+        assert result.startswith("DOF download failed for 2026-04-26")
+        assert "(details redacted)" in result
+        assert "secret123" not in result
+        assert "/app/scraper/dof.py" not in result
+
+    def test_long_single_line_truncates(self):
+        from apps.api.admin_views import _safe_error_summary
+
+        raw = "x" * 1000
+        result = _safe_error_summary(raw)
+        assert len(result) == 500
+
