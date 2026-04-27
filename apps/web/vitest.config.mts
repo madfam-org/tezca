@@ -21,10 +21,11 @@ export default defineConfig({
             reporter: ['text', 'json', 'html'],
             // `all: true` widens the denominator to every source file under
             // the project, not just files imported by tests. Thresholds are
-            // pinned to the observed floor minus ~5pp so unrelated PRs don't
+            // pinned ~3pp below the observed floor so unrelated PRs don't
             // trip the gate; ratchet up as component coverage grows.
             // Observed floor (2026-04-27, all:true with full include scope):
             // stmts 56.44, branches 49.68, funcs 52.09, lines 57.66.
+            // WS2 Phase 2C lock target: ≥50/40/50/50.
             all: true,
             include: ['app/**', 'components/**', 'hooks/**', 'lib/**', 'contexts/**'],
             exclude: [
@@ -37,10 +38,10 @@ export default defineConfig({
                 'e2e/**',
             ],
             thresholds: {
-                statements: 51,
-                branches: 44,
-                functions: 47,
-                lines: 52,
+                statements: 53,
+                branches: 46,
+                functions: 49,
+                lines: 54,
             },
         },
         alias: {
