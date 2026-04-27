@@ -47,11 +47,16 @@ We commit to the following service level objective on dependency vulnerabilities
 
 ### TLS verification on government scrapers
 
-Some Mexican government portals ship expired or misconfigured TLS chains. The allowlist of hosts where `verify=False` is acceptable lives in `apps/scraper/http.py:INSECURE_HOSTS`. Adding a host requires:
+Some Mexican government portals ship expired or misconfigured TLS chains. `apps/scraper/http.py` resolves trust through two layers:
 
-1. Documented justification (cert chain inspection, last-renewal date)
-2. Per-host fingerprint pinning where feasible (Workstream 7 of the A+ plan tightens this from blanket bypass to fingerprint pinning)
-3. Annual review of the allowlist — hosts that have since fixed their cert chains get removed
+1. **`HOST_FINGERPRINTS`** — preferred. The host's leaf cert SHA-256 is compared against a pinned value at connection time. A mismatch fails the connection (no fallback). Pinning a host requires capturing the fingerprint with `scripts/utils/capture_tls_fingerprint.py <host>`. Pinned hosts are reviewed annually or whenever a connection is rejected.
+
+2. **`INSECURE_HOSTS`** — fallback for chains too unstable to pin (e.g. multi-balancer rotations). Adding a host requires:
+   - Documented justification (cert chain inspection, last-renewal date)
+   - A capture attempt — if the leaf is stable, fingerprint instead
+   - Annual review — hosts that fix their chains are removed
+
+Hosts not in either set get normal CA-verified TLS. Test coverage in `tests/scraper/test_http.py` exercises both trust paths.
 
 ## Supported Versions
 

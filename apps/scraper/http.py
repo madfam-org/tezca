@@ -1,10 +1,24 @@
 """
-Centralized SSL-bypass session factory for government websites.
+Centralized SSL session factory for government websites.
 
 Many Mexican government portals have expired or misconfigured SSL certificates.
-This module provides a single place to manage SSL bypass decisions, keeping an
-explicit allowlist of known-problematic hosts instead of scattering
-``verify=False`` throughout the codebase.
+This module manages two layers of trust:
+
+1. **Fingerprint-pinned hosts** (preferred): the host's leaf certificate is
+   compared against a known SHA-256 fingerprint. Even if a CA chain would
+   reject the cert, an exact-match fingerprint is treated as authoritative.
+   See ``HOST_FINGERPRINTS`` for the pinned hosts and audit dates.
+
+2. **Insecure-allowlisted hosts** (fallback): hosts in ``INSECURE_HOSTS`` get
+   ``verify=False`` because their chains are too unstable to pin. Adding to
+   this set requires documented justification (see SECURITY.md §"TLS
+   verification on government scrapers").
+
+Hosts not in either set get normal CA-verified TLS.
+
+Capture a new fingerprint with::
+
+    poetry run python scripts/utils/capture_tls_fingerprint.py <hostname>
 
 Usage::
 
@@ -14,18 +28,42 @@ Usage::
     resp = session.get("https://dof.gob.mx/some/path")
 """
 
+from __future__ import annotations
+
+import hashlib
 import logging
+import socket
+import ssl
 from urllib.parse import urlparse
 
 import requests
 import urllib3
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Allowlist of government hosts with known SSL issues.
-# Only these hosts will have certificate verification disabled.
+# Fingerprint-pinned hosts: leaf cert SHA-256 (uppercase hex, colon-separated)
 # ---------------------------------------------------------------------------
+# When a host is here, the leaf certificate is fetched at connection time and
+# compared against the known fingerprint. A match is authoritative even if the
+# CA chain is broken; a mismatch fails the connection (no fallback). Capture
+# new fingerprints with `scripts/utils/capture_tls_fingerprint.py`.
+#
+# Format: { hostname: (sha256_hex, captured_iso_date, captured_by_url) }
+# Review cadence: annually, or whenever a connection failure is reported.
+
+HOST_FINGERPRINTS: dict[str, tuple[str, str, str]] = {
+    # No hosts pinned yet — populated as fingerprints are captured.
+    # First capture sweep is tracked in SECURITY.md §"TLS verification".
+}
+
+# ---------------------------------------------------------------------------
+# Allowlist of government hosts with known SSL issues (no pinning available)
+# ---------------------------------------------------------------------------
+# Only these hosts have certificate verification disabled. Adding to this set
+# requires documented justification — see SECURITY.md.
 
 INSECURE_HOSTS: frozenset[str] = frozenset(
     {
@@ -58,29 +96,93 @@ DEFAULT_TIMEOUT = 30  # seconds
 
 def _host_from_url(url: str) -> str:
     """Extract the hostname from *url*, lowercased."""
-    return urlparse(url).hostname or ""
+    return (urlparse(url).hostname or "").lower()
+
+
+def _normalize_fingerprint(raw: str) -> str:
+    """Strip colons + uppercase a SHA-256 fingerprint for comparison."""
+    return raw.replace(":", "").replace(" ", "").upper()
+
+
+def fetch_leaf_fingerprint(host: str, port: int = 443, timeout: float = 10.0) -> str:
+    """Connect to *host:port* and return the leaf cert SHA-256 fingerprint.
+
+    Returned as uppercase colon-less hex (e.g. ``"AB12...CD"``). Raises any
+    socket / SSL exception on failure. Verification is *disabled* during
+    capture — this function exists precisely to fingerprint untrusted chains.
+    """
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    with socket.create_connection((host, port), timeout=timeout) as sock:
+        with ctx.wrap_socket(sock, server_hostname=host) as ssock:
+            der = ssock.getpeercert(binary_form=True)
+    if not der:
+        raise RuntimeError(f"No leaf certificate returned by {host}:{port}")
+    return hashlib.sha256(der).hexdigest().upper()
+
+
+class _FingerprintPinnedAdapter(HTTPAdapter):
+    """HTTPAdapter that validates leaf cert SHA-256 against an expected pin.
+
+    Built on urllib3's ``assert_fingerprint`` — exact-match fingerprint
+    overrides CA-chain validation. A mismatch raises ``SSLError`` with no
+    fallback; that is the desired behavior (refuse-on-mismatch).
+    """
+
+    def __init__(self, *args, fingerprint: str, **kwargs) -> None:
+        self._fingerprint = _normalize_fingerprint(fingerprint)
+        super().__init__(*args, **kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
+        pool_kwargs["assert_fingerprint"] = self._fingerprint
+        # When fingerprint-pinning, CA verification is bypassed in favor of the
+        # exact-match check. This is by design: gov hosts often have broken
+        # chains but stable leaf certs.
+        pool_kwargs["cert_reqs"] = "CERT_NONE"
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            **pool_kwargs,
+        )
 
 
 def government_session(base_url: str) -> requests.Session:
     """Return a :class:`requests.Session` configured for *base_url*.
 
-    If the host portion of *base_url* is in :data:`INSECURE_HOSTS`, SSL
-    certificate verification is disabled on the returned session and a
-    warning is logged.  Otherwise the session uses normal (verified) TLS.
+    Trust resolution order:
 
-    The session is pre-configured with a reasonable ``User-Agent`` header
-    and a default timeout adapter is **not** injected (callers should pass
-    ``timeout=`` on each request or rely on the library default).  The
-    ``DEFAULT_TIMEOUT`` constant is exported for convenience.
+    1. If the host has a pinned leaf fingerprint in :data:`HOST_FINGERPRINTS`,
+       a custom adapter validates the cert against that fingerprint. The
+       session is otherwise behaving as if ``verify=True``.
+    2. If the host is in :data:`INSECURE_HOSTS`, SSL verification is disabled
+       and a warning is logged. (Fallback for hosts whose chains are too
+       unstable to pin.)
+    3. Otherwise, normal CA-verified TLS.
     """
     session = requests.Session()
     session.headers.update({"User-Agent": DEFAULT_USER_AGENT})
 
     host = _host_from_url(base_url)
 
-    if host in INSECURE_HOSTS:
+    if host in HOST_FINGERPRINTS:
+        fingerprint, captured_at, _source = HOST_FINGERPRINTS[host]
+        adapter = _FingerprintPinnedAdapter(fingerprint=fingerprint)
+        session.mount("https://", adapter)
+        session.verify = True
+        logger.info(
+            "TLS fingerprint-pinning active for %s (captured %s)",
+            host,
+            captured_at,
+        )
+    elif host in INSECURE_HOSTS:
         session.verify = False
-        logger.warning("SSL verification disabled for allowlisted host: %s", host)
+        logger.warning(
+            "SSL verification disabled for allowlisted host: %s "
+            "(consider capturing a fingerprint — see scripts/utils/capture_tls_fingerprint.py)",
+            host,
+        )
     else:
         session.verify = True
 

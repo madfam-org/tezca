@@ -562,9 +562,7 @@ def _finish_acquisition_log(log_entry, succeeded, failed, total):
         log_entry.failed = failed
         log_entry.ingested = succeeded
         log_entry.finish(error_summary=error_summary)
-    except (
-        Exception
-    ):  # noqa: broad-except — best-effort logging, must not break pipeline
+    except Exception:  # noqa: BLE001 — best-effort logging, must not break pipeline
         pass
 
 

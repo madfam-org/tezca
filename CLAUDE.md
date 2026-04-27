@@ -592,7 +592,7 @@ type Lang = 'es' | 'en' | 'nah';
 See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the original ecosystem audit.
 
 Open:
-- **🟠 H7: TLS verification disabled on government scrapers** — `apps/scraper/http.py:79`, `federal/nom_scraper.py:273`, `municipal/pnt_scraper.py:604`. MITM risk — attacker can forge compliance evidence flowing into Karafiel. Pin CA bundles; if gov sites use old certs, narrow `verify=False` to specific hostnames with cert-fingerprint pinning.
+- **🟡 H7 (architecture fix landed; capture sweep pending)** — `apps/scraper/http.py` now supports per-host SHA-256 fingerprint pinning via `HOST_FINGERPRINTS` and a `_FingerprintPinnedAdapter`. The 10 hosts still in `INSECURE_HOSTS` need fingerprint capture (`scripts/utils/capture_tls_fingerprint.py <host>`) before the residual MITM window closes. Operator task: schedule a capture sweep on stable network.
 - **🟡 State coverage incomplete** — 16 of 32 states have scrapers (Wave 1A added Aguascalientes, Hidalgo, Morelos, Yucatán). Wave 1B/1C remaining for full parity claim per `FEATURE_PARITY_PLAN_2026-04-27.md` §3.5.
 - **🟡 ES single-node** — Postgres HA prep done (Track 6); ES HA is a separate pending project.
 - **🟡 First-paid-customer blockers** — Selva onboarding (CHAT_BACKEND flip), Stripe live keys + Tezca price IDs in Dhanam (MONETIZATION_ENABLED flip), and Karafiel team's Wave 1 Month 1 deliverables. All operator-side; specs are landed.

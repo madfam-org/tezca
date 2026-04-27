@@ -10,6 +10,7 @@ Usage:
     python manage.py index_laws --all --tier state
 """
 
+import logging
 import re
 
 from django.core.management.base import BaseCommand
@@ -24,6 +25,8 @@ from apps.api.es_index_manager import (
 )
 from apps.api.models import Law
 from apps.api.utils.paths import ES_HOST, read_data_content
+
+logger = logging.getLogger(__name__)
 
 INDEX_LAWS = "laws"
 INDEX_ARTICLES = "articles"
@@ -491,7 +494,11 @@ class Command(BaseCommand):
                         art["text"]
                     )
                 except Exception:
-                    pass  # Skip embedding on failure, article is still indexed
+                    logger.debug(
+                        "Embedding generation failed for article in %s; indexing without it",
+                        law.official_id,
+                        exc_info=True,
+                    )
 
             actions.append(doc)
 
@@ -647,8 +654,12 @@ class Command(BaseCommand):
                             f"Use --include-quarantined to override."
                         )
                     )
-            except Exception:
-                pass  # Skip quarantine filtering if DB schema not migrated yet
+            except (
+                Exception
+            ):  # noqa: BLE001 — pre-migration schemas may lack quality_grade column
+                logger.debug(
+                    "quarantine filter skipped (DB schema not migrated)", exc_info=True
+                )
 
         if options.get("limit"):
             laws = laws[: options["limit"]]
