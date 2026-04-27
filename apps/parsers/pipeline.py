@@ -4,6 +4,7 @@ Law ingestion pipeline - End-to-end processing.
 Combines: Download → Extract → Parse → Validate → Quality Assessment
 """
 
+import logging
 import subprocess
 
 # Import components
@@ -20,6 +21,8 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from apps.parsers.error_tracker import ErrorTracker
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -266,8 +269,12 @@ class IngestionPipeline:
                                 pdf_path,
                                 quality_metrics=metrics,
                             )
-                        except Exception:
-                            pass  # Best-effort DB save for quarantined
+                        except (
+                            Exception
+                        ):  # noqa: BLE001 — best-effort save for quarantined laws
+                            logger.debug(
+                                "DB save failed for quarantined law", exc_info=True
+                            )
                     return result
 
                 # Stage 5: Detect cross-references

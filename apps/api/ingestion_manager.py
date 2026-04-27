@@ -79,7 +79,7 @@ class IngestionManager:
             return True, f"Ingestion started (task {result.id})"
         except (
             Exception
-        ):  # noqa: broad-except — Celery/Redis may be unavailable, fall back to thread
+        ):  # noqa: BLE001 — Celery/Redis may be unavailable, fall back to thread
             pass
 
         # Fallback: thread-based execution

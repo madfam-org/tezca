@@ -260,7 +260,7 @@ def list_jobs(request):
                 )
         except (
             Exception
-        ):  # noqa: broad-except — import may fail if dataops app is not installed
+        ):  # noqa: BLE001 — dataops app may not be installed; absence is fine here
             pass
 
         # Always include current ingestion status as first entry if no logs

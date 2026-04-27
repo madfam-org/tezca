@@ -246,9 +246,8 @@ class StateLawParser:
                     parser_confidence=parse_result.confidence,
                 )
                 result.quality_metrics = quality
-            except Exception as e:
-                # Quality calc failure is non-fatal
-                pass
+            except Exception:  # noqa: BLE001 — quality calc failure is non-fatal
+                logger.debug("quality calc failed for %s", slug, exc_info=True)
 
             # 5. Cross-references (optional, non-fatal)
             try:

@@ -41,6 +41,11 @@ jobs:
     - name: Check File Sizes
       run: poetry run python scripts/utils/audit_file_sizes.py
 
+    - name: Audit silent bare-except blocks
+      # Fails CI on any new `except Exception: pass`-style swallow without
+      # `# noqa: BLE001`. See scripts/utils/audit_silent_excepts.py.
+      run: poetry run python scripts/utils/audit_silent_excepts.py
+
     - name: Run Pytest with coverage
       run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=44
       env:
