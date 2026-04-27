@@ -104,8 +104,12 @@ export function VersionTimeline({ versions }: VersionTimelineProps) {
                     <div className="relative border-l-2 border-primary/20 ml-3 pl-6 space-y-6">
                         {versions.map((version, index) => {
                             const isCurrent = index === 0;
+                            // Composite key: publication_date is unique per
+                            // version in practice; the index is a tiebreaker
+                            // for the rare case where two versions share a date.
+                            const versionKey = `${version.publication_date ?? 'unknown'}-${index}`;
                             return (
-                                <div key={index} className="relative">
+                                <div key={versionKey} className="relative">
                                     {/* Timeline dot */}
                                     <div
                                         className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-2 ${

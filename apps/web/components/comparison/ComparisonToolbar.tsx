@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from "@tezca/ui";
 import { Link2, Unlink2, Copy, Check } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 const content = {
     es: {
@@ -34,16 +34,10 @@ interface ComparisonToolbarProps {
 export function ComparisonToolbar({ syncScroll, onToggleSync }: ComparisonToolbarProps) {
     const { lang } = useLang();
     const t = content[lang];
-    const [copied, setCopied] = useState(false);
+    const { copied, copy } = useCopyToClipboard();
 
-    const handleCopyUrl = async () => {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch {
-            // Fallback: ignore if clipboard API unavailable
-        }
+    const handleCopyUrl = () => {
+        void copy(window.location.href);
     };
 
     return (

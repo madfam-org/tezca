@@ -154,7 +154,7 @@ function StructureTree({ nodes, level = 0 }: { nodes: LawStructureNode[]; level?
     return (
         <ul className={`space-y-1 ${level > 0 ? 'ml-2 border-l pl-2' : ''}`}>
             {nodes.map((node, i) => (
-                <li key={i}>
+                <li key={`${level}-${i}-${node.label}`}>
                     <div className="py-1 px-2 rounded hover:bg-muted cursor-pointer truncate" title={node.label}>
                         {node.label}
                     </div>

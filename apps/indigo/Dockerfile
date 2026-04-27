@@ -45,7 +45,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH"
 
-# Runtime-only system dependencies
+# Runtime-only system dependencies. This layer rarely changes — keep it
+# above the source COPY so application edits don't bust the apt cache.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     libxml2 \
@@ -75,10 +76,12 @@ RUN groupadd --system --gid 1001 django && \
 
 WORKDIR /app
 
-# Copy virtualenv from builder
+# Copy virtualenv from builder. This layer is invalidated only when
+# pyproject.toml / poetry.lock change — keep it before the source COPY so
+# code-only edits stay cheap.
 COPY --from=builder /app/.venv ./.venv
 
-# Copy application code
+# Copy application code last — most frequent invalidation point.
 COPY . .
 
 # Collect static files (needs Django available)

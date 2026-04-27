@@ -8,6 +8,7 @@ import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 import { getAuthToken } from '@/lib/auth-token';
 import { trackEvent } from '@/lib/analytics/posthog';
+import { COPY_FEEDBACK_DURATION_MS } from '@/lib/constants';
 
 const content = {
     es: {
@@ -88,7 +89,7 @@ export function AlertButton({ lawId, className }: AlertButtonProps) {
                 setAlertId(alert.id);
                 setJustSaved(true);
                 trackEvent('alert.created', { law_id: lawId });
-                setTimeout(() => setJustSaved(false), 2000);
+                setTimeout(() => setJustSaved(false), COPY_FEEDBACK_DURATION_MS);
             } catch (err) {
                 console.error(err);
             }

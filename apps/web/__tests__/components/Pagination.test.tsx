@@ -33,8 +33,10 @@ describe('Pagination', () => {
             <Pagination currentPage={1} totalPages={5} onPageChange={mockOnPageChange} />
         );
 
+        // Page buttons now expose a descriptive aria-label so screen-reader
+        // users hear "Ir a página 3" instead of just "3". Match by aria-label.
         for (let i = 1; i <= 5; i++) {
-            expect(screen.getByRole('button', { name: String(i) })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: `Ir a página ${i}` })).toBeInTheDocument();
         }
     });
 
@@ -65,7 +67,7 @@ describe('Pagination', () => {
             <Pagination currentPage={3} totalPages={5} onPageChange={mockOnPageChange} />
         );
 
-        fireEvent.click(screen.getByRole('button', { name: '4' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Ir a página 4' }));
         expect(mockOnPageChange).toHaveBeenCalledWith(4);
     });
 
@@ -93,8 +95,8 @@ describe('Pagination', () => {
         );
 
         // Should have first page, ellipsis, pages around current, ellipsis, last page
-        expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '20' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Ir a página 1' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Ir a página 20' })).toBeInTheDocument();
         expect(screen.getAllByText('...').length).toBeGreaterThanOrEqual(1);
     });
 
@@ -104,9 +106,9 @@ describe('Pagination', () => {
         );
 
         // Near start: 1, 2, 3, ..., 20
-        expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '2' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Ir a página 1' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Ir a página 2' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Ir a página 3' })).toBeInTheDocument();
         expect(screen.getAllByText('...')).toHaveLength(1);
     });
 

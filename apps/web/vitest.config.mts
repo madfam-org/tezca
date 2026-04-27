@@ -19,6 +19,12 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
+            // NOTE: thresholds below cover only files imported by tests
+            // (the v8 default). Switching to `all: true` would widen the
+            // denominator across the whole project — currently ~15% of
+            // components have unit tests so the gate would instantly fail.
+            // Plan: backfill component tests, then flip `all: true` and
+            // ratchet these numbers up. Tracked as a follow-up.
             thresholds: {
                 statements: 70,
                 branches: 60,

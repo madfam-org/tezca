@@ -35,7 +35,7 @@ export function Breadcrumbs({ lawName }: BreadcrumbsProps) {
         <nav aria-label="Breadcrumb" className="mb-4">
             <ol className="flex items-center gap-1 text-sm text-muted-foreground flex-wrap">
                 {items.map((item, i) => (
-                    <li key={i} className="flex items-center gap-1">
+                    <li key={item.href ?? `crumb-${item.label}-${i}`} className="flex items-center gap-1">
                         {i > 0 && <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />}
                         {item.href ? (
                             <Link href={item.href} className="hover:text-foreground transition-colors">

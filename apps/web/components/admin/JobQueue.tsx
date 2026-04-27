@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import type { IngestionStatus } from '@tezca/lib';
 import { PlayCircle, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { ADMIN_JOB_QUEUE_POLL_MS } from '@/lib/constants';
 
 export function JobQueue() {
     const [jobs, setJobs] = useState<IngestionStatus[]>([]);
@@ -22,7 +23,7 @@ export function JobQueue() {
 
     useEffect(() => {
         fetchJobs();
-        const interval = setInterval(fetchJobs, 5000); // Poll every 5s
+        const interval = setInterval(fetchJobs, ADMIN_JOB_QUEUE_POLL_MS);
         return () => clearInterval(interval);
     }, []);
 

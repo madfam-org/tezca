@@ -33,6 +33,11 @@ from apps.scraper.federal.conamer_scraper import (
 )
 from apps.scraper.playwright_base import PlaywrightBase
 
+# Wait budget after clicking the pagination "Next" button. Long enough that
+# slow CONAMER pages settle, short enough that a stuck request doesn't pin
+# the worker. The networkidle wait is allowed to time out — see catch below.
+_PAGINATION_NETWORKIDLE_TIMEOUT_MS = 15_000
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -297,7 +302,9 @@ class ConamerPlaywrightScraper(PlaywrightBase):
                 if not self._try_click_next():
                     logger.warning("Could not skip to resume page %d", resume_from_page)
                     break
-                self._page.wait_for_load_state("networkidle", timeout=15_000)
+                self._page.wait_for_load_state(
+                    "networkidle", timeout=_PAGINATION_NETWORKIDLE_TIMEOUT_MS
+                )
                 self._rate_limit()
 
         while True:
@@ -340,7 +347,9 @@ class ConamerPlaywrightScraper(PlaywrightBase):
                 break
 
             try:
-                self._page.wait_for_load_state("networkidle", timeout=15_000)
+                self._page.wait_for_load_state(
+                    "networkidle", timeout=_PAGINATION_NETWORKIDLE_TIMEOUT_MS
+                )
             except PlaywrightTimeout:
                 logger.debug("networkidle timeout after clicking next, continuing.")
 

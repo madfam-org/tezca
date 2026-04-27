@@ -399,8 +399,8 @@ export function InterestGate({
 
                     {benefits && benefits.length > 0 && (
                         <ul className="text-sm text-left max-w-xs mx-auto space-y-1.5 mb-5">
-                            {benefits.map((b, i) => (
-                                <li key={i} className="flex items-start gap-2">
+                            {benefits.map((b) => (
+                                <li key={b} className="flex items-start gap-2">
                                     <span className="text-primary mt-0.5">&#10003;</span>
                                     <span className="text-muted-foreground">{b}</span>
                                 </li>

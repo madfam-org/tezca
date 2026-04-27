@@ -138,11 +138,17 @@ test-e2e:
 # ── Linting & Formatting ──────────────────────────────────────────────
 
 # Run all linters
+# Aligned with CI: pyproject.toml + .github/workflows/ci.yml use black + isort
+# (not ruff). Keep this make target consistent so local pre-PR checks match
+# what the pipeline will enforce.
 lint:
 	@echo "🔍 Running linters..."
 	@echo ""
-	@echo "── Python (ruff) ──"
-	@python -m ruff check apps/ tests/ scripts/ || echo "⚠️  Ruff found issues"
+	@echo "── Python (black --check) ──"
+	@poetry run black --check apps/ tests/ scripts/ || echo "⚠️  black found issues"
+	@echo ""
+	@echo "── Python (isort --check-only) ──"
+	@poetry run isort --check-only apps/ tests/ scripts/ || echo "⚠️  isort found issues"
 	@echo ""
 	@echo "── TypeScript (eslint) ──"
 	@npm run lint:web || echo "⚠️  Web lint failed"
@@ -154,9 +160,9 @@ lint:
 format:
 	@echo "🎨 Formatting code..."
 	@echo ""
-	@echo "── Python (ruff format) ──"
-	@python -m ruff format apps/ tests/ scripts/
-	@python -m ruff check --fix apps/ tests/ scripts/ || true
+	@echo "── Python (black + isort) ──"
+	@poetry run black apps/ tests/ scripts/
+	@poetry run isort apps/ tests/ scripts/
 	@echo ""
 	@echo "✅ Format complete"
 

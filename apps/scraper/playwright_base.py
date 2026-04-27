@@ -124,22 +124,27 @@ class PlaywrightBase(ABC):
         logger.info("Browser launched successfully.")
 
     def close(self) -> None:
-        """Close browser and release Playwright resources."""
+        """Close browser and release Playwright resources.
+
+        Errors during teardown are swallowed by design (we want every cleanup
+        step to run even if an earlier one failed) but they are logged at
+        debug so a curious operator can still see them.
+        """
         if self._context:
             try:
                 self._context.close()
             except Exception:
-                pass
+                logger.debug("Browser context close failed", exc_info=True)
         if self._browser:
             try:
                 self._browser.close()
             except Exception:
-                pass
+                logger.debug("Browser close failed", exc_info=True)
         if self._playwright:
             try:
                 self._playwright.stop()
             except Exception:
-                pass
+                logger.debug("Playwright stop failed", exc_info=True)
         self._page = None
         self._context = None
         self._browser = None
@@ -169,6 +174,11 @@ class PlaywrightBase(ABC):
                     )
                     return True
             except Exception:
+                # Selector probe failures are expected (e.g. detached frames
+                # mid-navigation). Log at debug, keep probing other selectors.
+                logger.debug(
+                    "WAF selector probe failed for %s", selector, exc_info=True
+                )
                 continue
         return False
 
@@ -201,9 +211,17 @@ class PlaywrightBase(ABC):
                         timeout=self._waf_timeout,
                     )
                 except PlaywrightTimeout:
-                    pass
+                    # Selector still visible after the timeout — try the next.
+                    continue
                 except Exception:
-                    pass
+                    # Page navigation in flight, frame detached, etc. Log at
+                    # debug and continue probing other selectors.
+                    logger.debug(
+                        "WAF wait_for_selector failed for %s",
+                        selector,
+                        exc_info=True,
+                    )
+                    continue
 
             self._page.wait_for_load_state("networkidle", timeout=self._waf_timeout)
             logger.info("WAF challenge appears resolved.")
@@ -244,7 +262,10 @@ class PlaywrightBase(ABC):
                     retries,
                 )
                 self._page.goto(url, wait_until="domcontentloaded")
-                self._page.wait_for_load_state("networkidle", timeout=30_000)
+                # Use the configured WAF timeout — same scale as the rest of
+                # the page-load lifecycle and overridable per scraper via the
+                # waf_timeout constructor arg.
+                self._page.wait_for_load_state("networkidle", timeout=self._waf_timeout)
 
                 if not self._wait_for_waf_resolution():
                     logger.warning("WAF not resolved, retrying...")
@@ -417,6 +438,8 @@ class PlaywrightBase(ABC):
                     logger.debug("Clicked next-page button: %s", selector)
                     return True
             except Exception:
+                # Stale element or click intercepted — try the next selector.
+                logger.debug("Pagination click failed for %s", selector, exc_info=True)
                 continue
 
         return False

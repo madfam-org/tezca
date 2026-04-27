@@ -7,6 +7,7 @@ import { api, type NotificationData } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useLang } from '@/components/providers/LanguageContext';
 import { getAuthToken } from '@/lib/auth-token';
+import { NOTIFICATION_POLL_INTERVAL_MS } from '@/lib/constants';
 
 const content = {
     es: {
@@ -55,7 +56,7 @@ export function NotificationBell() {
             // Deferred initial fetch (async to satisfy react-compiler)
             const id = requestAnimationFrame(() => { fetchNotifications(); });
             // Poll every 60s
-            const interval = setInterval(fetchNotifications, 60_000);
+            const interval = setInterval(fetchNotifications, NOTIFICATION_POLL_INTERVAL_MS);
             return () => {
                 cancelAnimationFrame(id);
                 clearInterval(interval);

@@ -10,6 +10,7 @@ import { LinkifiedArticle } from './LinkifiedArticle';
 import { useLang, LOCALE_MAP, type Lang } from '@/components/providers/LanguageContext';
 import { useBatchCrossRefs, type BatchCrossRefs } from '@/hooks/useBatchCrossRefs';
 import type { CrossReferenceData } from '@/lib/api';
+import { COPY_FEEDBACK_DURATION_MS, SCROLL_INTO_VIEW_DEBOUNCE_MS } from '@/lib/constants';
 
 const content = {
     es: {
@@ -90,7 +91,7 @@ export function ArticleViewer({
             });
             setTimeout(() => {
                 scrollingRef.current = false;
-            }, 1000);
+            }, SCROLL_INTO_VIEW_DEBOUNCE_MS);
         }
     }, [activeArticle]);
 
@@ -196,7 +197,7 @@ function SingleArticle({
         triggerOnce: false
     });
 
-    const clearCopied = () => setTimeout(() => setCopiedState('none'), 2000);
+    const clearCopied = () => setTimeout(() => setCopiedState('none'), COPY_FEEDBACK_DURATION_MS);
 
     const copyToClipboard = () => {
         const url = `${window.location.origin}${window.location.pathname}#article-${article.article_id}`;
@@ -292,10 +293,7 @@ function SingleArticle({
             </div>
 
             <LinkifiedArticle
-                lawId={lawId}
-                articleId={article.article_id}
                 text={article.text}
-                crossRefsDisabled={false}
                 preloadedRefs={batchRefs.get(article.article_id)?.outgoing as CrossReferenceData[] | undefined}
             />
         </article>

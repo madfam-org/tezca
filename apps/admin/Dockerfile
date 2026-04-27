@@ -5,7 +5,9 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Copy workspace root package files
+# Copy workspace root package files. .npmrc references ${NPM_MADFAM_TOKEN}
+# but the token itself is never written to the image — it's mounted as a
+# BuildKit secret on the npm ci step below.
 COPY package.json package-lock.json .npmrc ./
 
 # Copy workspace package.json files for dependency resolution
@@ -13,9 +15,11 @@ COPY apps/admin/package.json apps/admin/package.json
 COPY packages/ui/package.json packages/ui/package.json
 COPY packages/lib/package.json packages/lib/package.json
 
-# Install dependencies
-ARG NPM_MADFAM_TOKEN
-RUN npm ci --workspace=apps/admin --workspace=packages/ui --workspace=packages/lib \
+# Install dependencies. Token sourced from BuildKit secret so it never
+# persists in image layers.
+# Build with: DOCKER_BUILDKIT=1 docker build --secret id=npm_token,env=NPM_MADFAM_TOKEN ...
+RUN --mount=type=secret,id=npm_token,env=NPM_MADFAM_TOKEN \
+    npm ci --workspace=apps/admin --workspace=packages/ui --workspace=packages/lib \
     && mkdir -p apps/admin/node_modules packages/ui/node_modules packages/lib/node_modules
 
 # Explicitly install musl-compatible native bindings for Alpine

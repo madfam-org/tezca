@@ -11,6 +11,7 @@ const content = {
         nextPage: 'Página siguiente',
         lastPage: 'Última página',
         paginationLabel: 'Paginación',
+        goToPage: (n: number) => `Ir a página ${n}`,
     },
     en: {
         firstPage: 'First page',
@@ -18,6 +19,7 @@ const content = {
         nextPage: 'Next page',
         lastPage: 'Last page',
         paginationLabel: 'Pagination',
+        goToPage: (n: number) => `Go to page ${n}`,
     },
     nah: {
         firstPage: 'Achto āmatl',
@@ -25,6 +27,7 @@ const content = {
         nextPage: 'Niman āmatl',
         lastPage: 'Tlāmian āmatl',
         paginationLabel: 'Āmoxihuitl tlanōnōtzaliztli',
+        goToPage: (n: number) => `Xiyāuh āmatl ${n}`,
     },
 };
 
@@ -89,8 +92,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 disabled={currentPage === 1}
                 className="h-9 w-9"
                 title={t.firstPage}
+                aria-label={t.firstPage}
             >
-                <ChevronsLeft className="h-4 w-4" />
+                <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
             </Button>
 
             {/* Previous Page */}
@@ -101,8 +105,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 disabled={currentPage === 1}
                 className="h-9 w-9"
                 title={t.prevPage}
+                aria-label={t.prevPage}
             >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </Button>
 
             {/* Page Numbers */}
@@ -110,20 +115,27 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 {pageNumbers.map((pageNum, index) => {
                     if (pageNum === '...') {
                         return (
-                            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                            <span
+                                key={`ellipsis-${index}`}
+                                className="px-2 text-muted-foreground"
+                                aria-hidden="true"
+                            >
                                 ...
                             </span>
                         );
                     }
 
                     const page = pageNum as number;
+                    const isCurrent = currentPage === page;
                     return (
                         <Button
                             key={page}
-                            variant={currentPage === page ? 'default' : 'outline'}
+                            variant={isCurrent ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => onPageChange(page)}
                             className="h-9 min-w-[2.25rem]"
+                            aria-label={t.goToPage(page)}
+                            aria-current={isCurrent ? 'page' : undefined}
                         >
                             {page}
                         </Button>
@@ -139,8 +151,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 disabled={currentPage === totalPages}
                 className="h-9 w-9"
                 title={t.nextPage}
+                aria-label={t.nextPage}
             >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </Button>
 
             {/* Last Page */}
@@ -151,8 +164,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
                 disabled={currentPage === totalPages}
                 className="h-9 w-9"
                 title={t.lastPage}
+                aria-label={t.lastPage}
             >
-                <ChevronsRight className="h-4 w-4" />
+                <ChevronsRight className="h-4 w-4" aria-hidden="true" />
             </Button>
         </nav>
     );
