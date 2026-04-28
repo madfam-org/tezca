@@ -20,12 +20,15 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
             // `all: true` widens the denominator to every source file under
-            // the project, not just files imported by tests. Thresholds are
-            // pinned ~3pp below the observed floor so unrelated PRs don't
-            // trip the gate; ratchet up as component coverage grows.
-            // Observed floor (2026-04-27, all:true with full include scope):
-            // stmts 56.44, branches 49.68, funcs 52.09, lines 57.66.
-            // WS2 Phase 2C lock target: ≥50/40/50/50.
+            // the project, not just files imported by tests.
+            //
+            // WS-R2 (2026-04-27): floor pushed via 12 new test files (api.ts
+            // facade, graph components, skeletons, JsonLd, AnnotationBadge,
+            // MetricCard, LawArticles, StatesGrid, theme-provider, etc.).
+            //   Observed floor: stmts 63.33, branches 56.82, funcs 60.19, lines 64.18.
+            //   Gates pinned at floor−2pp for headroom against minor drift.
+            //
+            // WS2 Phase 2C lock target ≥50/40/50/50 — well exceeded.
             all: true,
             include: ['app/**', 'components/**', 'hooks/**', 'lib/**', 'contexts/**'],
             exclude: [
@@ -38,10 +41,10 @@ export default defineConfig({
                 'e2e/**',
             ],
             thresholds: {
-                statements: 53,
-                branches: 46,
-                functions: 49,
-                lines: 54,
+                statements: 61,
+                branches: 54,
+                functions: 58,
+                lines: 62,
             },
         },
         alias: {

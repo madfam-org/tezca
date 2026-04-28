@@ -593,7 +593,7 @@ These gates run as discrete CI steps and fail the merge on regression:
 | Gate | Threshold | Source |
 |---|---|---|
 | Backend coverage | `--cov-fail-under=60` (actual ~64%) | `.github/workflows/ci.yml` |
-| Frontend coverage (`all: true`) | stmts 53 / branches 46 / funcs 49 / lines 54 (floor−3pp) | `apps/web/vitest.config.mts` |
+| Frontend coverage (`all: true`) | stmts 61 / branches 54 / funcs 58 / lines 62 (floor−2pp; actuals ~63/57/60/64) | `apps/web/vitest.config.mts` |
 | Silent bare-except | 0 findings | `scripts/utils/audit_silent_excepts.py` |
 | File size | 0 files >800 LOC outside allowlist | `scripts/utils/audit_file_sizes.py` |
 | pip-audit | 0 high-severity CVEs in locked deps | CI step |
