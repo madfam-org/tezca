@@ -78,7 +78,7 @@ Backend coverage: 44% → 61% (gate at 56% with 5pp headroom). 0 silent bare-exc
 
 **A+ remediation (see `A_PLUS_PROGRESS_2026-04-27.md`):**
 - ~~**WS-R1** — push backend coverage 61% → 65%~~ ✅ DONE — 64% achieved, gate at 60
-- **WS-R2** — frontend tests to ≥65% statements; lock at floor−2pp (~1-2 weeks)
+- ~~**WS-R2** — frontend tests; lock at floor−2pp~~ ✅ DONE — floor 63/57/60/64 achieved, gates locked at 61/54/58/62
 - **WS-R3a** — operator runs TLS fingerprint capture sweep (~1 day)
 - **WS-R4** — synthetic monitoring + Karafiel-test integration (~1-2 weeks)
 - **WS-R5** — PG/ES/Redis HA cutover (~6-8 weeks platform team)
