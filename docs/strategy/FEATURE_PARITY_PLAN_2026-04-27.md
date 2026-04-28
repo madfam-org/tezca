@@ -14,7 +14,7 @@ Tezca's competitive gaps from the 2026-04-27 benchmark are **not greenfield engi
 
 | Competitive gap | Ecosystem primitive that closes it |
 |---|---|
-| No first-party AI assistant | **Selva** — OpenAI-compatible LLM router (`/v1`) at agents-api.madfam.io |
+| No first-party AI assistant | **Selva** — OpenAI-compatible LLM router (`/v1`) at selva.town |
 | No HA infrastructure | **CNPG** — RFC 0012 Postgres HA (Wave 3 Track 3.3 of Q2 stability remediation) |
 | No docket monitoring | **Karafiel** — already SAT-adjacent; **panopticon-mx** — state-structure atlas slated for Tezca integration |
 | No subscription / billing | **Dhanam** — sole holder of payment keys; tiers already defined; webhook fanout shipping (Wave C) |
@@ -74,7 +74,7 @@ For each competitive gap from `COMPETITIVE_BENCHMARK_2026-04-27.md` §6, this se
 **Owning service:** Selva (`madfam-org/autoswarm-office`, post-cutover `madfam-org/selva-office`). Per ECOSYSTEM convention: "every LLM call should route through Selva (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly to OpenAI / Anthropic from service code."
 
 **Integration contract:**
-- Tezca-API calls `POST https://agents-api.madfam.io/v1/chat/completions` (post-cutover: `https://api.selva.town/v1/chat/completions`) with OpenAI-compatible payload + Janua-relayed credentials.
+- Tezca-API calls `POST https://selva.town/v1/chat/completions` (canonical public Selva domain) with OpenAI-compatible payload + Janua-relayed credentials.
 - Tezca **never** holds an OpenAI/Anthropic API key. Costs accrue to Selva, billed per-tier via Dhanam metered agent-hours (Maker $85 / Studio $170 / Enterprise $255 per agent-hour).
 
 **Work in `tezca`:**

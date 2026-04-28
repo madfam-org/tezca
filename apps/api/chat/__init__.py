@@ -4,7 +4,7 @@ FEATURE_PARITY_PLAN_2026-04-27 §3.1.
 
 Architecture (per the plan's strict constraint contract):
 - Tezca never holds an OpenAI/Anthropic API key.
-- Every LLM call routes through Selva (`agents-api.madfam.io/v1`,
+- Every LLM call routes through Selva (`selva.town/v1`,
   OpenAI-compatible) per the MADFAM ECOSYSTEM convention.
 - LLM costs are billed via Dhanam metered agent-hours, not per Tezca tier.
 
