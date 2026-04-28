@@ -592,7 +592,7 @@ These gates run as discrete CI steps and fail the merge on regression:
 
 | Gate | Threshold | Source |
 |---|---|---|
-| Backend coverage | `--cov-fail-under=56` (actual ~61%) | `.github/workflows/ci.yml` |
+| Backend coverage | `--cov-fail-under=60` (actual ~64%) | `.github/workflows/ci.yml` |
 | Frontend coverage (`all: true`) | stmts 53 / branches 46 / funcs 49 / lines 54 (floor−3pp) | `apps/web/vitest.config.mts` |
 | Silent bare-except | 0 findings | `scripts/utils/audit_silent_excepts.py` |
 | File size | 0 files >800 LOC outside allowlist | `scripts/utils/audit_file_sizes.py` |
@@ -600,7 +600,7 @@ These gates run as discrete CI steps and fail the merge on regression:
 | npm audit | 0 high-severity CVEs (`--audit-level=high`) | CI step |
 | CodeQL | 0 new alerts on PR | weekly + on-push |
 
-Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 across PRs #56, #77–80. Next target: 60% per `docs/strategy/A_PLUS_PROGRESS_2026-04-27.md` WS-R1.
+Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 → 60 across PRs #56, #77–80, and the WS-R1 push (PR #82). WS-R1 is now done; next ratchet is gated on WS-R5/R6 maturing per `docs/strategy/A_PLUS_PROGRESS_2026-04-27.md`.
 
 ## Strategy Documentation
 

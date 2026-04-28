@@ -77,7 +77,7 @@ Backend coverage: 44% → 61% (gate at 56% with 5pp headroom). 0 silent bare-exc
 ### What's still pending an agent (i.e., Tezca-side engineering work)
 
 **A+ remediation (see `A_PLUS_PROGRESS_2026-04-27.md`):**
-- **WS-R1** — push backend coverage 61% → 65% (~3-5 days, no blockers)
+- ~~**WS-R1** — push backend coverage 61% → 65%~~ ✅ DONE — 64% achieved, gate at 60
 - **WS-R2** — frontend tests to ≥65% statements; lock at floor−2pp (~1-2 weeks)
 - **WS-R3a** — operator runs TLS fingerprint capture sweep (~1 day)
 - **WS-R4** — synthetic monitoring + Karafiel-test integration (~1-2 weeks)
