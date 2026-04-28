@@ -202,3 +202,7 @@ audit/
 *.p12
 *.pfx
 .env.production
+
+# Claude Code agent scratch
+.claude/
+claudedocs/
