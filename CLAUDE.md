@@ -95,7 +95,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 1527 tests as of 2026-04-27)
+# Backend (pytest + django, 2164 tests / 17 skipped as of 2026-04-28; 64% coverage)
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 
@@ -103,14 +103,14 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 761 tests across 85 files as of 2026-04-27)
+# Web (vitest, 930 tests across 102 files; 63% coverage with all:true)
 cd apps/web && npx vitest run
 
-# Admin (vitest, 82 tests across 12 files)
+# Admin (vitest, 78 tests across 11 files)
 cd apps/admin && npx vitest run
 
-# MCP server (pytest + respx, 18 tests)
-cd packages/mcp-server && uv run pytest tests/ -v
+# MCP server (pytest + respx, 23 passed / 8 skipped)
+cd packages/mcp-server && uv sync --all-extras && uv run pytest tests/ -v
 
 # Data recovery
 python manage.py retry_failed_non_leg --dry-run          # report retryable non-leg gaps
@@ -148,7 +148,7 @@ python manage.py verify_dof_health                           # 7-day report
 python manage.py verify_dof_health --days 30 --json          # 30-day JSON report
 python manage.py verify_dof_health --run-now                 # manual DOF check
 
-# E2E (89 tests across 15 specs, 4 browser projects)
+# E2E (Playwright; 16 specs across 4 browser projects)
 cd apps/web && npx playwright test
 cd apps/web && DATA_INTEGRITY_E2E=1 npx playwright test data-integrity.spec.ts  # live API
 cd apps/web && UI_FIDELITY_E2E=1 npx playwright test e2e/ui-data-fidelity.spec.ts e2e/search-data-completeness.spec.ts  # live API
@@ -622,7 +622,7 @@ Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 → 60 a
 
 **Tracks shipped 2026-04-27 (PRs #46–52):** RMF scraper, `/preguntar` chat scaffold, state scrapers Wave 1A (4 states), `/cuenta/billing` scaffold, Karafiel audit doc, CNPG settings prep, docket-watcher spec, Selva onboarding ticket spec.
 
-**A+ remediation shipped 2026-04-27 (PRs #55, #56, #75–80):** backend coverage 44%→61%, 0 silent bare-except, 0 files >800 LOC, TLS fingerprint pinning architecture, frontend `vitest all:true` gates, silent-except CI gate, file-size CI gate, CVE SLO + Dependabot, scraper first-run checklist. Composite grade B+/B → **B+/A−**. Remaining work in `A_PLUS_PROGRESS_2026-04-27.md`.
+**A+ remediation shipped (PRs #55, #56, #75–83):** backend coverage 44%→**64%** (gate 60), frontend coverage 56%→**63%** with `all:true` (gates 61/54/58/62), 0 silent bare-except, 0 files >800 LOC, TLS fingerprint pinning architecture, silent-except CI gate, file-size CI gate, CVE SLO + Dependabot, scraper first-run checklist. **Composite grade: B+/B → A.** WS-R1 + WS-R2 ✅ DONE; remaining work (R3–R6: TLS capture, ISO 27001, synthetic monitoring, HA, Grafana) is operator/platform-side. See `A_PLUS_PROGRESS_2026-04-27.md`.
 
 ## Known Issues
 

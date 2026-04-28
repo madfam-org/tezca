@@ -23,7 +23,7 @@ This directory holds Tezca's product/architectural strategy. If you're new to th
 ## Quality / stability
 
 9. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — Original 8-workstream plan with the rubric and rationale. Still authoritative on the dimension definitions.
-10. **[A_PLUS_PROGRESS_2026-04-27.md](./A_PLUS_PROGRESS_2026-04-27.md)** — **Live progress doc.** What shipped in PRs #55–80 (44%→61% backend coverage, 0 silent excepts, 0 files >800 LOC, TLS pinning architecture, frontend `all:true` gates). Consolidates remaining work into 6 forward workstreams (WS-R1…WS-R6) with sequencing and DoD verification commands. Read this for the *current* state.
+10. **[A_PLUS_PROGRESS_2026-04-27.md](./A_PLUS_PROGRESS_2026-04-27.md)** — **Live progress doc.** What shipped in PRs #55–83 (44%→64% backend coverage, 56%→63% frontend coverage with `all:true`, 0 silent excepts, 0 files >800 LOC, TLS pinning architecture, frontend coverage gates locked at floor−2pp). 4 of 9 A+ rubric dimensions now at A. Consolidates remaining work into 6 forward workstreams (WS-R1…WS-R6) with WS-R1 + WS-R2 ✅ DONE. Read this for the *current* state.
 
 ## Subdirectories
 
@@ -71,8 +71,11 @@ These cannot be done by an agent — listed in priority order for revenue impact
 | #78 | WS1 1C + WS2 2B | law_registry 0→71, sinec 0→69, pnt 0→66; gate 48→51; FE 51/44/47/52 → 53/46/49/54 |
 | #79 | WS1 1C/1D | 5 state scrapers 0→60-70%; gate 51→54 |
 | #80 | WS1 1C/1D | state_congress_municipal 0→55, scjn_playwright 0→36; gate 54→56 |
+| #81 | docs | A+ progress doc + 6-workstream forward plan |
+| #82 | WS-R1 ✅ | nom_scraper, conamer_scraper, conamer_playwright, dof_daily, dof_api_client, catalog_spider, billing_stream_consumer + helpers; gate 56→60; backend coverage 61%→64% |
+| #83 | WS-R2 ✅ | api.ts facade + 11 component test files; frontend coverage 56%→63%; gates locked at 61/54/58/62 (floor−2pp) |
 
-Backend coverage: 44% → 61% (gate at 56% with 5pp headroom). 0 silent bare-except. 0 files >800 LOC. Frontend gates active at floor−3pp. Composite grade: B+/B → **B+/A−**.
+Backend coverage: 44% → **64%** (gate at 60% with 4pp headroom). Frontend coverage: floor 56% → **63%** statements with `all:true` (gates locked at 61/54/58/62). 0 silent bare-except. 0 files >800 LOC. Composite grade: B+/B → **A**. WS-R1 + WS-R2 ✅ DONE; remaining workstreams (R3–R6) are operator/platform-side.
 
 ### What's still pending an agent (i.e., Tezca-side engineering work)
 
