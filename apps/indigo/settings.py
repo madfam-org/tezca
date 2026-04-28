@@ -12,7 +12,17 @@ if not DEBUG and SECRET_KEY == "django-insecure-mock-key-for-dev":
     raise ImproperlyConfigured(
         "DJANGO_SECRET_KEY must be set in production (DEBUG=False)"
     )
-_default_hosts = "*" if DEBUG else "tezca.mx,api.tezca.mx,admin.tezca.mx"
+# Cluster-internal service-mesh DNS is allowed alongside public hostnames so
+# that consuming services (Karafiel, etc.) can reach tezca-api over
+# `tezca-api.tezca.svc.cluster.local` without each consumer having to set a
+# bespoke Host header. Per the "Integration Policy (Zero Touch)" — tezca is
+# a generic multi-tenant platform; supporting the K8s service DNS is part of
+# being a good citizen in the mesh.
+_default_hosts = (
+    "*"
+    if DEBUG
+    else "tezca.mx,api.tezca.mx,admin.tezca.mx,tezca-api.tezca.svc.cluster.local"
+)
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", _default_hosts).split(",")
 
 CORS_ALLOWED_ORIGINS = os.environ.get(
