@@ -79,7 +79,7 @@ npm run dev:all                     # both concurrently
 | `CRM_WEBHOOK_SECRET` | `""` | HMAC-SHA256 secret for CRM webhook signing. No-ops when empty |
 | `CHAT_ENABLED` | `false` | Master kill-switch for `/api/v1/chat/preguntar/`. Flip to `true` once Selva onboarding lands |
 | `CHAT_BACKEND` | `mock` | `mock` (deterministic, dev/test) or `selva` (production OpenAI-compatible /v1) |
-| `SELVA_API_URL` | `https://agents-api.madfam.io/v1` | Selva endpoint when `CHAT_BACKEND=selva`. Post-cutover: `https://api.selva.town/v1` |
+| `SELVA_API_URL` | `https://selva.town/v1` | Selva endpoint when `CHAT_BACKEND=selva` (canonical public domain) |
 | `SELVA_API_TOKEN` | `""` | Janua-relayed bearer token for the `tezca-selva-relay` client |
 | `SELVA_DEFAULT_MODEL` | `claude-haiku-4-5` | Default LLM model for chat completions |
 | `ES_USERNAME` | `""` | Elasticsearch basic-auth user (required when `xpack.security.enabled=true`, default in compose) |

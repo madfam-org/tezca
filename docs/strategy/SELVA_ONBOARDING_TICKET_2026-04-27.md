@@ -60,7 +60,7 @@ The work is small — the Track 2 PR already wired everything. Once Selva confir
 ```bash
 # Set the Selva endpoint env vars on the tezca-api Deployment
 enclii secrets set \
-  SELVA_API_URL="https://agents-api.madfam.io/v1" \
+  SELVA_API_URL="https://selva.town/v1" \
   SELVA_API_TOKEN="<janua-relayed-token>" \
   CHAT_BACKEND="selva" \
   CHAT_ENABLED="true" \
@@ -69,7 +69,7 @@ enclii secrets set \
 enclii deploy --env production --service tezca-api
 ```
 
-(Post-cutover when Selva moves to `selva.town`, also flip `SELVA_API_URL=https://api.selva.town/v1` per RFC 0010 Layer 2.)
+(`selva.town` is the canonical public Selva domain per RFC 0010 Layer 2; `SELVA_API_URL=https://selva.town/v1`.)
 
 ### Smoke test (post-deploy)
 

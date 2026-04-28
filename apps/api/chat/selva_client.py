@@ -69,8 +69,8 @@ class SelvaClient:
     """Real Selva client — talks HTTP to the OpenAI-compatible /v1 endpoint.
 
     Configuration:
-    - ``SELVA_API_URL`` — base URL, e.g. ``https://agents-api.madfam.io/v1``
-      (post-cutover: ``https://api.selva.town/v1``).
+    - ``SELVA_API_URL`` — base URL, e.g. ``https://selva.town/v1``
+      (canonical public domain per RFC 0010 Layer 2).
     - ``SELVA_API_TOKEN`` — Janua-relayed bearer token. The Tezca service
       account is provisioned per the §3.1 cross-cutting Selva onboarding
       ticket.
