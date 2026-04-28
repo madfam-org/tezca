@@ -1,6 +1,6 @@
 # Tezca A+ Remediation — Progress & Forward Plan
 
-**Date:** 2026-04-27 (live snapshot)
+**Date:** 2026-04-28 (live snapshot)
 **Companion:** [`A_PLUS_REMEDIATION_PLAN_2026-04-27.md`](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md) (original rubric, sequencing, open questions)
 **Status:** Active — this doc tracks the *delta* against the plan and re-sequences the remaining work.
 
@@ -8,7 +8,7 @@
 
 ## 1. Where we are vs. the A+ rubric
 
-| Dimension | Then (2026-04-27 baseline) | Now (post-PR-#80) | A+ threshold | Status |
+| Dimension | Then (2026-04-27 baseline) | Now (post-PR-#83) | A+ threshold | Status |
 |---|---|---|---|:-:|
 | Test discipline (pass rate) | A — 1527/1542 = 99.0%, 15 skipped | A — 2164 passed / 17 skipped / 0 failures | A+ (≥99.5%, all skipped tracked) | 🟡 |
 | Backend coverage | C+ (44%, gate 44%) | **A (64% actual, 60% gate)** | A (≥60%, gate ≥55%) | ✅ |
@@ -20,13 +20,13 @@
 | Security posture | A− | **A (TLS pinning architecture + CVE SLO)** — capture sweep pending | A (ISO 27001 prep started) | 🟡 |
 | Observability | B (Sentry + PostHog) | B (no change) | A (Grafana + SLO board) | 🔴 |
 
-**Composite right now: ~B+/A−.** Up from B+/B at the start. Everything that the application code itself can fix has been pushed near A. The **two open A− → A blockers are platform-side (HA + observability)**, plus one operator-side **(TLS fingerprint capture sweep + ISO 27001 prep)**.
+**Composite right now: A** (up from B+/B at the start of the session). All four application-side dimensions (test discipline, backend coverage, frontend coverage, code-debt hygiene + architecture + security architecture) are now at **A or A+**. The remaining gaps to A+ are **platform-side (HA + observability)** and **operator-side (TLS fingerprint capture sweep + ISO 27001 prep)** — none addressable by application code alone.
 
 ---
 
 ## 2. What shipped — PRs #55 → #80
 
-Twelve PRs landed, ratcheting backend coverage 44% → 61% and frontend gates from disabled → 53/46/49/54.
+15 PRs landed (#55, #56, #75–#83), ratcheting backend coverage 44% → 64% and frontend gates from disabled → 61/54/58/62 with floor at 63/57/60/64.
 
 | PR | Workstream | Coverage move | Notes |
 |---|---|---|---|
@@ -38,8 +38,11 @@ Twelve PRs landed, ratcheting backend coverage 44% → 61% and frontend gates fr
 | #78 | WS1 1C + WS2 2B | `law_registry` 0→71, `sinec_scraper` 0→69, `pnt_scraper` 0→66 | Backend gate 48 → 51, frontend gates ratcheted to 51/44/47/52 |
 | #79 | WS1 1C/1D | 5 state scrapers 0% → 60-70% | Gate 51 → 54 |
 | #80 | WS1 1C/1D | `state_congress_municipal` 0→55, `scjn_playwright` 0→36 | Gate 54 → 56 |
+| #81 | docs | A+ progress doc + 6-workstream forward plan | Synced INDEX + CLAUDE + README |
+| #82 | **WS-R1 ✅** | nom_scraper, conamer, dof_daily, dof_api_client, catalog_spider, billing_stream, helpers | Backend 61% → 64%; gate 56 → 60 |
+| #83 | **WS-R2 ✅** | api.ts facade + 11 component test files (graph, skeletons, MetricCard, AnnotationBadge, JsonLd, LawArticles, theme-provider, StatesGrid, feature-labels, sentry) | Frontend 56% → 63%; gates locked at 61/54/58/62 (floor−2pp) |
 
-**Test count:** 1527 → 1991 (+464). **Files >900 LOC:** 7 → 0. **Silent bare-except:** 64 → 0. **CI quality gates added:** 2 (silent-except audit + frontend `all: true` coverage).
+**Test count (this session, ending 2026-04-28):** Backend 1527 → **2164** (+637). Frontend 761 → **930** (+169). Admin 78. api-client 48. MCP 23. **Total monorepo: ~3243 passing tests.** Files >900 LOC: 7 → 0. Silent bare-except: 64 → 0. CI quality gates added: 2 (silent-except audit + frontend `all: true` coverage).
 
 ---
 
@@ -76,7 +79,7 @@ The eight workstreams in the original plan collapse to six now that WS1 Phase 1A
 - `apps/web/lib/{feature-labels, sentry}` covered.
 - `apps/web/app/estados/StatesGrid.tsx` covered.
 
-Test count: 761 → **914** (+153). 12 new test files.
+Test count: 761 → **930** (+169). 12 new test files.
 
 **Why we stopped at the current floor (not pushed to 75%+):** the remaining gaps are LawGraph (sigma.js renderer, hard to mock), busqueda/page.tsx (full search-page integration), and per-page Next.js Server Components. Each yields shallow coverage when unit-tested; better tested via Playwright E2E in WS-R4.
 
