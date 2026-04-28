@@ -47,11 +47,12 @@ jobs:
       run: poetry run python scripts/utils/audit_silent_excepts.py
 
     - name: Run Pytest with coverage
-      # Coverage floor: ratcheted 44 → 48 → 51 → 54 → 56 as WS1 Phase 1C
-      # closed scheduling, parser pipeline, scjn, treaty, playwright_base,
-      # law_registry, sinec, pnt, 5 state scrapers, state_congress_municipal,
-      # and scjn_playwright partial coverage. Actual is ~61%. Target: 60%.
-      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=56
+      # Coverage floor: ratcheted 44 → 48 → 51 → 54 → 56 → 60 (WS-R1 done).
+      # WS-R1 added: nom_scraper, conamer_scraper, conamer_playwright,
+      # dof_daily, dof_api_client, catalog_spider, billing_stream_consumer,
+      # plus pure helpers in management commands. Actual is ~64%. Next
+      # ratchet target: 65% — gated on WS-R5 / WS-R6 reaching A.
+      run: poetry run pytest tests/ -v --cov=apps --cov-report=xml --cov-report=term --cov-fail-under=60
       env:
         PYTHONPATH: apps:.
 
