@@ -31,7 +31,7 @@ drf-spectacular = "^0.29.0"
 django-celery-beat = "^2.8.1"
 pdfplumber = "^0.11.9"
 psycopg2-binary = "^2.9.11"
-gunicorn = "^23.0"
+gunicorn = ">=23,<26"
 PyJWT = {version = "^2.8", extras = ["crypto"]}
 cryptography = "^46.0"
 # Sentry error tracking
