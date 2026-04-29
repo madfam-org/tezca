@@ -4156,6 +4156,26 @@ doc = ["furo", "sphinx"]
 test = ["pytest", "ruff"]
 
 [[package]]
+name = "tinyhtml5"
+version = "2.1.0"
+description = "HTML parser based on the WHATWG HTML specification"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "extra == \"export\" or extra == \"pdf\" or extra == \"production\""
+files = [
+    {file = "tinyhtml5-2.1.0-py3-none-any.whl", hash = "sha256:6e11cfff38515834268daf89d5f85bbde0b6dd02e8d9e212d1385c2289b89f0a"},
+    {file = "tinyhtml5-2.1.0.tar.gz", hash = "sha256:60a50ec3d938a37e491efa01af895853060943dcebb5627de5b10d188b338a67"},
+]
+
+[package.dependencies]
+webencodings = ">=0.5.1"
+
+[package.extras]
+doc = ["sphinx", "sphinx_rtd_theme"]
+test = ["pytest", "ruff"]
+
+[[package]]
 name = "tldextract"
 version = "5.3.1"
 description = "Accurately separates a URL's subdomain, domain, and public suffix, using the Public Suffix List (PSL). By default, this includes the public ICANN TLDs and their exceptions. You can optionally support the Public Suffix List's private domains as well."
@@ -4474,30 +4494,30 @@ wasabi = ">=0.9.1,<1.2.0"
 
 [[package]]
 name = "weasyprint"
-version = "62.3"
+version = "68.1"
 description = "The Awesome Document Factory"
 optional = true
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"export\" or extra == \"pdf\" or extra == \"production\""
 files = [
-    {file = "weasyprint-62.3-py3-none-any.whl", hash = "sha256:d31048646ce15084e135b33e334a61f526aa68d2f679fcc109ed0e0f5edaed21"},
-    {file = "weasyprint-62.3.tar.gz", hash = "sha256:8d8680d732f7fa0fcbc587692a5a5cb095c3525627066918d6e203cbf42b7fcd"},
+    {file = "weasyprint-68.1-py3-none-any.whl", hash = "sha256:4dc3ba63c68bbbce3e9617cb2226251c372f5ee90a8a484503b1c099da9cf5be"},
+    {file = "weasyprint-68.1.tar.gz", hash = "sha256:d3b752049b453a5c95edb27ce78d69e9319af5a34f257fa0f4c738c701b4184e"},
 ]
 
 [package.dependencies]
 cffi = ">=0.6"
-cssselect2 = ">=0.1"
-fonttools = {version = ">=4.0.0", extras = ["woff"]}
-html5lib = ">=1.1"
+cssselect2 = ">=0.8.0"
+fonttools = {version = ">=4.59.2", extras = ["woff"]}
 Pillow = ">=9.1.0"
-pydyf = ">=0.10.0"
+pydyf = ">=0.11.0"
 Pyphen = ">=0.9.1"
-tinycss2 = ">=1.3.0"
+tinycss2 = ">=1.5.0"
+tinyhtml5 = ">=2.0.0b1"
 
 [package.extras]
-doc = ["sphinx", "sphinx_rtd_theme"]
-test = ["pytest", "ruff"]
+doc = ["furo", "sphinx"]
+test = ["Pillow (>=12.1.0)", "pytest", "ruff"]
 
 [[package]]
 name = "webencodings"
@@ -4689,4 +4709,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "41e43be972144b4a62ffc8bc4db78213b27b302c3a031426c032f6daabb0498a"
+content-hash = "58c2cb7b999be08e36ab9007560719d687c9ce2ba54ae45ac5d6d4de461eaf46"
