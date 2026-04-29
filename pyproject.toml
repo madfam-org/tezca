@@ -64,7 +64,7 @@ production = ["boto3", "sentry-sdk", "weasyprint", "python-docx", "ebooklib", "j
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0"  # ^8 had CVE-2025-71176; 9.0+ patched
-pytest-cov = "^4.1"
+pytest-cov = ">=4.1,<8.0"
 pytest-django = "^4.7"
 black = "^26.0"
 isort = "^5.13"
