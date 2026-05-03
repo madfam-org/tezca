@@ -258,7 +258,7 @@ For each competitive gap from `COMPETITIVE_BENCHMARK_2026-04-27.md` §6, this se
 
 **Integration contract** (per CLAUDE.md "PMF measurement (2026-04-26)" already wired):
 - `@madfam/pmf-widget` already mounted in `apps/web/components/pmf/PmfWidgetMount.tsx`, gated by `NEXT_PUBLIC_PMF_WIDGET_ENABLED=false`.
-- POSTs to `https://api.tulana.madfam.io/v1/pmf/{nps,ellis,smile}`.
+- POSTs to `https://tulana-api.madfam.io/v1/pmf/{nps,ellis,smile}`.
 - Triggers: NPS afterSession=5, Sean Ellis afterSession=3, smile after 3 `law_viewed` actions.
 
 **Work in `tezca`:**

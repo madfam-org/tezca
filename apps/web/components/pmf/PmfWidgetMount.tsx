@@ -40,7 +40,7 @@ import { useAuth } from '@/components/providers/AuthContext';
 
 const FLAG_ENABLED = process.env.NEXT_PUBLIC_PMF_WIDGET_ENABLED === 'true';
 const TULANA_API_URL =
-  process.env.NEXT_PUBLIC_TULANA_API_URL || 'https://api.tulana.madfam.io';
+  process.env.NEXT_PUBLIC_TULANA_API_URL || 'https://tulana-api.madfam.io';
 
 /**
  * Route prefixes where the PMF widget MUST NOT render. PMF signal is only
