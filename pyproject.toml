@@ -67,7 +67,7 @@ pytest = "^9.0"  # ^8 had CVE-2025-71176; 9.0+ patched
 pytest-cov = "^4.1"
 pytest-django = "^4.7"
 black = "^26.0"
-isort = "^5.13"
+isort = ">=5.13,<9.0"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "apps.indigo.settings"
