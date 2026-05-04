@@ -28,6 +28,25 @@ files = [
 ]
 
 [[package]]
+name = "anyio"
+version = "4.13.0"
+description = "High-level concurrency and networking framework on top of asyncio or Trio"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "anyio-4.13.0-py3-none-any.whl", hash = "sha256:08b310f9e24a9594186fd75b4f73f4a4152069e3853f1ed8bfbf58369f4ad708"},
+    {file = "anyio-4.13.0.tar.gz", hash = "sha256:334b70e641fd2221c1505b3890c69882fe4a2df910cba14d97019b90b24439dc"},
+]
+
+[package.dependencies]
+idna = ">=2.8"
+typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
+
+[package.extras]
+trio = ["trio (>=0.32.0)"]
+
+[[package]]
 name = "asgiref"
 version = "3.11.0"
 description = "ASGI specs, helper code, and adapters"
@@ -1546,6 +1565,34 @@ files = [
 ]
 
 [[package]]
+name = "h2"
+version = "4.3.0"
+description = "Pure-Python HTTP/2 protocol implementation"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "h2-4.3.0-py3-none-any.whl", hash = "sha256:c438f029a25f7945c69e0ccf0fb951dc3f73a5f6412981daee861431b70e2bdd"},
+    {file = "h2-4.3.0.tar.gz", hash = "sha256:6c59efe4323fa18b47a632221a1888bd7fde6249819beda254aeca909f221bf1"},
+]
+
+[package.dependencies]
+hpack = ">=4.1,<5"
+hyperframe = ">=6.1,<7"
+
+[[package]]
+name = "hpack"
+version = "4.1.0"
+description = "Pure-Python HPACK header encoding"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "hpack-4.1.0-py3-none-any.whl", hash = "sha256:157ac792668d995c657d93111f46b4535ed114f0c9c8d672271bbec7eae1b496"},
+    {file = "hpack-4.1.0.tar.gz", hash = "sha256:ec5eca154f7056aa06f196a557655c5b009b382873ac8d1e66e79e87535f1dca"},
+]
+
+[[package]]
 name = "html5lib"
 version = "1.1"
 description = "HTML parser based on the WHATWG HTML specification"
@@ -1566,6 +1613,66 @@ all = ["chardet (>=2.2)", "genshi", "lxml ; platform_python_implementation == \"
 chardet = ["chardet (>=2.2)"]
 genshi = ["genshi"]
 lxml = ["lxml ; platform_python_implementation == \"CPython\""]
+
+[[package]]
+name = "httpcore"
+version = "1.0.9"
+description = "A minimal low-level HTTP client."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"},
+    {file = "httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"},
+]
+
+[package.dependencies]
+certifi = "*"
+h11 = ">=0.16"
+
+[package.extras]
+asyncio = ["anyio (>=4.0,<5.0)"]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (==1.*)"]
+trio = ["trio (>=0.22.0,<1.0)"]
+
+[[package]]
+name = "httpx"
+version = "0.28.1"
+description = "The next generation HTTP client."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
+    {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
+]
+
+[package.dependencies]
+anyio = "*"
+certifi = "*"
+h2 = {version = ">=3,<5", optional = true, markers = "extra == \"http2\""}
+httpcore = "==1.*"
+idna = "*"
+
+[package.extras]
+brotli = ["brotli ; platform_python_implementation == \"CPython\"", "brotlicffi ; platform_python_implementation != \"CPython\""]
+cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (==1.*)"]
+zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "hyperframe"
+version = "6.1.0"
+description = "Pure-Python HTTP/2 framing"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "hyperframe-6.1.0-py3-none-any.whl", hash = "sha256:b03380493a519fce58ea5af42e4a42317bf9bd425596f7a0835ffce80f1a42e5"},
+    {file = "hyperframe-6.1.0.tar.gz", hash = "sha256:f630908a00854a7adeabd6382b43923a4c4cd4b821fcb527e6ab9e15382a3b08"},
+]
 
 [[package]]
 name = "idna"
@@ -1715,14 +1822,14 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "juriscraper"
-version = "2.7.5"
+version = "3.0.16"
 description = "An API to scrape American court websites for metadata."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "juriscraper-2.7.5-py3-none-any.whl", hash = "sha256:eb1150fea3107244277b884b8fdc53764a44d18a5ece6b9306d089ba9542206a"},
-    {file = "juriscraper-2.7.5.tar.gz", hash = "sha256:6d0768945c8b10408894f710f30d5cfab56e6a89b7b97ba4eea41c40ae5fa915"},
+    {file = "juriscraper-3.0.16-py3-none-any.whl", hash = "sha256:e1d284375cc830779786cbba369be6c2b1f04dac74543af0aae93cb5306ce827"},
+    {file = "juriscraper-3.0.16.tar.gz", hash = "sha256:ba15a161d94ac6996183bbdab5e0f8696e9c92d8870b0736080469a98b2add79"},
 ]
 
 [package.dependencies]
@@ -1734,6 +1841,7 @@ dateparser = ">=1.2.0"
 feedparser = ">=6.0.11"
 geonamescache = ">=2.0.0"
 html5lib = "*"
+httpx = {version = ">=0.28.1", extras = ["http2"]}
 lxml = ">=5.2"
 nh3 = "*"
 python-dateutil = ">=2.8.2"
@@ -4689,4 +4797,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "41e43be972144b4a62ffc8bc4db78213b27b302c3a031426c032f6daabb0498a"
+content-hash = "11ebf9866ddd7dc50f252e68d23d90e74096a3d0989e8a1d28200aa49a129804"
