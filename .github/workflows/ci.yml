@@ -7,6 +7,25 @@ on:
     branches: [ main ]
 
 jobs:
+  networkpolicy-port-lint:
+    name: NetworkPolicy port consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    # Prevents the 2026-05-04 status.enclii.dev outage class:
+    # NetworkPolicy `ports:` clauses that don't intersect the selected pods'
+    # containerPorts (silent CNI drop, hours to diagnose).
+    # See scripts/check-networkpolicy-ports.py for full rationale.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Run NetworkPolicy port lint
+        run: python3 scripts/check-networkpolicy-ports.py k8s/
+
   test-backend:
     name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
