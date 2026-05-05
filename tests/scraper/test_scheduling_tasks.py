@@ -583,8 +583,10 @@ class TestRecoveryTasks:
         mock_run.return_value = MagicMock(returncode=0, stdout="ok")
         run_wayback_recovery(domains=["example.com", "test.gob.mx"])
         cmd = mock_run.call_args[0][0]
-        assert "example.com" in cmd
-        assert "test.gob.mx" in cmd
+        # Use explicit element-equality (not substring-of-the-whole-list)
+        # to avoid CodeQL's URL-substring-sanitization false-positive class.
+        assert any(arg == "example.com" for arg in cmd)
+        assert any(arg == "test.gob.mx" for arg in cmd)
 
 
 # ── run_dof_historical ────────────────────────────────────────────────
