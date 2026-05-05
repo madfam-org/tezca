@@ -1,0 +1,43 @@
+---
+# Allow Cloudflare Tunnel ingress to tezca-api.
+#
+# Background: tezca-api serves api.tezca.mx via Cloudflare Tunnel.
+# A previously-applied NetworkPolicy `tezca-api-ingress-from-karafiel`
+# (added 2026-04-28) selected `app.kubernetes.io/name: tezca-api` for
+# Ingress. Once any NetworkPolicy applies to a pod, Kubernetes default-
+# denies all OTHER ingress directions. Since no policy explicitly
+# permitted cloudflared, every external request to api.tezca.mx
+# returned HTTP 502 (status.enclii.dev incident, 2026-05-03 23:46).
+#
+# Fix: explicit allow-cloudflared-ingress for the api on port 8000.
+# Cloudflared is the trust boundary; we allow all named container
+# ports the api exposes.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cloudflared-ingress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudflare-tunnel
+          podSelector:
+            matchLabels:
+              app: cloudflared
+      ports:
+        - protocol: TCP
+          port: 8000   # tezca-api (Django + DRF)
+        - protocol: TCP
+          port: 3000   # tezca-web (Next.js)
+        - protocol: TCP
+          port: 3001   # tezca-admin (Next.js)
