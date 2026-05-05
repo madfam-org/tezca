@@ -35,6 +35,7 @@ Response::
 from __future__ import annotations
 
 import datetime
+import hashlib
 import logging
 import os
 from typing import Any, Dict
@@ -111,9 +112,20 @@ def _record_usage(
         method="POST",
         status_code=200,
     )
+    # Log a SHA-256 hash of the api-key prefix instead of the prefix itself.
+    # The prefix alone is low-risk (it's just the public-facing few chars,
+    # not the secret), but several compliance regimes (PCI-DSS, SOC 2 CC6.7,
+    # MX LFPDPPP) treat any portion of an authentication credential as
+    # sensitive in unstructured logs. Hashing yields a stable correlation
+    # id without leaking the credential surface.
+    api_key_log_id = (
+        hashlib.sha256(api_key_prefix.encode("utf-8")).hexdigest()[:16]
+        if api_key_prefix
+        else "anon"
+    )
     logger.info(
-        "chat.preguntar usage api_key=%s prompt_tokens=%d completion_tokens=%d",
-        api_key_prefix or "anon",
+        "chat.preguntar usage api_key_id=%s prompt_tokens=%d completion_tokens=%d",
+        api_key_log_id,
         prompt_tokens,
         completion_tokens,
     )

@@ -108,10 +108,21 @@ def fetch_leaf_fingerprint(host: str, port: int = 443, timeout: float = 10.0) ->
     """Connect to *host:port* and return the leaf cert SHA-256 fingerprint.
 
     Returned as uppercase colon-less hex (e.g. ``"AB12...CD"``). Raises any
-    socket / SSL exception on failure. Verification is *disabled* during
-    capture — this function exists precisely to fingerprint untrusted chains.
+    socket / SSL exception on failure. Certificate-chain verification is
+    *intentionally* disabled — this function exists precisely to capture the
+    leaf-cert fingerprint of an untrusted (or self-signed) endpoint, which
+    is then pinned via ``HOST_FINGERPRINTS`` so subsequent connections can
+    be authenticated against the captured pin.
+
+    Protocol version is still pinned to TLS 1.2+ — disabling chain
+    validation does NOT mean accepting insecure transport. Connections that
+    can't negotiate TLS 1.2 or higher are rejected at the TLS layer.
     """
     ctx = ssl.create_default_context()
+    # Pin minimum protocol to TLS 1.2 — fingerprint capture is for chain-untrust,
+    # not protocol-downgrade tolerance. Closes the CodeQL py/insecure-protocol
+    # finding (CERT_NONE alone left the door open to TLS<1.2 via system default).
+    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
     with socket.create_connection((host, port), timeout=timeout) as sock:
