@@ -24,3 +24,114 @@ spec:
           podSelector:
             matchLabels:
               app: cloudflared
+---
+# Allow intra-namespace pod-to-pod traffic.
+#
+# Critical: when ANY NetworkPolicy applies to a pod (above), Kubernetes
+# auto-isolates that pod for the directions covered. The allow-cloudflared
+# rule above selects every part-of=tezca pod — which means tezca-redis
+# becomes default-deny ingress, blocking tezca-worker / tezca-beat /
+# tezca-api from reaching it on port 6379. Result: workers crashloop on
+# `Connection refused to tezca-redis:6379`. Caught 2026-05-04 ~165 min
+# after the cloudflared rule rolled.
+#
+# Same pattern as karafiel/infra/k8s/production/network-policies.yaml.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-intra-namespace
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector: {}
+  egress:
+    - to:
+        - podSelector: {}
+---
+# Allow DNS egress (CoreDNS in kube-system on port 53 UDP/TCP).
+# Without this, the Egress isolation triggered by allow-intra-namespace
+# blocks the workers from resolving hostnames at all (including
+# tezca-redis in their own namespace, which still goes through DNS).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow egress to data namespace (postgres 5432, pgbouncer 6432).
+# Tezca's API + workers query the shared postgres for Law / Article /
+# APIUsageLog reads/writes. Workers also write Celery results.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-data-egress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6432
+---
+# Allow HTTPS egress (port 443) to the public internet for SAT scraping,
+# DOF crawls, judicial scrapers, Selva inference router, etc.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-https-egress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 443
