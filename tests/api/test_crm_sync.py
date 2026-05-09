@@ -1,4 +1,4 @@
-"""Tests for CRM sync — interest.created dispatch to phyne-crm."""
+"""Tests for CRM sync — interest.created dispatch to phynd-crm."""
 
 import hashlib
 import hmac

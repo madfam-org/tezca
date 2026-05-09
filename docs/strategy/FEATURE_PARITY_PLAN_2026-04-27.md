@@ -404,7 +404,7 @@ Per `2026-04-25-tulana-ecosystem-pricing.md`, Tezca's tiers are LIVE at $199 / $
 - Tulana v0.2 path to high-confidence prices (target 2026-05-09 per pricing doc):
   1. Operator enters cost-of-delivery for top 5 products including Tezca.
   2. Run `tulana_recommend` → review dossier.
-  3. Schedule PhyneCRM Van Westendorp campaigns (10 responses × 3 SKUs).
+  3. Schedule PhyndCRM Van Westendorp campaigns (10 responses × 3 SKUs).
   4. Approve via admin UI; recommendation engine stamps confidence.
 
 **Expected outcome:** Essentials may move to $499 or $799 (within the Help-AI / vLex band). Institutional likely stable at $1,999 anchored by Karafiel WTP. Community at $199 stays as differentiator.

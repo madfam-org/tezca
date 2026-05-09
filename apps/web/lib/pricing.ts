@@ -9,7 +9,7 @@
 //   apps/api/billing_views PLAN_TO_TIER. academic maps to tezca_academic.
 //   institutional maps to tezca_institutional.
 // - Confidence: "low" until Tulana v0.2 ships WTP automation. Operator
-//   should re-validate via PhyneCRM Van Westendorp campaign before
+//   should re-validate via PhyndCRM Van Westendorp campaign before
 //   any major price change.
 export const PRICING = {
   essentials:    { monthly: 199,  promo: 31, currency: 'MXN' },

@@ -1,4 +1,4 @@
-"""CRM webhook dispatch — sends interest.created events to phyne-crm."""
+"""CRM webhook dispatch — sends interest.created events to phynd-crm."""
 
 import logging
 

@@ -232,7 +232,7 @@ TEZCA_ADMIN_USER_IDS = set(
 # ── Deployment Mode ──────────────────────────────────────────────────
 TEZCA_DEPLOYMENT = os.environ.get("TEZCA_DEPLOYMENT", "self-hosted")
 
-# ── CRM Sync (Phyne-CRM) ────────────────────────────────────────────
+# ── CRM Sync (Phynd-CRM) ────────────────────────────────────────────
 CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
 CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")
 

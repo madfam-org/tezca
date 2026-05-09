@@ -75,7 +75,7 @@ npm run dev:all                     # both concurrently
 | `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
 | `QUALITY_QUARANTINE_GRADES` | `D,F` | Comma-separated quality grades to quarantine from indexing |
 | `NEXT_PUBLIC_MONETIZATION_ENABLED` | `false` | When `true`, enables full tier checkout flows. When `false` (default), shows interest-capture forms instead of paywalls |
-| `CRM_WEBHOOK_URL` | `""` | Phyne-CRM webhook URL (e.g. `https://crm.madfam.io/api/webhooks/tezca`). No-ops when empty |
+| `CRM_WEBHOOK_URL` | `""` | Phynd-CRM webhook URL (e.g. `https://crm.madfam.io/api/webhooks/tezca`). No-ops when empty |
 | `CRM_WEBHOOK_SECRET` | `""` | HMAC-SHA256 secret for CRM webhook signing. No-ops when empty |
 | `CHAT_ENABLED` | `false` | Master kill-switch for `/api/v1/chat/preguntar/`. Flip to `true` once Selva onboarding lands |
 | `CHAT_BACKEND` | `mock` | `mock` (deterministic, dev/test) or `selva` (production OpenAI-compatible /v1) |
@@ -459,7 +459,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/models.py` | Law, Article, ExportLog, AcquisitionLog, Contribution, JudicialRecord, FeatureInterest (with wishlist field) |
 | `apps/api/interest_views.py` | Feature interest capture endpoint (`POST /api/v1/interest/`) — email + feature_key + wishlist collection before monetization. `ALLOWED_FEATURES` includes `early_access` for pre-monetization waitlist |
 | `apps/api/user_apikey_views.py` | Self-serve API key CRUD (`GET/POST /api/v1/user/apikeys/`, `PATCH ./<prefix>/`, `DELETE ./<prefix>/revoke/`) — tier-inherited, max 5 keys |
-| `apps/api/crm_sync.py` | CRM webhook dispatch — sends interest.created and newsletter.subscribed events to phyne-crm (no-ops when CRM_WEBHOOK_URL not set) |
+| `apps/api/crm_sync.py` | CRM webhook dispatch — sends interest.created and newsletter.subscribed events to phynd-crm (no-ops when CRM_WEBHOOK_URL not set) |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |

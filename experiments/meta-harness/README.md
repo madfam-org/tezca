@@ -103,7 +103,7 @@ Worst-case cost estimates for common run shapes. Verify against
 | Phase 0 spike | `openrouter/openai/gpt-oss-120b` | 1×5×100 | 4k+0.5k | ~$0.28 |
 | Phase 1 tezca pilot (per iter) | `claude-haiku-4-5` | 1×5×100 | 4k+0.5k | ~$3.25 |
 | Phase 1 tezca full sweep | `claude-haiku-4-5` | 10×5×100 | 4k+0.5k | ~$32.50 |
-| Phase 3 phyne-crm draft eval | `claude-sonnet-4-6` | 1×5×100 | 6k+1k | ~$16.50 |
+| Phase 3 phynd-crm draft eval | `claude-sonnet-4-6` | 1×5×100 | 6k+1k | ~$16.50 |
 | Paper TB2 reference (per iter) | `claude-opus-4-7` | 1×2×89 | ~100k+20k | ~$535 |
 
 Regenerate any row with `make estimate MODEL=... ITERATIONS=... CANDIDATES=...`.
@@ -222,7 +222,7 @@ upstream/                            — cloned by bootstrap (gitignored)
   held-out split. Success gate: ≥3pp F1 lift, ≤2pp per-label regression.
 - **Phase 2** — dhanam transaction auto-categorization. Target ≥20%
   reduction in manual recategorizations.
-- **Phase 3** — phyne-crm first-touch email. Offline reply-rate lift ≥15%
+- **Phase 3** — phynd-crm first-touch email. Offline reply-rate lift ≥15%
   before any live A/B.
 - **Phase 4** — autoswarm agent scaffolds. Conditional on 1–3 wins.
 
