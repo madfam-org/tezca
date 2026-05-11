@@ -2,7 +2,7 @@
 # Build context: project root (monorepo)
 
 # ── Stage 1: Dependencies ────────────────────────────────────────────
-FROM node:25-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 
 # Copy workspace root package files. .npmrc references ${NPM_MADFAM_TOKEN}
@@ -32,7 +32,7 @@ RUN npm install --no-save \
     2>/dev/null || true
 
 # ── Stage 2: Build ───────────────────────────────────────────────────
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -65,7 +65,7 @@ RUN test -f apps/web/.next/standalone/apps/web/server.js || \
     (echo "ERROR: server.js not found at expected path" && ls -la apps/web/.next/standalone/ && exit 1)
 
 # ── Stage 3: Runtime ─────────────────────────────────────────────────
-FROM node:25-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
