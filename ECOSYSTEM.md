@@ -1,5 +1,13 @@
 # tezca — Ecosystem Context
 
+> [!IMPORTANT]
+> MADFAM-ENCLII-FIRST-LEGACY-RAW v1: This document contains legacy raw infrastructure command examples.
+> Routine production operations must use Enclii web, API, or CLI. Treat raw
+> `kubectl`, `helm`, SSH, provider CLI/API, `docker exec`, and direct container
+> access as platform bootstrap or documented break-glass only, and record any
+> missing Enclii adapter gap.
+
+
 > **Mexican law oracle — machine-readable federal/state/municipal laws, rulings, and DOF feeds.**
 
 This file is self-contained: a Claude session on a fresh machine can operate
@@ -209,22 +217,33 @@ enclii local down
 enclii onboard --repo madfam-org/<name> --db-name <db> --secrets-file .env
 ```
 
-### When to use kubectl (escape hatches)
+### Enclii-first production operations
 
-The enclii CLI routes through Switchyard. These operations don't yet have
-a CLI equivalent — kubectl is the right tool:
+Enclii is the required control plane for routine production operations.
+Use the web UI, API, or CLI before reaching for raw infrastructure tools:
 
-- ArgoCD sync / patch — `kubectl patch application <app> -n argocd --type merge ...`
-- Kyverno PolicyExceptions + raw CRD management
-- Longhorn / PVC operations — `kubectl get volumes.longhorn.io -n longhorn-system`
-- Direct pod exec for debugging — `kubectl exec -n <ns> deploy/<svc> -- ...`
-- Raw port-forward — `kubectl port-forward -n <ns> svc/<svc> 8080:80`
-- Janua DB ops (no enclii equivalent)
+- ArgoCD sync / diff / rollback — `enclii ops apps ...`
+- Pod logs, diagnosis, and safe restarts — `enclii ops pods ...`
+- Longhorn / PVC / PV inspection and repair planning — `enclii ops storage ...`
+- Kyverno violations and time-bound waivers — `enclii ops policy ...`
+- ExternalSecrets and Vault readiness — `enclii ops secrets ...`
+- ARC runner inspection and drain workflows — `enclii ops runners ...`
+- DNS, tunnels, SaaS hostnames, providers, and repo automation — `enclii providers ...`
+- Service lifecycle, domains, secrets, jobs, and observability — `enclii deploy`, `enclii rollback`, `enclii logs`, `enclii observe`, `enclii domains`, `enclii secrets`, `enclii jobs`
+
+### Break-glass-only access
+
+Raw `kubectl`, `helm`, SSH, provider CLIs/APIs, `docker exec`, and direct
+container access are allowed only for platform bootstrap or documented
+break-glass emergencies when Enclii is unavailable or lacks an implemented
+adapter. Record the actor, reason, target service/environment, commands
+executed, result, and follow-up Enclii adapter gap or incident link.
 
 ### Cluster access
 
-kubeconfig + SSH keys live in `madfam-org/internal-devops` (private repo).
-On a fresh machine, pull that repo first to get `~/.kube/config-hetzner`.
+kubeconfig + SSH keys live in `madfam-org/internal-devops` (private repo)
+for bootstrap and break-glass use only. Routine production operations must
+go through Enclii web, API, or CLI.
 
 ### Exit codes (scripting against the CLI)
 
