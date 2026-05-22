@@ -66,11 +66,20 @@ from typing import Iterable, Iterator
 try:
     import yaml
 except ImportError:  # pragma: no cover
-    print("error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
+    print(
+        "error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr
+    )
     sys.exit(2)
 
 
-WORKLOAD_KINDS = {"Deployment", "StatefulSet", "DaemonSet", "ReplicaSet", "Job", "CronJob"}
+WORKLOAD_KINDS = {
+    "Deployment",
+    "StatefulSet",
+    "DaemonSet",
+    "ReplicaSet",
+    "Job",
+    "CronJob",
+}
 
 
 @dataclass
@@ -134,10 +143,12 @@ def extract_workload(path: Path, doc: dict) -> Workload | None:
     labels = pod_meta.get("labels") or {}
     pod_spec = template.get("spec") or {}
 
-    workload = Workload(file=str(path), name=name, namespace=namespace, labels=dict(labels))
+    workload = Workload(
+        file=str(path), name=name, namespace=namespace, labels=dict(labels)
+    )
 
-    for container in (pod_spec.get("containers") or []):
-        for port in (container.get("ports") or []):
+    for container in pod_spec.get("containers") or []:
+        for port in container.get("ports") or []:
             cp = port.get("containerPort")
             if isinstance(cp, int):
                 workload.container_ports.add(cp)
@@ -224,7 +235,9 @@ def classify_rule_ports(
     return matching, non_matching
 
 
-def check_networkpolicy(np_doc: dict, np_path: Path, workloads: list[Workload]) -> list[Finding]:
+def check_networkpolicy(
+    np_doc: dict, np_path: Path, workloads: list[Workload]
+) -> list[Finding]:
     findings: list[Finding] = []
     meta = np_doc.get("metadata") or {}
     np_name = meta.get("name", "<unnamed>")
@@ -238,9 +251,11 @@ def check_networkpolicy(np_doc: dict, np_path: Path, workloads: list[Workload]) 
         # Nothing in scope — surface a hint, but don't fail. The selector
         # might legitimately target a workload defined elsewhere (other repo,
         # operator-managed CRD output, etc.).
-        selector_repr = pod_selector.get("matchLabels") or pod_selector.get(
-            "matchExpressions"
-        ) or "(empty)"
+        selector_repr = (
+            pod_selector.get("matchLabels")
+            or pod_selector.get("matchExpressions")
+            or "(empty)"
+        )
         findings.append(
             Finding(
                 severity="warn",
@@ -313,7 +328,9 @@ def check_networkpolicy(np_doc: dict, np_path: Path, workloads: list[Workload]) 
 
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
-        print("usage: check-networkpolicy-ports.py <root> [<root> ...]", file=sys.stderr)
+        print(
+            "usage: check-networkpolicy-ports.py <root> [<root> ...]", file=sys.stderr
+        )
         return 2
 
     roots = [Path(p) for p in argv[1:]]
