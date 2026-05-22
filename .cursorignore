@@ -1,0 +1,9 @@
+# Copy to <app-repo>/.cursorignore for JS/TS monorepos
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+coverage/
+**/__pycache__/
+.pnpm-store/
