@@ -55,6 +55,7 @@ This script is intentionally dependency-light (PyYAML only) so it can be
 copied into any ecosystem repo's `scripts/` directory and wired into that
 repo's CI verbatim.
 """
+
 from __future__ import annotations
 
 import os
