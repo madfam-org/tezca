@@ -27,6 +27,12 @@ redirect and should not become the source of truth again.
   direct container access only for platform bootstrap or documented break-glass
   emergencies when Enclii is unavailable or lacks an implemented adapter.
 - Record any missing Enclii adapter gap instead of normalizing raw production
+
+Legal/compliance data and side-effect rules:
+- Treat legal texts, legal analysis, annotations, search/index data, scraper/source catalogs, official-source URLs, API keys/scopes, admin user IDs, CRM webhook payloads, billing/checkout handoffs, Selva chat prompts, Elasticsearch indexes, MCP queries, and generated exports as sensitive legal/compliance data where applicable.
+- Treat scrapers/downloaders/ingestion/RMF/DOF jobs, quality backfills, cross-reference/domain classification, index rebuilds, exports, API key admin, webhook delivery, chat/LLM calls, DB migrations/seeds/resets, local docker stacks, MCP/SDK publish, and GitOps deploys as side-effectful. Run them only after an explicit operator request and the matching local guard environment variable.
+- Placeholder-only secrets belong in examples and docs: Janua, Dhanam, Selva, CRM webhook, Elasticsearch, database/Redis, npm/GitHub, Sentry/PostHog, R2/S3, and Tezca API keys/tokens.
+- Local guard variables: `LOCAL_SERVICES=yes` for service stacks/dev servers, `LOCAL_DB=yes` for migrations/seeds, `LOCAL_DESTRUCTIVE=yes` for cleanup/reset flows, and `LOCAL_LEGAL_DATA_OPS=yes` for legal ingestion/indexing/export/webhook/chat/package-publish operations.
   access in docs or runbooks.
 
 ## Repo entrypoints

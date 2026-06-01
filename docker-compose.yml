@@ -27,7 +27,7 @@ services:
       # ES auth — must match the elasticsearch service credentials below.
       # Override via .env in any non-throwaway environment.
       - ES_USERNAME=${ES_USERNAME:-elastic}
-      - ES_PASSWORD=${ES_PASSWORD:-changeme-dev-only}
+      - ES_PASSWORD=${ES_PASSWORD:?set ES_PASSWORD for local compose}
       # Document storage (defaults to "local"; set "r2" for Cloudflare R2)
       - STORAGE_BACKEND=${STORAGE_BACKEND:-local}
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
@@ -36,7 +36,7 @@ services:
       - R2_ENDPOINT_URL=${R2_ENDPOINT_URL:-}
       # CRM integration (PhyndCRM webhook dispatch)
       - CRM_WEBHOOK_URL=${CRM_WEBHOOK_URL:-}
-      - CRM_WEBHOOK_SECRET=${CRM_WEBHOOK_SECRET:-}
+      - CRM_WEBHOOK_SECRET=${CRM_WEBHOOK_SECRET:?set CRM_WEBHOOK_SECRET for local compose}
       # Error tracking
       - SENTRY_DSN=${SENTRY_DSN:-}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-development}
@@ -77,7 +77,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - ES_HOST=http://elasticsearch:9200
       - ES_USERNAME=${ES_USERNAME:-elastic}
-      - ES_PASSWORD=${ES_PASSWORD:-changeme-dev-only}
+      - ES_PASSWORD=${ES_PASSWORD:?set ES_PASSWORD for local compose}
       - STORAGE_BACKEND=${STORAGE_BACKEND:-local}
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-}
@@ -85,7 +85,7 @@ services:
       - R2_ENDPOINT_URL=${R2_ENDPOINT_URL:-}
       # CRM integration (PhyndCRM webhook dispatch — Celery task)
       - CRM_WEBHOOK_URL=${CRM_WEBHOOK_URL:-}
-      - CRM_WEBHOOK_SECRET=${CRM_WEBHOOK_SECRET:-}
+      - CRM_WEBHOOK_SECRET=${CRM_WEBHOOK_SECRET:?set CRM_WEBHOOK_SECRET for local compose}
       - SENTRY_DSN=${SENTRY_DSN:-}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-development}
     deploy:
@@ -192,7 +192,7 @@ services:
     environment:
       - POSTGRES_DB=${DB_NAME:-leyes_mx}
       - POSTGRES_USER=${DB_USER:-leyes_mx}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-leyes_mx_dev}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD for local compose}
     ports:
       - "5432:5432"
     volumes:
@@ -246,7 +246,7 @@ services:
       - xpack.security.enrollment.enabled=false
       - xpack.security.transport.ssl.enabled=false
       - xpack.security.http.ssl.enabled=false
-      - ELASTIC_PASSWORD=${ES_PASSWORD:-changeme-dev-only}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?set ELASTIC_PASSWORD for local compose}
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
     ports:
       - "9200:9200"
