@@ -1,6 +1,6 @@
 # Strategy Documentation Index
 
-**Last Updated:** 2026-04-27
+**Last Updated:** 2026-05-29
 
 This directory holds Tezca's product/architectural strategy. If you're new to the project and need to know "why X" or "what should we build next," start here. The documents are listed in suggested reading order.
 
@@ -12,18 +12,19 @@ This directory holds Tezca's product/architectural strategy. If you're new to th
 2. **[PRD.md](./PRD.md)** — Product requirements. Legacy; partial refresh pending.
 3. **[COMPETITIVE_BENCHMARK_2026-04-27.md](./COMPETITIVE_BENCHMARK_2026-04-27.md)** — Where Tezca sits against vLex, Tirant Prime, Lexius, Help-AI, Buho Legal. Resulting positioning: "the open infrastructure for Mexican law — the data layer everyone builds on top of."
 4. **[FEATURE_PARITY_PLAN_2026-04-27.md](./FEATURE_PARITY_PLAN_2026-04-27.md)** — **Source-of-truth** for what's in flight. Maps each competitive gap to the responsible MADFAM ecosystem service (Selva, Dhanam, CNPG, Karafiel, Tulana, Coforma). 13 sections, 8 quarters of sequencing, 8 open operator decisions.
+5. **[TULANA_INTEGRATION_BOUNDARY_2026-05-29.md](./TULANA_INTEGRATION_BOUNDARY_2026-05-29.md)** — Boundary decision: Tezca is a product/SKU and legal-data service, not Tulana's legal approval workflow.
 
 ## Track-specific docs (FEATURE_PARITY_PLAN cross-references)
 
-5. **[KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md](./KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md)** — Track 5. Tezca-side readiness for Karafiel as anchor paying customer. Includes operator-runnable SQL queries to verify domain-classification coverage (P0 before Karafiel goes live).
-6. **[SELVA_ONBOARDING_TICKET_2026-04-27.md](./SELVA_ONBOARDING_TICKET_2026-04-27.md)** — Track 8. Operator-side spec for provisioning the `tezca-selva-relay` Janua client. Unblocks `CHAT_BACKEND=selva` flip in production.
-7. **[CNPG_MIGRATION_PREP_2026-04-27.md](./CNPG_MIGRATION_PREP_2026-04-27.md)** — Track 6. Tezca-side connection-pool knobs (already shipped) plus the cutover runbook. Gated on RFC 0012 (`madfam-org/enclii`) shipping the cluster.
-8. **[DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md](./DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md)** — Track 7. Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027). Architecture, repo layout, RFC 0014 onboarding command, pricing tiers anchored on Buho Legal.
+6. **[KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md](./KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md)** — Track 5. Tezca-side readiness for Karafiel as anchor paying customer. Includes operator-runnable SQL queries to verify domain-classification coverage (P0 before Karafiel goes live).
+7. **[SELVA_ONBOARDING_TICKET_2026-04-27.md](./SELVA_ONBOARDING_TICKET_2026-04-27.md)** — Track 8. Operator-side spec for provisioning the `tezca-selva-relay` Janua client. Unblocks `CHAT_BACKEND=selva` flip in production.
+8. **[CNPG_MIGRATION_PREP_2026-04-27.md](./CNPG_MIGRATION_PREP_2026-04-27.md)** — Track 6. Tezca-side connection-pool knobs (already shipped) plus the cutover runbook. Gated on RFC 0012 (`madfam-org/enclii`) shipping the cluster.
+9. **[DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md](./DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md)** — Track 7. Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027). Architecture, repo layout, RFC 0014 onboarding command, pricing tiers anchored on Buho Legal.
 
 ## Quality / stability
 
-9. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — Original 8-workstream plan with the rubric and rationale. Still authoritative on the dimension definitions.
-10. **[A_PLUS_PROGRESS_2026-04-27.md](./A_PLUS_PROGRESS_2026-04-27.md)** — **Live progress doc.** What shipped in PRs #55–83 (44%→64% backend coverage, 56%→63% frontend coverage with `all:true`, 0 silent excepts, 0 files >800 LOC, TLS pinning architecture, frontend coverage gates locked at floor−2pp). 4 of 9 A+ rubric dimensions now at A. Consolidates remaining work into 6 forward workstreams (WS-R1…WS-R6) with WS-R1 + WS-R2 ✅ DONE. Read this for the *current* state.
+10. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — Original 8-workstream plan with the rubric and rationale. Still authoritative on the dimension definitions.
+11. **[A_PLUS_PROGRESS_2026-04-27.md](./A_PLUS_PROGRESS_2026-04-27.md)** — **Live progress doc.** What shipped in PRs #55–83 (44%→64% backend coverage, 56%→63% frontend coverage with `all:true`, 0 silent excepts, 0 files >800 LOC, TLS pinning architecture, frontend coverage gates locked at floor−2pp). 4 of 9 A+ rubric dimensions now at A. Consolidates remaining work into 6 forward workstreams (WS-R1…WS-R6) with WS-R1 + WS-R2 ✅ DONE. Read this for the *current* state.
 
 ## Subdirectories
 
