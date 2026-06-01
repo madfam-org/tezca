@@ -20,7 +20,7 @@
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "node ../../scripts/require-local-legal-data-ops.mjs && npm run build"
   },
   "publishConfig": {
     "access": "public",

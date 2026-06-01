@@ -2,6 +2,15 @@ name: Deploy Admin
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_ack:
+        description: "Type production to approve this production deploy."
+        required: true
+        type: string
+      reason:
+        description: "Production deploy reason (min 12 chars)."
+        required: true
+        type: string
   push:
     branches: [main]
     paths:
@@ -15,6 +24,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: madfam-org/tezca/admin
 
+concurrency:
+  group: tezca-production-kustomization
+  cancel-in-progress: false
+
 jobs:
   build-and-push:
     name: Build & Push Admin Image
@@ -25,6 +38,20 @@ jobs:
       id-token: write
 
     steps:
+      - name: Require manual production deploy acknowledgement
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          DEPLOY_ACK: ${{ inputs.deploy_ack }}
+          DEPLOY_REASON: ${{ inputs.reason }}
+        run: |
+          if [ "${DEPLOY_ACK}" != "production" ]; then
+            echo "deploy_ack must be production" >&2
+            exit 1
+          fi
+          if [ ${#DEPLOY_REASON} -lt 12 ]; then
+            echo "reason must be at least 12 characters" >&2
+            exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -55,7 +82,6 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             NEXT_PUBLIC_API_URL=https://api.tezca.mx/api/v1
             NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_JANUA_ADMIN_PUBLISHABLE_KEY }}

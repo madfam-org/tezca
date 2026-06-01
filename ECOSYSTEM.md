@@ -1,6 +1,10 @@
 # tezca — Ecosystem Context
 
 > [!IMPORTANT]
+> Tezca is a legal intelligence/oracle surface. Treat legal source data, legal analysis, official-source URLs, scraper catalogs, search indexes, API keys, webhooks, chat prompts, and generated exports as sensitive legal/compliance data where applicable.
+> Scraping, ingestion, RMF/DOF jobs, quality backfills, reindexing, exports, webhooks, chat/LLM calls, DB changes, MCP/SDK publishing, and GitOps deploys require explicit operator intent plus `LOCAL_SERVICES`, `LOCAL_DB`, `LOCAL_DESTRUCTIVE`, or `LOCAL_LEGAL_DATA_OPS` as applicable.
+
+> [!IMPORTANT]
 > MADFAM-ENCLII-FIRST-LEGACY-RAW v1: This document contains legacy raw infrastructure command examples.
 > Routine production operations must use Enclii web, API, or CLI. Treat raw
 > `kubectl`, `helm`, SSH, provider CLI/API, `docker exec`, and direct container
@@ -73,7 +77,7 @@ below is embedded here so this document stands alone.
 | **Enclii** | `madfam-org/enclii` | PaaS control plane — all deploys go through this |
 | **Janua** | `madfam-org/janua` | OIDC/OAuth 2.0 provider — RS256 JWKS at `auth.madfam.io/.well-known/jwks.json` |
 | **Dhanam** | `madfam-org/dhanam` | Billing + payment gateways (Stripe, Mercado Pago, SPEI, etc.) |
-| **Selva** | `madfam-org/autoswarm-office` | LLM inference routing + agent orchestration |
+| **Selva** | `madfam-org/selva-office` | LLM inference routing + agent orchestration |
 | **Karafiel** | `madfam-org/karafiel` | Operational compliance — CFDI, NOM-151, e.firma, SAT-adjacent. Owns legal-ops / contract templates |
 | **Tezca** | `madfam-org/tezca` | Mexican law oracle (informational only — feeds Karafiel) |
 | **Cotiza** | `madfam-org/digifab-quoting` | MADFAM's quoting engine (fabrication + services) |
@@ -91,7 +95,7 @@ below is embedded here so this document stands alone.
 - **Billing**: credit metering + entitlements flow through Dhanam. See
   `madfam-org/dhanam` for the meter/entitlement/invoice APIs.
 - **Inference**: every LLM call should route through Selva
-  (`autoswarm-office`) at `/v1` (OpenAI-compatible). Do not talk directly
+  (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly
   to OpenAI / Anthropic from service code.
 - **CORS**: explicit allowlist per service. Wildcards are banned
   (audit 2026-04-23 H2/H5/H6).
