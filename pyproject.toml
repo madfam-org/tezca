@@ -50,7 +50,7 @@ pdf2image = {version = "^1.16", optional = true}
 # Excel parsing for QR state scraper
 openpyxl = {version = "^3.1", optional = true}
 # Analytics
-posthog = {version = "^3.0", optional = true}
+posthog = {version = ">=3,<8", optional = true}
 idna = ">=3.15,<4"
 urllib3 = ">=2.7,<3"
 
