@@ -9,7 +9,7 @@ packages = [{include = "apps"}, {include = "engines"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "^5.0"
+django = ">=5.2.14,<6"
 djangorestframework = "^3.14"
 django-cors-headers = "^4.3.1"
 celery = "^5.3"
@@ -51,6 +51,8 @@ pdf2image = {version = "^1.16", optional = true}
 openpyxl = {version = "^3.1", optional = true}
 # Analytics
 posthog = {version = "^3.0", optional = true}
+idna = ">=3.15,<4"
+urllib3 = ">=2.7,<3"
 
 [tool.poetry.extras]
 r2 = ["boto3"]
