@@ -16,7 +16,7 @@ services:
     environment:
       - POSTGRES_DB=leyes_mx_test
       - POSTGRES_USER=leyes_mx
-      - POSTGRES_PASSWORD=test_pw
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD for local compose}
     deploy:
       resources:
         limits:
