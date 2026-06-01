@@ -26,6 +26,7 @@ help:
 
 # Start all services
 up:
+	@node ./scripts/require-local-services.mjs
 	@echo "🚀 Starting all services..."
 	@docker-compose up -d
 	@echo "✅ Docker services started"
@@ -40,6 +41,7 @@ up:
 
 # Stop all services
 down:
+	@node ./scripts/require-local-destructive.mjs
 	@echo "🛑 Stopping all services..."
 	@docker-compose down
 	@pkill -f "next dev" || true
@@ -70,6 +72,7 @@ logs:
 
 # Clean up everything
 clean:
+	@node ./scripts/require-local-destructive.mjs
 	@echo "🧹 Cleaning up..."
 	@docker-compose down -v
 	@rm -rf apps/web/.next
@@ -83,6 +86,7 @@ clean:
 
 # Development mode (Docker + Next.js with hot reload)
 dev:
+	@node ./scripts/require-local-services.mjs
 	@echo "🔧 Starting development environment..."
 	@docker-compose up -d
 	@cd apps/web && npm install
@@ -170,6 +174,7 @@ format:
 
 # Run law ingestion
 ingest:
+	@node ./scripts/require-local-legal-data-ops.mjs
 	@echo "📚 Running law ingestion pipeline..."
 	@python scripts/ingestion/bulk_ingest.py --all --workers 8
 	@echo "✅ Ingestion complete"
@@ -215,6 +220,7 @@ health:
 
 # Database operations
 db-shell:
+	@node ./scripts/require-local-db.mjs
 	@docker-compose exec db psql -U postgres leyes_db || echo "Database not running"
 
 # API shell

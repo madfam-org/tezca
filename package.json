@@ -1,41 +1,41 @@
 {
-    "name": "tezca-monorepo",
-    "version": "1.0.0",
-    "private": true,
-    "description": "Monorepo root for Tezca",
-    "workspaces": [
-        "apps/*",
-        "packages/*"
-    ],
-    "scripts": {
-        "dev:web": "npm run dev --workspace=web",
-        "build:web": "npm run build --workspace=web",
-        "lint:web": "npm run lint --workspace=web",
-        "dev:admin": "npm run dev --workspace=admin",
-        "build:admin": "npm run build --workspace=admin",
-        "lint:admin": "npm run lint --workspace=admin",
-        "dev:all": "npx concurrently \"npm run dev:web\" \"npm run dev:admin\"",
-        "build:all": "npm run build:web && npm run build:admin",
-        "lint:all": "npm run lint:web && npm run lint:admin",
-        "test:vitest": "npx vitest run",
-        "test:pytest": "python -m pytest tests/ -v",
-        "test:e2e": "npx playwright test",
-        "test:all": "npm run test:vitest && npm run test:pytest && npm run test:e2e"
-    },
-    "engines": {
-        "node": ">=20"
-    },
-    "overrides": {
-        "@janua/nextjs": "0.1.5",
-        "@janua/typescript-sdk": "0.1.2"
-    },
-    "optionalDependencies": {
-        "lightningcss-linux-x64-gnu": "1.30.2",
-        "lightningcss-linux-x64-musl": "1.30.2",
-        "lightningcss-linux-arm64-gnu": "1.30.2"
-    },
-    "devDependencies": {
-        "@janua/typescript-sdk": "0.1.2",
-        "eslint": "^9"
-    }
+  "name": "tezca-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo root for Tezca",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "node ./scripts/require-local-services.mjs && npm run dev --workspace=web",
+    "build:web": "npm run build --workspace=web",
+    "lint:web": "npm run lint --workspace=web",
+    "dev:admin": "node ./scripts/require-local-services.mjs && npm run dev --workspace=admin",
+    "build:admin": "npm run build --workspace=admin",
+    "lint:admin": "npm run lint --workspace=admin",
+    "dev:all": "node ./scripts/require-local-services.mjs && npx concurrently \"npm run dev:web\" \"npm run dev:admin\"",
+    "build:all": "npm run build:web && npm run build:admin",
+    "lint:all": "npm run lint:web && npm run lint:admin",
+    "test:vitest": "npx vitest run",
+    "test:pytest": "python -m pytest tests/ -v",
+    "test:e2e": "npx playwright test",
+    "test:all": "npm run test:vitest && npm run test:pytest && npm run test:e2e"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "overrides": {
+    "@janua/nextjs": "0.1.5",
+    "@janua/typescript-sdk": "0.1.2"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.30.2",
+    "lightningcss-linux-x64-musl": "1.30.2",
+    "lightningcss-linux-arm64-gnu": "1.30.2"
+  },
+  "devDependencies": {
+    "@janua/typescript-sdk": "0.1.2",
+    "eslint": "^9"
+  }
 }
