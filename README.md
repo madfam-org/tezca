@@ -1,5 +1,9 @@
 # Leyes Como Código - Mexico
 
+> [!IMPORTANT]
+> Tezca handles legal/compliance data, official-source scraping, search indexes, API keys, webhooks, chat/LLM prompts, billing handoffs, and package/deploy publishing paths.
+> Scrapers, RMF/DOF ingestion, index rebuilds, exports, webhooks, Selva chat, DB mutations, and publish/deploy flows are side-effectful. Keep examples placeholder-only and set the matching local guard env var only for an explicit operation.
+
 **The definitive digital platform for Mexican legal research** - comprehensive, machine-readable database of Mexican laws (federal, state, municipal) with intuitive interfaces for professionals and citizens.
 
 **Coverage**: 93.9% of Legislative Laws (11,696 of 12,456) + 18,439 non-legislative (30,343 total) — [sourced from `data/universe_registry.json`]

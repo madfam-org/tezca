@@ -1,5 +1,17 @@
 # tezca — Ecosystem Context
 
+> [!IMPORTANT]
+> Tezca is a legal intelligence/oracle surface. Treat legal source data, legal analysis, official-source URLs, scraper catalogs, search indexes, API keys, webhooks, chat prompts, and generated exports as sensitive legal/compliance data where applicable.
+> Scraping, ingestion, RMF/DOF jobs, quality backfills, reindexing, exports, webhooks, chat/LLM calls, DB changes, MCP/SDK publishing, and GitOps deploys require explicit operator intent plus `LOCAL_SERVICES`, `LOCAL_DB`, `LOCAL_DESTRUCTIVE`, or `LOCAL_LEGAL_DATA_OPS` as applicable.
+
+> [!IMPORTANT]
+> MADFAM-ENCLII-FIRST-LEGACY-RAW v1: This document contains legacy raw infrastructure command examples.
+> Routine production operations must use Enclii web, API, or CLI. Treat raw
+> `kubectl`, `helm`, SSH, provider CLI/API, `docker exec`, and direct container
+> access as platform bootstrap or documented break-glass only, and record any
+> missing Enclii adapter gap.
+
+
 > **Mexican law oracle — machine-readable federal/state/municipal laws, rulings, and DOF feeds.**
 
 This file is self-contained: a Claude session on a fresh machine can operate
@@ -65,7 +77,7 @@ below is embedded here so this document stands alone.
 | **Enclii** | `madfam-org/enclii` | PaaS control plane — all deploys go through this |
 | **Janua** | `madfam-org/janua` | OIDC/OAuth 2.0 provider — RS256 JWKS at `auth.madfam.io/.well-known/jwks.json` |
 | **Dhanam** | `madfam-org/dhanam` | Billing + payment gateways (Stripe, Mercado Pago, SPEI, etc.) |
-| **Selva** | `madfam-org/autoswarm-office` | LLM inference routing + agent orchestration |
+| **Selva** | `madfam-org/selva-office` | LLM inference routing + agent orchestration |
 | **Karafiel** | `madfam-org/karafiel` | Operational compliance — CFDI, NOM-151, e.firma, SAT-adjacent. Owns legal-ops / contract templates |
 | **Tezca** | `madfam-org/tezca` | Mexican law oracle (informational only — feeds Karafiel) |
 | **Cotiza** | `madfam-org/digifab-quoting` | MADFAM's quoting engine (fabrication + services) |
@@ -83,7 +95,7 @@ below is embedded here so this document stands alone.
 - **Billing**: credit metering + entitlements flow through Dhanam. See
   `madfam-org/dhanam` for the meter/entitlement/invoice APIs.
 - **Inference**: every LLM call should route through Selva
-  (`autoswarm-office`) at `/v1` (OpenAI-compatible). Do not talk directly
+  (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly
   to OpenAI / Anthropic from service code.
 - **CORS**: explicit allowlist per service. Wildcards are banned
   (audit 2026-04-23 H2/H5/H6).
@@ -209,22 +221,33 @@ enclii local down
 enclii onboard --repo madfam-org/<name> --db-name <db> --secrets-file .env
 ```
 
-### When to use kubectl (escape hatches)
+### Enclii-first production operations
 
-The enclii CLI routes through Switchyard. These operations don't yet have
-a CLI equivalent — kubectl is the right tool:
+Enclii is the required control plane for routine production operations.
+Use the web UI, API, or CLI before reaching for raw infrastructure tools:
 
-- ArgoCD sync / patch — `kubectl patch application <app> -n argocd --type merge ...`
-- Kyverno PolicyExceptions + raw CRD management
-- Longhorn / PVC operations — `kubectl get volumes.longhorn.io -n longhorn-system`
-- Direct pod exec for debugging — `kubectl exec -n <ns> deploy/<svc> -- ...`
-- Raw port-forward — `kubectl port-forward -n <ns> svc/<svc> 8080:80`
-- Janua DB ops (no enclii equivalent)
+- ArgoCD sync / diff / rollback — `enclii ops apps ...`
+- Pod logs, diagnosis, and safe restarts — `enclii ops pods ...`
+- Longhorn / PVC / PV inspection and repair planning — `enclii ops storage ...`
+- Kyverno violations and time-bound waivers — `enclii ops policy ...`
+- ExternalSecrets and Vault readiness — `enclii ops secrets ...`
+- ARC runner inspection and drain workflows — `enclii ops runners ...`
+- DNS, tunnels, SaaS hostnames, providers, and repo automation — `enclii providers ...`
+- Service lifecycle, domains, secrets, jobs, and observability — `enclii deploy`, `enclii rollback`, `enclii logs`, `enclii observe`, `enclii domains`, `enclii secrets`, `enclii jobs`
+
+### Break-glass-only access
+
+Raw `kubectl`, `helm`, SSH, provider CLIs/APIs, `docker exec`, and direct
+container access are allowed only for platform bootstrap or documented
+break-glass emergencies when Enclii is unavailable or lacks an implemented
+adapter. Record the actor, reason, target service/environment, commands
+executed, result, and follow-up Enclii adapter gap or incident link.
 
 ### Cluster access
 
-kubeconfig + SSH keys live in `madfam-org/internal-devops` (private repo).
-On a fresh machine, pull that repo first to get `~/.kube/config-hetzner`.
+kubeconfig + SSH keys live in `madfam-org/internal-devops` (private repo)
+for bootstrap and break-glass use only. Routine production operations must
+go through Enclii web, API, or CLI.
 
 ### Exit codes (scripting against the CLI)
 

@@ -65,6 +65,7 @@ run: $(PY)
 
 .PHONY: clean
 clean:
+	@node ../../scripts/require-local-destructive.mjs
 	rm -rf $(VENV) upstream .pytest_cache .ruff_cache
 	find . -name __pycache__ -type d -exec rm -rf {} +
 
