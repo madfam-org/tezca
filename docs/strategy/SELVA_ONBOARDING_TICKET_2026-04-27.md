@@ -3,7 +3,7 @@
 **Last Updated:** 2026-04-27
 **Track:** Track 8 (cross-cutting) of [FEATURE_PARITY_PLAN_2026-04-27](./FEATURE_PARITY_PLAN_2026-04-27.md) §3.1.
 **Status:** Operator action required. Engineering side (Track 2) is already merged behind feature flag `CHAT_ENABLED=false`.
-**Audience:** Operator + Selva team (`madfam-org/autoswarm-office`, post-cutover `madfam-org/selva-office`).
+**Audience:** Operator + Selva team (`madfam-org/selva-office`, post-cutover `madfam-org/selva-office`).
 
 ---
 
@@ -12,7 +12,7 @@
 Track 2 (`/preguntar` chat scaffold) merged in `ea46ad4` (#47) with a `MockSelvaClient` so it can run in tests + dev without a real Selva connection. To **flip `CHAT_BACKEND=selva` in production**, Selva must provision Tezca as a credentialed `/v1` caller. This is the only remaining blocker to making `/preguntar` live for `essentials+` customers.
 
 Per the MADFAM ECOSYSTEM convention (`internal-devops/ECOSYSTEM.md`):
-> Every LLM call should route through Selva (`selva-office`, formerly `autoswarm-office`) at `/v1` (OpenAI-compatible). Do not talk directly to OpenAI / Anthropic from service code.
+> Every LLM call should route through Selva (`selva-office`, formerly `selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly to OpenAI / Anthropic from service code.
 
 Tezca holds **zero** OpenAI/Anthropic API keys today and that constraint must hold post-flip.
 
@@ -159,6 +159,6 @@ If Selva env vars are missing despite `CHAT_BACKEND=selva`, the factory falls ba
 
 - [FEATURE_PARITY_PLAN_2026-04-27.md §3.1](./FEATURE_PARITY_PLAN_2026-04-27.md)
 - `internal-devops/ECOSYSTEM.md` — "Inference: every LLM call should route through Selva"
-- `internal-devops/rfcs/0010-autoswarm-to-selva-identity-cutover.md` — namespace/domain cutover
+- `internal-devops/rfcs/0010-selva-to-selva-identity-cutover.md` — namespace/domain cutover
 - `apps/api/chat/selva_client.py` — Tezca-side client (already merged in #47)
 - `.env.example` — Selva env var documentation

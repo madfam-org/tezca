@@ -71,7 +71,7 @@ For each competitive gap from `COMPETITIVE_BENCHMARK_2026-04-27.md` §6, this se
 
 **Competitive parity target:** every paid MX legal-tech competitor has chat-with-corpus. Tezca's MCP enables third parties to use Tezca, but a built-in chat is what 60-second demos require.
 
-**Owning service:** Selva (`madfam-org/autoswarm-office`, post-cutover `madfam-org/selva-office`). Per ECOSYSTEM convention: "every LLM call should route through Selva (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly to OpenAI / Anthropic from service code."
+**Owning service:** Selva (`madfam-org/selva-office`, post-cutover `madfam-org/selva-office`). Per ECOSYSTEM convention: "every LLM call should route through Selva (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly to OpenAI / Anthropic from service code."
 
 **Integration contract:**
 - Tezca-API calls `POST https://selva.town/v1/chat/completions` (canonical public Selva domain) with OpenAI-compatible payload + Janua-relayed credentials.

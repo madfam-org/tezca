@@ -16,7 +16,7 @@ dependencies = [
     # Lift-and-shift: budget gate + cost model now live in the shared package.
     # Local path keeps this experiment self-contained in the monorepo; once
     # we publish, flip to a version pin.
-    "madfam-budget-gate @ file:///Users/aldoruizluna/labspace/autoswarm-office/packages/budget-gate",
+    "madfam-budget-gate @ file:///Users/aldoruizluna/labspace/selva-office/packages/budget-gate",
 ]
 
 [project.optional-dependencies]

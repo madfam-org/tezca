@@ -224,6 +224,6 @@ upstream/                            — cloned by bootstrap (gitignored)
   reduction in manual recategorizations.
 - **Phase 3** — phynd-crm first-touch email. Offline reply-rate lift ≥15%
   before any live A/B.
-- **Phase 4** — autoswarm agent scaffolds. Conditional on 1–3 wins.
+- **Phase 4** — selva agent scaffolds. Conditional on 1–3 wins.
 
 Each phase's entrypoint will land under `src/meta_harness_madfam/entrypoints/`.

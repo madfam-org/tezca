@@ -13,7 +13,7 @@ Two modes:
     - ``deepinfra``: direct bridge mode used while Anthropic credits are
       paused and Selva's DeepInfra secret isn't yet deployed in prod. Cost
       is still attributed to the in-process tracker and HITL gate still
-      applies. See ``autoswarm-office/docs/runbooks/BRIDGE_DEEPINFRA.md``.
+      applies. See ``selva-office/docs/runbooks/BRIDGE_DEEPINFRA.md``.
 
 Mode is picked by env var (``MADFAM_INFERENCE_PROVIDER``) or the ``provider``
 constructor argument. When unset, prefers ``selva`` if ``SELVA_*`` env vars

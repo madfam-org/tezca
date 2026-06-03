@@ -2,7 +2,7 @@
 Selva client — Tezca's gateway to the MADFAM-wide LLM router.
 
 Per ``internal-devops/ECOSYSTEM.md``: every LLM call should route through
-Selva (`selva-office`, formerly `autoswarm-office`) at ``/v1``
+Selva (`selva-office`, formerly `selva-office`) at ``/v1``
 (OpenAI-compatible). Tezca never holds an OpenAI / Anthropic API key.
 
 Two implementations:
