@@ -71,6 +71,7 @@ import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { BackToTop } from "@/components/BackToTop";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { PmfWidgetMount } from "@/components/pmf/PmfWidgetMount";
+import { EcosystemBannerClient } from "@/components/EcosystemBannerClient";
 import { Toaster } from "sonner";
 
 const januaConfig = {
@@ -86,7 +87,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden`}
+        className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden pb-8`}
       >
         <a
           href="#main-content"
@@ -116,6 +117,7 @@ export default function RootLayout({
                           <BackToTop />
                           <Toaster theme="system" position="top-right" richColors />
                           <PmfWidgetMount />
+                          <EcosystemBannerClient />
                         </PostHogProvider>
                       </Suspense>
                     </ComparisonProvider>
