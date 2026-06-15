@@ -240,13 +240,6 @@ export function Footer() {
             <LanguageToggle />
           </div>
         </div>
-        {/* Ecosystem */}
-        <div className="container mx-auto px-4 sm:px-6 pb-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-          <span>Ecosystem:</span>
-          <a href="https://karafiel.mx" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Karafiel</a>
-          <span aria-hidden="true">&middot;</span>
-          <a href="https://dhan.am" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Dhanam</a>
-        </div>
       </div>
     </footer>
   );
