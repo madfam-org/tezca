@@ -850,6 +850,38 @@ def ingest_judicial_batches():
         return {"status": "error", "error": str(e)}
 
 
+@shared_task(name="dataops.ingest_conamer_catalog")
+def ingest_conamer_catalog():
+    """Auto-ingest scraped CONAMER regulations into the database.
+
+    The CONAMER scrapers (``run_conamer_scraper`` / ``run_conamer_playwright``)
+    only write JSON to ``data/conamer/`` — nothing was wired to the
+    ``ingest_conamer`` management command, so even a successful scrape left the
+    DB at 0 CONAMER rows. This closes the gap, mirroring
+    ``ingest_judicial_batches``. Scheduled to run after both weekly scrapes.
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    catalog = Path("data/conamer/discovered_conamer.json")
+    batch_dir = Path("data/conamer")
+    has_batches = batch_dir.exists() and bool(list(batch_dir.glob("batch_*.json")))
+    if not catalog.exists() and not has_batches:
+        logger.info("No CONAMER catalog to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("conamer_catalog_ingest")
+    try:
+        call_command("ingest_conamer", all=True)
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("CONAMER catalog ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
 @shared_task(name="dataops.classify_law_domains")
 def classify_law_domains_task():
     """Weekly domain classification for newly added laws."""
