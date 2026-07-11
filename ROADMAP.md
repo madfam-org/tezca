@@ -324,7 +324,7 @@ Each state follows the existing `apps/scraper/state/baja_california.py` template
 
 | # | Task | Priority | Notes |
 |---|------|----------|-------|
-| 1 | Production go-live at tezca.mx | High | Infrastructure code done, manual provisioning remaining |
+| 1 | Production go-live at tezca.mx | ✅ Done | Web + api.tezca.mx live behind Cloudflare |
 | 2 | Municipal scraper: Guadalajara + Monterrey content | High | Content download implemented, needs execution |
 | 3 | CONAMER CNARTyS integration exploration | Medium | 113,373 regulations — assess API/bulk access |
 | 4 | Embeddings/vector search integration | Medium | Semantic search for legal queries |
@@ -583,7 +583,7 @@ Django models:       14         React contexts:      5
 ## Priority Matrix
 
 ### High Priority (Next 3 Months)
-1. ⭐⭐⭐ Production go-live at tezca.mx (1-2 weeks)
+1. ✅ Production go-live at tezca.mx — DONE (web + api.tezca.mx live)
 2. ⭐⭐⭐ Backup/restore strategy for PostgreSQL + ES snapshots
 3. ⭐⭐⭐ ES production hardening (JVM heap alignment, evaluate clustering)
 4. ⭐⭐⭐ Municipal pilot — Tier 1 cities (3-4 months)
