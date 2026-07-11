@@ -73,7 +73,9 @@ class Command(BaseCommand):
             return []
 
         records = []
-        for f in sorted(dir_path.glob("*.json")):
+        # rglob so per-type subdirectories written by the Playwright scraper
+        # (jurisprudencia/, tesis_aisladas/) are picked up, not just flat files.
+        for f in sorted(dir_path.rglob("*.json")):
             with open(f) as fh:
                 data = json.load(fh)
                 batch = data if isinstance(data, list) else data.get("records", [])
@@ -81,6 +83,20 @@ class Command(BaseCommand):
                 self.stdout.write(f"  Loaded {len(batch)} records from {f.name}")
 
         return records
+
+    @staticmethod
+    def _is_degenerate(rec):
+        """A judicial record with no body text carries no legal content.
+
+        The SJF scraper can capture result-listing rows that have a valid
+        ``registro`` but an empty ``texto``/``rubro`` (a broken-selector
+        symptom). Ingesting those pollutes the corpus with empty rows, so we
+        skip them here rather than serving contentless "laws".
+        """
+        return (
+            not (rec.get("texto") or "").strip()
+            and not (rec.get("rubro") or "").strip()
+        )
 
     def _normalize_materia(self, raw):
         """Map raw materia string to model choices."""
@@ -140,7 +156,7 @@ class Command(BaseCommand):
             if options["dry_run"]:
                 for rec in batch:
                     registro = rec.get("registro", "")
-                    if not registro:
+                    if not registro or self._is_degenerate(rec):
                         skipped += 1
                         continue
                     exists = JudicialRecord.objects.filter(registro=registro).exists()
@@ -153,7 +169,7 @@ class Command(BaseCommand):
                     for rec in batch:
                         try:
                             registro = rec.get("registro", "")
-                            if not registro:
+                            if not registro or self._is_degenerate(rec):
                                 skipped += 1
                                 continue
 

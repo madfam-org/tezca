@@ -664,14 +664,18 @@ class TestIngestJudicialBatches:
     ):
         from apps.scraper.scheduling import tasks
 
-        batch_dir = tmp_path / "data" / "judicial" / "batches"
+        # The Playwright scraper writes into per-type subdirectories, not a
+        # flat data/judicial/batches — the task must recurse to find them.
+        batch_dir = tmp_path / "data" / "judicial" / "jurisprudencia"
         batch_dir.mkdir(parents=True)
-        (batch_dir / "fixture.json").write_text("[]")
+        (batch_dir / "batch_0000.json").write_text("[]")
 
         monkeypatch.chdir(tmp_path)
         result = tasks.ingest_judicial_batches()
         assert result["status"] == "completed"
         mock_call_command.assert_called_once()
+        # reads from the judicial root, not the nonexistent .../batches
+        assert mock_call_command.call_args.kwargs["dir"] == "data/judicial"
 
 
 # ── classify_law_domains_task ─────────────────────────────────────────

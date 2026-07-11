@@ -829,13 +829,21 @@ def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
 
 @shared_task(name="dataops.ingest_judicial_batches")
 def ingest_judicial_batches():
-    """Auto-ingest SCJN judicial records from batch directory."""
+    """Auto-ingest SCJN judicial records from the judicial data directory.
+
+    The Playwright scraper writes batches under per-type subdirectories
+    (``data/judicial/jurisprudencia/``, ``data/judicial/tesis_aisladas/``),
+    but this task previously read a flat ``data/judicial/batches/`` that no
+    scraper writes to — so it always short-circuited on ``no_files`` and the
+    JudicialRecord table stayed empty. Read the judicial root and let the
+    ingest command recurse into the subdirectories.
+    """
     from pathlib import Path
 
     from django.core.management import call_command
 
-    batch_dir = Path("data/judicial/batches")
-    if not batch_dir.exists() or not list(batch_dir.glob("*.json")):
+    batch_dir = Path("data/judicial")
+    if not batch_dir.exists() or not list(batch_dir.rglob("*.json")):
         logger.info("No judicial batch files to ingest")
         return {"status": "no_files"}
 
