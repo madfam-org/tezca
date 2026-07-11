@@ -21,6 +21,10 @@ This directory holds Tezca's product/architectural strategy. If you're new to th
 8. **[CNPG_MIGRATION_PREP_2026-04-27.md](./CNPG_MIGRATION_PREP_2026-04-27.md)** — Track 6. Tezca-side connection-pool knobs (already shipped) plus the cutover runbook. Gated on RFC 0012 (`madfam-org/enclii`) shipping the cluster.
 9. **[DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md](./DOCKET_WATCHER_BOOTSTRAP_2026-04-27.md)** — Track 7. Bootstrap kit for the `madfam-org/docket-watcher` sibling repo (Q1-2027). Architecture, repo layout, RFC 0014 onboarding command, pricing tiers anchored on Buho Legal.
 
+## Data capture
+
+- **[TOTAL_CAPTURE_ROADMAP_2026-07-10.md](./TOTAL_CAPTURE_ROADMAP_2026-07-10.md)** — **The path to the full Mexican legal universe.** Per-tier coverage vs. the ~652K-instrument universe (5.5% captured; the two 0% mega-tiers — CONAMER 113K + SCJN judicial 500K — are 94% of it), what the 2026-07-10 remediation shipped, and the sequenced plan separating code-doable from operator/partnership from bot-wall-blocked work (SJF Imperva WAF confirmed).
+
 ## Quality / stability
 
 10. **[A_PLUS_REMEDIATION_PLAN_2026-04-27.md](./A_PLUS_REMEDIATION_PLAN_2026-04-27.md)** — Original 8-workstream plan with the rubric and rationale. Still authoritative on the dimension definitions.
