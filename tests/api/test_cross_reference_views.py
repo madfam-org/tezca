@@ -64,6 +64,47 @@ class TestArticleCrossReferences:
         assert data["outgoing"][0]["targetArticle"] == "5"
         assert data["incoming"][0]["sourceArticle"] == "3"
 
+    def test_low_confidence_refs_filtered_by_default(self):
+        """Refs below the 0.3 default floor (likely false positives) are hidden."""
+        CrossReference.objects.create(
+            source_law_slug=self.law.official_id,
+            source_article_id="1",
+            target_law_slug=self.other_law.official_id,
+            target_article_num="9",
+            reference_text="posible artículo 9",
+            confidence=0.1,
+            start_position=50,
+            end_position=70,
+        )
+        url = reverse("article-references", args=[self.law.official_id, "1"])
+        resp = self.client.get(url)
+        assert resp.status_code == 200
+        # only the 0.95 ref survives the default floor
+        assert resp.json()["total_outgoing"] == 1
+
+    def test_min_confidence_zero_includes_low_confidence(self):
+        """?min_confidence=0 opts back into every ref (kept in the DB)."""
+        CrossReference.objects.create(
+            source_law_slug=self.law.official_id,
+            source_article_id="1",
+            target_law_slug=self.other_law.official_id,
+            target_article_num="9",
+            reference_text="posible artículo 9",
+            confidence=0.1,
+            start_position=50,
+            end_position=70,
+        )
+        url = reverse("article-references", args=[self.law.official_id, "1"])
+        resp = self.client.get(url, {"min_confidence": "0"})
+        assert resp.status_code == 200
+        assert resp.json()["total_outgoing"] == 2
+
+    def test_invalid_min_confidence_falls_back_to_default(self):
+        url = reverse("article-references", args=[self.law.official_id, "1"])
+        resp = self.client.get(url, {"min_confidence": "not-a-number"})
+        assert resp.status_code == 200
+        assert resp.json()["total_outgoing"] == 1
+
     def test_outgoing_contains_target_url(self):
         url = reverse(
             "article-references",

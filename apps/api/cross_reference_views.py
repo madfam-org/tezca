@@ -17,6 +17,23 @@ from apps.api.schema import (
     LawCrossRefsSchema,
 )
 
+# Cross-references below this detection confidence are likely false positives
+# (broken article detection, ambiguous matches). Filter them out of the
+# displayed refs by default — all confidences remain in the DB for analysis.
+# Consumers can widen the net with ?min_confidence=0. (2026-03-20 audit #9)
+DEFAULT_MIN_CONFIDENCE = 0.3
+
+
+def _parse_min_confidence(request):
+    """Parse the ?min_confidence= query param, clamped to [0, 1]."""
+    raw = request.query_params.get("min_confidence")
+    if raw is None:
+        return DEFAULT_MIN_CONFIDENCE
+    try:
+        return max(0.0, min(1.0, float(raw)))
+    except (TypeError, ValueError):
+        return DEFAULT_MIN_CONFIDENCE
+
 
 @extend_schema(
     tags=["Cross-References"],
@@ -35,14 +52,20 @@ def article_cross_references(request, law_id, article_id):
 
     Example: GET /api/v1/laws/amparo/articles/107/references/
     """
+    min_confidence = _parse_min_confidence(request)
+
     # Get outgoing references (references this article makes)
     outgoing_refs = CrossReference.objects.filter(
-        source_law_slug=law_id, source_article_id=article_id
+        source_law_slug=law_id,
+        source_article_id=article_id,
+        confidence__gte=min_confidence,
     ).order_by("start_position")
 
     # Get incoming references (references to this article)
     incoming_refs = CrossReference.objects.filter(
-        target_law_slug=law_id, target_article_num=article_id
+        target_law_slug=law_id,
+        target_article_num=article_id,
+        confidence__gte=min_confidence,
     ).order_by("-confidence")
 
     # Format outgoing references
@@ -120,13 +143,19 @@ def batch_article_cross_references(request, law_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    min_confidence = _parse_min_confidence(request)
+
     # 2 DB queries total
     outgoing_qs = CrossReference.objects.filter(
-        source_law_slug=law_id, source_article_id__in=article_ids
+        source_law_slug=law_id,
+        source_article_id__in=article_ids,
+        confidence__gte=min_confidence,
     ).order_by("source_article_id", "start_position")
 
     incoming_qs = CrossReference.objects.filter(
-        target_law_slug=law_id, target_article_num__in=article_ids
+        target_law_slug=law_id,
+        target_article_num__in=article_ids,
+        confidence__gte=min_confidence,
     ).order_by("target_article_num", "-confidence")
 
     # Group by article ID
