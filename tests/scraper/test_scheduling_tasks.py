@@ -674,6 +674,51 @@ class TestIngestJudicialBatches:
         mock_call_command.assert_called_once()
 
 
+# ── ingest_conamer_catalog ────────────────────────────────────────────
+
+
+class TestIngestConamerCatalog:
+    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
+        """No discovered_conamer.json and no batch files → clean no-op."""
+        from apps.scraper.scheduling import tasks
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_conamer_catalog()
+        assert result["status"] == "no_files"
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_runs_ingest_when_catalog_present(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        conamer_dir = tmp_path / "data" / "conamer"
+        conamer_dir.mkdir(parents=True)
+        (conamer_dir / "discovered_conamer.json").write_text("[]")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_conamer_catalog()
+        assert result["status"] == "completed"
+        mock_call_command.assert_called_once_with("ingest_conamer", all=True)
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_runs_ingest_from_batch_files(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        conamer_dir = tmp_path / "data" / "conamer"
+        conamer_dir.mkdir(parents=True)
+        (conamer_dir / "batch_0000.json").write_text("[]")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_conamer_catalog()
+        assert result["status"] == "completed"
+        mock_call_command.assert_called_once_with("ingest_conamer", all=True)
+
+
 # ── classify_law_domains_task ─────────────────────────────────────────
 
 
