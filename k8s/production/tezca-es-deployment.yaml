@@ -48,7 +48,9 @@ spec:
             - name: bootstrap.memory_lock
               value: "false"
             - name: ES_JAVA_OPTS
-              value: "-Xms1g -Xmx1g"
+              # Was 1g/1g — below the dev heap (2g) for the same 3.5M-doc
+              # index. Set to 2g (=50% of the 4Gi limit, the ES guideline).
+              value: "-Xms2g -Xmx2g"
             - name: xpack.security.enabled
               value: "false"
             - name: xpack.security.enrollment.enabled
@@ -72,7 +74,9 @@ spec:
           resources:
             requests:
               cpu: 25m
-              memory: 2Gi
+              # 3Gi request gives the 2g heap + JVM/OS overhead headroom under
+              # the 4Gi limit (a 2g heap typically resides ~2.5-3Gi RSS).
+              memory: 3Gi
             limits:
               cpu: 1000m
               memory: 4Gi
