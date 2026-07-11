@@ -712,7 +712,7 @@ class TestCheckScraperHealth:
 
 class TestDofMaterialization:
     def test_metadata_from_change(self):
-        from apps.scraper.scheduling.tasks import _dof_change_to_law_metadata
+        from apps.scraper.scheduling.dof_ingest import _dof_change_to_law_metadata
 
         md = _dof_change_to_law_metadata(
             {
@@ -728,7 +728,7 @@ class TestDofMaterialization:
 
     def test_materialize_disabled_by_default(self, settings):
         settings.DOF_AUTO_INGEST_ENABLED = False
-        from apps.scraper.scheduling.tasks import _materialize_dof_changes
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
 
         with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline:
             result = _materialize_dof_changes(
@@ -739,7 +739,7 @@ class TestDofMaterialization:
 
     def test_materialize_enabled_ingests_new_and_reform_only(self, settings):
         settings.DOF_AUTO_INGEST_ENABLED = True
-        from apps.scraper.scheduling.tasks import _materialize_dof_changes
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
 
         changes = [
             {"title": "LEY Nueva", "url": "http://a", "change_type": "new_law"},
@@ -762,7 +762,7 @@ class TestDofMaterialization:
 
     def test_materialize_counts_failures(self, settings):
         settings.DOF_AUTO_INGEST_ENABLED = True
-        from apps.scraper.scheduling.tasks import _materialize_dof_changes
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
 
         changes = [
             {"title": "LEY A", "url": "http://a", "change_type": "new_law"},
@@ -781,7 +781,7 @@ class TestDofMaterialization:
 
     def test_materialize_skips_changes_without_url(self, settings):
         settings.DOF_AUTO_INGEST_ENABLED = True
-        from apps.scraper.scheduling.tasks import _materialize_dof_changes
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
 
         changes = [{"title": "LEY no URL", "url": "", "change_type": "new_law"}]
         with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline_cls:

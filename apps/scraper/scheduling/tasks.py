@@ -11,6 +11,8 @@ import shlex
 from celery import shared_task
 from django.utils import timezone
 
+from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
+
 logger = logging.getLogger(__name__)
 
 # Cap for AcquisitionLog.error_summary persisted in DB
@@ -211,63 +213,6 @@ def generate_coverage_report():
         summary["actionable_gaps"],
     )
     return summary
-
-
-def _dof_change_to_law_metadata(change):
-    """Build an ingestion-pipeline law_metadata dict from a DOF change.
-
-    IngestionPipeline._download_file needs at least id/name/url. The DOF
-    change carries title + url (the nota detail URL).
-    """
-    import re
-    import unicodedata
-
-    title = (change.get("title") or "").strip()
-    slug = unicodedata.normalize("NFKD", title.lower())
-    slug = "".join(c for c in slug if not unicodedata.combining(c))
-    slug = re.sub(r"[^\w\s-]", "", slug)
-    slug = re.sub(r"[\s_-]+", "_", slug).strip("_")[:150]
-    return {
-        "id": slug or "dof_unknown",
-        "name": title,
-        "url": change.get("url", ""),
-        "source": "dof_daily",
-    }
-
-
-def _materialize_dof_changes(changes):
-    """Materialize detected new-law/reform DOF changes via the pipeline.
-
-    Gated by DOF_AUTO_INGEST_ENABLED (default off) — see settings. Returns
-    (materialized, failed). Each law is ingested independently so one bad
-    parse doesn't abort the batch.
-    """
-    from django.conf import settings
-
-    if not getattr(settings, "DOF_AUTO_INGEST_ENABLED", False):
-        return 0, 0
-
-    from apps.parsers.pipeline import IngestionPipeline
-
-    pipeline = IngestionPipeline()
-    materialized = 0
-    failed = 0
-    for change in changes:
-        if change.get("change_type") not in ("new_law", "reform"):
-            continue
-        metadata = _dof_change_to_law_metadata(change)
-        if not metadata["url"]:
-            continue
-        try:
-            result = pipeline.ingest_law(metadata)
-            if getattr(result, "success", False):
-                materialized += 1
-            else:
-                failed += 1
-        except Exception:
-            failed += 1
-            logger.exception("DOF auto-ingest failed for %s", metadata.get("id"))
-    return materialized, failed
 
 
 @shared_task(name="dataops.check_dof_daily")
