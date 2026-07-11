@@ -60,11 +60,11 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Advanced Search** - Date range filtering, state filters, and auto-complete
 - ✅ **Law Detail 2.0** - Enhanced typography, improved ease-of-reading, and citations
 - ✅ **Quality Validation** - 5 automated checks, A-F grading
-- ✅ **Full-Text Search** - 3,480,000+ articles indexed in Elasticsearch
+- ✅ **Full-Text Search** - 1,100,000+ articles indexed in Elasticsearch
 - ✅ **Version History** - Track legal evolution over time
 - ✅ **REST API** - Machine-readable access for legal tech (paginated, filtered, rate-limited)
 - ✅ **Batch Processing** - Parallel ingestion with 4-8 workers
-- ✅ **Production Ready** - Full-stack testing (2164 Pytest + 930 web Vitest + 78 admin Vitest + 48 api-client Vitest + 23 MCP server Pytest); backend coverage ≥64%, frontend coverage ≥63% with `all: true` denominator
+- ✅ **Production Ready** - Full-stack testing (2164 Pytest + 930 web Vitest + 78 admin Vitest + 48 api-client Vitest + 23 MCP server Pytest); backend coverage gate 60% (≈64% actual), frontend gates 61% statements / 62% lines with `all: true` denominator
 - ✅ **OpenAPI Documentation** - Swagger UI, ReDoc at `/api/docs/`
 - ✅ **Background Processing** - Celery + Redis for ingestion jobs
 - ✅ **Cross-References** - Automatic detection and linking between laws
@@ -216,8 +216,8 @@ This project uses a monorepo architecture managed by NPM Workspaces.
 - ✅ API key admin CRUD + CORS for API key consumers
 - ✅ OpenAPI security schemes (ApiKey + Bearer)
 
-**Phase 14: Production & Growth** - 📋 PLANNED (Q2 2026)
-- 📋 Production go-live at tezca.mx
+**Phase 14: Production & Growth** - 🔄 IN PROGRESS
+- ✅ Production go-live at tezca.mx (web + api.tezca.mx live behind Cloudflare)
 - 📋 Embeddings / vector search integration
 - 📋 External customer onboarding (legaltech, compliance SaaS)
 
