@@ -38,7 +38,9 @@ class TestCheckDofDaily:
     def test_acquisition_log_records_ingested_count(
         self, mock_scraper_cls, mock_law, mock_log_cls
     ):
-        """Verify AcquisitionLog.ingested reflects detected changes count."""
+        """AcquisitionLog.ingested reflects laws actually materialized (0 when
+        DOF_AUTO_INGEST_ENABLED is off), not the detected-count; the detected
+        count is tracked separately in parameters."""
         from apps.scraper.scheduling.tasks import check_dof_daily
 
         mock_law.objects.values_list.return_value = []
@@ -58,8 +60,10 @@ class TestCheckDofDaily:
 
         mock_log_cls.objects.create.assert_called_once()
         call_kwargs = mock_log_cls.objects.create.call_args[1]
-        assert call_kwargs["ingested"] == 2
+        # auto-ingest off (default) -> nothing materialized
+        assert call_kwargs["ingested"] == 0
         assert call_kwargs["found"] == 5
+        assert call_kwargs["parameters"]["detected"] == 2
         assert "changes" in call_kwargs["parameters"]
 
     @patch("apps.scraper.dataops.models.AcquisitionLog")
