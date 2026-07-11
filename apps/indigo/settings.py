@@ -478,6 +478,13 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.ingest_judicial_batches",
         "schedule": crontab(hour=2, minute=0, day_of_week="sunday"),
     },
+    # Ingest the scraped CONAMER catalog into the DB. Runs after both weekly
+    # scrapes land (Fri 23:00 playwright + Sat 01:00 http) so a scrape actually
+    # reaches the Law table instead of sitting as JSON on disk.
+    "conamer-ingest-weekly": {
+        "task": "dataops.ingest_conamer_catalog",
+        "schedule": crontab(hour=4, minute=0, day_of_week="saturday"),
+    },
     "classify-domains-weekly": {
         "task": "dataops.classify_law_domains",
         "schedule": crontab(hour=5, minute=30, day_of_week="monday"),

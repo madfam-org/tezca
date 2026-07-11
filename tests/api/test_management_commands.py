@@ -411,6 +411,67 @@ class TestIngestJudicialCommand:
         assert JudicialRecord.objects.filter(registro="DIR-002").exists()
         assert JudicialRecord.objects.count() == 2
 
+    def test_dir_mode_recurses_into_subdirectories(self, tmp_path):
+        """Batches written under per-type subdirs (the real scraper layout)
+        must be picked up by --dir on the judicial root."""
+        sub = tmp_path / "judicial" / "jurisprudencia"
+        sub.mkdir(parents=True)
+        (sub / "batch_0000.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "registro": "SUB-001",
+                        "tipo": "jurisprudencia",
+                        "materia": "civil",
+                        "rubro": "Nested record",
+                        "texto": "Cuerpo de la tesis.",
+                        "epoca": "11a",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_judicial", "--dir", str(tmp_path / "judicial"))
+
+        assert JudicialRecord.objects.filter(registro="SUB-001").exists()
+
+    def test_skips_degenerate_records(self, tmp_path):
+        """Records with no body text/rubro (broken-selector scrape output)
+        are skipped, not ingested as empty rows."""
+        records_file = tmp_path / "records.json"
+        records_file.write_text(
+            json.dumps(
+                [
+                    {
+                        "registro": "GOOD-1",
+                        "tipo": "jurisprudencia",
+                        "rubro": "R",
+                        "texto": "T",
+                    },
+                    {
+                        "registro": "EMPTY-1",
+                        "tipo": "jurisprudencia",
+                        "rubro": "",
+                        "texto": "",
+                    },
+                    {
+                        "registro": "EMPTY-2",
+                        "tipo": "jurisprudencia",
+                        "rubro": "  ",
+                        "texto": "  ",
+                    },
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_judicial", "--file", str(records_file))
+
+        assert JudicialRecord.objects.filter(registro="GOOD-1").exists()
+        assert not JudicialRecord.objects.filter(registro="EMPTY-1").exists()
+        assert not JudicialRecord.objects.filter(registro="EMPTY-2").exists()
+
 
 # ---------------------------------------------------------------------------
 # ingest_conamer --source sinec

@@ -843,13 +843,21 @@ def scrape_scjn(max_items=5000, epoca=10, mode="jurisprudencia"):
 
 @shared_task(name="dataops.ingest_judicial_batches")
 def ingest_judicial_batches():
-    """Auto-ingest SCJN judicial records from batch directory."""
+    """Auto-ingest SCJN judicial records from the judicial data directory.
+
+    The Playwright scraper writes batches under per-type subdirectories
+    (``data/judicial/jurisprudencia/``, ``data/judicial/tesis_aisladas/``),
+    but this task previously read a flat ``data/judicial/batches/`` that no
+    scraper writes to — so it always short-circuited on ``no_files`` and the
+    JudicialRecord table stayed empty. Read the judicial root and let the
+    ingest command recurse into the subdirectories.
+    """
     from pathlib import Path
 
     from django.core.management import call_command
 
-    batch_dir = Path("data/judicial/batches")
-    if not batch_dir.exists() or not list(batch_dir.glob("*.json")):
+    batch_dir = Path("data/judicial")
+    if not batch_dir.exists() or not list(batch_dir.rglob("*.json")):
         logger.info("No judicial batch files to ingest")
         return {"status": "no_files"}
 
@@ -860,6 +868,38 @@ def ingest_judicial_batches():
         return {"status": "completed"}
     except Exception as e:
         logger.error("Judicial batch ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
+@shared_task(name="dataops.ingest_conamer_catalog")
+def ingest_conamer_catalog():
+    """Auto-ingest scraped CONAMER regulations into the database.
+
+    The CONAMER scrapers (``run_conamer_scraper`` / ``run_conamer_playwright``)
+    only write JSON to ``data/conamer/`` — nothing was wired to the
+    ``ingest_conamer`` management command, so even a successful scrape left the
+    DB at 0 CONAMER rows. This closes the gap, mirroring
+    ``ingest_judicial_batches``. Scheduled to run after both weekly scrapes.
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    catalog = Path("data/conamer/discovered_conamer.json")
+    batch_dir = Path("data/conamer")
+    has_batches = batch_dir.exists() and bool(list(batch_dir.glob("batch_*.json")))
+    if not catalog.exists() and not has_batches:
+        logger.info("No CONAMER catalog to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("conamer_catalog_ingest")
+    try:
+        call_command("ingest_conamer", all=True)
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("CONAMER catalog ingest failed: %s", e)
         _finish_log(log_entry, error=str(e))
         return {"status": "error", "error": str(e)}
 

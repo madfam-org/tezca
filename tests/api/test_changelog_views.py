@@ -67,6 +67,9 @@ class TestChangelog:
         assert data["total"] == 1
         assert data["changes"][0]["law_id"] == "cpeum"
         assert data["changes"][0]["change_type"] == "new_version"
+        # domains is emitted so the Karafiel catch-up path has the fiscal
+        # signal (legal-alert.v1.json) — not only the webhook path.
+        assert isinstance(data["changes"][0]["domains"], list)
 
     @patch(AUTH_PATCH)
     def test_changelog_missing_since(self, mock_auth):
