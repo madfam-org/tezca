@@ -1,0 +1,130 @@
+---
+# Tenant-scoped logical backup of Tezca's Postgres DB to R2.
+#
+# The shared `data/postgres` instance has an instance-level pgbackrest/daily
+# dump, but there was no Tezca-only logical dump and no tested restore path.
+# This CronJob produces an independent, fast-restore `pg_dump` artifact.
+#
+# Egress: the pod carries `app.kubernetes.io/part-of: tezca`, so the existing
+# network-policies.yaml rules grant it DNS, Postgres (data ns:5432), and
+# HTTPS (443 → R2). No new NetworkPolicy is required.
+#
+# pg_dump takes only ACCESS SHARE locks — it never blocks writers.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tezca-db-backup
+  namespace: tezca
+  labels:
+    app.kubernetes.io/name: tezca-db-backup
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: backup
+spec:
+  schedule: "0 8 * * *" # 08:00 UTC daily (offset from the 07:00 DOF beat job)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: tezca-db-backup
+            app.kubernetes.io/part-of: tezca
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          volumes:
+            - name: dump
+              emptyDir:
+                sizeLimit: 4Gi
+            - name: tmp
+              emptyDir: {}
+          # 1) Dump to an emptyDir with the postgres client image (pin the
+          #    MAJOR to match/exceed the server — RFC 0012: primary is PG15+).
+          initContainers:
+            - name: pgdump
+              image: postgres:16-alpine
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  pg_dump --format=custom --no-owner --no-privileges \
+                    -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+                    -f /dump/tezca.dump
+                  echo "dump complete: $(ls -lh /dump/tezca.dump)"
+              env:
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef: { name: tezca-secrets, key: DB_HOST }
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef: { name: tezca-secrets, key: DB_USER }
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef: { name: tezca-secrets, key: DB_PASSWORD }
+                - name: DB_NAME
+                  value: "tezca"
+                - name: DB_PORT
+                  value: "5432"
+              volumeMounts:
+                - { name: dump, mountPath: /dump }
+                - { name: tmp, mountPath: /tmp }
+              resources:
+                requests: { cpu: 50m, memory: 256Mi }
+                limits: { cpu: 500m, memory: 512Mi }
+          # 2) Upload the artifact to R2 with the AWS CLI image.
+          containers:
+            - name: upload
+              image: amazon/aws-cli:2.15.0
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  TS=$(date -u +%Y%m%dT%H%M%SZ)
+                  aws --endpoint-url "$R2_ENDPOINT_URL" s3 cp /dump/tezca.dump \
+                    "s3://${R2_BUCKET_NAME}/backups/db/tezca-${TS}.dump"
+                  echo "uploaded s3://${R2_BUCKET_NAME}/backups/db/tezca-${TS}.dump"
+              env:
+                # Reuse the app's R2 credentials (guaranteed write access to the
+                # bucket). A dedicated `enclii-backups` bucket is preferable once
+                # its creds are provisioned — swap R2_BUCKET_NAME + prefix then.
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef: { name: tezca-r2-credentials, key: R2_ACCESS_KEY_ID }
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef: { name: tezca-r2-credentials, key: R2_SECRET_ACCESS_KEY }
+                - name: R2_ENDPOINT_URL
+                  valueFrom:
+                    secretKeyRef: { name: tezca-r2-credentials, key: R2_ENDPOINT_URL }
+                - name: R2_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef: { name: tezca-r2-credentials, key: R2_BUCKET_NAME }
+                - name: HOME
+                  value: /tmp
+              volumeMounts:
+                - { name: dump, mountPath: /dump }
+                - { name: tmp, mountPath: /tmp }
+              resources:
+                requests: { cpu: 50m, memory: 128Mi }
+                limits: { cpu: 500m, memory: 512Mi }
