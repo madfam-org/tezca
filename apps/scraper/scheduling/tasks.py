@@ -213,12 +213,71 @@ def generate_coverage_report():
     return summary
 
 
+def _dof_change_to_law_metadata(change):
+    """Build an ingestion-pipeline law_metadata dict from a DOF change.
+
+    IngestionPipeline._download_file needs at least id/name/url. The DOF
+    change carries title + url (the nota detail URL).
+    """
+    import re
+    import unicodedata
+
+    title = (change.get("title") or "").strip()
+    slug = unicodedata.normalize("NFKD", title.lower())
+    slug = "".join(c for c in slug if not unicodedata.combining(c))
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[\s_-]+", "_", slug).strip("_")[:150]
+    return {
+        "id": slug or "dof_unknown",
+        "name": title,
+        "url": change.get("url", ""),
+        "source": "dof_daily",
+    }
+
+
+def _materialize_dof_changes(changes):
+    """Materialize detected new-law/reform DOF changes via the pipeline.
+
+    Gated by DOF_AUTO_INGEST_ENABLED (default off) — see settings. Returns
+    (materialized, failed). Each law is ingested independently so one bad
+    parse doesn't abort the batch.
+    """
+    from django.conf import settings
+
+    if not getattr(settings, "DOF_AUTO_INGEST_ENABLED", False):
+        return 0, 0
+
+    from apps.parsers.pipeline import IngestionPipeline
+
+    pipeline = IngestionPipeline()
+    materialized = 0
+    failed = 0
+    for change in changes:
+        if change.get("change_type") not in ("new_law", "reform"):
+            continue
+        metadata = _dof_change_to_law_metadata(change)
+        if not metadata["url"]:
+            continue
+        try:
+            result = pipeline.ingest_law(metadata)
+            if getattr(result, "success", False):
+                materialized += 1
+            else:
+                failed += 1
+        except Exception:
+            failed += 1
+            logger.exception("DOF auto-ingest failed for %s", metadata.get("id"))
+    return materialized, failed
+
+
 @shared_task(name="dataops.check_dof_daily")
 def check_dof_daily():
     """Check today's DOF edition for law changes.
 
-    Runs daily at 7 AM via Celery Beat. Fetches the DOF index,
-    detects reforms/new laws/abrogations, and logs findings.
+    Runs daily at 7 AM via Celery Beat. Fetches the DOF index, detects
+    reforms/new laws/abrogations, and — when DOF_AUTO_INGEST_ENABLED is set —
+    materializes new-law/reform publications through the ingestion pipeline.
+    With the flag off it detects + logs only.
     """
     import datetime
 
@@ -234,6 +293,8 @@ def check_dof_daily():
     entries = results.get("entries", [])
     changes = results.get("changes", [])
 
+    materialized, materialize_failed = _materialize_dof_changes(changes)
+
     # Log to AcquisitionLog
     try:
         from apps.scraper.dataops.models import AcquisitionLog
@@ -243,6 +304,7 @@ def check_dof_daily():
             parameters={
                 "date": str(datetime.date.today()),
                 "existing_laws_count": len(existing_laws),
+                "detected": len(changes),
                 "changes": [
                     {
                         "change_type": c.get("change_type"),
@@ -252,12 +314,17 @@ def check_dof_daily():
                 ],
             },
             found=len(entries),
-            downloaded=0,
-            failed=0,
-            ingested=len(changes),
+            downloaded=materialized,
+            failed=materialize_failed,
+            # `ingested` is now an accurate count of laws written to the DB
+            # (0 when auto-ingest is off), not the prior detected-count misnomer.
+            ingested=materialized,
         )
         if changes:
-            log_entry.error_summary = f"{len(changes)} law changes detected"
+            log_entry.error_summary = (
+                f"{len(changes)} law changes detected, "
+                f"{materialized} materialized, {materialize_failed} failed"
+            )
         log_entry.finish()
     except Exception:
         # Log persistence failure — don't fail the actual DOF check, but
@@ -281,6 +348,8 @@ def check_dof_daily():
         "date": str(datetime.date.today()),
         "total_entries": len(entries),
         "law_changes": len(changes),
+        "materialized": materialized,
+        "materialize_failed": materialize_failed,
         "changes": changes[:20],
     }
 
