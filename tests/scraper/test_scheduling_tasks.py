@@ -754,3 +754,88 @@ class TestCheckScraperHealth:
 
         result = check_scraper_health()
         assert isinstance(result, dict)
+
+
+# ── DOF daily materialization (flag-gated) ────────────────────────────
+
+
+class TestDofMaterialization:
+    def test_metadata_from_change(self):
+        from apps.scraper.scheduling.dof_ingest import _dof_change_to_law_metadata
+
+        md = _dof_change_to_law_metadata(
+            {
+                "title": "LEY de Prueba de Economía",
+                "url": "https://dof.gob.mx/nota_detalle.php?codigo=1",
+                "change_type": "new_law",
+            }
+        )
+        assert md["id"] == "ley_de_prueba_de_economia"
+        assert md["name"] == "LEY de Prueba de Economía"
+        assert md["url"] == "https://dof.gob.mx/nota_detalle.php?codigo=1"
+        assert md["source"] == "dof_daily"
+
+    def test_materialize_disabled_by_default(self, settings):
+        settings.DOF_AUTO_INGEST_ENABLED = False
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
+
+        with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline:
+            result = _materialize_dof_changes(
+                [{"title": "LEY X", "url": "http://x", "change_type": "new_law"}]
+            )
+        assert result == (0, 0)
+        mock_pipeline.assert_not_called()
+
+    def test_materialize_enabled_ingests_new_and_reform_only(self, settings):
+        settings.DOF_AUTO_INGEST_ENABLED = True
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
+
+        changes = [
+            {"title": "LEY Nueva", "url": "http://a", "change_type": "new_law"},
+            {"title": "Reforma a la LEY Y", "url": "http://b", "change_type": "reform"},
+            {
+                "title": "Se abroga la LEY Z",
+                "url": "http://c",
+                "change_type": "abrogation",
+            },
+            {"title": "Otro aviso", "url": "http://d", "change_type": "other"},
+        ]
+        with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline_cls:
+            instance = mock_pipeline_cls.return_value
+            instance.ingest_law.return_value = MagicMock(success=True)
+            materialized, failed = _materialize_dof_changes(changes)
+
+        assert materialized == 2  # new_law + reform only
+        assert failed == 0
+        assert instance.ingest_law.call_count == 2
+
+    def test_materialize_counts_failures(self, settings):
+        settings.DOF_AUTO_INGEST_ENABLED = True
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
+
+        changes = [
+            {"title": "LEY A", "url": "http://a", "change_type": "new_law"},
+            {"title": "LEY B", "url": "http://b", "change_type": "new_law"},
+        ]
+        with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline_cls:
+            instance = mock_pipeline_cls.return_value
+            instance.ingest_law.side_effect = [
+                MagicMock(success=True),
+                Exception("parse boom"),
+            ]
+            materialized, failed = _materialize_dof_changes(changes)
+
+        assert materialized == 1
+        assert failed == 1
+
+    def test_materialize_skips_changes_without_url(self, settings):
+        settings.DOF_AUTO_INGEST_ENABLED = True
+        from apps.scraper.scheduling.dof_ingest import _materialize_dof_changes
+
+        changes = [{"title": "LEY no URL", "url": "", "change_type": "new_law"}]
+        with patch("apps.parsers.pipeline.IngestionPipeline") as mock_pipeline_cls:
+            instance = mock_pipeline_cls.return_value
+            materialized, failed = _materialize_dof_changes(changes)
+
+        assert (materialized, failed) == (0, 0)
+        instance.ingest_law.assert_not_called()

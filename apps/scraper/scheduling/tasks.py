@@ -11,6 +11,8 @@ import shlex
 from celery import shared_task
 from django.utils import timezone
 
+from apps.scraper.scheduling.dof_ingest import check_dof_daily
+
 logger = logging.getLogger(__name__)
 
 # Cap for AcquisitionLog.error_summary persisted in DB
@@ -211,78 +213,6 @@ def generate_coverage_report():
         summary["actionable_gaps"],
     )
     return summary
-
-
-@shared_task(name="dataops.check_dof_daily")
-def check_dof_daily():
-    """Check today's DOF edition for law changes.
-
-    Runs daily at 7 AM via Celery Beat. Fetches the DOF index,
-    detects reforms/new laws/abrogations, and logs findings.
-    """
-    import datetime
-
-    # Pass existing law names so the scraper can match against actual DB laws
-    from apps.api.models import Law
-    from apps.scraper.federal.dof_daily import DofScraper
-
-    existing_laws = list(Law.objects.values_list("name", flat=True))
-
-    scraper = DofScraper(date=datetime.date.today())
-    results = scraper.run(existing_laws=existing_laws)
-
-    entries = results.get("entries", [])
-    changes = results.get("changes", [])
-
-    # Log to AcquisitionLog
-    try:
-        from apps.scraper.dataops.models import AcquisitionLog
-
-        log_entry = AcquisitionLog.objects.create(
-            operation="dof_daily_check",
-            parameters={
-                "date": str(datetime.date.today()),
-                "existing_laws_count": len(existing_laws),
-                "changes": [
-                    {
-                        "change_type": c.get("change_type"),
-                        "title": c.get("title", "")[:200],
-                    }
-                    for c in changes[:20]
-                ],
-            },
-            found=len(entries),
-            downloaded=0,
-            failed=0,
-            ingested=len(changes),
-        )
-        if changes:
-            log_entry.error_summary = f"{len(changes)} law changes detected"
-        log_entry.finish()
-    except Exception:
-        # Log persistence failure — don't fail the actual DOF check, but
-        # surface it so AcquisitionLog gaps don't go unnoticed.
-        logger.exception("Failed to persist AcquisitionLog for dof_daily_check")
-
-    if changes:
-        logger.warning(
-            "DOF daily: %d entries, %d law changes detected",
-            len(entries),
-            len(changes),
-        )
-        for change in changes[:10]:
-            logger.warning(
-                "  [%s] %s", change.get("change_type", "?"), change.get("title", "?")
-            )
-    else:
-        logger.info("DOF daily: %d entries, no law changes detected", len(entries))
-
-    return {
-        "date": str(datetime.date.today()),
-        "total_entries": len(entries),
-        "law_changes": len(changes),
-        "changes": changes[:20],
-    }
 
 
 @shared_task(name="dataops.run_state_scraper")
