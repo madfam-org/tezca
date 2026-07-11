@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 from .constants import DOMAIN_MAP
 from .models import Law, LawVersion
+from .signals import _resolve_domains
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +126,7 @@ def changelog(request):
                 "law_id": v.law.official_id,
                 "law_name": v.law.name,
                 "category": v.law.category,
+                "domains": _resolve_domains(v.law),
                 "tier": v.law.tier,
                 "status": v.law.status,
                 "change_type": "new_version",
