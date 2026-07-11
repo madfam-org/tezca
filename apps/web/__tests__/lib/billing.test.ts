@@ -41,6 +41,20 @@ describe('billing', () => {
         expect(hasPaidAccess(null)).toBe(false);
     });
 
+    it('defaults to the live app.dhan.am checkout host (not the dead dhanam.madfam.io)', async () => {
+        delete process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL;
+        const { getCheckoutUrl } = await import('@/lib/billing');
+        const url = getCheckoutUrl('academic');
+        expect(url.startsWith('https://app.dhan.am/checkout')).toBe(true);
+        expect(url).not.toContain('dhanam.madfam.io');
+    });
+
+    it('honors NEXT_PUBLIC_DHANAM_CHECKOUT_URL override', async () => {
+        process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL = 'https://example.test/co';
+        const { getCheckoutUrl } = await import('@/lib/billing');
+        expect(getCheckoutUrl('essentials')).toContain('https://example.test/co?');
+    });
+
     it('getTrialCheckoutUrl includes mode=trial_cc', async () => {
         const { getTrialCheckoutUrl } = await import('@/lib/billing');
         const url = getTrialCheckoutUrl('academic');
