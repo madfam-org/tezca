@@ -21,7 +21,7 @@ elasticsearch = "^8.0"
 # NLP
 spacy = "^3.7"
 # Scraping
-juriscraper = "^2.5"
+juriscraper = ">=2.5,<4.0"
 beautifulsoup4 = "^4.12"
 requests = "^2.31"
 # Simulation
