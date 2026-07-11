@@ -206,15 +206,14 @@ class Command(BaseCommand):
             # Dedup: check if law already exists by official_id
             existing_law = Law.objects.filter(official_id=official_id).first()
 
-            # Also check by normalized name to catch duplicates with different IDs
+            # Also check by normalized name to catch duplicates with different
+            # IDs — O(1) against the prebuilt index (see handle()).
             if not existing_law:
-                norm_name = _normalise_for_dedup(reg_name)
-                for candidate in Law.objects.filter(
-                    tier="federal", law_type="non_legislative"
-                ).only("id", "name"):
-                    if _normalise_for_dedup(candidate.name) == norm_name:
-                        existing_law = candidate
-                        break
+                existing_id = getattr(self, "_existing_norm_index", {}).get(
+                    _normalise_for_dedup(reg_name)
+                )
+                if existing_id:
+                    existing_law = Law.objects.filter(id=existing_id).first()
 
             defaults = {
                 "name": reg_name,
@@ -236,6 +235,10 @@ class Command(BaseCommand):
             else:
                 law = Law.objects.create(official_id=official_id, **defaults)
                 action = "created"
+                # Keep the dedup index fresh so later records in this same run
+                # collapse onto this new law instead of double-creating it.
+                if hasattr(self, "_existing_norm_index"):
+                    self._existing_norm_index[_normalise_for_dedup(law.name)] = law.id
 
             # Publication date
             pub_date = None
@@ -329,6 +332,18 @@ class Command(BaseCommand):
 
         results = []
         batch_count = 0
+
+        # Build a normalized-name -> id index of the existing federal
+        # non-legislative corpus (reglamentos/NOMs/CONAMER share this bucket)
+        # ONCE, so per-record name dedup is an O(1) dict lookup instead of a
+        # full-table scan per regulation — the difference between O(N+M) and
+        # O(N*M) at 113K CONAMER records against thousands of existing laws.
+        self._existing_norm_index = {
+            _normalise_for_dedup(name): law_id
+            for law_id, name in Law.objects.filter(
+                tier="federal", law_type="non_legislative"
+            ).values_list("id", "name")
+        }
 
         for i in range(0, len(all_regulations), options["batch_size"]):
             batch = all_regulations[i : i + options["batch_size"]]

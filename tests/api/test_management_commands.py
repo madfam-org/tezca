@@ -246,6 +246,61 @@ class TestIngestConamerCommand:
 
         assert "Failed:" in captured.out
 
+    def test_dedups_against_existing_corpus_by_name(self, tmp_path):
+        """A CONAMER reg matching an existing federal non-legislative law by
+        normalized name updates it instead of creating a duplicate."""
+        Law.objects.create(
+            official_id="pre_existing_reg",
+            name="Reglamento Duplicado de Prueba",
+            tier="federal",
+            law_type="non_legislative",
+            status="vigente",
+        )
+        catalog = tmp_path / "catalog.json"
+        catalog.write_text(
+            json.dumps(
+                [
+                    {
+                        "id": "conamer_dup",
+                        "name": "Reglamento Duplicado de Prueba",
+                        "regulation_type": "reglamento",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_conamer", "--all", "--catalog", str(catalog))
+
+        assert Law.objects.filter(name="Reglamento Duplicado de Prueba").count() == 1
+        assert not Law.objects.filter(official_id="conamer_conamer_dup").exists()
+
+    def test_dedups_within_a_single_run_by_name(self, tmp_path):
+        """Two regulations with the same name but different IDs collapse to one
+        Law (the index is kept fresh as new laws are created)."""
+        catalog = tmp_path / "catalog.json"
+        catalog.write_text(
+            json.dumps(
+                [
+                    {
+                        "id": "a1",
+                        "name": "Acuerdo Repetido",
+                        "regulation_type": "acuerdo",
+                    },
+                    {
+                        "id": "b2",
+                        "name": "Acuerdo Repetido",
+                        "regulation_type": "acuerdo",
+                    },
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_conamer", "--all", "--catalog", str(catalog))
+
+        assert Law.objects.filter(name="Acuerdo Repetido").count() == 1
+
 
 # ---------------------------------------------------------------------------
 # ingest_judicial command
