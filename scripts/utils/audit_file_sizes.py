@@ -42,6 +42,12 @@ ALLOWED_LARGE_FILES = {
     "apps/scraper/federal/treaty_scraper.py",
     "apps/scraper/judicial/scjn_scraper.py",
     "apps/scraper/judicial/scjn_playwright.py",
+    # Flat catalog of independent @shared_task Celery Beat entries (health
+    # checks, scrapers, catalog-ingest wiring). Crossed 800 lines during the
+    # #140/#146/#156 + NOM wiring-gap fix series — each task is small and
+    # self-contained; splitting mid-series would fragment a pattern other
+    # PRs actively mirror. Revisit if it keeps growing past ~1000.
+    "apps/scraper/scheduling/tasks.py",
 }
 
 

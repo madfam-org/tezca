@@ -820,6 +820,38 @@ def ingest_conamer_catalog():
         return {"status": "error", "error": str(e)}
 
 
+@shared_task(name="dataops.ingest_nom_catalog")
+def ingest_nom_catalog():
+    """Auto-ingest the scraped NOM catalog into the database.
+
+    ``run_nom_scraper`` (weekly Thursday 03:00 + monthly day-15 full scan)
+    only writes ``data/noms/discovered_noms.json`` — nothing scheduled the
+    ``ingest_noms`` management command, so NOMs never reached the Law
+    table despite green scrapes. Same wiring-gap class as the
+    CONAMER/judicial/DOF/RMF/treaty fixes; mirrors
+    ``ingest_conamer_catalog``. Scheduled Thursday 06:00, three hours
+    after the weekly discovery scrape.
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    catalog = Path("data/noms/discovered_noms.json")
+    if not catalog.exists():
+        logger.info("No NOM catalog to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("nom_catalog_ingest")
+    try:
+        call_command("ingest_noms", catalog=str(catalog))
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("NOM catalog ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
 @shared_task(name="dataops.ingest_rmf_catalog")
 def ingest_rmf_catalog():
     """Auto-ingest the scraped RMF catalog into the database.

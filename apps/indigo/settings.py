@@ -389,6 +389,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "dataops.ingest_treaty_catalog",
         "schedule": crontab(hour=5, minute=0, day_of_week="wednesday"),
     },
+    "nom-catalog-ingest-weekly": {
+        "task": "dataops.ingest_nom_catalog",
+        "schedule": crontab(hour=6, minute=0, day_of_week="thursday"),
+    },
     "nom-weekly-discovery": {
         "task": "dataops.run_nom_scraper",
         "schedule": crontab(hour=3, minute=0, day_of_week="thursday"),
