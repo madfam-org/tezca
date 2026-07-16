@@ -54,7 +54,14 @@ def track(distinct_id: str, event: str, properties: Optional[dict] = None) -> No
     if _client is None:
         return
     try:
-        _client.capture(distinct_id, event, properties=properties or {})
+        # Keyword form binds on both posthog majors: 3.x is
+        # capture(distinct_id, event, ...), 6+/7.x is
+        # capture(event, *, distinct_id=..., ...) — positional args would
+        # TypeError on 6+ and silently kill all telemetry via the
+        # except below.
+        _client.capture(
+            event=event, distinct_id=distinct_id, properties=properties or {}
+        )
     except Exception:
         # Telemetry must never break a request. Log at debug for visibility
         # without polluting production logs with PostHog network blips.
@@ -65,7 +72,12 @@ def identify(distinct_id: str, properties: Optional[dict] = None) -> None:
     if _client is None:
         return
     try:
-        _client.identify(distinct_id, properties=properties or {})
+        # posthog 6+ removed module-level identify(); set() is its
+        # replacement for attaching person properties.
+        if hasattr(_client, "identify"):
+            _client.identify(distinct_id, properties=properties or {})
+        else:
+            _client.set(distinct_id=distinct_id, properties=properties or {})
     except Exception:
         logger.debug("PostHog identify() failed", exc_info=True)
 
