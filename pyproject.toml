@@ -33,7 +33,7 @@ pdfplumber = "^0.11.9"
 psycopg2-binary = "^2.9.11"
 gunicorn = ">=23,<27"
 PyJWT = {version = "^2.8", extras = ["crypto"]}
-cryptography = "^48.0.1"
+cryptography = ">=48.0.1,<50.0.0"
 # Sentry error tracking
 sentry-sdk = {version = "^2.0", extras = ["django", "celery"], optional = true}
 # Cloud storage (Cloudflare R2 / S3-compatible)
