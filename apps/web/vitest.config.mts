@@ -29,7 +29,10 @@ export default defineConfig({
             //   Gates pinned at floor−2pp for headroom against minor drift.
             //
             // WS2 Phase 2C lock target ≥50/40/50/50 — well exceeded.
-            all: true,
+            //
+            // (vitest v4 removed `all: true` — files matching `include` are
+            // now always counted, untested or not, so the gate semantics
+            // are unchanged.)
             include: ['app/**', 'components/**', 'hooks/**', 'lib/**', 'contexts/**'],
             exclude: [
                 '**/*.d.ts',
