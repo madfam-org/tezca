@@ -5,6 +5,7 @@ namespace: tezca
 
 resources:
 - namespace.yaml
+- tezca-rmf-catchup-job.yaml
 - tezca-api-deployment.yaml
 - tezca-api-service.yaml
 - tezca-web-deployment.yaml
