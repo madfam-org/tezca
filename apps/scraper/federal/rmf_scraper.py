@@ -46,13 +46,32 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Source URLs (SAT — www.sat.gob.mx — valid TLS, no INSECURE_HOSTS entry)
+#
+# SAT's 2026-07 site restructure killed the old /normatividad/2270{2,3}/
+# index pages (they now 302 to the SPA homepage, which renders nothing
+# server-side). RMF publishing lives on a static per-year minisite instead:
+# one plain-HTML page carrying the annual resolution, every modification,
+# and all annexes. The pattern is year-parameterized and confirmed stable
+# for at least 2025 and 2026.
 # ---------------------------------------------------------------------------
 
 SAT_BASE = "https://www.sat.gob.mx"
-SAT_RMF_INDEX = f"{SAT_BASE}/normatividad/22702/resoluciones-miscelaneas-fiscales"
-SAT_RMF_ANNEXES_INDEX = (
-    f"{SAT_BASE}/normatividad/22703/anexos-de-la-resolucion-miscelanea-fiscal"
-)
+SAT_RMF_MINISITE_DIR = f"{SAT_BASE}/minisitio/NormatividadRMFyRGCE/"
+
+
+def rmf_index_url(year: int) -> str:
+    """Per-year RMF minisite index (annual + modifications + annexes)."""
+    return f"{SAT_RMF_MINISITE_DIR}normatividad_rmf_rgce{year}.html"
+
+
+# Path segments on the minisite that must NOT be classified as RMF docs:
+# - anticipadas/: "versión anticipada" previews of modifications (the final
+#   text lands under rmf/ — ingesting both would duplicate/contradict)
+# - compiladas/: consolidated re-issues of annexes (the DOF-published
+#   originals under anexos/ are the canonical corpus artifacts)
+# - rgce/, rfa/: Comercio Exterior and RFA regimes co-located on the same
+#   page whose annexes would otherwise pollute the RMF annex namespace
+_EXCLUDED_PATH_SEGMENTS = ("/anticipadas/", "/compiladas/", "/rgce/", "/rfa/")
 
 # ---------------------------------------------------------------------------
 # Behavior knobs
@@ -186,7 +205,7 @@ class RmfScraper:
     # ------------------------------------------------------------------
 
     def _parse_index_links(
-        self, html: str, base_url: str, year: int
+        self, html: "str | bytes", base_url: str, year: int
     ) -> List[Dict[str, str]]:
         """Extract document links from a SAT index page.
 
@@ -204,9 +223,20 @@ class RmfScraper:
             if not text:
                 continue
 
-            # Year filter: skip anchors that name a different year explicitly.
+            # Accordion toggles and JS handlers aren't documents — the
+            # minisite's collapsible sections use #fragment anchors that
+            # carry the SAME text as the real PDF links, and first-wins
+            # dedup would otherwise pick the toggle over the document.
+            if href.startswith("#") or href.lower().startswith("javascript:"):
+                continue
+
+            # Year filter: skip anchors that name a different year — unless
+            # the href itself carries the target year. SAT reuses legacy
+            # titles on current files (e.g. "Novena Modificación al Anexo 6
+            # ... 2014" linking Anexo-6-RMF-2026.pdf), so the path signal
+            # outranks the text signal.
             year_matches = [int(m.group(0)) for m in _YEAR_PATTERN.finditer(text)]
-            if year_matches and year not in year_matches:
+            if year_matches and year not in year_matches and str(year) not in href:
                 continue
 
             # Absolute URL
@@ -214,6 +244,11 @@ class RmfScraper:
                 href = f"{SAT_BASE}{href}"
             elif not href.startswith("http"):
                 href = f"{base_url.rstrip('/')}/{href}"
+
+            # Minisite co-tenants and preview/consolidated variants are not
+            # canonical RMF corpus artifacts (see _EXCLUDED_PATH_SEGMENTS).
+            if any(seg in href.lower() for seg in _EXCLUDED_PATH_SEGMENTS):
+                continue
 
             # Heuristic: skip nav/footer links that don't look like documents.
             looks_like_document = (
@@ -303,38 +338,43 @@ class RmfScraper:
     # ------------------------------------------------------------------
 
     def discover(self, year: int, include_annexes: bool = True) -> List[RmfDocument]:
-        """Walk the SAT RMF + annex indices for ``year`` and return all
-        unique ``RmfDocument`` records discovered.
+        """Walk the SAT per-year RMF minisite and return all unique
+        ``RmfDocument`` records discovered.
 
-        Deduplication is by ``official_id`` — if the same artifact appears
-        on both index pages (which it sometimes does), we keep the first.
+        A single static page carries the annual resolution, every
+        modification, and all annexes (post-restructure — see the URL
+        constants block). Deduplication is by ``official_id``: annexes are
+        re-published on the page as amendments land, and first-wins keeps
+        the top-most (most prominent) listing.
+
+        ``include_annexes=False`` keeps the historical interface: annex
+        documents are filtered from the result rather than skipping a
+        second fetch (there is no second page anymore).
         """
         documents: Dict[str, RmfDocument] = {}
 
-        # 1. Main RMF + modifications index
-        index_resp = self._get(SAT_RMF_INDEX)
+        index_url = rmf_index_url(year)
+        index_resp = self._get(index_url)
         if index_resp:
-            for anchor in self._parse_index_links(index_resp.text, SAT_RMF_INDEX, year):
+            # Parse the raw bytes: SAT serves UTF-8 without a charset in the
+            # Content-Type header, so requests' .text decodes as latin-1 and
+            # mojibakes every accented keyword ("miscelánea", "modificación")
+            # out of classification. BeautifulSoup honors the page's own
+            # <meta charset> when given bytes.
+            #
+            # Relative hrefs on the minisite resolve against its directory,
+            # not the .html document URL.
+            for anchor in self._parse_index_links(
+                index_resp.content, SAT_RMF_MINISITE_DIR, year
+            ):
                 doc = self._classify(anchor, year)
-                if doc and doc.official_id not in documents:
-                    documents[doc.official_id] = doc
+                if doc is None or doc.official_id in documents:
+                    continue
+                if not include_annexes and doc.document_type == "annex":
+                    continue
+                documents[doc.official_id] = doc
         else:
-            logger.error("Failed to load RMF main index — discovery incomplete")
-
-        # 2. Annexes index (optional — annex parsing is heavier)
-        if include_annexes:
-            annexes_resp = self._get(SAT_RMF_ANNEXES_INDEX)
-            if annexes_resp:
-                for anchor in self._parse_index_links(
-                    annexes_resp.text, SAT_RMF_ANNEXES_INDEX, year
-                ):
-                    doc = self._classify(anchor, year)
-                    if doc and doc.official_id not in documents:
-                        documents[doc.official_id] = doc
-            else:
-                logger.warning(
-                    "Failed to load RMF annexes index — annexes will be missing"
-                )
+            logger.error("Failed to load RMF minisite index — discovery incomplete")
 
         return sorted(documents.values(), key=lambda d: d.official_id)
 
