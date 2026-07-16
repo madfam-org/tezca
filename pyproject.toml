@@ -27,7 +27,7 @@ requests = "^2.31"
 # Simulation
 # openfisca-core = "*" (Blocked on Py3.11/Numpy)
 # numpy = "^1.26"
-drf-spectacular = "^0.29.0"
+drf-spectacular = ">=0.29,<0.31"
 django-celery-beat = "^2.8.1"
 pdfplumber = "^0.11.9"
 psycopg2-binary = "^2.9.11"
