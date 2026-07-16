@@ -42,7 +42,7 @@ KNOWN_SOURCES = [
         "source_type": "scraper",
         "level": "federal",
         "base_url": "https://www.diariooficial.gob.mx/",
-        "notes": "Daily official gazette. dof_daily.py is a TODO stub.",
+        "notes": "Daily official gazette. Scraped by dof_daily.py (DofScraper), scheduled daily via check_dof_daily.",
     },
     # State - OJN
     {
