@@ -61,12 +61,10 @@ def _count_treaty_rows():
 # gap, so it would only produce noise. Re-add DOF here if/when auto-ingest
 # becomes the default and a clean "materialized" signal exists.
 #
-# Treaties has no dedicated AcquisitionLog write today (`run_treaty_scraper`
-# only logs via `logger.info`), so the "successful scrape" precondition for
-# that pipeline will never be satisfied by AcquisitionLog data. That's a
-# separate wiring gap from the one this guard targets; documented here so
-# it isn't mistaken for a bug in this guard — the entry is kept so the
-# guard activates automatically once that logging gap is closed.
+# Treaties: `run_treaty_scraper` writes a "treaty_scrape" AcquisitionLog
+# entry (added alongside this guard — it previously only logger.info'd,
+# which left the pipeline invisible to both staleness and row-growth
+# checks).
 _ROW_GROWTH_PIPELINES = {
     "conamer": {
         "operation_prefixes": ("conamer_cnartys_scrape", "conamer_playwright_scrape"),
@@ -81,7 +79,7 @@ _ROW_GROWTH_PIPELINES = {
         "count_fn": _count_rmf_rows,
     },
     "treaties": {
-        "operation_prefixes": ("run_treaty_scraper",),
+        "operation_prefixes": ("treaty_scrape",),
         "count_fn": _count_treaty_rows,
     },
 }

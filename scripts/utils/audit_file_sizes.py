@@ -33,6 +33,7 @@ EXCLUDE_DIRS = {
     "build",
     ".next",
     "engines",  # External codebases
+    ".claude",  # Agent worktrees/scratch — duplicate copies of the repo
 }
 
 # Files allowed to exceed ERROR_THRESHOLD (complex scrapers with inherent verbosity)

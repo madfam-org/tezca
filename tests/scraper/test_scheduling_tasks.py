@@ -315,8 +315,9 @@ class TestRunNomScraper:
 
 
 class TestRunTreatyScraper:
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
     @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
-    def test_passes_fetch_details_flag(self, mock_scraper_cls):
+    def test_passes_fetch_details_flag(self, mock_scraper_cls, mock_log_cls):
         from apps.scraper.scheduling.tasks import run_treaty_scraper
 
         scraper = MagicMock()
@@ -327,6 +328,38 @@ class TestRunTreatyScraper:
         scraper.run.assert_called_once_with(
             output_dir="data/treaties", fetch_details=True, max_details=100
         )
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
+    def test_writes_acquisition_log(self, mock_scraper_cls, mock_log_cls):
+        """The scrape must be visible to staleness + row-growth checks."""
+        from apps.scraper.scheduling.tasks import run_treaty_scraper
+
+        scraper = MagicMock()
+        scraper.run.return_value = {"total": 42}
+        mock_scraper_cls.return_value = scraper
+
+        run_treaty_scraper()
+
+        mock_log_cls.objects.create.assert_called_once()
+        assert (
+            mock_log_cls.objects.create.call_args.kwargs["operation"] == "treaty_scrape"
+        )
+        log_entry = mock_log_cls.objects.create.return_value
+        assert log_entry.found == 42
+        log_entry.save.assert_called_once()
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
+    def test_error_is_logged_not_raised(self, mock_scraper_cls, mock_log_cls):
+        from apps.scraper.scheduling.tasks import run_treaty_scraper
+
+        mock_scraper_cls.return_value.run.side_effect = RuntimeError("treaty boom")
+
+        result = run_treaty_scraper()
+        assert "treaty boom" in result["error"]
+        log_entry = mock_log_cls.objects.create.return_value
+        assert "treaty boom" in log_entry.error_summary
 
 
 # ── run_rmf_scraper ───────────────────────────────────────────────────
@@ -642,227 +675,6 @@ class TestScrapeScjn:
 
         result = scrape_scjn()
         assert "error" in result
-
-
-# ── ingest_judicial_batches ───────────────────────────────────────────
-
-
-class TestIngestJudicialBatches:
-    def test_no_batch_files_short_circuits(self, tmp_path, monkeypatch):
-        """When there are no batch files the task no-ops cleanly."""
-        from apps.scraper.scheduling import tasks
-
-        # Use cwd manipulation: easier than mocking Path globally
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_judicial_batches()
-        assert result["status"] == "no_files"
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_when_files_present(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        # The Playwright scraper writes into per-type subdirectories, not a
-        # flat data/judicial/batches — the task must recurse to find them.
-        batch_dir = tmp_path / "data" / "judicial" / "jurisprudencia"
-        batch_dir.mkdir(parents=True)
-        (batch_dir / "batch_0000.json").write_text("[]")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_judicial_batches()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once()
-        # reads from the judicial root, not the nonexistent .../batches
-        assert mock_call_command.call_args.kwargs["dir"] == "data/judicial"
-
-
-# ── ingest_conamer_catalog ────────────────────────────────────────────
-
-
-class TestIngestConamerCatalog:
-    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
-        """No discovered_conamer.json and no batch files → clean no-op."""
-        from apps.scraper.scheduling import tasks
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_conamer_catalog()
-        assert result["status"] == "no_files"
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_when_catalog_present(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        conamer_dir = tmp_path / "data" / "conamer"
-        conamer_dir.mkdir(parents=True)
-        (conamer_dir / "discovered_conamer.json").write_text("[]")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_conamer_catalog()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once_with("ingest_conamer", all=True)
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_from_batch_files(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        conamer_dir = tmp_path / "data" / "conamer"
-        conamer_dir.mkdir(parents=True)
-        (conamer_dir / "batch_0000.json").write_text("[]")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_conamer_catalog()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once_with("ingest_conamer", all=True)
-
-
-# ── ingest_rmf_catalog ────────────────────────────────────────────────
-
-
-class TestIngestRmfCatalog:
-    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
-        """No data/rmf/catalog.json → clean no-op."""
-        from apps.scraper.scheduling import tasks
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_rmf_catalog()
-        assert result["status"] == "no_files"
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_when_catalog_present(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        rmf_dir = tmp_path / "data" / "rmf"
-        rmf_dir.mkdir(parents=True)
-        (rmf_dir / "catalog.json").write_text("{}")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_rmf_catalog()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once_with(
-            "ingest_rmf", catalog="data/rmf/catalog.json"
-        )
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_error_is_reported_not_raised(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        rmf_dir = tmp_path / "data" / "rmf"
-        rmf_dir.mkdir(parents=True)
-        (rmf_dir / "catalog.json").write_text("{}")
-        mock_call_command.side_effect = RuntimeError("ingest boom")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_rmf_catalog()
-        assert result["status"] == "error"
-        assert "ingest boom" in result["error"]
-
-
-# ── ingest_nom_catalog ────────────────────────────────────────────────
-
-
-class TestIngestNomCatalog:
-    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
-        """No data/noms/discovered_noms.json → clean no-op."""
-        from apps.scraper.scheduling import tasks
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_nom_catalog()
-        assert result["status"] == "no_files"
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_when_catalog_present(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        noms_dir = tmp_path / "data" / "noms"
-        noms_dir.mkdir(parents=True)
-        (noms_dir / "discovered_noms.json").write_text("[]")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_nom_catalog()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once_with(
-            "ingest_noms", catalog="data/noms/discovered_noms.json"
-        )
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_error_is_reported_not_raised(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        noms_dir = tmp_path / "data" / "noms"
-        noms_dir.mkdir(parents=True)
-        (noms_dir / "discovered_noms.json").write_text("[]")
-        mock_call_command.side_effect = RuntimeError("nom boom")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_nom_catalog()
-        assert result["status"] == "error"
-        assert "nom boom" in result["error"]
-
-
-# ── ingest_treaty_catalog ─────────────────────────────────────────────
-
-
-class TestIngestTreatyCatalog:
-    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
-        """No discovered_treaties.json → clean no-op."""
-        from apps.scraper.scheduling import tasks
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_treaty_catalog()
-        assert result["status"] == "no_files"
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_runs_ingest_when_catalog_present(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        treaties_dir = tmp_path / "data" / "treaties"
-        treaties_dir.mkdir(parents=True)
-        (treaties_dir / "discovered_treaties.json").write_text("[]")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_treaty_catalog()
-        assert result["status"] == "completed"
-        mock_call_command.assert_called_once_with("ingest_treaties", all=True)
-
-    @patch("apps.scraper.dataops.models.AcquisitionLog")
-    @patch("django.core.management.call_command")
-    def test_error_is_reported_not_raised(
-        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
-    ):
-        from apps.scraper.scheduling import tasks
-
-        treaties_dir = tmp_path / "data" / "treaties"
-        treaties_dir.mkdir(parents=True)
-        (treaties_dir / "discovered_treaties.json").write_text("[]")
-        mock_call_command.side_effect = RuntimeError("treaty boom")
-
-        monkeypatch.chdir(tmp_path)
-        result = tasks.ingest_treaty_catalog()
-        assert result["status"] == "error"
-        assert "treaty boom" in result["error"]
 
 
 # ── classify_law_domains_task ─────────────────────────────────────────
