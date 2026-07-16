@@ -19,12 +19,12 @@ COPY packages/lib/package.json packages/lib/package.json
 # Token sourced from BuildKit secret so it never persists in image layers.
 # Build with: DOCKER_BUILDKIT=1 docker build --secret id=npm_token,env=NPM_MADFAM_TOKEN ...
 RUN --mount=type=secret,id=npm_token,env=NPM_MADFAM_TOKEN \
-    npm ci --workspace=apps/web --workspace=packages/ui --workspace=packages/lib \
+    npm ci --legacy-peer-deps --workspace=apps/web --workspace=packages/ui --workspace=packages/lib \
     && mkdir -p apps/web/node_modules packages/ui/node_modules packages/lib/node_modules
 
 # Explicitly install musl-compatible native bindings for Alpine
 # npm ci --workspace=... skips platform-specific optional deps (npm/cli#4828)
-RUN npm install --no-save \
+RUN npm install --no-save --legacy-peer-deps \
     lightningcss-linux-x64-musl \
     @tailwindcss/oxide-linux-x64-musl \
     @rollup/rollup-linux-x64-musl \
