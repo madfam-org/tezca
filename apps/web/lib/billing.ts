@@ -5,8 +5,13 @@
  * Uses direct URL construction (no SDK dependency needed for this minimal use case).
  */
 
+// Dhanam is served on the dhan.am apex (app.dhan.am for the customer-facing
+// checkout, api.dhan.am for the API). The legacy `dhanam.madfam.io` host was
+// never routed and does not resolve, so the previous default silently produced
+// a dead checkout link. Keep this in sync with the checkout host in
+// `app/cuenta/billing/page.tsx` (which already uses api.dhan.am).
 const DHANAM_CHECKOUT_URL =
-  process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL || 'https://dhanam.madfam.io/checkout';
+  process.env.NEXT_PUBLIC_DHANAM_CHECKOUT_URL || 'https://app.dhan.am/checkout';
 
 export type TezaTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam' | null;
 
