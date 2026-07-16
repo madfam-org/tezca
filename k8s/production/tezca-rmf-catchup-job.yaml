@@ -1,0 +1,135 @@
+# One-shot catch-up r3: runs on the image carrying the SAT-minisite
+# scraper fix (#171). r1 exposed the /app/data permission regression
+# (#170); r2 ran clean but the scraper still pointed at SAT's dead
+# pre-restructure URLs → 0 documents. Expected yield now: ~29 RMF docs
+# (annual + 1a modificación + 27 anexos), live-verified locally.
+#
+# Runs scrape → ingest for RMF, then opportunistic ingest of any other
+# catalogs present (each no-ops safely when its catalog is absent; all
+# ingests are idempotent upserts keyed on official_id).
+#
+# Lifecycle: plain GitOps Job — Argo applies it once, it runs to
+# completion and lingers Completed (no TTL: deletion would make Argo
+# recreate and re-run it). REMOVE via a follow-up PR after success.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tezca-rmf-catchup-20260716-r3
+  labels:
+    app.kubernetes.io/name: tezca-rmf-catchup
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: dataops-oneshot
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tezca-rmf-catchup
+        app.kubernetes.io/part-of: tezca
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: ghcr-credentials
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: catchup
+          image: ghcr.io/madfam-org/tezca/api
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 1001
+            capabilities:
+              drop: ["ALL"]
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -x
+              echo "=== RMF: scrape 2026 (polite 1 req/s) + ingest ==="
+              python -m apps.scraper.federal.rmf_scraper --year 2026 --download \
+                && python manage.py ingest_rmf --catalog data/rmf/catalog.json \
+                || echo "RMF catch-up failed (non-fatal for the rest)"
+              echo "=== opportunistic ingests (no-op when catalog absent) ==="
+              python manage.py ingest_treaties --all || true
+              python manage.py ingest_noms || true
+              python manage.py ingest_state_catalogs --all || true
+              python manage.py ingest_conamer --all || true
+              echo "=== catch-up complete ==="
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: DJANGO_SECRET_KEY
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: DB_PASSWORD
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: DB_HOST
+            - name: DEBUG
+              value: "False"
+            - name: DB_ENGINE
+              value: "django.db.backends.postgresql"
+            - name: DB_NAME
+              value: "tezca"
+            - name: DB_PORT
+              value: "5432"
+            - name: ES_HOST
+              value: "http://tezca-es:9200"
+            - name: STORAGE_BACKEND
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-r2-credentials
+                  key: STORAGE_BACKEND
+            - name: R2_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-r2-credentials
+                  key: R2_ACCESS_KEY_ID
+            - name: R2_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-r2-credentials
+                  key: R2_SECRET_ACCESS_KEY
+            - name: R2_ENDPOINT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-r2-credentials
+                  key: R2_ENDPOINT_URL
+            - name: R2_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-r2-credentials
+                  key: R2_BUCKET_NAME
+          resources:
+            requests:
+              cpu: 50m
+              memory: 384Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          # The image lacks a writable /app/data for uid 1001 (Dockerfile
+          # fix ships separately); scrape+ingest happen in one pod lifetime
+          # so ephemeral is fine here.
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          emptyDir:
+            sizeLimit: 2Gi
