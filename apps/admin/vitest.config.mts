@@ -24,6 +24,20 @@ export default defineConfig({
             // at the root node_modules resolves.
             // TODO: Remove once @janua/nextjs ships with `from "next/server.js"`.
             'next/server': path.resolve(__dirname, '../../node_modules/next/server.js'),
+            // Two jose copies exist (admin's own v6 vs the root v5 that the
+            // inlined @janua/nextjs resolves). vi.mock('jose') keys on the
+            // test file's resolution, so unify both onto one copy or the
+            // middleware's verify escapes the mock.
+            jose: path.resolve(__dirname, '../../node_modules/jose'),
+        },
+        server: {
+            deps: {
+                // vitest v4 stopped applying test.alias inside externalized
+                // node_modules imports — inline @janua/nextjs so its bare
+                // `from "next/server"` goes through the transform where the
+                // alias above still applies.
+                inline: ['@janua/nextjs'],
+            },
         },
     },
 });
