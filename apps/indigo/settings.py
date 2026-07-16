@@ -439,6 +439,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=22, minute=0, day_of_week="saturday"),
         "kwargs": {"max_items": 5000, "epoca": 11, "tipo": "jurisprudencia"},
     },
+    # DESCOPED from auto-ingest (2026-07-16 wiring audit): both recovery
+    # scripts below write raw, unparsed files (PDF/DOC/HTML) — not a
+    # structured catalog an existing ingest_* command can parse — and never
+    # touch GapRecord. No text-extraction/official_id-derivation step exists
+    # to bridge them into the Law table with MVP-sized glue, unlike the
+    # CONAMER/NOM/RMF/treaty catalogs. Output is consumed manually; see the
+    # task docstrings in apps/scraper/scheduling/tasks.py for details.
     "ojn-recovery-monthly": {
         "task": "dataops.run_ojn_recovery",
         "schedule": crontab(hour=3, minute=0, day_of_month="10"),

@@ -610,6 +610,20 @@ def run_ojn_recovery(paths="ab", scope="all", limit=500):
         paths: Recovery paths to run ("a", "ab", "abc")
         scope: "non_leg", "leg", or "all"
         limit: Max items per path
+
+    Output is NOT auto-ingested. ``ojn_multipath_recovery.py`` writes raw
+    PDF/DOC binaries to ``data/recovery/{path_a,path_b}/{state}/`` plus JSON
+    reports (``recovery_report.json``, ``recovered_records.json``,
+    ``remaining_failures.json``) to ``data/recovery/`` — it does not extract
+    text, derive an ``official_id``, or update ``state_laws_metadata.json``
+    or any ``GapRecord`` row. Unlike the CONAMER/NOM/RMF/treaty catalogs
+    (structured JSON an ``ingest_*`` command already parses), these are raw
+    research artifacts with no existing text-extraction step, so there is no
+    minimal-glue ingest path today. Consumed manually: an operator reviews
+    ``data/recovery/recovery_report.json``, cross-checks recovered files
+    against the original gap, and re-runs the normal state-law pipeline
+    (extract → parse → ``ingest_state_laws``) by hand for anything worth
+    keeping. Revisit if/when a recovered-file → pipeline bridge is built.
     """
     import subprocess
 
@@ -646,6 +660,18 @@ def run_wayback_recovery(domains=None, limit=200):
     Args:
         domains: List of domains (None = all configured)
         limit: Max records per domain
+
+    Output is NOT auto-ingested. ``wayback_bulk_recovery.py`` writes raw
+    PDF/DOC/HTML/JSON files to ``data/wayback_recovery/<domain>/`` plus
+    ``wayback_recovery_report.json`` — it does not extract text, derive an
+    ``official_id``, or update any ``GapRecord`` row. These are undifferentiated
+    archive dumps from dead domains (sinec.gob.mx, cnartys.conamer.gob.mx,
+    etc.), not a structured catalog an existing ``ingest_*`` command can
+    parse, so there is no minimal-glue ingest path today. Consumed manually:
+    an operator reviews ``data/wayback_recovery/wayback_recovery_report.json``,
+    triages downloaded files per domain, and feeds anything worth keeping
+    through the normal extract → parse → ingest pipeline by hand. Revisit if
+    a recovered-file → pipeline bridge is built.
     """
     import subprocess
 
