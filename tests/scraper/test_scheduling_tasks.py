@@ -897,6 +897,55 @@ class TestCheckScraperHealth:
         result = check_scraper_health()
         assert isinstance(result, dict)
 
+    def test_row_growth_warnings_surface_in_report(self, monkeypatch, tmp_path):
+        """The health task's returned report includes row-growth warnings
+        under `_row_growth_warnings`, so operators see them without
+        digging into logs. Guard internals are covered in
+        test_row_growth_guard.py; this just confirms the wiring."""
+        from apps.scraper.scheduling import tasks
+
+        monkeypatch.chdir(tmp_path)
+
+        with patch("apps.scraper.dataops.models.AcquisitionLog") as mock_log_cls:
+            mock_log_cls.objects.values_list.return_value.distinct.return_value.order_by.return_value = (
+                []
+            )
+            monkeypatch.setattr(
+                tasks, "check_row_growth", lambda now: ["pipeline fake: flat rows"]
+            )
+            result = tasks.check_scraper_health()
+
+        assert result["_row_growth_warnings"] == ["pipeline fake: flat rows"]
+
+    def test_report_intact_when_row_growth_guard_yields_no_warnings(
+        self, monkeypatch, tmp_path
+    ):
+        """The row-growth guard is fail-open internally (see
+        test_row_growth_guard.py::test_guard_exception_does_not_raise_and_returns_empty).
+        This confirms the primary per-operation results are unaffected by
+        the guard call — with no DB access allowed here, the guard's real
+        implementation naturally hits an exception internally and returns
+        [], but `check_scraper_health`'s own report must stay intact."""
+        from apps.scraper.scheduling import tasks
+
+        monkeypatch.chdir(tmp_path)
+
+        with patch("apps.scraper.dataops.models.AcquisitionLog") as mock_log_cls:
+            mock_log_cls.objects.values_list.return_value.distinct.return_value.order_by.return_value = [
+                "some_op"
+            ]
+            mock_log_cls.objects.filter.return_value.order_by.return_value.first.return_value = (
+                None
+            )
+            mock_log_cls.objects.filter.return_value.filter.return_value.count.return_value = (
+                0
+            )
+            result = tasks.check_scraper_health()
+
+        assert "some_op" in result
+        assert result["some_op"]["recent_failures"] == 0
+        assert result["_row_growth_warnings"] == []
+
 
 # ── DOF daily materialization (flag-gated) ────────────────────────────
 
