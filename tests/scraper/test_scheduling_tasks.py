@@ -315,8 +315,9 @@ class TestRunNomScraper:
 
 
 class TestRunTreatyScraper:
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
     @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
-    def test_passes_fetch_details_flag(self, mock_scraper_cls):
+    def test_passes_fetch_details_flag(self, mock_scraper_cls, mock_log_cls):
         from apps.scraper.scheduling.tasks import run_treaty_scraper
 
         scraper = MagicMock()
@@ -327,6 +328,38 @@ class TestRunTreatyScraper:
         scraper.run.assert_called_once_with(
             output_dir="data/treaties", fetch_details=True, max_details=100
         )
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
+    def test_writes_acquisition_log(self, mock_scraper_cls, mock_log_cls):
+        """The scrape must be visible to staleness + row-growth checks."""
+        from apps.scraper.scheduling.tasks import run_treaty_scraper
+
+        scraper = MagicMock()
+        scraper.run.return_value = {"total": 42}
+        mock_scraper_cls.return_value = scraper
+
+        run_treaty_scraper()
+
+        mock_log_cls.objects.create.assert_called_once()
+        assert (
+            mock_log_cls.objects.create.call_args.kwargs["operation"] == "treaty_scrape"
+        )
+        log_entry = mock_log_cls.objects.create.return_value
+        assert log_entry.found == 42
+        log_entry.save.assert_called_once()
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.federal.treaty_scraper.TreatyScraper")
+    def test_error_is_logged_not_raised(self, mock_scraper_cls, mock_log_cls):
+        from apps.scraper.scheduling.tasks import run_treaty_scraper
+
+        mock_scraper_cls.return_value.run.side_effect = RuntimeError("treaty boom")
+
+        result = run_treaty_scraper()
+        assert "treaty boom" in result["error"]
+        log_entry = mock_log_cls.objects.create.return_value
+        assert "treaty boom" in log_entry.error_summary
 
 
 # ── run_rmf_scraper ───────────────────────────────────────────────────

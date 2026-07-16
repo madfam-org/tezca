@@ -360,14 +360,28 @@ def run_treaty_scraper(fetch_details=False, max_details=50):
     """
     from apps.scraper.federal.treaty_scraper import TreatyScraper
 
-    scraper = TreatyScraper()
-    result = scraper.run(
-        output_dir="data/treaties",
-        fetch_details=fetch_details,
-        max_details=max_details,
+    # AcquisitionLog entry so scraper-health checks (staleness + the
+    # row-growth guard) can see this pipeline — it previously only wrote
+    # logger.info, making it invisible to both.
+    log_entry = _start_log(
+        "treaty_scrape",
+        {"fetch_details": fetch_details, "max_details": max_details},
     )
+    try:
+        scraper = TreatyScraper()
+        result = scraper.run(
+            output_dir="data/treaties",
+            fetch_details=fetch_details,
+            max_details=max_details,
+        )
+    except Exception as e:
+        logger.error("Treaty scraper failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"error": str(e)}
 
-    logger.info("Treaty scraper: %d treaties found", result.get("total", 0))
+    found = result.get("total", 0)
+    logger.info("Treaty scraper: %d treaties found", found)
+    _finish_log(log_entry, found=found)
     return result
 
 
@@ -932,6 +946,7 @@ _EXPECTED_INTERVALS = {
     "conamer_playwright_scrape": 7 * 24,
     "scjn_jurisprudencia_scrape": 7 * 24,
     "scjn_playwright_jurisprudencia": 7 * 24,
+    "treaty_scrape": 7 * 24,  # treaty-weekly-check, Wednesday 02:00
 }
 
 
