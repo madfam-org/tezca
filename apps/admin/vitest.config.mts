@@ -23,7 +23,11 @@ export default defineConfig({
             // mapping. Force the explicit .js path so the hoisted next package
             // at the root node_modules resolves.
             // TODO: Remove once @janua/nextjs ships with `from "next/server.js"`.
-            'next/server': path.resolve(__dirname, '../../node_modules/next/server.js'),
+            // (next nests per-workspace since the 16.2.10 bump — its peers
+            // keep it out of the root — so resolve against this workspace's
+            // copy, and cover next/headers which @janua/nextjs also imports.)
+            'next/server': path.resolve(__dirname, 'node_modules/next/server.js'),
+            'next/headers': path.resolve(__dirname, 'node_modules/next/headers.js'),
             // Two jose copies exist (admin's own v6 vs the root v5 that the
             // inlined @janua/nextjs resolves). vi.mock('jose') keys on the
             // test file's resolution, so unify both onto one copy or the
