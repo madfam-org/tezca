@@ -75,6 +75,7 @@ EPOCAS = {
     9: "Novena Epoca",
     10: "Decima Epoca",
     11: "Undecima Epoca",
+    12: "Duodecima Epoca",
 }
 
 

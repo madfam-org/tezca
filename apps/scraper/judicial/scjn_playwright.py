@@ -1,25 +1,26 @@
 """
-SCJN Judicial Playwright Scraper (W3 — Phase 17)
+SCJN Judicial Scraper (W3 — Phase 17; API-first since #142)
 
-Browser-based scraper for the Semanario Judicial de la Federación (SJF).
-The SJF portal renders search results via JavaScript, making it inaccessible
-to requests-based scrapers. Uses Playwright to automate Chromium.
+Scraper for the Semanario Judicial de la Federación (SJF). The SJF portal
+is an Angular SPA backed by a public JSON microservice (see sjf_api.py for
+the captured contract). Scraping runs through a three-tier strategy:
 
-Architecture:
-    1. Launch Chromium via PlaywrightBase
-    2. Navigate to SJF search interface
-    3. Fill search form: epoca, materia, tipo filters
-    4. Wait for JS-rendered results table to populate
-    5. Extract record fields: registro, rubro, texto, epoca, instancia, materia
-    6. Paginate via "Siguiente" button clicks
-    7. Checkpoint every 100 items, save batches
+    Tier 1 — direct JSON API via requests (no browser). Primary path:
+             deterministic fields, full detail texto/precedentes.
+    Tier 2 — same JSON API through an in-page fetch() in Chromium, for
+             egress environments the WAF challenges (browser session
+             carries the WAF cookies).
+    Tier 3 — legacy DOM scraping (form fill + CSS selectors), kept as a
+             last resort. Historically produced empty records when the
+             SPA's markup drifted (issue #142) — do not rely on it.
+
+Common to all tiers: checkpoint every 100 items, batch saves under
+data/judicial/<tipo>/, records deduped downstream by registro.
 
 Epoch-by-epoch strategy:
-    1. Epoch 11 first (~10K items, fastest validation)
-    2. Epoch 10 (~60K jurisprudencia, highest legal value)
+    1. Epoch 11/12 first (smallest, fastest validation)
+    2. Epoch 10 (~24K tesis, highest legal value)
     3. Epochs 9→1 (historical, lower priority)
-
-Open data probe first — datos.scjn.gob.mx may have bulk CSV/JSON.
 
 Usage:
     python -m apps.scraper.judicial.scjn_playwright --check-only
@@ -39,6 +40,12 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeout
 
 from apps.scraper.client.madfam_bridge import MadfamBridge
 from apps.scraper.judicial.scjn_scraper import EPOCAS, ScjnScraper
+from apps.scraper.judicial.sjf_api import (
+    SjfApiClient,
+    SjfApiError,
+    doc_to_record,
+    strip_html,
+)
 from apps.scraper.playwright_base import PlaywrightBase
 
 logger = logging.getLogger(__name__)
@@ -86,6 +93,7 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         self._epoca: int = 10
         self._tipo: str = "jurisprudencia"
         self.madfam = MadfamBridge()
+        self.api = SjfApiClient()
 
     # ------------------------------------------------------------------
     # Search form interaction
@@ -93,10 +101,12 @@ class ScjnPlaywrightScraper(PlaywrightBase):
 
     def _navigate_to_search(self) -> bool:
         """Navigate to the SJF search interface and wait for form."""
-        # Try the current search URL first, then legacy subdomain
+        # sjf2 first: it hosts the tesis microservice the in-page API
+        # fallback needs (same-origin), and sjfsemanal fronts an Imperva
+        # challenge that blocks automation outright (observed 2026-07-15).
         search_urls = [
-            SJF_SEARCH_URL,
             SJF_SEARCH_URL_LEGACY,
+            SJF_SEARCH_URL,
             f"{SJF_BASE_URL}/SJFHome/home",
             SJF_BASE_URL,
         ]
@@ -508,14 +518,38 @@ class ScjnPlaywrightScraper(PlaywrightBase):
     # Detail page enrichment
     # ------------------------------------------------------------------
 
-    def _fetch_detail_page(self, registro: str) -> Dict[str, str]:
-        """Fetch and parse a single SJF detail page for full record fields.
+    def _fetch_detail_page(
+        self, registro: str, semanal: bool = False
+    ) -> Dict[str, str]:
+        """Fetch full record fields for one tesis.
 
-        Delegates the immense layout inconsistencies and Regex requirements entirely
-        to madfam-crawler, which returns standard JSON structured_data immediately.
+        Primary: the SJF detail JSON endpoint (deterministic, returns
+        texto/precedentes directly). Fallback: madfam-crawler LLM
+        extraction against the public detail page, kept for environments
+        where the API is unreachable.
         """
-        url = f"{SJF_DETAIL_URL}/{registro}"
+        # Primary: detail API. Weekly-published records need isSemanal=true;
+        # when the flag is unknown, try the record's own hint then the
+        # opposite variant before giving up.
+        for is_semanal in dict.fromkeys([semanal, not semanal]):
+            try:
+                detail = self.api.fetch_detail(registro, semanal=is_semanal)
+            except SjfApiError:
+                continue
+            if detail and (detail.get("texto") or detail.get("rubro")):
+                return {
+                    "rubro": strip_html(detail.get("rubro")),
+                    "texto": strip_html(detail.get("texto")),
+                    "precedentes": strip_html(detail.get("precedentes")),
+                    "materia": strip_html(detail.get("materias")),
+                    "tesis_num": strip_html(detail.get("claveTesis")),
+                    "instancia": strip_html(
+                        detail.get("instanciaAbr") or detail.get("sala")
+                    ),
+                }
 
+        # Fallback: LLM extraction via madfam-crawler.
+        url = f"{SJF_DETAIL_URL}/{registro}"
         logger.info(f"Delegating detail extraction to madfam-crawler for {url}")
         prompt = "Extract the specific case details, identifying metadata like materia, tesis, instancia, ponente, and tipo. Capture the 'rubro' (the title/summary paragraph) and the core legal 'texto' body."
 
@@ -568,7 +602,9 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             if not registro:
                 continue
 
-            detail = self._fetch_detail_page(registro)
+            detail = self._fetch_detail_page(
+                registro, semanal=bool(record.get("semanal"))
+            )
             if detail:
                 # Merge non-empty fields into record
                 for key, value in detail.items():
@@ -730,6 +766,169 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         return all_items
 
     # ------------------------------------------------------------------
+    # API-first scraping (fix for #142)
+    # ------------------------------------------------------------------
+
+    def _save_api_batches(
+        self, all_items: List[Dict[str, Any]], batch_number: int
+    ) -> int:
+        """Flush completed batches to disk; returns the next batch number."""
+        subdir = (
+            "jurisprudencia" if self._tipo == "jurisprudencia" else "tesis_aisladas"
+        )
+        while len(all_items) >= (batch_number + 1) * _BATCH_SIZE:
+            start = batch_number * _BATCH_SIZE
+            self.save_batch(
+                all_items[start : start + _BATCH_SIZE],
+                batch_number,
+                subdirectory=subdir,
+            )
+            batch_number += 1
+        return batch_number
+
+    def _scrape_via_api(self, max_items: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Paginate the SJF tesis microservice directly — no browser.
+
+        The SPA's own JSON API returns every list field the DOM never
+        reliably exposed. Raises SjfApiError to trigger the browser
+        fallback when the API is unreachable (e.g. WAF-challenged egress).
+        """
+        all_items: List[Dict[str, Any]] = []
+        batch_number = 0
+        page = 0
+        epoca_nombre = EPOCAS.get(self._epoca, f"Epoca {self._epoca}")
+
+        while True:
+            docs, total, total_pages = self.api.list_tesis(
+                self._epoca, self._tipo, page=page, size=_BATCH_SIZE
+            )
+            if not docs:
+                break
+
+            for doc in docs:
+                all_items.append(
+                    doc_to_record(doc, self._epoca, epoca_nombre, self._tipo)
+                )
+            self._total_items = len(all_items)
+
+            logger.info(
+                "API page %d/%d: %d docs (collected: %d of %d total).",
+                page + 1,
+                max(total_pages, 1),
+                len(docs),
+                len(all_items),
+                total,
+            )
+
+            batch_number = self._save_api_batches(all_items, batch_number)
+
+            if max_items and len(all_items) >= max_items:
+                all_items = all_items[:max_items]
+                break
+            page += 1
+            if total_pages and page >= total_pages:
+                break
+
+        remaining_start = batch_number * _BATCH_SIZE
+        if remaining_start < len(all_items):
+            subdir = (
+                "jurisprudencia" if self._tipo == "jurisprudencia" else "tesis_aisladas"
+            )
+            self.save_batch(
+                all_items[remaining_start:], batch_number, subdirectory=subdir
+            )
+
+        return all_items
+
+    def _scrape_via_inpage_api(
+        self, max_items: Optional[int] = None
+    ) -> List[Dict[str, Any]]:
+        """Call the same JSON API from inside the browser page.
+
+        Used when direct requests are WAF-blocked but a real browser
+        session passes: the page's fetch() carries the WAF cookies and
+        same-origin headers automatically. Requires the page to be on the
+        sjf2.scjn.gob.mx origin (see _navigate_to_search ordering).
+        """
+        if not self._page:
+            return []
+
+        from apps.scraper.judicial.sjf_api import build_list_body
+
+        body = build_list_body(self._epoca, self._tipo)
+        epoca_nombre = EPOCAS.get(self._epoca, f"Epoca {self._epoca}")
+        all_items: List[Dict[str, Any]] = []
+        batch_number = 0
+        page = 0
+
+        script = (
+            "async (args) => {"
+            "  const r = await fetch("
+            "    `/services/sjftesismicroservice/api/public/tesis"
+            "?page=${args.page}&size=${args.size}`,"
+            "    {method: 'POST', headers: {'Content-Type': 'application/json'},"
+            "     body: JSON.stringify(args.body)});"
+            "  if (!r.ok) return {httpError: r.status};"
+            "  return await r.json();"
+            "}"
+        )
+
+        while True:
+            try:
+                data = self._page.evaluate(
+                    script, {"body": body, "page": page, "size": _BATCH_SIZE}
+                )
+            except Exception:
+                logger.warning("In-page API fetch failed", exc_info=True)
+                break
+
+            if not isinstance(data, dict) or data.get("httpError"):
+                logger.warning(
+                    "In-page API returned error: %s",
+                    data.get("httpError") if isinstance(data, dict) else type(data),
+                )
+                break
+
+            docs = data.get("documents") or []
+            if not docs:
+                break
+            total_pages = int(data.get("totalPage") or 0)
+
+            for doc in docs:
+                all_items.append(
+                    doc_to_record(doc, self._epoca, epoca_nombre, self._tipo)
+                )
+            self._total_items = len(all_items)
+            logger.info(
+                "In-page API page %d/%d: %d docs (collected: %d).",
+                page + 1,
+                max(total_pages, 1),
+                len(docs),
+                len(all_items),
+            )
+
+            batch_number = self._save_api_batches(all_items, batch_number)
+
+            if max_items and len(all_items) >= max_items:
+                all_items = all_items[:max_items]
+                break
+            page += 1
+            if total_pages and page >= total_pages:
+                break
+            self._rate_limit()
+
+        remaining_start = batch_number * _BATCH_SIZE
+        if remaining_start < len(all_items):
+            subdir = (
+                "jurisprudencia" if self._tipo == "jurisprudencia" else "tesis_aisladas"
+            )
+            self.save_batch(
+                all_items[remaining_start:], batch_number, subdirectory=subdir
+            )
+
+        return all_items
+
+    # ------------------------------------------------------------------
     # Main pipeline
     # ------------------------------------------------------------------
 
@@ -778,32 +977,52 @@ class ScjnPlaywrightScraper(PlaywrightBase):
             "output_dir": str(self._output_dir),
         }
 
+        # If max_pages was given (legacy knob), translate to an item cap so
+        # the API paths honor it too (~_BATCH_SIZE items per API page).
+        effective_max_items = max_items
+        if max_pages and not max_items:
+            effective_max_items = max_pages * _BATCH_SIZE
+
         try:
-            self._launch()
+            # Tier 1: direct JSON API (no browser at all).
+            items: Optional[List[Dict[str, Any]]] = None
+            try:
+                items = self._scrape_via_api(max_items=effective_max_items)
+                summary["method"] = "api"
+            except SjfApiError as exc:
+                logger.warning(
+                    "Direct SJF API failed (%s) — falling back to browser.", exc
+                )
 
-            # Navigate to search
-            if not self._navigate_to_search():
-                logger.error("Cannot reach SJF search at %s", SJF_SEARCH_URL)
-                summary["error"] = "navigation_failed"
-                return summary
+            if items is None:
+                self._launch()
 
-            # Fill and submit search form
-            self._fill_search_form(epoca, tipo)
+                # Navigate to search
+                if not self._navigate_to_search():
+                    logger.error("Cannot reach SJF search at %s", SJF_SEARCH_URL)
+                    summary["error"] = "navigation_failed"
+                    return summary
 
-            # Allow JS rendering time
-            time.sleep(3)
+                # Tier 2: same JSON API through the page's fetch() —
+                # carries WAF cookies a datacenter egress can't get alone.
+                items = self._scrape_via_inpage_api(max_items=effective_max_items)
+                if items:
+                    summary["method"] = "inpage_api"
+                else:
+                    # Tier 3: legacy DOM scraping (form fill + selectors).
+                    self._fill_search_form(epoca, tipo)
+                    time.sleep(3)
 
-            # Compute max_pages from max_items if needed
-            effective_max_pages = max_pages
-            if max_items and not max_pages:
-                # Estimate ~20 items per page
-                effective_max_pages = (max_items // 20) + 2
+                    effective_max_pages = max_pages
+                    if max_items and not max_pages:
+                        # Estimate ~20 items per page
+                        effective_max_pages = (max_items // 20) + 2
 
-            # Scrape
-            items = self.scrape_catalog(
-                max_pages=effective_max_pages,
-                resume_from_page=resume_from_page,
-            )
+                    items = self.scrape_catalog(
+                        max_pages=effective_max_pages,
+                        resume_from_page=resume_from_page,
+                    )
+                    summary["method"] = "dom"
 
             if max_items and len(items) > max_items:
                 items = items[:max_items]
@@ -865,7 +1084,8 @@ class ScjnPlaywrightScraper(PlaywrightBase):
         }
 
         try:
-            self._launch()
+            # No browser needed: enrichment goes through the detail API
+            # (with madfam-crawler as a browserless HTTP fallback).
             items = self._enrich_records(items)
             enriched = sum(1 for it in items if it.get("texto"))
             summary["enriched_count"] = enriched

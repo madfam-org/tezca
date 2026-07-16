@@ -39,8 +39,13 @@ if "playwright" not in sys.modules:
 
 
 # httpx is an optional dep used by MadfamBridge. Shim if missing.
+# NOTE: this stub is installed into sys.modules for the whole test process
+# (not just this file), so it must look enough like the real package that
+# unrelated tests collected later (e.g. elastic_transport's httpx probe in
+# test_dataops.py) don't crash on missing attributes such as __version__.
 if "httpx" not in sys.modules:
     _httpx = ModuleType("httpx")
+    _httpx.__version__ = "0.0.0-shim"  # type: ignore[attr-defined]
     _httpx.Client = MagicMock()  # type: ignore[attr-defined]
     _httpx.AsyncClient = MagicMock()  # type: ignore[attr-defined]
     _httpx.HTTPError = type("HTTPError", (Exception,), {})  # type: ignore[attr-defined]
@@ -403,3 +408,273 @@ def test_parse_page_skips_short_link_text(scraper):
 
     items = scraper._parse_page()
     assert items == []
+
+
+# ---------------------------------------------------------------------------
+# API-first scraping (fix for #142)
+# ---------------------------------------------------------------------------
+
+from apps.scraper.judicial.sjf_api import SjfApiError  # noqa: E402
+
+
+def _fake_doc(ius: str) -> dict:
+    return {
+        "ius": ius,
+        "rubro": f"<b>RUBRO {ius}</b>",
+        "texto": f"Texto {ius}",
+        "instanciaAbr": "Pleno",
+        "materias": "Civil",
+        "claveTesis": f"P./J. {ius}/2024",
+    }
+
+
+class TestScrapeViaApi:
+    """``_scrape_via_api`` — direct requests-based pagination, no browser."""
+
+    def test_two_pages_then_empty_maps_and_saves_batches(self, scraper):
+        page1 = [_fake_doc("1"), _fake_doc("2")]
+        page2 = [_fake_doc("3")]
+        scraper.api.list_tesis = MagicMock(
+            side_effect=[
+                (page1, 3, 2),
+                (page2, 3, 2),
+            ]
+        )
+
+        items = scraper._scrape_via_api()
+
+        assert [it["registro"] for it in items] == ["1", "2", "3"]
+        assert items[0]["rubro"] == "RUBRO 1"
+        assert scraper.api.list_tesis.call_count == 2
+
+    def test_saves_batches_to_output_dir(self, scraper, tmp_path):
+        docs = [_fake_doc(str(i)) for i in range(3)]
+        scraper.api.list_tesis = MagicMock(side_effect=[(docs, 3, 1)])
+
+        items = scraper._scrape_via_api()
+
+        assert len(items) == 3
+        subdir = scraper._output_dir / "jurisprudencia"
+        saved_files = list(subdir.glob("batch_*.json")) if subdir.exists() else []
+        # scrape_via_api flushes any remaining (non-full) batch at the end.
+        assert len(saved_files) >= 1
+
+    def test_max_items_honored_and_truncates(self, scraper):
+        docs = [_fake_doc(str(i)) for i in range(5)]
+        scraper.api.list_tesis = MagicMock(side_effect=[(docs, 5, 1)])
+
+        items = scraper._scrape_via_api(max_items=2)
+
+        assert len(items) == 2
+
+    def test_empty_first_page_returns_empty_list(self, scraper):
+        scraper.api.list_tesis = MagicMock(return_value=([], 0, 0))
+        items = scraper._scrape_via_api()
+        assert items == []
+
+    def test_stops_when_total_pages_reached(self, scraper):
+        docs = [_fake_doc("1")]
+        scraper.api.list_tesis = MagicMock(side_effect=[(docs, 1, 1)])
+        items = scraper._scrape_via_api()
+        assert len(items) == 1
+        scraper.api.list_tesis.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# run() — tier selection
+# ---------------------------------------------------------------------------
+
+
+class TestRunTierSelection:
+    """run() should try API first, then in-page API, then DOM as a last resort."""
+
+    def test_api_success_sets_method_api_and_skips_browser(self, scraper, tmp_path):
+        scraper._scrape_via_api = MagicMock(
+            return_value=[
+                {
+                    "registro": "1",
+                    "rubro": "R",
+                    "texto": "T",
+                    "epoca": 10,
+                    "epoca_nombre": "Decima Epoca",
+                    "tipo": "jurisprudencia",
+                }
+            ]
+        )
+        with patch.object(scraper, "_launch") as mock_launch:
+            summary = scraper.run(epoca=10, tipo="jurisprudencia", enrich=False)
+
+        mock_launch.assert_not_called()
+        assert summary["method"] == "api"
+        assert summary["total_items"] == 1
+
+    def test_api_error_falls_back_to_browser_and_launches(self, scraper):
+        scraper._scrape_via_api = MagicMock(side_effect=SjfApiError("blocked"))
+        scraper._navigate_to_search = MagicMock(return_value=True)
+        scraper._scrape_via_inpage_api = MagicMock(return_value=[])
+        scraper._fill_search_form = MagicMock(return_value=True)
+        scraper.scrape_catalog = MagicMock(return_value=[])
+
+        with patch.object(scraper, "_launch") as mock_launch, patch(
+            "apps.scraper.judicial.scjn_playwright.time.sleep"
+        ):
+            summary = scraper.run(epoca=10, tipo="jurisprudencia", enrich=False)
+
+        mock_launch.assert_called_once()
+        scraper._scrape_via_inpage_api.assert_called_once()
+        assert summary["method"] == "dom"
+
+    def test_inpage_api_success_sets_method_inpage_api(self, scraper):
+        scraper._scrape_via_api = MagicMock(side_effect=SjfApiError("blocked"))
+        scraper._navigate_to_search = MagicMock(return_value=True)
+        scraper._scrape_via_inpage_api = MagicMock(
+            return_value=[
+                {
+                    "registro": "1",
+                    "rubro": "R",
+                    "texto": "T",
+                    "epoca": 10,
+                    "epoca_nombre": "Decima Epoca",
+                    "tipo": "jurisprudencia",
+                }
+            ]
+        )
+        scraper._fill_search_form = MagicMock()
+        scraper.scrape_catalog = MagicMock()
+
+        with patch.object(scraper, "_launch") as mock_launch:
+            summary = scraper.run(epoca=10, tipo="jurisprudencia", enrich=False)
+
+        mock_launch.assert_called_once()
+        assert summary["method"] == "inpage_api"
+        scraper._fill_search_form.assert_not_called()
+        scraper.scrape_catalog.assert_not_called()
+
+    def test_falls_through_to_dom_when_inpage_api_also_empty(self, scraper):
+        scraper._scrape_via_api = MagicMock(side_effect=SjfApiError("blocked"))
+        scraper._navigate_to_search = MagicMock(return_value=True)
+        scraper._scrape_via_inpage_api = MagicMock(return_value=[])
+        scraper._fill_search_form = MagicMock(return_value=True)
+        scraper.scrape_catalog = MagicMock(
+            return_value=[
+                {
+                    "registro": "1",
+                    "rubro": "R",
+                    "texto": "T",
+                    "epoca": 10,
+                    "epoca_nombre": "Decima Epoca",
+                    "tipo": "jurisprudencia",
+                }
+            ]
+        )
+
+        with patch.object(scraper, "_launch") as mock_launch, patch(
+            "apps.scraper.judicial.scjn_playwright.time.sleep"
+        ):
+            summary = scraper.run(epoca=10, tipo="jurisprudencia", enrich=False)
+
+        mock_launch.assert_called_once()
+        scraper._fill_search_form.assert_called_once()
+        scraper.scrape_catalog.assert_called_once()
+        assert summary["method"] == "dom"
+        assert summary["total_items"] == 1
+
+    def test_navigation_failure_returns_error_summary(self, scraper):
+        scraper._scrape_via_api = MagicMock(side_effect=SjfApiError("blocked"))
+        scraper._navigate_to_search = MagicMock(return_value=False)
+
+        with patch.object(scraper, "_launch"):
+            summary = scraper.run(epoca=10, tipo="jurisprudencia", enrich=False)
+
+        assert summary["error"] == "navigation_failed"
+
+
+# ---------------------------------------------------------------------------
+# _fetch_detail_page
+# ---------------------------------------------------------------------------
+
+
+class TestFetchDetailPage:
+    def test_detail_api_returns_texto_madfam_not_called(self, scraper):
+        scraper.api.fetch_detail = MagicMock(
+            return_value={
+                "rubro": "<b>Rubro</b>",
+                "texto": "<p>Full body</p>",
+                "precedentes": "Prec",
+                "materias": "Civil",
+                "claveTesis": "P./J. 1/2024",
+                "instanciaAbr": "Pleno",
+            }
+        )
+        scraper.madfam.extract_sync = MagicMock()
+
+        result = scraper._fetch_detail_page("2031846", semanal=False)
+
+        assert result["rubro"] == "Rubro"
+        assert result["texto"] == "Full body"
+        assert result["precedentes"] == "Prec"
+        assert result["materia"] == "Civil"
+        assert result["tesis_num"] == "P./J. 1/2024"
+        assert result["instancia"] == "Pleno"
+        scraper.madfam.extract_sync.assert_not_called()
+
+    def test_both_semanal_variants_error_falls_back_to_madfam(self, scraper):
+        scraper.api.fetch_detail = MagicMock(side_effect=SjfApiError("not found"))
+        scraper.madfam.extract_sync = MagicMock(
+            return_value={"rubro": "From madfam", "texto": "Madfam body"}
+        )
+
+        result = scraper._fetch_detail_page("2031846", semanal=False)
+
+        assert result == {"rubro": "From madfam", "texto": "Madfam body"}
+        assert scraper.api.fetch_detail.call_count == 2
+        scraper.madfam.extract_sync.assert_called_once()
+
+    def test_first_variant_empty_second_variant_has_texto_uses_second(self, scraper):
+        scraper.api.fetch_detail = MagicMock(
+            side_effect=[
+                {},
+                {"rubro": "R2", "texto": "T2"},
+            ]
+        )
+        scraper.madfam.extract_sync = MagicMock()
+
+        result = scraper._fetch_detail_page("2031846", semanal=False)
+
+        assert result["texto"] == "T2"
+        assert scraper.api.fetch_detail.call_count == 2
+        scraper.madfam.extract_sync.assert_not_called()
+
+    def test_madfam_tesis_key_remapped_to_tesis_num(self, scraper):
+        scraper.api.fetch_detail = MagicMock(side_effect=SjfApiError("gone"))
+        scraper.madfam.extract_sync = MagicMock(
+            return_value={"rubro": "R", "texto": "T", "tesis": "P./J. 9/2024"}
+        )
+
+        result = scraper._fetch_detail_page("1", semanal=False)
+
+        assert result["tesis_num"] == "P./J. 9/2024"
+        assert "tesis" not in result
+
+
+# ---------------------------------------------------------------------------
+# run_enrich_only — no browser launch
+# ---------------------------------------------------------------------------
+
+
+class TestRunEnrichOnly:
+    def test_run_enrich_only_does_not_launch_browser(self, scraper, tmp_path):
+        input_path = tmp_path / "existing.json"
+        input_path.write_text(
+            '[{"registro": "1", "rubro": "R", "texto": "already there"}]',
+            encoding="utf-8",
+        )
+
+        with patch.object(scraper, "_launch") as mock_launch:
+            summary = scraper.run_enrich_only(
+                input_path=str(input_path), epoca=10, tipo="jurisprudencia"
+            )
+
+        mock_launch.assert_not_called()
+        assert summary["total_items"] == 1
+        assert "error" not in summary
