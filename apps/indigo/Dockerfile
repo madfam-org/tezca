@@ -88,8 +88,8 @@ COPY . .
 RUN python apps/manage.py collectstatic --noinput 2>/dev/null || true
 
 # Create directories for runtime data
-RUN mkdir -p /app/staticfiles /app/logs && \
-    chown -R django:django /app/staticfiles /app/logs
+RUN mkdir -p /app/staticfiles /app/logs /app/data && \
+    chown -R django:django /app/staticfiles /app/logs /app/data
 
 USER django
 
