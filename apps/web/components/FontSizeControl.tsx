@@ -14,8 +14,13 @@ export type { FontSize };
 
 function readStoredSize(): FontSize {
     if (typeof window === 'undefined') return 'text-base';
-    const stored = localStorage.getItem(STORAGE_KEY) as FontSize | null;
-    return stored && SIZES.includes(stored) ? stored : 'text-base';
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return 'text-base';
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY) as FontSize | null;
+        return stored && SIZES.includes(stored) ? stored : 'text-base';
+    } catch {
+        return 'text-base';
+    }
 }
 
 export function FontSizeControl({ onChange }: FontSizeControlProps) {
@@ -24,7 +29,13 @@ export function FontSizeControl({ onChange }: FontSizeControlProps) {
     const [, setTick] = useState(0);
 
     const handleChange = (newSize: FontSize) => {
-        localStorage.setItem(STORAGE_KEY, newSize);
+        try {
+            if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+                localStorage.setItem(STORAGE_KEY, newSize);
+            }
+        } catch {
+            // localStorage unavailable
+        }
         setTick((t) => t + 1);
         onChange(newSize);
     };

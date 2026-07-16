@@ -22,6 +22,9 @@ const STORAGE_KEY = 'preferred-lang';
 
 function getSnapshot(): Lang {
   try {
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') {
+      return 'es';
+    }
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'nah') return stored;
     return 'es';
@@ -48,7 +51,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     trackEvent('language.switched', { from: lang, to: newLang });
     setOverride(newLang);
     try {
-      localStorage.setItem(STORAGE_KEY, newLang);
+      if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+        localStorage.setItem(STORAGE_KEY, newLang);
+      }
     } catch {
       // localStorage unavailable
     }

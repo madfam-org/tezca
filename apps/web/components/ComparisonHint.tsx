@@ -14,7 +14,15 @@ const labels = {
 
 function useIsDismissed() {
     const subscribe = useCallback(() => () => {}, []);
-    const getSnapshot = useCallback(() => typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === '1', []);
+    const getSnapshot = useCallback(() => {
+        if (typeof window === 'undefined') return true;
+        if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return true;
+        try {
+            return localStorage.getItem(STORAGE_KEY) === '1';
+        } catch {
+            return true;
+        }
+    }, []);
     const getServerSnapshot = useCallback(() => true, []); // hide on SSR
     return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
@@ -26,7 +34,13 @@ export function ComparisonHint() {
 
     const dismiss = () => {
         setHidden(true);
-        localStorage.setItem(STORAGE_KEY, '1');
+        try {
+            if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+                localStorage.setItem(STORAGE_KEY, '1');
+            }
+        } catch {
+            // localStorage unavailable
+        }
     };
 
     const show = !dismissed && !hidden;
