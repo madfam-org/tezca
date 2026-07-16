@@ -53,7 +53,11 @@ spec:
           #    MAJOR to match/exceed the server — RFC 0012: primary is PG15+).
           initContainers:
             - name: pgdump
-              image: postgres:16-alpine
+              # Fully-qualified: Kyverno restrict-image-registries matches on
+              # the literal registry prefix; bare Docker Hub shorthand is
+              # rejected at admission and this CronJob never applied (Argo
+              # stuck OutOfSync retry-looping since #145).
+              image: docker.io/library/postgres:16-alpine
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
@@ -90,7 +94,7 @@ spec:
           # 2) Upload the artifact to R2 with the AWS CLI image.
           containers:
             - name: upload
-              image: amazon/aws-cli:2.15.0
+              image: docker.io/amazon/aws-cli:2.15.0
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
