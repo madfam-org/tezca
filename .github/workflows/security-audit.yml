@@ -1,0 +1,69 @@
+name: Scheduled Security Audit
+
+# Weekly dependency-vulnerability sweep, independent of PR traffic.
+#
+# Why: pip-audit/npm-audit run as PR-blocking CI steps, but advisories
+# publish on their own schedule — the setuptools PYSEC dropped mid-week
+# (2026-07) and would have failed whichever unlucky PR pushed next. This
+# scheduled run surfaces new CVEs proactively (issue instead of a blocked
+# merge queue), so remediation is planned work, not a fire drill.
+
+on:
+  schedule:
+    # Wednesday 11:00 UTC (05:00 CDMX) — offset from the Monday CodeQL run
+    - cron: "0 11 * * 3"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  pip-audit:
+    name: pip-audit (locked deps)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      - name: Security audit (pip-audit)
+        id: audit
+        run: |
+          # Same invocation as the PR-blocking CI step (ci.yml), kept in
+          # sync manually — including the toolchain-CVE ignore.
+          poetry run pip install --upgrade pip
+          poetry run pip install pip-audit
+          poetry run pip-audit --ignore-vuln CVE-2026-3219 2>&1 | tee audit.txt
+
+      - name: File issue on findings
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Scheduled security audit: pip-audit found new vulnerabilities"
+          BODY="The weekly pip-audit sweep failed on $(date -u +%F). New advisories affect locked dependencies — bump them before the next push trips the PR-blocking gate.
+
+\`\`\`
+$(tail -30 audit.txt)
+\`\`\`
+
+Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # Reuse the open issue if one exists to avoid weekly duplicates
+          EXISTING=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label security 2>/dev/null \
+              || gh issue create --title "$TITLE" --body "$BODY"
+          fi
