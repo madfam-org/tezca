@@ -75,6 +75,11 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: ES_HOST
               value: "http://tezca-es:9200"
+            # Unfreezes the DOF corpus: detected changes materialize via the
+            # ingestion pipeline (#146) instead of detect-and-log only. Only
+            # meaningful on images >= 2026-07-10; the flag is unread before.
+            - name: DOF_AUTO_INGEST_ENABLED
+              value: "true"
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
