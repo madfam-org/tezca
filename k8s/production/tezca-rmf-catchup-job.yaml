@@ -1,27 +1,481 @@
-# One-shot catch-up r3: runs on the image carrying the SAT-minisite
-# scraper fix (#171). r1 exposed the /app/data permission regression
-# (#170); r2 ran clean but the scraper still pointed at SAT's dead
-# pre-restructure URLs → 0 documents. Expected yield now: ~29 RMF docs
-# (annual + 1a modificación + 27 anexos), live-verified locally.
+# One-shot catch-up r4: ingest-only, catalog shipped via ConfigMap.
 #
-# Runs scrape → ingest for RMF, then opportunistic ingest of any other
-# catalogs present (each no-ops safely when its catalog is absent; all
-# ingests are idempotent upserts keyed on official_id).
+# The full story: r1 exposed the /app/data permission regression (#170);
+# r2 exposed SAT's site restructure (#171 fixed the scraper); r3 ran the
+# FIXED scraper and exposed the final blocker — the cluster's egress
+# cannot reach www.sat.gob.mx at all (3 attempts, network error; the
+# same code succeeds from residential networks). SAT apparently blocks
+# datacenter IP ranges.
 #
-# Lifecycle: plain GitOps Job — Argo applies it once, it runs to
-# completion and lingers Completed (no TTL: deletion would make Argo
-# recreate and re-run it). REMOVE via a follow-up PR after success.
+# So: the catalog was scraped from an authorized network (2026-07-16,
+# 29 documents — annual RMF + 1a modificación + 27 anexos) and ships
+# here as data; the Job only runs the DB ingest. ingest_rmf needs no
+# PDF files — Law/LawVersion rows carry metadata + source URLs.
+#
+# STRUCTURAL FOLLOW-UP (tracked on #148): the scheduled in-cluster RMF
+# scrape (Oct 8) will hit the same egress block. Durable fix: move the
+# scrape to a scheduled GitHub Actions workflow that commits the catalog.
+#
+# Lifecycle: Argo applies once; Job lingers Completed; removal PR after
+# log review.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tezca-rmf-catalog-20260716
+  labels:
+    app.kubernetes.io/name: tezca-rmf-catchup
+    app.kubernetes.io/part-of: tezca
+data:
+  catalog.json: |
+    [
+     {
+      "official_id": "rmf_2026",
+      "name": "Resolución Miscelánea Fiscal 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/RMF_2026-DOF-28122025.pdf",
+      "document_type": "rmf",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": null,
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_1",
+      "name": "Anexo 1 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-1-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "1",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_10",
+      "name": "Anexo 10 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_10_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "10",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_11",
+      "name": "Anexo 11 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_11_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "11",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_12",
+      "name": "Anexo 12 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_12_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "12",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_13",
+      "name": "Anexo 13 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_13_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "13",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_14",
+      "name": "Anexo 14 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_14_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "14",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_15",
+      "name": "Anexo 15 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-15-RMF-2026_DOF-2812225.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "15",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_16",
+      "name": "Anexo 16 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_16_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "16",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_17",
+      "name": "Anexo 17 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_17_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "17",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_18",
+      "name": "Anexo 18 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_18_RMF2026-19012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "18",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_19",
+      "name": "Anexo 19 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_19_RMF2026-26012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "19",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_2",
+      "name": "Anexo 2 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-2-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "2",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_21",
+      "name": "Anexo 21 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_21_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "21",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_22",
+      "name": "Anexo 22 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_22_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "22",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_23",
+      "name": "Anexo 23 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_23_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "23",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_24",
+      "name": "Anexo 24 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_24_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "24",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_25",
+      "name": "Anexo 25 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-25-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "25",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_27",
+      "name": "Anexo 27 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_27_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "27",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_28",
+      "name": "Anexo 28 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_28_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "28",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_29",
+      "name": "Anexo 29 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_29_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "29",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_3",
+      "name": "Anexo 3 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_3_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "3",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_30",
+      "name": "Anexo 30 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_30_RMF2026-13012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "30",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_4",
+      "name": "Anexo 4 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-4-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "4",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_5",
+      "name": "Anexo 5 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-5-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "5",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_6",
+      "name": "Anexo 6 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-6-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "6",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_7",
+      "name": "Anexo 7 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_7_RMF2026-09012026.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "7",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_anexo_8",
+      "name": "Anexo 8 de la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-8-RMF-2026_DOF-28122025.pdf",
+      "document_type": "annex",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": "8",
+      "modification_number": null,
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     },
+     {
+      "official_id": "rmf_2026_modificacion_1",
+      "name": "1ª Modificación a la RMF 2026",
+      "url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/1aRM_RMF2026.pdf",
+      "document_type": "modification",
+      "year": 2026,
+      "publication_date": null,
+      "annex_number": null,
+      "modification_number": "1",
+      "category": "resolución_miscelánea_fiscal",
+      "domains": [
+       "fiscal"
+      ],
+      "source": "sat_rmf_scraper"
+     }
+    ]
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tezca-rmf-catchup-20260716-r3
+  name: tezca-rmf-catchup-20260716-r4
   labels:
     app.kubernetes.io/name: tezca-rmf-catchup
     app.kubernetes.io/part-of: tezca
     app.kubernetes.io/component: dataops-oneshot
 spec:
   backoffLimit: 1
-  activeDeadlineSeconds: 3600
+  activeDeadlineSeconds: 900
   template:
     metadata:
       labels:
@@ -36,7 +490,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: catchup
+        - name: ingest
           image: ghcr.io/madfam-org/tezca/api
           securityContext:
             privileged: false
@@ -50,16 +504,9 @@ spec:
             - -c
             - |
               set -x
-              echo "=== RMF: scrape 2026 (polite 1 req/s) + ingest ==="
-              python -m apps.scraper.federal.rmf_scraper --year 2026 --download \
-                && python manage.py ingest_rmf --catalog data/rmf/catalog.json \
-                || echo "RMF catch-up failed (non-fatal for the rest)"
-              echo "=== opportunistic ingests (no-op when catalog absent) ==="
-              python manage.py ingest_treaties --all || true
-              python manage.py ingest_noms || true
-              python manage.py ingest_state_catalogs --all || true
-              python manage.py ingest_conamer --all || true
-              echo "=== catch-up complete ==="
+              echo "=== RMF ingest from shipped catalog ==="
+              python manage.py ingest_rmf --catalog /catalog/catalog.json
+              echo "=== done ==="
           env:
             - name: DJANGO_SECRET_KEY
               valueFrom:
@@ -91,31 +538,10 @@ spec:
               value: "5432"
             - name: ES_HOST
               value: "http://tezca-es:9200"
-            - name: STORAGE_BACKEND
-              valueFrom:
-                secretKeyRef:
-                  name: tezca-r2-credentials
-                  key: STORAGE_BACKEND
-            - name: R2_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: tezca-r2-credentials
-                  key: R2_ACCESS_KEY_ID
-            - name: R2_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: tezca-r2-credentials
-                  key: R2_SECRET_ACCESS_KEY
-            - name: R2_ENDPOINT_URL
-              valueFrom:
-                secretKeyRef:
-                  name: tezca-r2-credentials
-                  key: R2_ENDPOINT_URL
-            - name: R2_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: tezca-r2-credentials
-                  key: R2_BUCKET_NAME
+          volumeMounts:
+            - name: catalog
+              mountPath: /catalog
+              readOnly: true
           resources:
             requests:
               cpu: 50m
@@ -123,13 +549,7 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
-          # The image lacks a writable /app/data for uid 1001 (Dockerfile
-          # fix ships separately); scrape+ingest happen in one pod lifetime
-          # so ephemeral is fine here.
-          volumeMounts:
-            - name: data
-              mountPath: /app/data
       volumes:
-        - name: data
-          emptyDir:
-            sizeLimit: 2Gi
+        - name: catalog
+          configMap:
+            name: tezca-rmf-catalog-20260716
