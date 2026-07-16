@@ -13,7 +13,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tezca-rmf-catchup-20260716
+  name: tezca-rmf-catchup-20260716-r2
   labels:
     app.kubernetes.io/name: tezca-rmf-catchup
     app.kubernetes.io/part-of: tezca
@@ -122,3 +122,13 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+          # The image lacks a writable /app/data for uid 1001 (Dockerfile
+          # fix ships separately); scrape+ingest happen in one pod lifetime
+          # so ephemeral is fine here.
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          emptyDir:
+            sizeLimit: 2Gi
