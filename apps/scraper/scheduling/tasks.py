@@ -12,6 +12,7 @@ from celery import shared_task
 from django.utils import timezone
 
 from apps.scraper.scheduling.dof_ingest import check_dof_daily
+from apps.scraper.scheduling.row_growth_guard import check_row_growth
 
 logger = logging.getLogger(__name__)
 
@@ -936,14 +937,15 @@ _EXPECTED_INTERVALS = {
 
 @shared_task(name="dataops.check_scraper_health")
 def check_scraper_health():
-    """Check scraper health: flag stale and failing scrapers.
+    """Check scraper health: flag stale, failing, or row-growth-flat scrapers.
 
-    Logs WARNING for scrapers with no run in 2x expected interval
-    or 3+ failures in the last 7 days.
+    Logs WARNING for no run in 2x the expected interval, 3+ failures in 7
+    days, or a flat corpus row count despite succeeding scrapes (see
+    ``row_growth_guard``).
     """
     from datetime import timedelta
 
-    from django.db.models import Count, Q
+    from django.db.models import Q
     from django.utils import timezone
 
     try:
@@ -1003,5 +1005,13 @@ def check_scraper_health():
             "recent_failures": recent_failures,
         }
 
-    logger.info("Scraper health check complete: %d operations checked", len(results))
+    operations_checked = len(results)
+    row_growth_warnings = check_row_growth(now)
+    results["_row_growth_warnings"] = row_growth_warnings
+
+    logger.info(
+        "Scraper health check complete: %d operations, %d row-growth warnings",
+        operations_checked,
+        len(row_growth_warnings),
+    )
     return results
