@@ -134,7 +134,7 @@ npm run dev:all                     # both concurrently
 | `INTERNAL_API_URL` | falls back to `NEXT_PUBLIC_API_URL` | Server-side API URL for SSR inside Docker (e.g. `http://api:8000/api/v1`) |
 | `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Redis for Celery tasks |
 | `TEZCA_ADMIN_USER_IDS` | `""` | Comma-separated Janua user IDs allowed admin access |
-| `DHANAM_CHECKOUT_URL` | `https://dhanam.madfam.io/checkout` | Billing checkout URL (used by tier gates) |
+| `DHANAM_CHECKOUT_URL` | `https://app.dhan.am/checkout` | Billing checkout URL (used by tier gates) |
 | `TEZCA_DEPLOYMENT` | `self-hosted` | Deployment mode. `self-hosted` caps effective tier at academic |
 | `QUALITY_QUARANTINE_GRADES` | `D,F` | Comma-separated quality grades to quarantine from indexing |
 | `NEXT_PUBLIC_MONETIZATION_ENABLED` | `false` | When `true`, enables full tier checkout flows. When `false` (default), shows interest-capture forms instead of paywalls |
@@ -329,7 +329,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 
 ### Billing
 
-- Checkout URL: `settings.DHANAM_CHECKOUT_URL` (env `DHANAM_CHECKOUT_URL`, default `https://dhanam.madfam.io/checkout`)
+- Checkout URL: `settings.DHANAM_CHECKOUT_URL` (env `DHANAM_CHECKOUT_URL`, default `https://app.dhan.am/checkout`)
 - Webhook: `POST /api/v1/billing/webhook/` — HMAC-SHA256 signed by Dhanam, upgrades/downgrades API key tiers
 - Secret: `DHANAM_WEBHOOK_SECRET` env var
 - Plan mappings: `tezca_community`, `tezca_essentials`, `tezca_academic`, `tezca_institutional`, `tezca_madfam` → corresponding tiers (legacy `tezca_pro`→`academic`)

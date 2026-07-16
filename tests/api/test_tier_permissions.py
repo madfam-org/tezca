@@ -377,7 +377,7 @@ class TestRequireTier:
         request = self._make_request_with_tier("essentials")
         perm.has_permission(request, None)
         assert "academic tier or above" in perm.message
-        assert "dhanam.madfam.io/checkout" in perm.message
+        assert "app.dhan.am/checkout" in perm.message
 
     def test_default_min_tier_is_academic(self):
         perm = RequireTier()

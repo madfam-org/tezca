@@ -19,7 +19,7 @@ vi.mock('@/components/providers/AuthContext', () => ({
 vi.mock('@/lib/billing', () => ({
     getCheckoutUrl: vi.fn(
         (tier: string, userId?: string, _returnUrl?: string) =>
-            `https://dhanam.madfam.io/checkout?tier=${tier}&uid=${userId ?? ''}`
+            `https://app.dhan.am/checkout?tier=${tier}&uid=${userId ?? ''}`
     ),
 }));
 
