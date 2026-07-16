@@ -771,6 +771,54 @@ class TestIngestRmfCatalog:
         assert "ingest boom" in result["error"]
 
 
+# ── ingest_nom_catalog ────────────────────────────────────────────────
+
+
+class TestIngestNomCatalog:
+    def test_no_catalog_short_circuits(self, tmp_path, monkeypatch):
+        """No data/noms/discovered_noms.json → clean no-op."""
+        from apps.scraper.scheduling import tasks
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_nom_catalog()
+        assert result["status"] == "no_files"
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_runs_ingest_when_catalog_present(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        noms_dir = tmp_path / "data" / "noms"
+        noms_dir.mkdir(parents=True)
+        (noms_dir / "discovered_noms.json").write_text("[]")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_nom_catalog()
+        assert result["status"] == "completed"
+        mock_call_command.assert_called_once_with(
+            "ingest_noms", catalog="data/noms/discovered_noms.json"
+        )
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_error_is_reported_not_raised(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        noms_dir = tmp_path / "data" / "noms"
+        noms_dir.mkdir(parents=True)
+        (noms_dir / "discovered_noms.json").write_text("[]")
+        mock_call_command.side_effect = RuntimeError("nom boom")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_nom_catalog()
+        assert result["status"] == "error"
+        assert "nom boom" in result["error"]
+
+
 # ── ingest_treaty_catalog ─────────────────────────────────────────────
 
 
