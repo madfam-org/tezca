@@ -930,6 +930,42 @@ def ingest_treaty_catalog():
         return {"status": "error", "error": str(e)}
 
 
+@shared_task(name="dataops.ingest_state_catalogs")
+def ingest_state_catalogs():
+    """Auto-ingest scraped state-congress catalogs into the database.
+
+    ``run_state_scraper`` writes a bare catalog (name/url/state/tier/
+    category/law_type — no law text) to
+    ``data/state_laws/<state>/catalog.json`` for each state key it runs.
+    Nothing consumed that output: ``ingest_state_laws`` reads a completely
+    different, richer artifact (``state_laws_metadata.json``, with
+    ``text_file``/``akn_file_path``/``publication_date``) that the state
+    scrapers never produce, so scraped catalogs were a dead end even for
+    manual ingestion. This ingests catalog.json directly — one Law row per
+    discovered entry, tier="state", no LawVersion since there's no law text
+    to attach yet. Mirrors ``ingest_conamer_catalog``; scheduled a few
+    hours after the monthly state scraper runs (day 5).
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    state_laws_root = Path("data/state_laws")
+    if not state_laws_root.exists() or not list(state_laws_root.glob("*/catalog.json")):
+        logger.info("No state catalogs to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("state_catalog_ingest")
+    try:
+        call_command("ingest_state_catalogs", all=True)
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("State catalog ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
 @shared_task(name="dataops.classify_law_domains")
 def classify_law_domains_task():
     """Weekly domain classification for newly added laws."""

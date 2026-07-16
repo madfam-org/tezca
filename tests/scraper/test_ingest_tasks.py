@@ -228,3 +228,49 @@ class TestIngestTreatyCatalog:
         result = tasks.ingest_treaty_catalog()
         assert result["status"] == "error"
         assert "treaty boom" in result["error"]
+
+
+# ── ingest_state_catalogs ─────────────────────────────────────────────
+
+
+class TestIngestStateCatalogs:
+    def test_no_catalogs_short_circuits(self, tmp_path, monkeypatch):
+        """No data/state_laws/*/catalog.json → clean no-op."""
+        from apps.scraper.scheduling import tasks
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_state_catalogs()
+        assert result["status"] == "no_files"
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_runs_ingest_when_catalog_present(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        state_dir = tmp_path / "data" / "state_laws" / "guerrero"
+        state_dir.mkdir(parents=True)
+        (state_dir / "catalog.json").write_text("[]")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_state_catalogs()
+        assert result["status"] == "completed"
+        mock_call_command.assert_called_once_with("ingest_state_catalogs", all=True)
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_error_is_reported_not_raised(
+        self, mock_call_command, mock_log_cls, tmp_path, monkeypatch
+    ):
+        from apps.scraper.scheduling import tasks
+
+        state_dir = tmp_path / "data" / "state_laws" / "guerrero"
+        state_dir.mkdir(parents=True)
+        (state_dir / "catalog.json").write_text("[]")
+        mock_call_command.side_effect = RuntimeError("state boom")
+
+        monkeypatch.chdir(tmp_path)
+        result = tasks.ingest_state_catalogs()
+        assert result["status"] == "error"
+        assert "state boom" in result["error"]

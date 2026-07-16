@@ -427,6 +427,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=2, minute=30, day_of_month="5"),
         "kwargs": {"state_key": "nuevo_leon"},
     },
+    # Ingest a few hours after the monthly state scraper runs above — the
+    # scraped catalogs previously had no scheduled consumer (wiring-gap
+    # class; see ingest_conamer_catalog / ingest_nom_catalog).
+    "state-catalog-ingest-monthly": {
+        "task": "dataops.ingest_state_catalogs",
+        "schedule": crontab(hour=5, minute=0, day_of_month="5"),
+    },
     # ── Phase 16: SCJN judicial corpus ────────────────────────────────
     "scjn-weekly-scrape": {
         "task": "dataops.scrape_scjn",
