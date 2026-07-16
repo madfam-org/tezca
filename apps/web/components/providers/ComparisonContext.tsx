@@ -13,6 +13,7 @@ const ComparisonContext = createContext<ComparisonContextType | undefined>(undef
 
 function getInitialLaws(): string[] {
     if (typeof window === 'undefined') return [];
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return [];
     try {
         const stored = localStorage.getItem('comparison_selected_laws');
         return stored ? JSON.parse(stored) : [];
@@ -31,7 +32,13 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
             isInitialMount.current = false;
             return;
         }
-        localStorage.setItem('comparison_selected_laws', JSON.stringify(selectedLaws));
+        try {
+            if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+                localStorage.setItem('comparison_selected_laws', JSON.stringify(selectedLaws));
+            }
+        } catch {
+            // localStorage unavailable
+        }
     }, [selectedLaws]);
 
     const toggleLaw = (lawId: string) => {

@@ -31,6 +31,7 @@ function emitChange() {
 
 function getSnapshot(): Bookmark[] {
     if (typeof window === 'undefined') return EMPTY;
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return EMPTY;
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw !== cachedRaw) {
@@ -59,7 +60,13 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
 
     const persist = useCallback((next: Bookmark[]) => {
         const raw = JSON.stringify(next);
-        localStorage.setItem(STORAGE_KEY, raw);
+        try {
+            if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+                localStorage.setItem(STORAGE_KEY, raw);
+            }
+        } catch {
+            // localStorage unavailable
+        }
         // Update cache immediately so getSnapshot returns stable reference
         cachedRaw = raw;
         cachedBookmarks = next;

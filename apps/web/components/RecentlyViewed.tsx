@@ -37,6 +37,7 @@ const content = {
 /** Call on law detail mount to record a visit */
 export function recordLawView(entry: Omit<RecentLawEntry, 'viewedAt'>) {
     if (typeof window === 'undefined') return;
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return;
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         let items: RecentLawEntry[] = raw ? JSON.parse(raw) : [];
@@ -51,6 +52,9 @@ export function recordLawView(entry: Omit<RecentLawEntry, 'viewedAt'>) {
 
 function getSnapshot(): string {
     try {
+        if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') {
+            return '[]';
+        }
         return localStorage.getItem(STORAGE_KEY) || '[]';
     } catch {
         return '[]';

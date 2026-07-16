@@ -173,8 +173,12 @@ function getToken(): string | null {
         const match = document.cookie.match(/(?:^|;\s*)janua_token=([^;]*)/);
         if (match) return decodeURIComponent(match[1]);
     }
-    if (typeof localStorage !== 'undefined') {
-        return localStorage.getItem('janua_token');
+    if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
+        try {
+            return localStorage.getItem('janua_token');
+        } catch {
+            return null;
+        }
     }
     return null;
 }
