@@ -246,6 +246,61 @@ class TestIngestConamerCommand:
 
         assert "Failed:" in captured.out
 
+    def test_dedups_against_existing_corpus_by_name(self, tmp_path):
+        """A CONAMER reg matching an existing federal non-legislative law by
+        normalized name updates it instead of creating a duplicate."""
+        Law.objects.create(
+            official_id="pre_existing_reg",
+            name="Reglamento Duplicado de Prueba",
+            tier="federal",
+            law_type="non_legislative",
+            status="vigente",
+        )
+        catalog = tmp_path / "catalog.json"
+        catalog.write_text(
+            json.dumps(
+                [
+                    {
+                        "id": "conamer_dup",
+                        "name": "Reglamento Duplicado de Prueba",
+                        "regulation_type": "reglamento",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_conamer", "--all", "--catalog", str(catalog))
+
+        assert Law.objects.filter(name="Reglamento Duplicado de Prueba").count() == 1
+        assert not Law.objects.filter(official_id="conamer_conamer_dup").exists()
+
+    def test_dedups_within_a_single_run_by_name(self, tmp_path):
+        """Two regulations with the same name but different IDs collapse to one
+        Law (the index is kept fresh as new laws are created)."""
+        catalog = tmp_path / "catalog.json"
+        catalog.write_text(
+            json.dumps(
+                [
+                    {
+                        "id": "a1",
+                        "name": "Acuerdo Repetido",
+                        "regulation_type": "acuerdo",
+                    },
+                    {
+                        "id": "b2",
+                        "name": "Acuerdo Repetido",
+                        "regulation_type": "acuerdo",
+                    },
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_conamer", "--all", "--catalog", str(catalog))
+
+        assert Law.objects.filter(name="Acuerdo Repetido").count() == 1
+
 
 # ---------------------------------------------------------------------------
 # ingest_judicial command
@@ -410,6 +465,67 @@ class TestIngestJudicialCommand:
         assert JudicialRecord.objects.filter(registro="DIR-001").exists()
         assert JudicialRecord.objects.filter(registro="DIR-002").exists()
         assert JudicialRecord.objects.count() == 2
+
+    def test_dir_mode_recurses_into_subdirectories(self, tmp_path):
+        """Batches written under per-type subdirs (the real scraper layout)
+        must be picked up by --dir on the judicial root."""
+        sub = tmp_path / "judicial" / "jurisprudencia"
+        sub.mkdir(parents=True)
+        (sub / "batch_0000.json").write_text(
+            json.dumps(
+                [
+                    {
+                        "registro": "SUB-001",
+                        "tipo": "jurisprudencia",
+                        "materia": "civil",
+                        "rubro": "Nested record",
+                        "texto": "Cuerpo de la tesis.",
+                        "epoca": "11a",
+                    }
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_judicial", "--dir", str(tmp_path / "judicial"))
+
+        assert JudicialRecord.objects.filter(registro="SUB-001").exists()
+
+    def test_skips_degenerate_records(self, tmp_path):
+        """Records with no body text/rubro (broken-selector scrape output)
+        are skipped, not ingested as empty rows."""
+        records_file = tmp_path / "records.json"
+        records_file.write_text(
+            json.dumps(
+                [
+                    {
+                        "registro": "GOOD-1",
+                        "tipo": "jurisprudencia",
+                        "rubro": "R",
+                        "texto": "T",
+                    },
+                    {
+                        "registro": "EMPTY-1",
+                        "tipo": "jurisprudencia",
+                        "rubro": "",
+                        "texto": "",
+                    },
+                    {
+                        "registro": "EMPTY-2",
+                        "tipo": "jurisprudencia",
+                        "rubro": "  ",
+                        "texto": "  ",
+                    },
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        call_command("ingest_judicial", "--file", str(records_file))
+
+        assert JudicialRecord.objects.filter(registro="GOOD-1").exists()
+        assert not JudicialRecord.objects.filter(registro="EMPTY-1").exists()
+        assert not JudicialRecord.objects.filter(registro="EMPTY-2").exists()
 
 
 # ---------------------------------------------------------------------------

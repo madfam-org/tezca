@@ -71,6 +71,14 @@ jobs:
     - name: Install dependencies
       run: poetry install --no-interaction
 
+    - name: Check for missing migrations (model drift)
+      # Fails CI when a model change was committed without its migration, so
+      # api / scraper.dataops schemas can't silently drift from their models.
+      run: poetry run python manage.py makemigrations --check --dry-run
+      env:
+        DJANGO_SETTINGS_MODULE: apps.indigo.settings
+        PYTHONPATH: apps:.
+
     - name: Lint with black (check)
       run: poetry run black --check apps/ tests/ scripts/
 

@@ -232,6 +232,20 @@ TEZCA_ADMIN_USER_IDS = set(
 # ── Deployment Mode ──────────────────────────────────────────────────
 TEZCA_DEPLOYMENT = os.environ.get("TEZCA_DEPLOYMENT", "self-hosted")
 
+# When true, the daily DOF check materializes detected new-law / reform
+# publications through the ingestion pipeline (download → parse → index).
+# Default OFF: DOF nota URLs point at HTML detail pages that don't always
+# resolve to a direct PDF, so an operator should validate materialization in
+# staging (and confirm celery-beat is actually running) before enabling in
+# prod. With the flag off, the daily task detects + logs only (prior behavior).
+DOF_AUTO_INGEST_ENABLED = os.environ.get(
+    "DOF_AUTO_INGEST_ENABLED", "false"
+).lower() in (
+    "true",
+    "1",
+    "yes",
+)
+
 # ── CRM Sync (Phynd-CRM) ────────────────────────────────────────────
 CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
 CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")
@@ -463,6 +477,13 @@ CELERY_BEAT_SCHEDULE = {
     "judicial-ingest-weekly": {
         "task": "dataops.ingest_judicial_batches",
         "schedule": crontab(hour=2, minute=0, day_of_week="sunday"),
+    },
+    # Ingest the scraped CONAMER catalog into the DB. Runs after both weekly
+    # scrapes land (Fri 23:00 playwright + Sat 01:00 http) so a scrape actually
+    # reaches the Law table instead of sitting as JSON on disk.
+    "conamer-ingest-weekly": {
+        "task": "dataops.ingest_conamer_catalog",
+        "schedule": crontab(hour=4, minute=0, day_of_week="saturday"),
     },
     "classify-domains-weekly": {
         "task": "dataops.classify_law_domains",
