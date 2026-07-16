@@ -820,6 +820,69 @@ def ingest_conamer_catalog():
         return {"status": "error", "error": str(e)}
 
 
+@shared_task(name="dataops.ingest_rmf_catalog")
+def ingest_rmf_catalog():
+    """Auto-ingest the scraped RMF catalog into the database.
+
+    ``run_rmf_scraper`` (quarterly, day 8) only writes
+    ``data/rmf/catalog.json`` — nothing scheduled ``ingest_rmf``, so SAT
+    resolutions never reached the Law table (and Karafiel's fiscal
+    webhook feed never fired) despite green scrapes. Same wiring-gap
+    class as the CONAMER/judicial/DOF fixes; mirrors
+    ``ingest_conamer_catalog``. Scheduled day 9, the day after the
+    quarterly scrape.
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    catalog = Path("data/rmf/catalog.json")
+    if not catalog.exists():
+        logger.info("No RMF catalog to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("rmf_catalog_ingest")
+    try:
+        call_command("ingest_rmf", catalog=str(catalog))
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("RMF catalog ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
+@shared_task(name="dataops.ingest_treaty_catalog")
+def ingest_treaty_catalog():
+    """Auto-ingest discovered treaties into the database.
+
+    ``run_treaty_scraper`` (weekly, Wednesday 02:00) only writes
+    ``data/treaties/discovered_treaties.json`` — the ``ingest_treaties``
+    command reads exactly that file but was only invoked manually (or by
+    the unscheduled overnight script), so treaties never landed
+    automatically. Mirrors ``ingest_conamer_catalog``; scheduled
+    Wednesday 05:00, after the weekly scrape.
+    """
+    from pathlib import Path
+
+    from django.core.management import call_command
+
+    catalog = Path("data/treaties/discovered_treaties.json")
+    if not catalog.exists():
+        logger.info("No treaty catalog to ingest")
+        return {"status": "no_files"}
+
+    log_entry = _start_log("treaty_catalog_ingest")
+    try:
+        call_command("ingest_treaties", all=True)
+        _finish_log(log_entry, ingested=1)
+        return {"status": "completed"}
+    except Exception as e:
+        logger.error("Treaty catalog ingest failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "error": str(e)}
+
+
 @shared_task(name="dataops.classify_law_domains")
 def classify_law_domains_task():
     """Weekly domain classification for newly added laws."""

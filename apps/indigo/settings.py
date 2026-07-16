@@ -383,6 +383,12 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=2, minute=0, day_of_week="wednesday"),
         "kwargs": {"fetch_details": True, "max_details": 50},
     },
+    # Ingest three hours after the weekly treaty scrape — the discovered
+    # catalog previously had no scheduled consumer (wiring-gap class).
+    "treaty-catalog-ingest-weekly": {
+        "task": "dataops.ingest_treaty_catalog",
+        "schedule": crontab(hour=5, minute=0, day_of_week="wednesday"),
+    },
     "nom-weekly-discovery": {
         "task": "dataops.run_nom_scraper",
         "schedule": crontab(hour=3, minute=0, day_of_week="thursday"),
@@ -458,6 +464,15 @@ CELERY_BEAT_SCHEDULE = {
             hour=3, minute=0, day_of_month="8", month_of_year="1,4,7,10"
         ),
         "kwargs": {"include_annexes": True, "download_documents": True},
+    },
+    # Ingest the day after the quarterly scrape — without this the RMF
+    # catalog only ever reached disk, never the Law table (wiring-gap
+    # class; see ingest_conamer_catalog).
+    "rmf-catalog-ingest-quarterly": {
+        "task": "dataops.ingest_rmf_catalog",
+        "schedule": crontab(
+            hour=3, minute=0, day_of_month="9", month_of_year="1,4,7,10"
+        ),
     },
     "conamer-playwright-weekly": {
         "task": "dataops.run_conamer_playwright",
