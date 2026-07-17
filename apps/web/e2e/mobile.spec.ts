@@ -69,7 +69,12 @@ test.describe('Mobile experience', () => {
         const pages = ['/', '/leyes', '/categorias', '/estados'];
         for (const url of pages) {
             await page.goto(url);
-            await page.waitForLoadState('domcontentloaded');
+            // domcontentloaded fires before client components finish their
+            // first data fetch/hydration pass (stats grid, ecosystem
+            // marquee, disclaimer banner). Measuring scrollWidth against
+            // that in-flight skeleton/loading state is racy — wait for the
+            // network to go idle so layout has settled to its final shape.
+            await page.waitForLoadState('networkidle');
             const overflow = await page.evaluate(() => {
                 return document.documentElement.scrollWidth > document.documentElement.clientWidth;
             });
