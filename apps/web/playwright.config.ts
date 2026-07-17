@@ -34,7 +34,13 @@ export default defineConfig({
     webServer: {
         command: 'echo CI=$CI && HOSTNAME=0.0.0.0 npx next start -p 3000',
         url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
+        // The CI E2E workflow already builds and runs web in the
+        // docker-compose.e2e.yml stack on :3000 (and waits for it), so
+        // Playwright must REUSE that server, not spawn a second `next
+        // start` on the same port. reuseExistingServer must therefore be
+        // true in CI too — the previous `!process.env.CI` caused a port
+        // conflict the moment the API actually booted.
+        reuseExistingServer: true,
         timeout: process.env.CI ? 300_000 : 120_000,
     },
 });
