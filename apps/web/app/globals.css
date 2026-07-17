@@ -93,7 +93,10 @@
   /* WARNING */
   --color-warning-50: oklch(97% 0.01 80);
   --color-warning-500: oklch(75% 0.16 80);
-  --color-warning-700: oklch(58% 0.13 80);
+  /* 52% keeps text-warning-700 on bg-warning-50 at ~5.1:1, clearing WCAG AA's
+     4.5:1 with margin (58% only reached 3.95:1 — axe-flagged on every page
+     via Footer.tsx/DisclaimerBanner.tsx/LawHeader.tsx/aviso-legal). */
+  --color-warning-700: oklch(52% 0.13 80);
 
   /* ERROR */
   --color-error-50: oklch(97% 0.01 25);
