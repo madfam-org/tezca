@@ -279,9 +279,18 @@ jobs:
       timeout-minutes: 25
 
     - name: Wait for services
+      # Cold API startup = full migrate + ES index seed before runserver;
+      # 180s raced it. 300s observed-safe; the log dump below makes any
+      # future failure self-documenting instead of a guessing game.
       run: |
-        timeout 180 bash -c 'until curl -fs http://localhost:8000/api/v1/stats/; do sleep 3; done'
+        timeout 300 bash -c 'until curl -fs http://localhost:8000/api/v1/stats/; do sleep 3; done'
         timeout 60 bash -c 'until curl -fs http://localhost:3000; do sleep 2; done'
+
+    - name: Dump compose logs on failure
+      if: failure()
+      env:
+        POSTGRES_PASSWORD: test_pw
+      run: docker compose -f docker-compose.e2e.yml logs --tail=200
 
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
