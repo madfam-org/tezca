@@ -83,7 +83,7 @@ services:
       dockerfile: apps/indigo/Dockerfile
     command: >
       sh -c "python manage.py migrate --noinput &&
-             python manage.py index_laws --tier federal --limit 10 &&
+             python manage.py index_laws --all --tier federal --limit 10 --create-indices &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
       - DEBUG=True
