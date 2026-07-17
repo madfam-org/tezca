@@ -28,7 +28,8 @@ export function GraphFilters({
     const t = content[lang];
 
     const wrapperClass = floating
-        ? 'absolute top-3 left-3 z-10 rounded-lg border bg-card/90 backdrop-blur-sm p-2 shadow-md'
+        // top-14 clears the title chip LawGraphContainer renders at top-3 left-3
+        ? 'absolute top-14 left-3 z-10 rounded-lg border bg-card/90 backdrop-blur-sm p-2 shadow-md'
         : '';
 
     return (
