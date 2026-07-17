@@ -273,7 +273,10 @@ jobs:
       env:
         POSTGRES_PASSWORD: test_pw
       run: docker compose -f docker-compose.e2e.yml up -d --build
-      timeout-minutes: 10
+      # Cacheless from-scratch build of the poetry API image + Next.js web
+      # image on a 2-core runner takes >10 min; the old budget predates the
+      # E2E stack ever reaching the build (it failed earlier for months).
+      timeout-minutes: 25
 
     - name: Wait for services
       run: |
