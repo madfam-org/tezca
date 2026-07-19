@@ -135,3 +135,32 @@ spec:
     - ports:
         - protocol: TCP
           port: 443
+---
+# Allow egress to the shared madfam-crawler namespace (crawler-api :8000).
+# MadfamBridge (apps/scraper/client/madfam_bridge.py) delegates hostile
+# detail-page extraction to the central crawler at
+# http://crawler-api.madfam-crawler.svc.cluster.local:8000. The egress
+# isolation triggered by allow-intra-namespace otherwise rejects TCP 8000
+# even when the FQDN resolves.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-crawler-egress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: madfam-crawler
+      ports:
+        - protocol: TCP
+          port: 8000
