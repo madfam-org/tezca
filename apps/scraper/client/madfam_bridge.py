@@ -26,9 +26,21 @@ DEFAULT_CRAWLER_URL = (
 
 
 class MadfamBridge:
-    def __init__(self, endpoint: Optional[str] = None):
+    def __init__(self, endpoint: Optional[str] = None, api_key: Optional[str] = None):
         self.endpoint = endpoint or os.getenv("MADFAM_CRAWLER_URL", DEFAULT_CRAWLER_URL)
+        # The crawler's ApiKeyMiddleware expects "X-Api-Key: <token>" matching
+        # one of its comma-separated API_KEYS. Consumers configure the token
+        # via MADFAM_CRAWLER_TOKEN; when unset/empty (local dev crawlers
+        # without auth) the header is omitted entirely.
+        self.api_key = (
+            api_key if api_key is not None else os.getenv("MADFAM_CRAWLER_TOKEN", "")
+        )
         self.poll_interval = 5.0  # seconds
+
+    @property
+    def _auth_headers(self) -> Dict[str, str]:
+        """Headers sent on every crawler request (dispatch POST + status GETs)."""
+        return {"X-Api-Key": self.api_key} if self.api_key else {}
 
     def extract_sync(
         self,
@@ -45,7 +57,7 @@ class MadfamBridge:
             "source_app": "tezca",
         }
 
-        with httpx.Client(timeout=10.0) as client:
+        with httpx.Client(timeout=10.0, headers=self._auth_headers) as client:
             try:
                 logger.info(f"[MadfamBridge] Enqueueing scrape for {url}")
                 response = client.post(self.endpoint, json=payload)
@@ -93,7 +105,9 @@ class MadfamBridge:
             "source_app": "tezca",
         }
 
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(
+            timeout=10.0, headers=self._auth_headers
+        ) as client:
             try:
                 # 1. Dispatch
                 logger.info(f"[MadfamBridge] Enqueueing scrape for {url}")
