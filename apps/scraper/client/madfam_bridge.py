@@ -7,6 +7,7 @@ heavy headless browser DOM processing to the central `madfam-crawler` architectu
 
 import asyncio
 import logging
+import os
 import time
 from typing import Any, Dict, Optional
 
@@ -14,10 +15,19 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
+# The shared crawler runs as service "crawler-api" in the "madfam-crawler"
+# namespace. A bare "madfam-crawler:8000" short name never resolves from the
+# tezca namespace (cross-namespace lookups need the full service FQDN), so
+# the default is the in-cluster FQDN and stays overridable via
+# MADFAM_CRAWLER_URL for local/dev setups.
+DEFAULT_CRAWLER_URL = (
+    "http://crawler-api.madfam-crawler.svc.cluster.local:8000/v1/crawl"
+)
+
 
 class MadfamBridge:
-    def __init__(self, endpoint: str = "http://madfam-crawler:8000/v1/crawl"):
-        self.endpoint = endpoint
+    def __init__(self, endpoint: Optional[str] = None):
+        self.endpoint = endpoint or os.getenv("MADFAM_CRAWLER_URL", DEFAULT_CRAWLER_URL)
         self.poll_interval = 5.0  # seconds
 
     def extract_sync(

@@ -75,6 +75,8 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: ES_HOST
               value: "http://tezca-es:9200"
+            - name: MADFAM_CRAWLER_URL
+              value: "http://crawler-api.madfam-crawler.svc.cluster.local:8000/v1/crawl"
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
