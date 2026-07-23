@@ -77,7 +77,19 @@ export default function LoginPage() {
                             januaClient={client}
                             afterSignIn={afterAuth}
                             redirectUrl={redirectTo}
-                            socialProviders={{ google: true, github: true, microsoft: true, apple: true }}
+                            // Primary path: "Sign in with Janua" runs the OIDC/PKCE
+                            // provider flow, minting a token with aud=tezca-api that
+                            // the API accepts. januaClientId defaults from
+                            // NEXT_PUBLIC_JANUA_CLIENT_ID (=tezca-web).
+                            enableJanuaSSO
+                            // client_id is a PUBLIC OIDC identifier (safe to commit);
+                            // hardcoded fallback avoids depending on a build-time
+                            // NEXT_PUBLIC_* being inlined. Redirect defaults to
+                            // ${origin}/auth/callback, matching the seeded redirect_uri.
+                            januaClientId={process.env.NEXT_PUBLIC_JANUA_CLIENT_ID || 'tezca-web'}
+                            // The four social providers are not configured in Janua
+                            // (live provider list is empty), so hide their dead buttons.
+                            socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                             showRememberMe={false}
                         />
                     ) : (
@@ -85,7 +97,7 @@ export default function LoginPage() {
                             januaClient={client}
                             afterSignUp={afterAuth}
                             redirectUrl={redirectTo}
-                            socialProviders={{ google: true, github: true, microsoft: true, apple: true }}
+                            socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                         />
                     )}
 
