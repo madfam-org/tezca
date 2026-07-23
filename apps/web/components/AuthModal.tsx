@@ -108,7 +108,6 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
                         onSuccess={afterAuth}
                         redirectTo="/cuenta"
                         enableJanuaSSO
-                        januaClientId={process.env.NEXT_PUBLIC_JANUA_CLIENT_ID || 'tezca-web'}
                         socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                         showRememberMe={false}
                     />

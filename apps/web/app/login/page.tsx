@@ -81,12 +81,13 @@ export default function LoginPage() {
                             // Primary path: "Sign in with Janua" runs the OIDC/PKCE
                             // provider flow, minting a token with aud=tezca-api that
                             // the API accepts.
+                            // OIDC "Sign in with Janua". The client id is read from
+                            // the build-time NEXT_PUBLIC_JANUA_CLIENT_ID (=tezca-web).
+                            // NOTE: the client-id→authorize wiring is fully functional
+                            // only in @janua/nextjs >= 0.2.0 (#447); this app's lockfile
+                            // pins 0.1.6, so activating the button needs an SDK bump
+                            // (regenerate package-lock.json with registry access).
                             enableJanuaSSO
-                            // client_id is a PUBLIC OIDC identifier (safe to commit);
-                            // hardcoded fallback avoids depending on a build-time
-                            // NEXT_PUBLIC_* being inlined. Redirect defaults to
-                            // ${origin}/auth/callback, matching the seeded redirect_uri.
-                            januaClientId={process.env.NEXT_PUBLIC_JANUA_CLIENT_ID || 'tezca-web'}
                             // The four social providers are not configured in Janua
                             // (live provider list is empty), so hide their dead buttons.
                             socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
