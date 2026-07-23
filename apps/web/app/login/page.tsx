@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useJanua } from '@janua/nextjs';
-import { SignIn, SignUp } from '@janua/ui';
+// Import SignIn/SignUp from @janua/nextjs (not @janua/ui): the nextjs wrapper is
+// resolved at a version that carries the OIDC "Sign in with Janua" flow
+// (enableJanuaSSO), and it sources the Janua client from the app-wide
+// JanuaProvider, so no januaClient prop is needed.
+import { SignIn, SignUp } from '@janua/nextjs';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { trackEvent } from '@/lib/analytics/posthog';
@@ -34,7 +37,6 @@ type AuthMode = 'signin' | 'signup';
 export default function LoginPage() {
     const { lang } = useLang();
     const t = content[lang];
-    const { client } = useJanua();
     const { isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -74,13 +76,11 @@ export default function LoginPage() {
                 <div className="rounded-lg border border-border bg-background p-6 shadow-sm">
                     {mode === 'signin' ? (
                         <SignIn
-                            januaClient={client}
-                            afterSignIn={afterAuth}
-                            redirectUrl={redirectTo}
+                            onSuccess={afterAuth}
+                            redirectTo={redirectTo}
                             // Primary path: "Sign in with Janua" runs the OIDC/PKCE
                             // provider flow, minting a token with aud=tezca-api that
-                            // the API accepts. januaClientId defaults from
-                            // NEXT_PUBLIC_JANUA_CLIENT_ID (=tezca-web).
+                            // the API accepts.
                             enableJanuaSSO
                             // client_id is a PUBLIC OIDC identifier (safe to commit);
                             // hardcoded fallback avoids depending on a build-time
@@ -94,9 +94,8 @@ export default function LoginPage() {
                         />
                     ) : (
                         <SignUp
-                            januaClient={client}
-                            afterSignUp={afterAuth}
-                            redirectUrl={redirectTo}
+                            onSuccess={afterAuth}
+                            redirectTo={redirectTo}
                             socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                         />
                     )}

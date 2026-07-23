@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useJanua } from '@janua/nextjs';
-import { SignIn, SignUp } from '@janua/ui';
+import { SignIn, SignUp } from '@janua/nextjs';
 import { X } from 'lucide-react';
 import { useLang } from '@/components/providers/LanguageContext';
 
@@ -41,7 +40,6 @@ interface AuthModalProps {
 export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalProps) {
     const { lang } = useLang();
     const t = content[lang];
-    const { client } = useJanua();
     const [mode, setMode] = useState<AuthMode>(initialMode);
 
     // Reset mode when modal opens (async to satisfy react-compiler)
@@ -107,9 +105,8 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
 
                 {mode === 'signin' ? (
                     <SignIn
-                        januaClient={client}
-                        afterSignIn={afterAuth}
-                        redirectUrl="/cuenta"
+                        onSuccess={afterAuth}
+                        redirectTo="/cuenta"
                         enableJanuaSSO
                         januaClientId={process.env.NEXT_PUBLIC_JANUA_CLIENT_ID || 'tezca-web'}
                         socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
@@ -117,9 +114,8 @@ export function AuthModal({ open, onClose, initialMode = 'signin' }: AuthModalPr
                     />
                 ) : (
                     <SignUp
-                        januaClient={client}
-                        afterSignUp={afterAuth}
-                        redirectUrl="/cuenta"
+                        onSuccess={afterAuth}
+                        redirectTo="/cuenta"
                         socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                     />
                 )}
