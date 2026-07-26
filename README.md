@@ -136,6 +136,24 @@ This project uses a monorepo architecture managed by NPM Workspaces.
   - **Public Portal**: Citizen-facing search and traversal of laws
   - **Admin Console**: Operator dashboard for monitoring ingestion jobs
 
+## Role in the MADFAM monetization engine
+
+Tezca is a revenue-carrying product in MADFAM's compliance line, not an internal tool. It is aimed at the people
+whose work depends on knowing what Mexican law currently says — compliance officers, accountants, legal and
+regulatory teams — with paid tiers layered over the public corpus and the machine-readable API as the principal
+commercial surface.
+
+Its place in the wider MADFAM pipeline is simply that of a product to be sold. Demand discovery, pricing,
+checkout, invoicing, and entitlement are each owned by other platforms; none of that path lives in this
+repository, and nothing here should grow a dependency on it.
+
+> **Boundary note.** This is a deliberately sanitized statement of role. The canonical end-to-end description of
+> the monetization pipeline is private and lives in the `internal-devops` repository at
+> `docs/monetization-engine.md`. Catalog prices, payment and entitlement wiring, credential names, deployment
+> topology, and tax/invoicing configuration belong there and must not be added to this repository.
+
+_Last Updated: 2026-07-26_
+
 ## Documentation
 
 - [Setup Guide](docs/guides/SETUP.md) - Installation and configuration
