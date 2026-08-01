@@ -23,7 +23,7 @@ resources:
 - tezca-db-backup-cronjob.yaml
 - network-policies.yaml
 images:
-- digest: sha256:7ea46029d9ff8689943d2409f447502e52cdc48fc1af96fa9576cc43f4dcbc31
+- digest: sha256:37eb441c5c4e1467f6735213e4493f9431f5491e94e2fe45990a3989175e2277
   name: ghcr.io/madfam-org/tezca/admin
   newName: ghcr.io/madfam-org/tezca-admin
 - digest: sha256:d84f377e207a0b22a445aab10cc442b7789731ef6fca7a8735a14306e5e6b626
