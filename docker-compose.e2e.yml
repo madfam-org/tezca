@@ -67,9 +67,12 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 768M
+          # 384m heap + ES 8.x off-heap (Lucene mmap, direct buffers, thread
+          # stacks) needs ~1.5x total; 768M left no margin and OOM-killed ES
+          # at startup (exit 137) under GH-runner memory pressure.
+          memory: 1200M
         reservations:
-          memory: 512M
+          memory: 640M
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
