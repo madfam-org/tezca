@@ -135,3 +135,73 @@ spec:
     - ports:
         - protocol: TCP
           port: 443
+---
+# Allow egress to the shared madfam-crawler namespace (crawler-api :8000).
+# MadfamBridge (apps/scraper/client/madfam_bridge.py) delegates hostile
+# detail-page extraction to the central crawler at
+# http://crawler-api.madfam-crawler.svc.cluster.local:8000. The egress
+# isolation triggered by allow-intra-namespace otherwise rejects TCP 8000
+# even when the FQDN resolves.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-crawler-egress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: tezca
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: madfam-crawler
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+# Allow karafiel-api → tezca-api ingress on port 8000.
+#
+# Counterpart to karafiel's `karafiel-tezca-egress` policy
+# (karafiel/infra/k8s/production/network-policies.yaml). NetworkPolicy is
+# enforced on BOTH sides of a cross-namespace call: karafiel already permits
+# the egress, but tezca-api is ingress-isolated by `allow-cloudflared-ingress`
+# above (it selects every `part-of: tezca` pod with policyTypes: [Ingress]),
+# whose only allowed sources are the cloudflare-tunnel namespace and — via
+# `allow-intra-namespace` — pods inside tezca. A karafiel→tezca SYN therefore
+# still gets dropped here. See madfam-org/karafiel#39.
+#
+# Karafiel calls TEZCA_API_URL (http://tezca-api.tezca.svc.cluster.local:8000
+# /api/v1) for legal-oracle lookups during CFDI/payroll flows; on failure it
+# silently falls back to its hardcoded ISR/UMA tables, so the drop is invisible
+# in Karafiel's responses and only shows up as fiscal-data drift.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-karafiel-ingress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: karafiel
+          podSelector:
+            matchLabels:
+              app: karafiel-api
+      ports:
+        - protocol: TCP
+          port: 8000
