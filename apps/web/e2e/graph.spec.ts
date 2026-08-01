@@ -9,8 +9,12 @@ test.describe('Graph overview page (/grafo)', () => {
 
     test('renders graph canvas container', async ({ page }) => {
         await page.goto('/grafo');
-        // Wait for data to load
-        await expect(page.locator('section')).toBeVisible();
+        // Wait for data to load. Scope to the graph section — Sonner's
+        // Toaster also renders a <section aria-label="Notifications..."> in
+        // the root layout, which makes an unscoped locator('section') match
+        // two elements.
+        const graphSection = page.locator('section').filter({ hasText: 'Red de leyes' });
+        await expect(graphSection).toBeVisible();
         // Sigma renders inside the graph container
         const graphContainer = page.locator('[style*="cursor"]');
         await expect(graphContainer.first()).toBeVisible();
@@ -36,10 +40,13 @@ test.describe('Graph overview page (/grafo)', () => {
 
     test('does NOT show controls on overview', async ({ page }) => {
         await page.goto('/grafo');
-        // Wait for graph to render
-        await expect(page.locator('section')).toBeVisible();
+        // Wait for graph to render. Scope to the graph section — Sonner's
+        // Toaster also renders a <section aria-label="Notifications..."> in
+        // the root layout, which makes an unscoped locator('section') match
+        // two elements.
+        const section = page.locator('section').filter({ hasText: 'Red de leyes' });
+        await expect(section).toBeVisible();
         // No depth/direction/confidence controls on overview
-        const section = page.locator('section');
         await expect(section.locator('select')).toHaveCount(0);
         await expect(section.locator('input[type="range"]')).toHaveCount(0);
     });

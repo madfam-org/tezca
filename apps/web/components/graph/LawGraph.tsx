@@ -47,8 +47,11 @@ export function LawGraph({
     const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
     const [focusedNode, setFocusedNode] = useState<string | null>(null);
 
-    // Keep ref in sync
-    colorModeRef.current = colorMode;
+    // Keep ref in sync — in an effect, not during render (its consumers are
+    // Sigma event handlers, which only fire after commit).
+    useEffect(() => {
+        colorModeRef.current = colorMode;
+    }, [colorMode]);
 
     // Build graphology graph from API data
     const buildGraph = useCallback(() => {

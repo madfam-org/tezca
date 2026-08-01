@@ -178,14 +178,6 @@ function SearchContent() {
         return params;
     };
 
-    // Perform search on initial load from URL params
-    useEffect(() => {
-        if (initialQuery) {
-            performSearch(initialQuery, filters, currentPage);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only runs on initialQuery change (URL-driven)
-    }, [initialQuery]);
-
     const performSearch = async (
         searchQuery: string,
         searchFilters: SearchFilterState,
@@ -241,6 +233,16 @@ function SearchContent() {
             setLoading(false);
         }
     };
+
+    // Perform search on initial load from URL params. Declared after
+    // performSearch so the effect closes over a declared binding
+    // (react-hooks/immutability).
+    useEffect(() => {
+        if (initialQuery) {
+            performSearch(initialQuery, filters, currentPage);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only runs on initialQuery change (URL-driven)
+    }, [initialQuery]);
 
     const handleSubmitQuery = (q: string) => {
         if (q.trim()) {
