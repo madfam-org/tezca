@@ -10,13 +10,9 @@ vi.mock('next/navigation', () => ({
     useSearchParams: () => mockSearchParams,
 }));
 
-// Mock @janua/nextjs
+// Mock @janua/nextjs — the login page now imports SignIn/SignUp from here.
 vi.mock('@janua/nextjs', () => ({
     useJanua: () => ({ client: {} }),
-}));
-
-// Mock @janua/ui
-vi.mock('@janua/ui', () => ({
     SignIn: (props: any) => <div data-testid="sign-in" />,
     SignUp: (props: any) => <div data-testid="sign-up" />,
 }));

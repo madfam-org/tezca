@@ -5,6 +5,13 @@ vi.mock('@/components/providers/LanguageContext', () => ({
     useLang: vi.fn(() => ({ lang: 'es', setLang: vi.fn() })),
 }));
 
+// AuthModal now renders SignIn/SignUp from @janua/nextjs — stub them so the
+// modal mounts without the real SDK (which needs a JanuaProvider).
+vi.mock('@janua/nextjs', () => ({
+    SignIn: (_props: any) => <div data-testid="sign-in" />,
+    SignUp: (_props: any) => <div data-testid="sign-up" />,
+}));
+
 import { AuthModal } from '@/components/AuthModal';
 
 describe('AuthModal', () => {
