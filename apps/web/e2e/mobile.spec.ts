@@ -28,11 +28,31 @@ test.describe('Mobile experience', () => {
             timeout: 10000,
         }).catch(() => {});
 
-        // Page should not have horizontal overflow
-        const hasHorizontalScroll = await page.evaluate(() => {
-            return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+        // Page should not have horizontal overflow. On failure, name the
+        // offending elements — a bare boolean cost multiple blind CI cycles
+        // when this fired only in the Linux-runner environment.
+        const overflow = await page.evaluate(() => {
+            const d = document.documentElement;
+            const vw = d.clientWidth;
+            const offenders: string[] = [];
+            if (d.scrollWidth > vw) {
+                document.querySelectorAll('body *').forEach((el) => {
+                    const r = el.getBoundingClientRect();
+                    if ((r.right > vw + 1 || r.left < -1) && r.width > 0 && offenders.length < 8) {
+                        offenders.push(
+                            `<${el.tagName.toLowerCase()} class="${String(el.className).slice(0, 80)}"> ` +
+                            `left=${Math.round(r.left)} right=${Math.round(r.right)} w=${Math.round(r.width)} ` +
+                            `text="${(el.textContent || '').trim().slice(0, 40)}"`
+                        );
+                    }
+                });
+            }
+            return { scrollWidth: d.scrollWidth, clientWidth: vw, offenders };
         });
-        expect(hasHorizontalScroll).toBe(false);
+        expect(
+            overflow.scrollWidth > overflow.clientWidth,
+            `Horizontal overflow on /busqueda (scrollWidth=${overflow.scrollWidth} > clientWidth=${overflow.clientWidth}). Offenders:\n${overflow.offenders.join('\n')}`
+        ).toBe(false);
     });
 
     test('command search button is visible (no Cmd+K on mobile)', async ({ page }) => {
@@ -75,10 +95,29 @@ test.describe('Mobile experience', () => {
             // that in-flight skeleton/loading state is racy — wait for the
             // network to go idle so layout has settled to its final shape.
             await page.waitForLoadState('networkidle');
+            // On failure, name the offenders — see the /busqueda test above.
             const overflow = await page.evaluate(() => {
-                return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+                const d = document.documentElement;
+                const vw = d.clientWidth;
+                const offenders: string[] = [];
+                if (d.scrollWidth > vw) {
+                    document.querySelectorAll('body *').forEach((el) => {
+                        const r = el.getBoundingClientRect();
+                        if ((r.right > vw + 1 || r.left < -1) && r.width > 0 && offenders.length < 8) {
+                            offenders.push(
+                                `<${el.tagName.toLowerCase()} class="${String(el.className).slice(0, 80)}"> ` +
+                                `left=${Math.round(r.left)} right=${Math.round(r.right)} w=${Math.round(r.width)} ` +
+                                `text="${(el.textContent || '').trim().slice(0, 40)}"`
+                            );
+                        }
+                    });
+                }
+                return { scrollWidth: d.scrollWidth, clientWidth: vw, offenders };
             });
-            expect(overflow, `Horizontal overflow on ${url}`).toBe(false);
+            expect(
+                overflow.scrollWidth > overflow.clientWidth,
+                `Horizontal overflow on ${url} (scrollWidth=${overflow.scrollWidth} > clientWidth=${overflow.clientWidth}). Offenders:\n${overflow.offenders.join('\n')}`
+            ).toBe(false);
         }
     });
 });
