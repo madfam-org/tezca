@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useJanua } from '@janua/nextjs';
-import { SignIn, SignUp } from '@janua/ui';
+// Import SignIn/SignUp from @janua/nextjs (not @janua/ui): the nextjs wrapper is
+// resolved at a version that carries the OIDC "Sign in with Janua" flow
+// (enableJanuaSSO), and it sources the Janua client from the app-wide
+// JanuaProvider, so no januaClient prop is needed.
+import { SignIn, SignUp } from '@janua/nextjs';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { trackEvent } from '@/lib/analytics/posthog';
@@ -34,7 +37,6 @@ type AuthMode = 'signin' | 'signup';
 export default function LoginPage() {
     const { lang } = useLang();
     const t = content[lang];
-    const { client } = useJanua();
     const { isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -74,18 +76,28 @@ export default function LoginPage() {
                 <div className="rounded-lg border border-border bg-background p-6 shadow-sm">
                     {mode === 'signin' ? (
                         <SignIn
-                            januaClient={client}
-                            afterSignIn={afterAuth}
-                            redirectUrl={redirectTo}
-                            socialProviders={{ google: true, github: true, microsoft: true, apple: true }}
+                            onSuccess={afterAuth}
+                            redirectTo={redirectTo}
+                            // Primary path: "Sign in with Janua" runs the OIDC/PKCE
+                            // provider flow, minting a token with aud=tezca-api that
+                            // the API accepts.
+                            // OIDC "Sign in with Janua". The client id is read from
+                            // the build-time NEXT_PUBLIC_JANUA_CLIENT_ID (=tezca-web).
+                            // NOTE: the client-id→authorize wiring is fully functional
+                            // only in @janua/nextjs >= 0.2.0 (#447); this app's lockfile
+                            // pins 0.1.6, so activating the button needs an SDK bump
+                            // (regenerate package-lock.json with registry access).
+                            enableJanuaSSO
+                            // The four social providers are not configured in Janua
+                            // (live provider list is empty), so hide their dead buttons.
+                            socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                             showRememberMe={false}
                         />
                     ) : (
                         <SignUp
-                            januaClient={client}
-                            afterSignUp={afterAuth}
-                            redirectUrl={redirectTo}
-                            socialProviders={{ google: true, github: true, microsoft: true, apple: true }}
+                            onSuccess={afterAuth}
+                            redirectTo={redirectTo}
+                            socialProviders={{ google: false, github: false, microsoft: false, apple: false }}
                         />
                     )}
 
