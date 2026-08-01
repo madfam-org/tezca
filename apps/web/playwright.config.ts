@@ -12,6 +12,16 @@ export default defineConfig({
         baseURL: 'http://localhost:3000',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
+        launchOptions: {
+            // Linux CI chromium reserves classic-scrollbar width, so
+            // clientWidth shrinks below the device viewport while
+            // 100vw/innerWidth do not — making scrollWidth > clientWidth
+            // read as "horizontal overflow" on layouts that real
+            // (overlay-scrollbar) mobile devices and macOS render clean.
+            // Overlay scrollbars make the overflow assertions measure what
+            // a phone actually shows.
+            args: ['--enable-features=OverlayScrollbar'],
+        },
     },
     projects: [
         {

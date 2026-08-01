@@ -198,7 +198,10 @@ function LawsBrowseContent() {
                                         {t.compareHint}
                                     </span>
                                     <Select value={sortParam} onValueChange={handleSortChange}>
-                                        <SelectTrigger className="w-full sm:w-[180px]">
+                                        {/* aria-label: with no resolvable value (e.g. the 0-law
+                                            state) the trigger renders no text, failing axe
+                                            button-name — the placeholder alone is not a name. */}
+                                        <SelectTrigger className="w-full sm:w-[180px]" aria-label={t.sortBy}>
                                             <SelectValue placeholder={t.sortBy} />
                                         </SelectTrigger>
                                         <SelectContent>
