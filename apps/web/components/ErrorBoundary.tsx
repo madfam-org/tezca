@@ -14,6 +14,7 @@ interface State {
 
 function getPreferredLang(): 'es' | 'en' | 'nah' {
   if (typeof window === 'undefined') return 'es';
+  if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return 'es';
   try {
     const stored = localStorage.getItem('preferred-lang');
     if (stored === 'en' || stored === 'nah') return stored;

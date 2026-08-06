@@ -136,45 +136,136 @@ class TestDiscover:
     """End-to-end discover() with mocked HTTP."""
 
     @patch.object(RmfScraper, "_get")
-    def test_dedups_documents_appearing_on_both_indices(self, mock_get, scraper):
-        # Same document on both pages — dedup should keep one
-        html_main = """
+    def test_dedups_republished_documents(self, mock_get, scraper):
+        # Annexes get re-published on the minisite as amendments land —
+        # dedup by official_id keeps the first (top-most) listing.
+        html = """
         <html><body>
-            <a href="/normatividad/rmf2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
+            <a href="documentos2026/rmf/rmf/RMF_2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
+            <a href="documentos2026/rmf/anexos/Anexo_1_RMF2026.pdf">Anexo 1 de la RMF 2026</a>
+            <a href="documentos2026/rmf/anexos/Anexo_1_RMF2026_v2.pdf">Anexo 1 de la RMF 2026</a>
         </body></html>
         """
-        html_annexes = """
-        <html><body>
-            <a href="/normatividad/rmf2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
-            <a href="/normatividad/anexo1.pdf">Anexo 1 RMF 2026</a>
-        </body></html>
-        """
-
-        def _fake_get(url):
-            resp = MagicMock()
-            resp.text = html_annexes if "22703" in url else html_main
-            return resp
-
-        mock_get.side_effect = _fake_get
+        mock_get.return_value = MagicMock(content=html)
 
         documents = scraper.discover(year=2026, include_annexes=True)
         official_ids = [d.official_id for d in documents]
-        assert official_ids.count("rmf_2026") == 1, "Annual RMF should be deduped"
-        assert "rmf_2026_anexo_1" in official_ids
+        assert official_ids.count("rmf_2026") == 1
+        assert official_ids.count("rmf_2026_anexo_1") == 1
+        anexo = next(d for d in documents if d.official_id == "rmf_2026_anexo_1")
+        assert anexo.url.endswith("Anexo_1_RMF2026.pdf"), "first listing wins"
 
     @patch.object(RmfScraper, "_get")
-    def test_returns_empty_when_indices_unreachable(self, mock_get, scraper):
-        mock_get.return_value = None  # both pages 5xx / timeout
+    def test_fetches_the_per_year_minisite_url(self, mock_get, scraper):
+        mock_get.return_value = MagicMock(content="<html></html>")
+        scraper.discover(year=2026)
+        called_urls = [call.args[0] for call in mock_get.call_args_list]
+        assert called_urls == [
+            "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/"
+            "normatividad_rmf_rgce2026.html"
+        ]
+
+    @patch.object(RmfScraper, "_get")
+    def test_relative_hrefs_resolve_against_minisite_dir(self, mock_get, scraper):
+        html = """
+        <html><body>
+            <a href="documentos2026/rmf/rmf/RMF_2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
+        </body></html>
+        """
+        mock_get.return_value = MagicMock(content=html)
+        (doc,) = scraper.discover(year=2026)
+        assert doc.url == (
+            "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/"
+            "documentos2026/rmf/rmf/RMF_2026.pdf"
+        )
+
+    @patch.object(RmfScraper, "_get")
+    def test_skips_anticipadas_compiladas_and_cotenant_regimes(self, mock_get, scraper):
+        # anticipadas = preview modification texts; compiladas = consolidated
+        # annex re-issues; rgce/rfa = co-located non-RMF regimes.
+        html = """
+        <html><body>
+            <a href="documentos2026/rmf/rmf/1aRM_RMF2026.pdf">Primera Modificación a la RMF 2026</a>
+            <a href="documentos2026/rmf/anticipadas/1aRM_ant.pdf">Primera Modificación a la RMF 2026 (versión anticipada)</a>
+            <a href="documentos2026/rmf/compiladas/Anexo_1_comp.pdf">Anexo 1 de la RMF 2026 compilado</a>
+            <a href="documentos2026/rgce/anexos/Anexo_2_RGCE.pdf">Anexo 2 de las RGCE 2026</a>
+            <a href="documentos2026/rfa/RFA_2026.pdf">Resolución de Facilidades Administrativas Miscelánea Fiscal 2026</a>
+        </body></html>
+        """
+        mock_get.return_value = MagicMock(content=html)
+        documents = scraper.discover(year=2026, include_annexes=True)
+        official_ids = [d.official_id for d in documents]
+        assert official_ids == ["rmf_2026_modificacion_1"]
+        (mod,) = documents
+        assert "anticipadas" not in mod.url
+
+    @patch.object(RmfScraper, "_get")
+    def test_accordion_toggle_anchors_lose_to_real_documents(self, mock_get, scraper):
+        # The minisite's collapsible sections use #fragment toggles carrying
+        # the same text as the PDF links — the document must win.
+        html = """
+        <html><body>
+            <a href="#anexos_abrirnivel3_1">Anexo 1 de la RMF 2026</a>
+            <a href="documentos2026/rmf/anexos/Anexo_1_RMF2026.pdf">Anexo 1 de la RMF 2026</a>
+        </body></html>
+        """
+        mock_get.return_value = MagicMock(content=html)
+        (doc,) = scraper.discover(year=2026)
+        assert doc.url.endswith(".pdf")
+
+    @patch.object(RmfScraper, "_get")
+    def test_target_year_href_overrides_legacy_title_year(self, mock_get, scraper):
+        # SAT reuses legacy titles on current files (seen live: 'Novena
+        # Modificación al Anexo 6 ... 2014' linking Anexo-6-RMF-2026.pdf).
+        html = """
+        <html><body>
+            <a href="documentos2026/rmf/anexos/Anexo-6-RMF-2026.pdf">Novena Modificación al Anexo 6 de la RMF para 2014</a>
+        </body></html>
+        """
+        mock_get.return_value = MagicMock(content=html)
+        (doc,) = scraper.discover(year=2026)
+        assert doc.official_id == "rmf_2026_anexo_6"
+
+    @patch.object(RmfScraper, "_get")
+    def test_parses_response_bytes_so_accented_keywords_survive(
+        self, mock_get, scraper
+    ):
+        # SAT serves UTF-8 without a charset header; requests' .text decodes
+        # latin-1 and mojibakes 'miscelánea'/'modificación' out of the
+        # classifier. discover() must parse .content (bytes) instead.
+        html_bytes = """
+        <html><head><meta charset="utf-8"></head><body>
+            <a href="documentos2026/rmf/rmf/RMF_2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
+            <a href="documentos2026/rmf/rmf/1aRM_RMF2026.pdf">1a Resolución de Modificaciones a la RMF para 2026</a>
+        </body></html>
+        """.encode("utf-8")
+        resp = MagicMock()
+        resp.content = html_bytes
+        # simulate the latin-1 mojibake requests would produce
+        resp.text = html_bytes.decode("latin-1")
+        mock_get.return_value = resp
+
+        documents = scraper.discover(year=2026)
+        official_ids = sorted(d.official_id for d in documents)
+        assert official_ids == ["rmf_2026", "rmf_2026_modificacion_1"]
+
+    @patch.object(RmfScraper, "_get")
+    def test_returns_empty_when_minisite_unreachable(self, mock_get, scraper):
+        mock_get.return_value = None  # 5xx / timeout
         documents = scraper.discover(year=2026, include_annexes=True)
         assert documents == []
 
     @patch.object(RmfScraper, "_get")
-    def test_skips_annexes_index_when_disabled(self, mock_get, scraper):
-        mock_get.return_value = MagicMock(text="<html></html>")
-        scraper.discover(year=2026, include_annexes=False)
-        # Only the main index should have been hit
-        called_urls = [call.args[0] for call in mock_get.call_args_list]
-        assert all("22702" in url for url in called_urls), called_urls
+    def test_include_annexes_false_filters_annex_documents(self, mock_get, scraper):
+        html = """
+        <html><body>
+            <a href="documentos2026/rmf/rmf/RMF_2026.pdf">Resolución Miscelánea Fiscal para 2026</a>
+            <a href="documentos2026/rmf/anexos/Anexo_1_RMF2026.pdf">Anexo 1 de la RMF 2026</a>
+        </body></html>
+        """
+        mock_get.return_value = MagicMock(content=html)
+        documents = scraper.discover(year=2026, include_annexes=False)
+        assert [d.official_id for d in documents] == ["rmf_2026"]
 
 
 class TestRun:

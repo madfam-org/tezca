@@ -22,7 +22,11 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: madfam-org/tezca/web
+  # Fresh package name (same rationale as the API fix in #168): the legacy
+  # PAT-created package rejects GITHUB_TOKEN and its ACL is UI-only; a
+  # package first published BY a workflow is auto-repo-linked with write.
+  IMAGE_NAME: madfam-org/tezca-web
+  LEGACY_IMAGE_NAME: madfam-org/tezca/web
 
 concurrency:
   group: tezca-production-kustomization
@@ -84,7 +88,9 @@ jobs:
             NEXT_PUBLIC_API_URL=https://api.tezca.mx/api/v1
             NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_MONETIZATION_ENABLED=true
-            NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
+            NEXT_PUBLIC_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
+          secrets: |
+            npm_token=${{ secrets.NPM_MADFAM_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
@@ -107,7 +113,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             cd k8s/production
-            kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}
+            kustomize edit set image ${{ env.REGISTRY }}/${{ env.LEGACY_IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}
             cd ../..
             git add k8s/production/kustomization.yaml
             git diff --staged --quiet && echo "No changes to commit" && exit 0

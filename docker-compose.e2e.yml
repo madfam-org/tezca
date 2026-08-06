@@ -67,9 +67,12 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 768M
+          # 384m heap + ES 8.x off-heap (Lucene mmap, direct buffers, thread
+          # stacks) needs ~1.5x total; 768M left no margin and OOM-killed ES
+          # at startup (exit 137) under GH-runner memory pressure.
+          memory: 1200M
         reservations:
-          memory: 512M
+          memory: 640M
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
@@ -83,7 +86,7 @@ services:
       dockerfile: apps/indigo/Dockerfile
     command: >
       sh -c "python manage.py migrate --noinput &&
-             python manage.py index_laws --tier federal --limit 10 &&
+             python manage.py index_laws --all --tier federal --limit 10 --create-indices &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
       - DEBUG=True
@@ -120,6 +123,11 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      # apps/web/Dockerfile reads the private-registry token via a BuildKit
+      # secret mount (id=npm_token); without this the in-image `npm ci`
+      # 401s against npm.madfam.io. Sourced from the NPM_MADFAM_TOKEN env.
+      secrets:
+        - npm_token
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
     deploy:
@@ -133,3 +141,9 @@ services:
       - api
     ports:
       - "3000:3000"
+
+# Top-level secret: NPM_MADFAM_TOKEN from the environment, mounted into the
+# web image build so `npm ci` can auth against the private registry.
+secrets:
+  npm_token:
+    environment: NPM_MADFAM_TOKEN

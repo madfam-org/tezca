@@ -15,7 +15,7 @@ vi.mock('@/components/providers/AuthContext', () => ({
 vi.mock('@/lib/billing', () => ({
     getTrialCheckoutUrl: vi.fn(
         (plan: string, userId?: string, _returnUrl?: string) =>
-            `https://dhanam.madfam.io/checkout?plan=tezca_${plan}&mode=trial_cc`
+            `https://app.dhan.am/checkout?plan=tezca_${plan}&mode=trial_cc`
     ),
     hasPaidAccess: vi.fn(() => false),
 }));

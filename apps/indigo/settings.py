@@ -253,7 +253,7 @@ CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")
 # ── Dhanam Billing ───────────────────────────────────────────────────
 DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
 DHANAM_CHECKOUT_URL = os.environ.get(
-    "DHANAM_CHECKOUT_URL", "https://dhanam.madfam.io/checkout"
+    "DHANAM_CHECKOUT_URL", "https://app.dhan.am/checkout"
 )
 
 # ── Logging ───────────────────────────────────────────────────────────

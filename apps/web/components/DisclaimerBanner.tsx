@@ -30,6 +30,9 @@ const content = {
 
 function getSnapshot(): boolean {
   try {
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') {
+      return false;
+    }
     return !localStorage.getItem(STORAGE_KEY);
   } catch {
     return false;
@@ -55,7 +58,9 @@ export function DisclaimerBanner() {
   const dismiss = useCallback(() => {
     setDismissed(true);
     try {
-      localStorage.setItem(STORAGE_KEY, '1');
+      if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+        localStorage.setItem(STORAGE_KEY, '1');
+      }
     } catch {
       // localStorage unavailable
     }

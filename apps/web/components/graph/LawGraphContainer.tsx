@@ -164,10 +164,15 @@ export function LawGraphContainer({ lawId, mode = 'embedded' }: LawGraphContaine
     return (
         <section
             ref={containerRef}
-            className={`${isFullscreenMode ? '' : 'mt-6 rounded-lg border bg-card p-4 shadow-sm'} ${isFullscreen ? 'bg-background' : ''}`}
+            className={`${isFullscreenMode ? 'relative' : 'mt-6 rounded-lg border bg-card p-4 shadow-sm'} ${isFullscreen ? 'bg-background' : ''}`}
         >
             {/* Header */}
-            {!isFullscreenMode && (
+            {isFullscreenMode ? (
+                <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-lg border bg-card/90 backdrop-blur-sm px-3 py-1.5 shadow-md">
+                    <Network className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+                </div>
+            ) : (
                 <div className="flex items-center gap-2 mb-3">
                     <Network className="h-4 w-4 text-primary" />
                     <h3 className="text-sm font-semibold text-foreground">{title}</h3>

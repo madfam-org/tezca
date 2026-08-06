@@ -216,16 +216,18 @@ function InvoicesSection({
     userId: string | null;
 }) {
     const [invoices, setInvoices] = useState<DhanamInvoice[] | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Only starts loading when there is a user to fetch invoices for —
+    // avoids a synchronous setState in the effect's early-exit branch.
+    const [loading, setLoading] = useState(Boolean(userId));
     const locale = lang === 'en' ? 'en-US' : 'es-MX';
 
     useEffect(() => {
         if (!userId) {
-            setLoading(false);
             return;
         }
         let cancelled = false;
         const ctrl = new AbortController();
+        setLoading(true); // covers userId arriving after mount
         fetch(
             `${DHANAM_API_BASE}/v1/invoices?product=tezca&user_id=${encodeURIComponent(userId)}`,
             { signal: ctrl.signal },

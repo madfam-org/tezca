@@ -75,6 +75,18 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: ES_HOST
               value: "http://tezca-es:9200"
+            - name: MADFAM_CRAWLER_URL
+              value: "http://crawler-api.madfam-crawler.svc.cluster.local:8000/v1/crawl"
+            # API key for the crawler's ApiKeyMiddleware (sent as X-Api-Key).
+            # optional: true keeps the pod booting until the operator adds the
+            # MADFAM_CRAWLER_TOKEN key to tezca-secrets; without it the bridge
+            # omits the header and the crawler answers 401.
+            - name: MADFAM_CRAWLER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tezca-secrets
+                  key: MADFAM_CRAWLER_TOKEN
+                  optional: true
             # Unfreezes the DOF corpus: detected changes materialize via the
             # ingestion pipeline (#146) instead of detect-and-log only. Only
             # meaningful on images >= 2026-07-10; the flag is unread before.

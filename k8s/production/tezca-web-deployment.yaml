@@ -72,3 +72,18 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          # readOnlyRootFilesystem is on, but Next.js needs a writable ISR
+          # cache — without it the pod logs a continuous ENOENT storm on
+          # `mkdir .next/cache` (observed 61 restarts per web pod).
+          volumeMounts:
+            - name: next-cache
+              mountPath: /app/apps/web/.next/cache
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: next-cache
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi

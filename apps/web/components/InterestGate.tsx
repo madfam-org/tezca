@@ -211,6 +211,7 @@ export function InterestGate({
         <select
             value={useCase}
             onChange={(e) => setUseCase(e.target.value)}
+            aria-label={t.useCaseLabel}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground"
         >
             <option value="">{t.useCaseLabel}</option>

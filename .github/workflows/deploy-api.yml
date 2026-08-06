@@ -26,7 +26,12 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: madfam-org/tezca/api
+  # Fresh package name: the legacy madfam-org/tezca/api package was created
+  # by PAT pushes and its Actions-access ACL rejects GITHUB_TOKEN (403, and
+  # the ACL is UI-only). A package first published BY a workflow is
+  # automatically repo-linked with write access — no ACL surgery needed.
+  IMAGE_NAME: madfam-org/tezca-api
+  LEGACY_IMAGE_NAME: madfam-org/tezca/api
 
 concurrency:
   group: tezca-production-kustomization
@@ -106,7 +111,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             cd k8s/production
-            kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}
+            kustomize edit set image ${{ env.REGISTRY }}/${{ env.LEGACY_IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}
             cd ../..
             git add k8s/production/kustomization.yaml
             git diff --staged --quiet && echo "No changes to commit" && exit 0

@@ -27,7 +27,7 @@ vi.mock('@/components/providers/AuthContext', () => ({
 vi.mock('@/lib/billing', () => ({
     getCheckoutUrl: vi.fn(
         (plan: string, userId?: string) =>
-            `https://dhanam.madfam.io/checkout?plan=tezca_${plan}&product=tezca${userId ? `&user_id=${userId}` : ''}`,
+            `https://app.dhan.am/checkout?plan=tezca_${plan}&product=tezca${userId ? `&user_id=${userId}` : ''}`,
     ),
 }));
 
@@ -263,7 +263,7 @@ describe('TierGate', () => {
         const ctaLink = screen.getByText('Mejora a Academic').closest('a');
         expect(ctaLink).toBeDefined();
         // getCheckoutUrl is called with ('academic', 'user-abc', window.location.href)
-        expect(ctaLink?.getAttribute('href')).toContain('dhanam.madfam.io/checkout');
+        expect(ctaLink?.getAttribute('href')).toContain('app.dhan.am/checkout');
         expect(ctaLink?.getAttribute('href')).toContain('tezca_academic');
     });
 

@@ -12,6 +12,16 @@ export default defineConfig({
         baseURL: 'http://localhost:3000',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
+        launchOptions: {
+            // Linux CI chromium reserves classic-scrollbar width, so
+            // clientWidth shrinks below the device viewport while
+            // 100vw/innerWidth do not — making scrollWidth > clientWidth
+            // read as "horizontal overflow" on layouts that real
+            // (overlay-scrollbar) mobile devices and macOS render clean.
+            // Overlay scrollbars make the overflow assertions measure what
+            // a phone actually shows.
+            args: ['--enable-features=OverlayScrollbar'],
+        },
     },
     projects: [
         {
@@ -34,7 +44,13 @@ export default defineConfig({
     webServer: {
         command: 'echo CI=$CI && HOSTNAME=0.0.0.0 npx next start -p 3000',
         url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
+        // The CI E2E workflow already builds and runs web in the
+        // docker-compose.e2e.yml stack on :3000 (and waits for it), so
+        // Playwright must REUSE that server, not spawn a second `next
+        // start` on the same port. reuseExistingServer must therefore be
+        // true in CI too — the previous `!process.env.CI` caused a port
+        // conflict the moment the API actually booted.
+        reuseExistingServer: true,
         timeout: process.env.CI ? 300_000 : 120_000,
     },
 });
