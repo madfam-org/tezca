@@ -2,6 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tezca-api
+  # Redundant at apply time (kustomization.yaml sets `namespace: tezca` on
+  # every resource) but load-bearing for scripts/check-networkpolicy-ports.py:
+  # it resolves a NetworkPolicy's podSelector against workloads sharing the
+  # policy's namespace, reading metadata.namespace literally with no kustomize
+  # rendering. Without this line tezca-api lands in the implicit "default"
+  # bucket, the checker sees zero containerPorts behind
+  # `app.kubernetes.io/part-of: tezca`, and any ingress rule carrying a
+  # `ports:` block fails the gate. Matches karafiel's convention, where every
+  # Deployment declares its namespace.
+  namespace: tezca
   labels:
     app.kubernetes.io/name: tezca-api
     app.kubernetes.io/part-of: tezca
@@ -118,8 +128,19 @@ spec:
               value: "redis://tezca-redis:6379/0"
             - name: ES_HOST
               value: "http://tezca-es:9200"
+            # The cluster-internal Service DNS name must stay in this list.
+            # settings.py already defaults to including it (see the
+            # "Integration Policy (Zero Touch)" comment there), but this env
+            # var OVERRIDES that default wholesale — so pinning it to the
+            # public host silently re-broke every in-cluster caller.
+            # Verified 2026-08-06 inside a tezca-api pod: GET /health with
+            # `Host: tezca-api.tezca.svc.cluster.local` returns 400
+            # DisallowedHost, while `Host: api.tezca.mx` does not. The
+            # cloudflared uptime probe derives Host from the URL and requires
+            # status 200, so without this it still reports a failure once the
+            # NetworkPolicy admits it.
             - name: ALLOWED_HOSTS
-              value: "api.tezca.mx"
+              value: "api.tezca.mx,tezca-api.tezca.svc.cluster.local"
             - name: CORS_ALLOWED_ORIGINS
               value: "https://tezca.mx,https://www.tezca.mx,https://admin.tezca.mx"
             - name: JANUA_ISSUER_URL

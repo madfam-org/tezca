@@ -24,6 +24,39 @@ spec:
           podSelector:
             matchLabels:
               app: cloudflared
+    # Admit the synthetic uptime probe (deployment/cloudflared-probe, same
+    # cloudflare-tunnel namespace). It GETs
+    # tezca-api.tezca.svc.cluster.local:8000/health on a 60s loop and is the
+    # only thing that turns "tezca-api is down" into a page.
+    #
+    # DO NOT DELETE THIS AS REDUNDANT WITH cloudflared ABOVE. The probe pod is
+    # labelled app.kubernetes.io/name=cloudflared-probe, NOT app=cloudflared,
+    # so the peer above denies it. Denied, the probe emits `probe_blocked`
+    # every cycle forever — and a real tezca outage then looks exactly like
+    # that standing noise. The tunnel proves the public edge works; only the
+    # probe proves the Service does. Verified 2026-08-06: a raw TCP connect
+    # from the probe pod to any tezca-api pod IP on 8000 returns ECONNREFUSED
+    # (on k3s a NetworkPolicy denial rejects rather than drops), while
+    # dhanam-api and janua-api — whose namespaces admit the probe — connect.
+    #
+    # This is deliberately a SECOND ingress rule rather than a second peer
+    # inside the rule above: NetworkPolicy scopes `ports:` to the whole rule,
+    # so folding the probe into that `from` list would also clamp cloudflared
+    # to 8000 and silently blackhole the tunnel to tezca-web (3000) and
+    # tezca-admin (3001) — the same class of outage as the 2026-05-04
+    # status.enclii.dev incident this file already warns about. Separate rule
+    # ⇒ the probe is port-constrained to the API and cloudflared stays
+    # unrestricted.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudflare-tunnel
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: cloudflared-probe
+      ports:
+        - protocol: TCP
+          port: 8000
 ---
 # Allow intra-namespace pod-to-pod traffic.
 #
