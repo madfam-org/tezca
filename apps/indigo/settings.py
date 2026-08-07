@@ -210,6 +210,25 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ── Production Security ───────────────────────────────────────────────
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
+    # Exempt the health endpoint from the HTTP→HTTPS redirect.
+    #
+    # Public traffic is unaffected: Cloudflare terminates TLS and cloudflared
+    # forwards X-Forwarded-Proto: https, which SECURE_PROXY_SSL_HEADER below
+    # already honours, so https://api.tezca.mx/health keeps working exactly as
+    # it does now. But in-cluster callers speak plain HTTP to
+    # tezca-api.tezca.svc.cluster.local:8000 and set no such header, so
+    # SecurityMiddleware answers 301 → https://api.tezca.mx/health before the
+    # view ever runs. Verified 2026-08-06 inside a tezca-api pod.
+    #
+    # The kubelet probes never surfaced this because kubelet treats any 2xx OR
+    # 3xx as success — the pods report Ready on a redirect that proves only
+    # that SecurityMiddleware is loaded. The cloudflared uptime probe requires
+    # status 200, so the redirect is a hard failure for it.
+    #
+    # Anchored to the single root health route (apps/indigo/urls.py
+    # `path("health", ...)`, matched without the leading slash per Django's
+    # SECURE_REDIRECT_EXEMPT contract). Every other path still redirects.
+    SECURE_REDIRECT_EXEMPT = [r"^health$"]
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
