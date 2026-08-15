@@ -393,3 +393,81 @@ class TestPublicCoverage:
         response = self.client.get(self.url)
         data = response.json()
         assert data["total_articles"] is None
+
+
+# -------------------------------------------------------------------
+# Registry loader — the real one, not the patched stand-in.
+#
+# Every test above patches _load_universe_registry, so the loader itself
+# was never exercised. It used to build a CWD-relative path
+# (`Path("data/universe_registry.json")`), which resolved under pytest
+# (run from the repo root) but never under gunicorn (WORKDIR /app) — so
+# production served the hardcoded fallback counts on every request while
+# the suite stayed green.
+# -------------------------------------------------------------------
+class TestUniverseRegistryLoader:
+    def test_registry_path_is_absolute_and_points_at_the_repo_copy(self):
+        from apps.api.coverage_views import REGISTRY_PATH
+
+        assert REGISTRY_PATH.is_absolute()
+        assert REGISTRY_PATH.name == "universe_registry.json"
+        assert REGISTRY_PATH.exists(), (
+            f"{REGISTRY_PATH} is missing. It must ship with the app: "
+            "/api/v1/coverage/ reports unmeasured hardcoded counts without it."
+        )
+
+    def test_loader_does_not_depend_on_the_process_cwd(self, tmp_path, monkeypatch):
+        """Regression: loading must work from any working directory."""
+        from apps.api import coverage_views
+
+        monkeypatch.chdir(tmp_path)
+        registry = coverage_views._load_universe_registry()
+
+        assert registry is not None, (
+            "Loader returned None from a non-repo-root CWD — this is the "
+            "gunicorn (WORKDIR /app) case that silently degraded /coverage/."
+        )
+        assert "sources" in registry
+
+    def test_missing_registry_is_logged_at_warning(self, tmp_path, monkeypatch, caplog):
+        """An absent registry must leave an operator-visible trace."""
+        import logging
+
+        from apps.api import coverage_views
+
+        monkeypatch.setattr(
+            coverage_views, "REGISTRY_PATH", tmp_path / "universe_registry.json"
+        )
+        with caplog.at_level(logging.WARNING, logger="apps.api.coverage_views"):
+            assert coverage_views._load_universe_registry() is None
+
+        assert any(
+            r.levelno >= logging.WARNING and "universe_registry.json" in r.getMessage()
+            for r in caplog.records
+        ), "Missing registry was swallowed below WARNING — invisible in prod logs"
+
+
+class TestCoverageFallbackIsNotMistakenForMeasurement:
+    """Without the registry, tier 'have' values are literals, not DB counts.
+
+    This is documented here deliberately: the endpoint keeps returning 200,
+    but the numbers are no longer measurements. The guard that keeps this
+    from reaching users is TestUniverseRegistryLoader above (the registry
+    must actually be loadable), not this behaviour.
+    """
+
+    @pytest.mark.django_db
+    @patch(ES_PATCH, return_value=None)
+    @patch(REGISTRY_PATCH, return_value=None)
+    def test_fallback_counts_are_literals_unrelated_to_the_database(
+        self, mock_registry, mock_es
+    ):
+        client = APIClient()
+        data = client.get(reverse("public-coverage")).json()
+
+        assert data["total_laws"] == 0  # nothing in the DB
+        state = next(t for t in data["tiers"] if t["id"] == "state_legislative")
+        # ...yet the endpoint still reports a five-figure count at 100%.
+        assert state["have"] == 12468
+        assert state["pct"] == 100.0
+        assert data["total_items"] > 0

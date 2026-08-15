@@ -17,7 +17,10 @@
     "dev:all": "node ./scripts/require-local-services.mjs && npx concurrently \"npm run dev:web\" \"npm run dev:admin\"",
     "build:all": "npm run build:web && npm run build:admin",
     "lint:all": "npm run lint:web && npm run lint:admin",
-    "test:vitest": "npx vitest run",
+    "test:vitest": "npm run test:vitest:web && npm run test:vitest:admin && npm run test:vitest:api-client",
+    "test:vitest:web": "cd apps/web && npx vitest run",
+    "test:vitest:admin": "cd apps/admin && npx vitest run",
+    "test:vitest:api-client": "cd packages/api-client && npx vitest run",
     "test:pytest": "python -m pytest tests/ -v",
     "test:e2e": "npx playwright test",
     "test:all": "npm run test:vitest && npm run test:pytest && npm run test:e2e"
