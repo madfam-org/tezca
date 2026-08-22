@@ -4471,6 +4471,54 @@
             "category": "federal",
             "slug": "lorcme",
             "notes": "Abrogated March 2025 by energy sector reforms. Historical preservation. Source: Cámara de Diputados archive."
+        },
+        {
+            "id": "jcf-reglas-2026",
+            "name": "REGLAS de Operación del Programa Jóvenes Construyendo el Futuro para el ejercicio fiscal 2026",
+            "short_name": "Reglas de Operación JCF 2026",
+            "type": "reglas_de_operacion",
+            "slug": "jcf-reglas-2026",
+            "expected_articles": 26,
+            "publication_date": "2025-12-31",
+            "source": "dof",
+            "url": "https://dof.gob.mx/nota_detalle.php?codigo=5777674&fecha=31/12/2025",
+            "priority": 1,
+            "tier": "labor",
+            "status": "active",
+            "category": "reglas_de_operacion",
+            "notes": "STPS administrative instrument (Ramo 14, categoria programatica S280) - NOT a ley. In force from 2026-01-01 per Transitorio Primero; abrogates the 2024-12-31 ROP. Provisions are numbered as feminine ordinals (PRIMERA..VIGESIMA SEXTA), not 'Articulo N'. Verified against DOF primary text 2026-08-22."
+        },
+        {
+            "id": "jcf-acuerdo-simplificacion-2026",
+            "name": "ACUERDO por el que se establecen acciones de simplificación para trámites que se realizan ante la Secretaría del Trabajo y Previsión Social",
+            "short_name": "Acuerdo de simplificación STPS 2026",
+            "type": "acuerdo",
+            "slug": "jcf-acuerdo-simplificacion-2026",
+            "expected_articles": 0,
+            "publication_date": "2026-05-27",
+            "source": "dof",
+            "url": "https://dof.gob.mx/nota_detalle.php?codigo=5788734&fecha=27/05/2026",
+            "priority": 2,
+            "tier": "labor",
+            "status": "active",
+            "category": "reglas_de_operacion",
+            "notes": "Modifies JCF tramites STPS-03-025 (registro de Joven) and STPS-03-026 (registro de Centro de Trabajo; fuses STPS-03-026-A/B/C). In force from the next business day (2026-05-28). Transitorio Cuarto gives STPS until ~2027-05 to update platforms and normativa - re-verify the JCF corpus within that window. Prose document: no ordinal Reglas, indexed as full_text. Verified against DOF primary text 2026-08-22."
+        },
+        {
+            "id": "jcf-lineamientos-2019",
+            "name": "LINEAMIENTOS para la operación del Programa Jóvenes Construyendo el Futuro",
+            "short_name": "Lineamientos JCF 2019",
+            "type": "acuerdo",
+            "slug": "jcf-lineamientos-2019",
+            "expected_articles": 0,
+            "publication_date": "2019-01-10",
+            "source": "dof",
+            "url": "https://dof.gob.mx/nota_detalle.php?codigo=5547857&fecha=10/01/2019",
+            "priority": 3,
+            "tier": "labor",
+            "status": "unknown",
+            "category": "reglas_de_operacion",
+            "notes": "Residual status - deliberately NOT marked abrogated. No instrument expressly abrogates these Lineamientos, and the corpus must not assert an abrogation the DOF never published. Displaced in practice by the successive annual ROP; controlling document is jcf-reglas-2026. Requires legal opinion before citing any numeral as vigente."
         }
     ],
     "categories": {
@@ -4611,17 +4659,23 @@
             "description": "GMOs and biosafety",
             "color": "forest",
             "icon": "🧬"
+        },
+        "reglas_de_operacion": {
+            "name": "Reglas de Operación",
+            "description": "Program operating rules issued by federal agencies and published in the DOF",
+            "color": "forest",
+            "icon": "📋"
         }
     },
     "metadata": {
         "version": "2.0",
-        "updated": "2026-02-02",
+        "updated": "2026-08-22",
         "total_laws": 50,
         "priority_1_count": 5,
         "priority_2_count": 45,
         "active_count": 10,
         "pending_count": 40,
-        "categories_count": 23,
-        "notes": "Updated with 40 additional Priority 2 laws based on 2024 legal practice research and legislative reforms"
+        "categories_count": 24,
+        "notes": "Updated with 40 additional Priority 2 laws based on 2024 legal practice research and legislative reforms | 2026-08-22: added the Jovenes Construyendo el Futuro (JCF) normative corpus - DOF Reglas de Operacion + the STPS simplification Acuerdo - as reglas_de_operacion, an administrative-rules type, not leyes. The abrogated 2025 ROP is intentionally absent: its DOF codigo could not be verified and registering an unverified one would mis-cite the corpus."
     }
 }

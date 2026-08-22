@@ -1,0 +1,65 @@
+[
+  {
+    "official_id": "jcf-reglas-2026",
+    "name": "REGLAS de Operación del Programa Jóvenes Construyendo el Futuro para el ejercicio fiscal 2026",
+    "short_name": "Reglas de Operación JCF 2026",
+    "dof_codigo": "5777674",
+    "publication_date": "2025-12-31",
+    "valid_from": "2026-01-01",
+    "document_type": "reglas_de_operacion",
+    "status": "vigente",
+    "issuer": "Secretaría del Trabajo y Previsión Social",
+    "vigencia_note": "Instrumento primario en vigor. Ramo 14, categoría programática S280. Abroga las Reglas de Operación publicadas el 31 de diciembre de 2024.",
+    "title_marker": "Jóvenes Construyendo el Futuro",
+    "category": "reglas_de_operacion",
+    "domains": [
+      "labor"
+    ],
+    "source": "jcf_dof_fetcher",
+    "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5777674&fecha=31/12/2025",
+    "sidof_url": "https://sidof.segob.gob.mx/notas/docFuente/5777674",
+    "text_filename": "jcf-reglas-2026.xml"
+  },
+  {
+    "official_id": "jcf-acuerdo-simplificacion-2026",
+    "name": "ACUERDO por el que se establecen acciones de simplificación para trámites que se realizan ante la Secretaría del Trabajo y Previsión Social",
+    "short_name": "Acuerdo de simplificación STPS 2026",
+    "dof_codigo": "5788734",
+    "publication_date": "2026-05-27",
+    "valid_from": "2026-05-28",
+    "document_type": "acuerdo",
+    "status": "vigente",
+    "issuer": "Secretaría del Trabajo y Previsión Social",
+    "vigencia_note": "En vigor. Modifica los trámites JCF STPS-03-025 (registro de Joven) y STPS-03-026 (registro de Centro de Trabajo; fusiona STPS-03-026-A/B/C). Transitorio Cuarto otorga a la STPS un plazo no mayor a un año (hasta ~2027-05) para actualizar plataformas, sistemas y normativa — reverificar el corpus JCF dentro de esa ventana.",
+    "title_marker": "acciones de simplificación",
+    "category": "reglas_de_operacion",
+    "domains": [
+      "labor"
+    ],
+    "source": "jcf_dof_fetcher",
+    "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5788734&fecha=27/05/2026",
+    "sidof_url": "https://sidof.segob.gob.mx/notas/docFuente/5788734",
+    "text_filename": "jcf-acuerdo-simplificacion-2026.xml"
+  },
+  {
+    "official_id": "jcf-lineamientos-2019",
+    "name": "LINEAMIENTOS para la operación del Programa Jóvenes Construyendo el Futuro",
+    "short_name": "Lineamientos JCF 2019",
+    "dof_codigo": "5547857",
+    "publication_date": "2019-01-10",
+    "valid_from": "2019-01-10",
+    "document_type": "acuerdo",
+    "status": "unknown",
+    "issuer": "Secretaría del Trabajo y Previsión Social",
+    "vigencia_note": "Estatus residual. Firmados el 9 de enero de 2019, sin cláusula de abrogación y con cláusula de autoprórroga; desplazados en la práctica por las sucesivas Reglas de Operación anuales, pero ningún instrumento los abroga expresamente. Documento controlante: jcf-reglas-2026. Requiere opinión legal antes de citar cualquier numeral como vigente.",
+    "title_marker": "Jóvenes Construyendo el Futuro",
+    "category": "reglas_de_operacion",
+    "domains": [
+      "labor"
+    ],
+    "source": "jcf_dof_fetcher",
+    "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5547857&fecha=10/01/2019",
+    "sidof_url": "https://sidof.segob.gob.mx/notas/docFuente/5547857",
+    "text_filename": "jcf-lineamientos-2019.xml"
+  }
+]
