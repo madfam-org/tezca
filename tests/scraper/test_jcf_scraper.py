@@ -484,9 +484,7 @@ class TestRun:
     def test_catalog_round_trips_into_documents(self, fetcher, tmp_path):
         import json
 
-        from apps.api.management.commands.ingest_jcf import (
-            _document_from_catalog_entry,
-        )
+        from apps.api.management.commands.ingest_jcf import _document_from_catalog_entry
 
         fetcher.run(download_documents=False)
         entries = json.loads((tmp_path / "catalog.json").read_text(encoding="utf-8"))
