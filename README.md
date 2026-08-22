@@ -106,6 +106,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Tiered Rate Limiting** - Per-tier sliding window throttle (anon 10/min → internal 200/min)
 - ✅ **Bulk Data Feed** - Cursor-paginated `/bulk/articles/` endpoint with domain filtering (requires `bulk` scope)
 - ✅ **Changelog API** - `/changelog/?since=` endpoint for incremental sync of law updates
+- ✅ **Fiscal Values Feed** - `/fiscal/{uma,minimos,tables}/` versioned UMA, salario mínimo and ISR/subsidio tables with DOF provenance and `?on=YYYY-MM-DD` point-in-time lookup (requires `read` scope). See [docs/FISCAL_VALUES_FEED.md](docs/FISCAL_VALUES_FEED.md)
 - ✅ **Webhook Subscriptions** - HMAC-SHA256 signed push notifications with auto-disable after failures
 - ✅ **Domain Filtering** - `?domain=finance` maps to category groups on all endpoints; API key domain restrictions
 - ✅ **TypeScript SDK** - `@tezca/api-client` package with auto-pagination, typed endpoints, error handling

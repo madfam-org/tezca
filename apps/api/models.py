@@ -1,6 +1,17 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+# Fiscal-value feed models live in their own module to keep this file under
+# the 800-LOC audit ceiling. Re-exported here so `from apps.api.models import
+# UMAValue` keeps working and Django's app registry discovers them.
+from .fiscal_models import (  # noqa: F401
+    FiscalTable,
+    FiscalValueBase,
+    MinimumWage,
+    Provenance,
+    UMAValue,
+)
+
 
 class Law(models.Model):
     OFFICIAL_ID_MAX_LENGTH = 200
