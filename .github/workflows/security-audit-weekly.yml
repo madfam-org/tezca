@@ -9,14 +9,16 @@ name: Scheduled Security Audit
 # merge queue), so remediation is planned work, not a fire drill.
 
 #
-# NOTE (2026-08-22): renamed from security-audit.yml to force GitHub to
-# re-register this workflow. The prior registration (id 314221736) had
-# CORRUPTED into a push-only trigger — every one of its 113 runs fired on
-# `event: push` (0s, zero jobs) though this file has only ever declared
-# schedule + workflow_dispatch, and `gh workflow run` 422'd with "does not
-# have 'workflow_dispatch' trigger". Result: the weekly sweep silently never
-# ran from 2026-07-16. A new path registers fresh with the correct triggers;
-# the stale id must then be disabled/deleted.
+# NOTE (2026-08-22): this workflow was broken from its first commit
+# (2026-07-16) until today — invalid YAML, not a corrupt registration.
+# The issue-body heredoc in "File issue on findings" contained column-0
+# lines, which terminate a block scalar and break the document. GitHub
+# could never parse the file: every push produced a 0s/zero-job stub run
+# and workflow_dispatch 422'd ("does not have 'workflow_dispatch'
+# trigger"), so the scheduled sweep never fired. Fixed by building the
+# issue body in an indented brace group + --body-file. (The file was also
+# renamed from security-audit.yml mid-diagnosis; the rename was harmless
+# but was not the fix.)
 
 on:
   schedule:
@@ -62,18 +64,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TITLE="Scheduled security audit: pip-audit found new vulnerabilities"
-          BODY="The weekly pip-audit sweep failed on $(date -u +%F). New advisories affect locked dependencies — bump them before the next push trips the PR-blocking gate.
-
-\`\`\`
-$(tail -30 audit.txt)
-\`\`\`
-
-Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          {
+            echo "The weekly pip-audit sweep failed on $(date -u +%F). New advisories affect locked dependencies — bump them before the next push trips the PR-blocking gate."
+            echo
+            echo '```'
+            tail -30 audit.txt
+            echo '```'
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > issue-body.md
           # Reuse the open issue if one exists to avoid weekly duplicates
           EXISTING=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number')
           if [ -n "$EXISTING" ]; then
-            gh issue comment "$EXISTING" --body "$BODY"
+            gh issue comment "$EXISTING" --body-file issue-body.md
           else
-            gh issue create --title "$TITLE" --body "$BODY" --label security 2>/dev/null \
-              || gh issue create --title "$TITLE" --body "$BODY"
+            gh issue create --title "$TITLE" --body-file issue-body.md --label security 2>/dev/null \
+              || gh issue create --title "$TITLE" --body-file issue-body.md
           fi
