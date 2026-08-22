@@ -8,6 +8,16 @@ name: Scheduled Security Audit
 # scheduled run surfaces new CVEs proactively (issue instead of a blocked
 # merge queue), so remediation is planned work, not a fire drill.
 
+#
+# NOTE (2026-08-22): renamed from security-audit.yml to force GitHub to
+# re-register this workflow. The prior registration (id 314221736) had
+# CORRUPTED into a push-only trigger — every one of its 113 runs fired on
+# `event: push` (0s, zero jobs) though this file has only ever declared
+# schedule + workflow_dispatch, and `gh workflow run` 422'd with "does not
+# have 'workflow_dispatch' trigger". Result: the weekly sweep silently never
+# ran from 2026-07-16. A new path registers fresh with the correct triggers;
+# the stale id must then be disabled/deleted.
+
 on:
   schedule:
     # Wednesday 11:00 UTC (05:00 CDMX) — offset from the Monday CodeQL run
