@@ -45,6 +45,13 @@ from .export_views import (
     export_quota,
     export_txt,
 )
+from .fiscal_views import (
+    minimos_list,
+    tables_by_year,
+    tables_list,
+    uma_current,
+    uma_list,
+)
 from .graph_views import graph_overview, graph_public_showcase, law_graph
 from .interest_views import register_interest
 from .judicial_views import (
@@ -202,6 +209,14 @@ urlpatterns = [
     # ── Chat (essentials+ tier required, gated by CHAT_ENABLED env) ──────
     path("chat/preguntar/", preguntar, name="chat-preguntar"),
     path("changelog/", changelog, name="changelog"),
+    # ── Fiscal values (API key with 'read' scope) ────────────────────────
+    # Tezca is the ecosystem's fiscal-value oracle: consumers (symbiosis-hcm,
+    # karafiel) read values here instead of hardcoding them.
+    path("fiscal/uma/", uma_list, name="fiscal-uma-list"),
+    path("fiscal/uma/current/", uma_current, name="fiscal-uma-current"),
+    path("fiscal/minimos/", minimos_list, name="fiscal-minimos-list"),
+    path("fiscal/tables/", tables_list, name="fiscal-tables-list"),
+    path("fiscal/tables/<int:year>/", tables_by_year, name="fiscal-tables-by-year"),
     path("coverage/", public_coverage, name="public-coverage"),
     path("graph/overview/", graph_overview, name="graph-overview"),
     path("graph/showcase/", graph_public_showcase, name="graph-showcase"),
