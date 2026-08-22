@@ -1,0 +1,823 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="reglasDeOperacion">
+    <meta>
+      <identification source="#tezca-jcf-fetcher">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026/main"/>
+          <FRBRuri value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026"/>
+          <FRBRdate date="2025-12-31" name="Generation"/>
+          <FRBRauthor href="#stps"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026/spa@/main"/>
+          <FRBRuri value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026/spa@"/>
+          <FRBRdate date="2025-12-31" name="Generation"/>
+          <FRBRauthor href="#tezca-jcf-fetcher"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/reglas-de-operacion/2025-12-31/jcf-reglas-2026/spa@/main.akn"/>
+          <FRBRdate date="2025-12-31" name="Generation"/>
+          <FRBRauthor href="#tezca-jcf-fetcher"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body>
+      <article eId="regla-primera" id="regla-primera">
+        <num>PRIMERA</num>
+        <paragraph eId="regla-primera-para-1">
+          <content>
+            <p>Las presentes Reglas de Operación tienen por objeto regir la operación del Programa Jóvenes Construyendo el Futuro en las 32 entidades federativas del país.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-segunda" id="regla-segunda">
+        <num>SEGUNDA</num>
+        <paragraph eId="regla-segunda-para-1">
+          <content>
+            <p>Para los efectos de las presentes Reglas de Operación se entenderá por:
+I. Acuerdo de Comité Técnico.
+Es el documento que contiene la decisión colegiada aprobada por la mayoría de las y los miembros con derecho a voz y voto presentes en la sesión correspondiente del Comité Técnico del Programa, siendo de observancia obligatoria en el Marco de las presentes Reglas de Operación.
+II. Administrador de sucursal.
+Es aquella persona designada por la o el Representante del Centro de Trabajo, facultada para establecer comunicación entre la Sucursal donde se desarrolla la Capacitación y el Programa.
+III. Apoyo económico.
+El que otorga la STPS por concepto de beca de manera directa y sin intermediarios a las y los Beneficiarios sin distinción alguna, hasta por 12 (doce) emisiones, cuyo monto equivale a $9,582.47 (nueve mil quinientos ochenta y dos pesos 47/100 M.N.). El monto del Apoyo económico será igual en todas las entidades federativas del país.
+IV. Aprendiz.
+Joven registrado que se postuló y se vinculó a un Centro de Trabajo, e inició Capacitación.
+V.
+Aprendiz verificado.
+Aprendiz que acreditó los requisitos establecidos para ser sujeto de pago del Apoyo económico.
+VI. Beneficiaria o Beneficiario.
+Joven que ha recibido el Apoyo económico en al menos una ocasión y cuyos datos personales se encuentran registrados en el Padrón de Beneficiarios del Programa.
+VII.
+Capacitación.
+Proceso continuo de enseñanza-aprendizaje, transmisión de conocimientos y desarrollo de Habilidades, hasta por 12 (doce) meses, que se realiza con la participación y acompañamiento de una o un Tutor en un Centro de Trabajo y/o en sus Sucursales, y que está orientada a permitirle a las y los Aprendices adquirir o reforzar su experiencia laboral y Habilidades, de acuerdo con el Plan de Actividades de su elección, registrado por el Centro de Trabajo.
+VIII.
+Centro de Trabajo.
+Persona Moral, Física, Institución Pública u Organización Social que participa en el Programa para la Capacitación de Aprendices.
+IX.
+Centro de Trabajo o Sucursales suspendidas.
+Centro de Trabajo o alguna de sus Sucursales cuya participación en el Programa se suspende por encontrarse en revisión y/o verificación del cumplimiento de las presentes Reglas de Operación.
+X.
+Comité Técnico.
+Instancia del Programa encargada de interpretar para efectos administrativos y operativos los asuntos concernientes al Programa o aquellos que no hayan sido previstos en las presentes Reglas de Operación, de conformidad con lo establecido en la disposición Vigésima Sexta.
+XI. Constancia de Situación Fiscal.
+Documento emitido por la Secretaría de Hacienda y Crédito Público a través del SAT que contiene la clave del Registro Federal de Contribuyentes, datos de identidad, ubicación, características fiscales del contribuyente, así como el estatus de cumplimiento de éstas.
+XII. Constancia de Capacitación . Documento expedido por la STPS a través de la Plataforma Digital para las y los Egresados del Programa y que funge como documento que acredita el tiempo adquirido de experiencia laboral, en el que se establece el Centro de Trabajo y la Capacitación tomada.
+XIII.
+Constancia de Participación.
+Documento expedido por la STPS que avala la participación de cada Tutora o Tutor en el Programa por haber capacitado al menos a un(a) Egresado(a), según lo defina el Programa. Podrá ser descargado directamente en la Plataforma Digital del Programa.
+XIV.
+Constancia de Vigencia de Derechos.
+Documento expedido por cualquier institución pública de seguridad social (Instituto Mexicano del Seguro Social, Instituto de Seguridad y Servicios Sociales para los Trabajadores del Estado, Petróleos Mexicanos, Secretaría de la Defensa Nacional) en el que se hace constar que una persona cuenta con servicio médico vigente, cuya expedición deberá ser inferior a 5 días naturales al momento de presentarlo ante el Programa.
+XV. Contraloría Social.
+Mecanismo de participación ciudadana conformado por las y los Beneficiarios del Programa, de manera organizada, voluntaria y honorífica, que tiene por objeto verificar el cumplimiento de las metas, y la correcta aplicación de los recursos públicos asignados.
+XVI.
+Corresponsabilidad.
+Es la responsabilidad compartida entre los Participantes en el Programa, conforme a sus obligaciones y derechos adquiridos.
+XVII. CURP.
+Clave Única de Registro de Población vigente, expedida por el Registro Nacional de Población (RENAPO).
+XVIII. Desvinculación.
+Suspensión de la entrega del Apoyo económico y Seguro Médico, derivada de algún incumplimiento a las obligaciones establecidas en las presentes Reglas de Operación, lo cual implica la pérdida de una oportunidad de Capacitación.
+XIX. Egresado(a) . Beneficiario(a) que concluyó su participación en el Programa.
+XX .
+Espacio para Capacitación . Oportunidad de Capacitación que el Centro de Trabajo pone a disposición de las y los Jóvenes registrados en el Programa.
+XXI. Grupos históricamente discriminados.
+Conjunto de personas a las que se le han violado sus derechos humanos por su condición social, económica y/o cultural, quienes han sido histórica o contextualmente marginados, excluidos o discriminados.
+XXII.
+Habilidades.
+Capacidades o destrezas que una persona adquiere y desarrolla para realizar una tarea o actividad de manera eficaz. Pueden ser innatas o aprendidas a través de la experiencia y la práctica.
+XXIII.
+Identificación oficial.
+Documento original vigente con fotografía, expedido por una entidad, dependencia o institución pública gubernamental, que presenta datos susceptibles de ser utilizados para comprobar la identidad de una persona, tales como credencial para votar, pasaporte, cédula profesional, licencia de conducir y documento migratorio vigente emitido por la autoridad competente o, en su caso, prórroga o refrendo migratorio; referidas de manera enunciativa, más no limitativa.
+XXIV. IMSS.
+Instituto Mexicano del Seguro Social.
+XXV. Institución Pública.
+Entidad dedicada a la prestación de servicios por parte de los tres órdenes de gobierno (federal, estatal o municipal). Incluye poder ejecutivo, judicial y legislativo, instituciones autónomas de educación superior, así como otras de interés público y de carácter no educativo, y cualquier otra institución que opere con fondos y/o patrimonios públicos.
+XXVI.
+Joven.
+Para efectos de las presentes Reglas de Operación, es aquella persona entre 18 y 29 años.
+XXVII.
+Joven postulante.
+Joven registrado(a) en el Programa y que ya eligió un Espacio para Capacitación.
+XXVIII.
+Joven registrado(a ). Joven que completó el formulario de registro y declara ante el Programa, bajo protesta de decir verdad, no encontrarse estudiando y/o trabajando.
+XXIX.
+LFPRH.
+Ley Federal de Presupuesto y Responsabilidad Hacendaria.
+XXX.
+Padrón de Beneficiarios.
+Relación de las y los Beneficiarios participantes, integrada con base en el Manual de Operación del Sistema Integral de Información de Padrones de Programas Gubernamentales (SIIPP-G), a cargo de la SABG, cuya publicación y actualización se realiza trimestralmente.
+XXXI. Padrón Único de Beneficiarios o Padrón del Bienestar.
+Padrón integrado con las y los Beneficiarios de los Programas para el Desarrollo con información de las dependencias y entidades responsables, información y entrevistas domiciliarias, de visita de campo y del registro e inscripción por los medios específicos establecidos para cada Programa, a cargo de la Coordinación General de Programas para el Desarrollo.
+XXXII. Plan de Actividades.
+Descripción detallada de las actividades que realizarán las y los Aprendices durante el desarrollo de la Capacitación en el Centro de Trabajo y/o sus Sucursales, la cual deberá contener las características mínimas y el perfil con que deben contar las y los Jóvenes postulantes; lugares y/o domicilios donde se realizará la Capacitación; los horarios y días en que se brindará la Capacitación; y la o el Tutor a cargo de impartirla.
+Este Plan deberá ser registrado por el Centro de Trabajo al momento de su alta ante el Programa.
+XXXIII. Plataforma Digital.
+Es el medio electrónico que alberga toda la información de operación del Programa y que, de manera automática, realiza los cruces para asociar los perfiles de las y los Jóvenes registrados, de acuerdo con sus intereses y lugar de residencia, con los Espacios para Capacitación disponibles en los Centros de Trabajo. De igual forma, es uno de los medios para enviar solicitudes, requerimientos y notificaciones oficiales a Aprendices, Representantes de Centros de Trabajo, Administradores de sucursales y/o Tutores, así como registrar las evaluaciones mensuales mutuas de las y los Aprendices y de las y los Tutores, y dar seguimiento al desempeño del Programa. Lo anterior, de conformidad con el Acuerdo por el que se crea la Plataforma Digital Jóvenes Construyendo el Futuro, publicado en el Diario Oficial de la Federación el 6 de diciembre de 2018. Se puede acceder a la Plataforma Digital en la siguiente liga electrónica:
+https:// jovenesconstruyendoelfuturo.stps.gob.mx/ .
+XXXIV. Presupuesto aprobado.
+Las asignaciones presupuestarias anuales comprendidas en el Presupuesto de Egresos de la Federación a nivel de clave presupuestaria en el caso de los ramos autónomos, administrativos y generales, y a nivel de los rubros de gasto que aparecen en las carátulas de flujo de efectivo para las entidades.
+XXXV. Programa.
+Programa Jóvenes Construyendo el Futuro, con categoría programática S280.
+XXXVI. Programas para el Desarrollo.
+Los Programas relacionados con el desarrollo integral de las personas; los que otorgan algún servicio a las mismas, así como aquellos que ejercen un beneficio directo y sin intermediarios a la población de conformidad con el Presupuesto de Egresos de la Federación para el Ejercicio Fiscal 2026, y los demás que se establezcan por acuerdo del Ejecutivo Federal que tengan esa finalidad.
+XXXVII. Representante de Centro de Trabajo.
+Persona responsable de la gestión del Centro de Trabajo ante el Programa.
+XXXVIII. Revisión administrativa.
+Proceso de validación mediante el cual las y los Aprendices o Beneficiarios que se encuentren en Capacitación, deben atender los requerimientos solicitados para continuar con su participación en el Programa y/o recepción de Apoyos económicos.
+XXXIX. RFC.
+Registro Federal de Contribuyentes.
+XL. SAT.
+Servicio de Administración Tributaria, órgano desconcentrado de la Secretaría de Hacienda y Crédito Público.
+XLI. Seguro Médico.
+Es el seguro que proporciona el IMSS con cargo al presupuesto autorizado para la STPS para el ejercicio fiscal correspondiente, con cobertura por las prestaciones en especie que otorgan los seguros de Enfermedades y Maternidad, y Riesgos de Trabajo a las y los Beneficiarios del Programa.
+XLII. Sucursal.
+Inmueble o espacio físico perteneciente al Centro de Trabajo en el que se realiza la Capacitación de las y los Aprendices.
+XLIII. SNE.
+Servicio Nacional de Empleo. Es una unidad administrativa de la STPS que brinda atención a la población buscadora de empleo y empleadores, mediante acciones de intermediación laboral, apoyos para la Capacitación y movilidad laboral, que tiene como finalidad facilitar la vinculación laboral.
+XLIV. SABG.
+Secretaría Anticorrupción y Buen Gobierno.
+XLV. SHCP.
+Secretaría de Hacienda y Crédito Público.
+XLVI. STPS o Secretaría.
+Secretaría del Trabajo y Previsión Social.
+XLVII. Tercerización de la Capacitación.
+Esquema en el que la Capacitación es impartida por un tercero distinto al Centro de Trabajo registrado ante el Programa, sin intervención de las y los Tutores registrados por éste.
+XLVIII. Tutora o Tutor.
+Persona designada por el Centro de Trabajo para capacitar y evaluar a las y los Aprendices, de acuerdo con el Plan de Actividades.
+XLIX. Unidad.
+Unidad del Programa Jóvenes Construyendo el Futuro como instancia ejecutora y responsable de coordinar la planeación, programación y organización del Programa, así como todas las demás atribuciones establecidas en el Reglamento Interior vigente de la STPS.
+L. Verificación física.
+Proceso de revisión orientado a validar que la información registrada en la Plataforma Digital, así como aquella que podrá ser recabada durante ésta, respalde adecuadamente el desarrollo del Plan de Actividades.
+LI. Vinculación.
+Proceso mediante el cual el Centro de Trabajo acepta la solicitud de una o un Joven postulante para que inicie su Capacitación, después de su primer encuentro con la o el Representante del Centro de Trabajo y/o Tutora o Tutor asignados.
+II. DEL PROGRAMA</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-tercera" id="regla-tercera">
+        <num>TERCERA</num>
+        <paragraph eId="regla-tercera-para-1">
+          <content>
+            <p>Descripción.
+El Programa tiene como finalidad brindar oportunidades de Capacitación para el trabajo a jóvenes que, al momento de postularse a un Espacio para Capacitación, tienen entre 18 y 29 años, y que no estudian y no trabajan al momento de la postulación ni durante el periodo de Capacitación. Para alcanzar dicho objetivo, el Programa otorga los siguientes apoyos de manera integral:
+I.
+Capacitación.
+II.
+Apoyo económico.
+III.
+Seguro Médico.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-cuarta" id="regla-cuarta">
+        <num>CUARTA</num>
+        <paragraph eId="regla-cuarta-para-1">
+          <content>
+            <p>Objetivos.
+A) General:
+Contribuir a la incorporación de jóvenes de 18 a 29 años que no estudian y no trabajan, en actividades productivas a través de su Capacitación en Centros de Trabajo que participan en el Programa y que cuentan con posibilidad de brindarla.
+B) Específicos:
+I.
+Facilitar la Capacitación a través de Centros de Trabajo participantes en el Programa de jóvenes entre 18 y 29 años que no estudian y no trabajan.
+II.
+Entregar Apoyos económicos de manera directa a las y los Beneficiarios hasta por 12 (doce) emisiones.
+III.
+Gestionar la cobertura del Seguro Médico de las y los Beneficiarios, por las prestaciones en especie que otorgan los seguros de Enfermedades y Maternidad, y Riesgos de Trabajo que otorga el IMSS.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-quinta" id="regla-quinta">
+        <num>QUINTA</num>
+        <paragraph eId="regla-quinta-para-1">
+          <content>
+            <p>Cobertura.
+El Programa tendrá cobertura en las 32 entidades federativas, con base en la disponibilidad presupuestal del ejercicio fiscal vigente.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-sexta" id="regla-sexta">
+        <num>SEXTA</num>
+        <paragraph eId="regla-sexta-para-1">
+          <content>
+            <p>Población Objetivo.
+Jóvenes entre 18 y 29 años que declaran bajo protesta de decir verdad no estudiar y no trabajar al momento de postularse a un Espacio para Capacitación en un Centro de Trabajo registrado en el Programa y estén en condiciones de participar en el mismo.
+En la implementación y operación del Programa se dará prioridad a las y los Jóvenes registrados que habiten en municipios con alto índice de rezago social, con alta incidencia delictiva y pertenecientes a grupos históricamente discriminados, entre los cuales se encuentran jóvenes con discapacidad, indígenas y afromexicanos por autoadscripción, entre otros. Los criterios específicos de atención podrán formar parte de los Acuerdos del Comité Técnico que sean aprobados para tal fin.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-septima" id="regla-septima">
+        <num>SÉPTIMA</num>
+        <paragraph eId="regla-septima-para-1">
+          <content>
+            <p>Participantes.
+En la prestación de los apoyos que ofrece el Programa participan:
+I.
+Unidad.
+II.
+Beneficiarias y/o Beneficiarios.
+III.
+Centros de Trabajo.
+III. DE LA OPERACIÓN DEL PROGRAMA</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-octava" id="regla-octava">
+        <num>OCTAVA</num>
+        <paragraph eId="regla-octava-para-1">
+          <content>
+            <p>Criterios de elegibilidad y requisitos con los que deben cumplir las y los Jóvenes registrados.
+A) Criterios de elegibilidad:
+I.
+Tener entre 18 y 29 años al momento de postularse a un Espacio para Capacitación en un Centro de Trabajo.
+II.
+Bajo protesta de decir verdad, declarar que no estudian y no trabajan.
+B) Requisitos de participación:
+I.
+Registrarse en la Plataforma Digital por cuenta propia o con asistencia de personal autorizado por la STPS, debidamente identificado, proporcionando la información y documentación requerida en el formulario de registro.
+II.
+Fotografía del Joven registrado(a) con el rostro descubierto, sin ediciones ni modificaciones, sosteniendo su Identificación oficial vigente.
+III.
+Las personas extranjeras deberán presentar el documento oficial vigente que acredite su estancia regular en el país, expedido por las autoridades migratorias correspondientes.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-novena" id="regla-novena">
+        <num>NOVENA</num>
+        <paragraph eId="regla-novena-para-1">
+          <content>
+            <p>Requisitos con los que deben cumplir los Centros de Trabajo en su carácter de Personas Físicas, Personas Morales o Instituciones Públicas solicitantes.
+A) Requisitos de participación de los Centros de Trabajo en su carácter de Personas Físicas, Personas Morales e Instituciones Públicas solicitantes:
+I.
+Registrarse en la Plataforma Digital de manera personal o por personal autorizado por la STPS, debidamente identificado, proporcionando la información requerida en el formulario de registro.
+II.
+Identificación oficial vigente por ambos lados de la o el Representante del Centro de Trabajo.
+III.
+Fotografías actuales del exterior del Centro de Trabajo y Sucursales registradas donde se muestre el lugar donde se va a desarrollar la Capacitación.
+Las Personas Morales deberán registrar adicionalmente:
+I.
+Escritura notarial, Acta Constitutiva u otro documento emitido y/o validado por fedatario público con el que se acredite a la persona registrada ante el Programa como representante legal de la Persona Moral, a quien, en lo subsecuente, se le considerará Representante del Centro de Trabajo ante el Programa.
+B) Para la aprobación de Aprendices en Centros de Trabajo:
+Las Personas Físicas con sus Sucursales podrán recibir de 1 (uno) a 5 (cinco) Aprendices, sujeto a la aprobación previa del Programa.
+Las Personas Morales con sus Sucursales podrán recibir de 1 (uno) a 20 (veinte) Aprendices, sujeto a la aprobación previa del Programa.
+En el caso de ser Organización Social, podrá recibir de 1 (uno) a 5 (cinco) Aprendices, sujeto a la aprobación previa del Programa.
+Las Instituciones Públicas federales con sus Sucursales podrán recibir de 1 (uno) a 50 (cincuenta) Aprendices, sujeto a la aprobación previa del Programa.
+Las Instituciones Públicas estatales podrán recibir de 1 (uno) a 20 (veinte) Aprendices, sujeto a la aprobación previa del Programa.
+Las Instituciones Públicas municipales podrán recibir de 1 (uno) a 10 (diez) Aprendices, sujeto a la aprobación previa del Programa.
+Aquellas Personas Morales, Personas Físicas o Instituciones Públicas que requieran recibir más Aprendices de los límites autorizados en las presentes Reglas de Operación, estarán sujetas a la aprobación del Programa.
+C) Quedan prohibidas en el Programa las Capacitaciones que contemplen las siguientes actividades:
+I.
+Trabajo doméstico y actividades centradas en el aseo de inmuebles, salvo aquellas actividades que determine el Programa;
+II.
+Ventas multinivel, esquemas piramidales o ventas por catálogo;
+III.
+Vigilancia, veladores, personal de seguridad para resguardo de bienes o personas y traslado de valores;
+IV.
+Choferes personales, de transporte de pasajeros o de carga, actividades exclusivamente de reparto;
+V.
+Actividades de culto religioso;
+VI.
+Actividades de proselitismo político-electoral o dentro de un partido político;
+Así como los que establezca adicionalmente el Programa o aquellas prohibidas por leyes civiles, mercantiles, laborales o que constituyan un delito de acuerdo con los códigos penales o aquellos que se consideren con objeto ilícito; y aquellas que representen para la o el Aprendiz una responsabilidad directa sobre la integridad de una tercera persona o un riesgo para la integridad de la o el propio Aprendiz.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima" id="regla-decima">
+        <num>DÉCIMA</num>
+        <paragraph eId="regla-decima-para-1">
+          <content>
+            <p>Mecánica de Operación.
+A) De las y los Aprendices.
+I. Registro en el Programa.
+El registro en el Programa es personal y totalmente gratuito.
+Para registrarse, las y los Jóvenes podrán acceder a la Plataforma Digital, por cuenta propia o con el apoyo del personal autorizado por la STPS, debidamente identificado, proporcionando la información requerida en el formulario de registro.
+II. Postulación.
+En el momento en que la o el Joven tenga por concluido el registro y exista disponibilidad presupuestal, la Plataforma Digital o personal autorizado por la STPS, debidamente identificado, le presentará los Espacios para Capacitación compatibles para su elección.
+Cuando la o el Joven registrado elija un Espacio para Capacitación , el Programa notificará al Centro de Trabajo sobre esta postulación mediante correo electrónico, a través de la Plataforma Digital y/o por personal autorizado por el Programa.
+El Centro de Trabajo recibirá la información general de la o el Joven postulante y se le indicará el Plan de Actividades elegido por éste.
+Una vez que la o el Joven registrado haya elegido un Espacio para Capacitación de su interés, recibirá a través de la Plataforma Digital y/o por personal autorizado por el Programa, la información de contacto del Centro de Trabajo, con lo cual adquiere el estatus de Joven postulante.
+Asimismo, deberá realizar la carga de la siguiente documentación:
+I.
+Identificación oficial vigente, legible y por ambos lados.
+II.
+Comprobante de domicilio actual, tal como recibo de luz, agua, predial o teléfono, o, en su caso, escrito libre de la autoridad local en el que se valide la residencia del solicitante, no mayor a 3 (tres) meses de haber sido expedido.
+La o el Joven postulante deberá contactar al Representante del Centro de Trabajo para agendar un primer encuentro en el que se precisen los detalles de la Capacitación. A partir de este primer encuentro, la o el Representante del Centro de Trabajo deberá aceptar o declinar la postulación de la o el Joven postulante desde la Plataforma Digital o a través de personal autorizado por la STPS.
+El Centro de Trabajo contará con al menos 4 (cuatro) días naturales, contados a partir de la postulación, para aceptar o declinar a la o el Joven postulante. En caso de ser aceptada la postulación, la o el Joven postulante adquiere el estatus de Aprendiz y será sujeto de verificación documental para formalizar su ingreso al Programa. De no haber recibido confirmación o haber sido declinada la postulación por el Centro de Trabajo a través de la Plataforma Digital y/o por personal autorizado por el Programa, la o el Joven registrado podrá postular nuevamente a un Espacio para Capacitación distinto, sujeto a disponibilidad.
+La o el Joven postulante podrá someterse, siempre y cuando esté de acuerdo con ello, a los procedimientos de ingreso al Centro de Trabajo cuando estén debidamente justificados y fundamentados en su reglamento interior o similar. Estos procedimientos podrán realizarse previo al inicio de la Capacitación y el Centro de Trabajo deberá garantizar que estén apegados a la Ley, que no impliquen un trato discriminatorio y no atenten contra los derechos humanos de las y los jóvenes.
+Las pruebas en ningún momento podrán consistir en que la o el Aprendiz demuestre las Habilidades que el Plan de Actividades pretende transferir.
+La o el Joven registrado que cuente con posibilidades para postularse en un Centro de Trabajo y que cumpla con los requisitos de participación establecidos al momento de vincularse a un Espacio para Capacitación, deberá actualizar la información y/o documentación que le sea requerida por el Programa.
+III. Ingreso al Programa.
+La formalización de participación e ingreso al Programa y el cambio de estatus a Aprendiz verificado se completa cuando, una vez aceptada la postulación por el Centro de Trabajo, el Programa corrobora los requisitos y la información proporcionada al momento del registro.
+El Programa verificará la documentación proporcionada y, en caso de error u omisión de la información y/o los documentos, se notificará a través de la Plataforma Digital y/o por el personal autorizado por la STPS a la o el Joven postulante y/o Aprendiz, quien contará con dos oportunidades para subsanar lo requerido por el Programa, dentro de 10 (diez) días naturales contados a partir de la fecha de su notificación. A su vez, el Programa contará con 30 (treinta) días hábiles como plazo máximo para la resolución y notificación, contados a partir de la corrección de documentos.
+El día de inicio de Capacitación será el día hábil del mes que determine el Programa.
+IV. Prácticas de Capacitación en el Centro de Trabajo.
+Al inicio de la Capacitación, la o el Tutor designado repasará con la o el Aprendiz las actividades y horarios establecidos en el Plan de Actividades y le dará a conocer las siguientes obligaciones que se compromete a cumplir durante su estancia en el Centro de Trabajo:
+a) Aceptar los lineamientos establecidos en el reglamento interior o similar del Centro de Trabajo y disposiciones análogas, lo que puede incluir de forma enunciativa más no limitativa: normas y procedimientos de seguridad e higiene, conductas aceptables y prohibidas, protocolos de atención, entre otras.
+b) Guardar confidencialmente la información que utilice o produzca como parte de sus actividades de Capacitación.
+La o el Tutor y la o el Aprendiz se apegarán al Plan de Actividades durante el desarrollo de la Capacitación. Este documento será la guía teórica-práctica durante la estancia de la o el Aprendiz en el Centro de Trabajo. La Capacitación podrá complementarse con actividades adicionales (cursos y/o talleres) que podrán ser proporcionadas por el Centro de Trabajo gratuitamente para apoyar el desarrollo de las y los Aprendices.
+V. Evaluación de Tutora o Tutor y Evaluación de Aprendices.
+La evaluación tiene como finalidad conocer el desempeño de las y los Beneficiarios y las y los Tutores. Podrá realizarse mutuamente entre las y los Beneficiarios y las y los Tutores durante la última semana de cada mes, a través de la Plataforma Digital.
+El Centro de Trabajo podrá llevar a cabo otro tipo de evaluaciones de forma opcional, en apego al Plan de Actividades, para monitorear el desempeño de Aprendices y Tutores, así como las Habilidades desarrolladas.
+VI. Entrega del Apoyo económico.
+El Apoyo económico se otorgará a las y los Aprendices verificados hasta por 12 (doce) emisiones. La entrega será directa y sin intermediarios, a través de un instrumento bancario y, de manera excepcional, por algún otro mecanismo que se valide por parte del Programa.
+El pago del Apoyo económico está condicionado a la realización de la Capacitación conforme a lo registrado en el Plan de Actividades y al cumplimiento de las presentes Reglas de Operación u otras disposiciones del Programa, salvo ausencias debidamente justificadas ante el Centro de Trabajo.
+VII. Cobertura del Seguro Médico del IMSS.
+Las y los Beneficiarios gozarán de la cobertura del Seguro Médico por las prestaciones en especie en las ramas de Enfermedades y Maternidad, y Riesgos de Trabajo que otorga el IMSS.
+La STPS, a través del Programa, es responsable de la incorporación y baja de las y los Beneficiarios ante el IMSS de acuerdo con los procesos y procedimientos establecidos por ambas instituciones.
+Las y los Beneficiarios son responsables de generar su alta en la Unidad de Medicina Familiar a partir de tres posibles vías: a través de internet ingresando a la página oficial del IMSS; por medio de la App móvil del IMSS; y presencialmente en la Unidad de Medicina Familiar que les corresponda según su domicilio actual.
+Las y los Beneficiarios podrán renunciar al Seguro Médico que otorga el Programa mediante solicitud expresa y por escrito, de acuerdo con las disposiciones establecidas por el Programa.
+En caso de encontrarse desvinculado de la Capacitación, ya sea por cuenta propia, por solicitud del Centro de Trabajo o derivado de un proceso de supervisión a cargo del Programa, se solicitará la baja del aseguramiento médico ante el IMSS.
+La ejecución de los movimientos afiliatorios y las bajas se realizarán de acuerdo con las disposiciones establecidas por el Programa.
+La cobertura del Seguro Médico está condicionada a la realización de la Capacitación y al cumplimiento de las presentes Reglas de Operación y otras disposiciones del Programa, salvo ausencias debidamente justificadas ante el Centro de Trabajo.
+VIII. Supervisión.
+La supervisión a la Capacitación es constante y se realiza en todo el territorio nacional a través de diversas herramientas y mecanismos establecidos por el Programa.
+Personal autorizado por la STPS, debidamente identificado podrá, con base en el manual establecido para ello, realizar visitas de supervisión física a los Centros de Trabajo y sus Sucursales para recabar evidencia con el objeto de constatar que se realice la Capacitación y se cumpla con las presentes Reglas de Operación. Las visitas se realizarán sin previo aviso. Si el Centro de Trabajo se niega a recibir al personal autorizado por la STPS podrá ser dado de baja del Programa.
+Asimismo, se podrán realizar operativos territoriales de supervisión y seguimiento por parte del personal autorizado por la STPS, con el objeto de constatar que se realice la Capacitación y se cumpla con las presentes Reglas de Operación.
+De igual manera, el cumplimiento de la Contraloría Social del Programa será herramienta fundamental en la supervisión de éste.
+IX. Cambio de Centro de Trabajo.
+Las y los Aprendices podrán cambiar de Centro de Trabajo por una sola ocasión, desvinculándose a través de la Plataforma Digital, por medio de la solicitud de cambio de Centro de Trabajo y postulándose a uno nuevo.
+Las y los Aprendices podrán postularse a su segunda oportunidad de Capacitación con base en la disponibilidad presupuestal y de Espacios para Capacitación .
+Su registro quedará vigente para vincularse al Centro de Trabajo de su interés y continuar con su Capacitación.
+El Centro de Trabajo podrá desvincular a las y los Aprendices y/o las y los Beneficiarios en caso de incumplimiento de la Capacitación, faltas al reglamento interior o similar, previa justificación ante el Programa. En tal caso, la o el Joven registrado podrá postularse a otro Centro de Trabajo si aún cuenta con la posibilidad de cambio por única ocasión, de acuerdo con lo que estipulan las presentes Reglas de Operación.
+Una vez concluida su participación en el Programa, la o el Joven no podrá volver a registrarse en el mismo, salvo aquellos casos de excepción que determine el Programa.
+B) De los Centros de Trabajo.
+I. Solicitud de registro para Centros de Trabajo.
+Las y los Representantes de los Centros de Trabajo interesados en participar en el Programa, podrán solicitar su registro a través de la Plataforma Digital o con el apoyo del personal autorizado por la STPS, debidamente identificado, con lo que se generará un folio de registro.
+Las y los Representantes de los Centros de Trabajo deberán registrar los datos y documentación establecida en la regla Novena de las presentes Reglas de Operación.
+II. Revisión de requisitos de Centros de Trabajo.
+Para que un Centro de Trabajo pueda participar en el Programa, deberá haber acreditado el proceso de verificación documental y física realizado por personal autorizado por la STPS.
+III. Plazos de verificación.
+El plazo de verificación documental de los Centros de Trabajo será de máximo 30 (treinta) días hábiles contados a partir de la fecha de conclusión de su registro y generación de los Convenios de Concertación o de Colaboración con la STPS en la Plataforma Digital.
+Cuando falte un requisito, los documentos sean ilegibles o tengan errores, la o el Representante del Centro de Trabajo será notificado a través de la Plataforma Digital o por personal autorizado por la STPS y podrá subsanar por única ocasión dentro de los 30 días naturales siguientes a la notificación. En caso contrario, el registro y folio serán cancelados.
+A su vez, el Programa contará con 30 (treinta) días hábiles para revisar los requisitos o documentos subsanados y determinar respecto de la solicitud de registro del Centro de Trabajo en el Programa.
+El Convenio de Concertación o de Colaboración generado por la Plataforma Digital tendrá validez únicamente para los Centros de Trabajo que cumplan con los requisitos y hasta el momento en que se le notifique al Representante del Centro de Trabajo el resultado positivo de la verificación documental y física.
+La Verificación física de los Centros de Trabajo y/o sus Sucursales estará enfocada en validar la información registrada en la Plataforma Digital, así como aquella que, en su caso, podrá solicitar el personal autorizado por el Programa tal como:
+I.- Comprobante de domicilio del Centro de Trabajo tal como recibo de luz, agua, predial, teléfono o, en su caso, escrito libre de la autoridad competente no mayor a 4 (cuatro) meses de haber sido expedido.
+II.- Fotografía actual, sin ediciones ni modificaciones de la o el Representante del Centro de Trabajo, de las y los Tutores designados y, en su caso, de las y los Administradores de sucursales.
+III.- Fotografías del interior del Centro de Trabajo que acrediten el correcto desarrollo del Plan de Actividades registrado en la Plataforma Digital.
+Dicha verificación física será realizada posterior a la calificación positiva de la verificación documental, por personal autorizado por la STPS debidamente identificado sin previo aviso. Ésta se llevará a cabo atendiendo la capacidad operativa y presupuestal del Programa.
+En los casos en que la STPS considere necesario contar con mayor información, podrá realizar adicionalmente otra(s) verificación(es) física(s) a los Centros de Trabajo y/o sus Sucursales.
+La o el Representante del Centro de Trabajo podrá acudir a las oficinas autorizadas por la STPS (cuyos domicilios podrá consultar en:
+https://jovenesconstruyendoelfuturo.stps.gob.mx ) o contactar al Programa a través de los medios electrónicos oficiales para cualquier aclaración respecto del proceso de verificación por parte del Programa, dentro de los 30 (treinta) días naturales siguientes a la notificación realizada a través de la Plataforma Digital sobre el resultado de la verificación documental o física.
+El Programa podrá determinar los casos en que los Centros de Trabajo puedan participar habiendo acreditado únicamente la verificación documental.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-primera" id="regla-decima-primera">
+        <num>DÉCIMA PRIMERA</num>
+        <paragraph eId="regla-decima-primera-para-1">
+          <content>
+            <p>De la Capacitación y los Planes de Actividades.
+La Capacitación en el Centro de Trabajo y el Plan de Actividades deberán apegarse a las siguientes características:
+I.
+Estará orientada a fomentar que las y los Aprendices adquieran experiencia laboral y desarrollen Habilidades que contribuyan a su inserción laboral.
+II.
+Se basará en el aprendizaje práctico a partir de la experiencia de las y los Tutores, quienes podrán auxiliarse en otros recursos y materiales de apoyo proporcionados por el Programa u otras fuentes de información, considerando las actividades y/o funciones productivas del Centro de Trabajo.
+III.
+Estará adaptada a las necesidades y características de las y los Aprendices, y deberá procurar ajustes razonables para jóvenes con discapacidad. Dicha adaptación deberá incluirse de manera expresa en el Plan de Actividades.
+IV.
+Deberá ser presencial y desarrollarse físicamente en las instalaciones del Centro de Trabajo u otros espacios especificados en el Plan de Actividades a cargo de las y los Tutores.
+Solo de manera complementaria, podrá incluir actividades fuera del Centro de Trabajo, mismas que deberán especificarse en el Plan de Actividades, indicando días y horarios en que las y los Aprendices las llevarán a cabo.
+Los Planes de Actividades elaborados por el Centro de Trabajo deberán tener una duración de 12 (doce) meses, con un horario entre 5 (cinco) y 8 (ocho) horas diarias y continuas, durante 5 (cinco) días a la semana, procurando que sea dentro de la jornada diurna.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-segunda" id="regla-decima-segunda">
+        <num>DÉCIMA SEGUNDA</num>
+        <paragraph eId="regla-decima-segunda-para-1">
+          <content>
+            <p>Derechos y obligaciones.
+A) Derechos de las y los Aprendices y las y los Beneficiarios.
+I.
+Contar con la información necesaria, de manera clara y oportuna, sin intermediarios, para participar en el Programa.
+II.
+Recibir por parte de las y los Representantes y/o Tutores, así como del personal autorizado por la STPS, un trato digno, respetuoso, oportuno, con calidad y sin discriminación por motivos físicos, de vestimenta, apariencia, idioma, origen étnico, sexo, discapacidad, género o religión, o cualquier otra que atente contra la dignidad humana y tenga por objeto anular o menoscabar los derechos y libertades de las personas.
+III.
+Elegir y postularse al Centro de Trabajo de su interés y conforme a su perfil, siempre que esté disponible en la Plataforma Digital, de acuerdo con los criterios registrados de lugar de residencia y áreas de interés.
+IV.
+Recibir Capacitación para desarrollar conocimientos, Habilidades, destrezas y aptitudes propias del Plan de Actividades elegido, bajo la guía de una o un Tutor durante su permanencia en la Capacitación dentro del Centro del Trabajo, hasta por 12 (doce) meses.
+V.
+Realizar su Capacitación únicamente en el horario y días establecidos en el Plan de Actividades.
+VI.
+Participar y/o recibir orientación de la Contraloría Social para presentar sugerencias, quejas y/o denuncias.
+VII.
+Cambiar de Centro de Trabajo por una sola ocasión.
+VIII.
+Recibir el Apoyo económico de manera directa y sin intermediarios durante la Capacitación, mismo que tendrá una duración máxima de 12 (doce) emisiones.
+IX.
+Recibir protección de sus datos personales conforme a la normatividad aplicable.
+X.
+Recibir la cobertura del Seguro Médico durante el periodo que me encuentre en Capacitación en términos de lo dispuesto en las presentes Reglas de Operación y demás normatividad aplicable.
+XI.
+Participar en los eventos académicos, culturales, deportivos o recreativos que se pongan a su disposición de manera gratuita, para promover su inclusión social y el uso óptimo de su tiempo libre.
+XII.
+Obtener al egresar de la Capacitación, a través de la Plataforma Digital, una Constancia de Capacitación misma que fungirá como el documento que acredite los meses adquiridos de experiencia laboral. Dicho documento contará con un código único de validación que permita verificar su autenticidad.
+XIII.
+Evaluar de forma mensual a través de la Plataforma Digital, del personal autorizado por la STPS, debidamente identificado, o a través del mecanismo determinado por el Programa, el desempeño de su Tutora o Tutor.
+XIV.
+Responder a través de la Plataforma Digital el cuestionario de inicio y de salida del Programa.
+XV.
+Recibir por parte del SNE información y asesoría para mejorar su empleabilidad durante el proceso de Capacitación.
+Asimismo, podrá obtener información sobre los servicios de intermediación y movilidad laboral otorgados a través del SNE.
+XVI.
+Registrar su perfil laboral en el Portal del Empleo ( www.empleo.gob.mx ) con la finalidad de promover su perfil laboral y, en su momento, acceder a oportunidades de empleo.
+XVII.
+Desistir de continuar su Capacitación en el Centro de Trabajo, situación que implica que la o el Beneficiario agote una de sus oportunidades de Capacitación.
+XVIII.
+Tener el control y manejo de su acceso a la Plataforma Digital.
+B) Obligaciones de las y los Aprendices y las y los Beneficiarios.
+I.
+Aceptar los términos de la carta compromiso de participación en el Programa.
+II.
+Asistir a la Capacitación en los lugares, domicilios o espacios, días y horarios establecidos en el Plan de Actividades elaborado por el Centro de Trabajo de su elección.
+III.
+Respetar lo establecido en el código de ética, reglamento interior o similar, según corresponda, del Centro de Trabajo y sus Sucursales.
+IV.
+Realizar todas las actividades de aprendizaje teóricas y prácticas que indique el Plan de Actividades registrado por el Centro de Trabajo de su elección, así como aquellas que le sean asignadas por parte de la Tutora o del Tutor.
+V.
+Cuidar y mantener en buen estado las instalaciones, equipo, herramientas o materiales que utilice durante la Capacitación.
+VI.
+Proporcionar con veracidad la información y documentación que se le requiera por medio de la Plataforma Digital o a través de las convocatorias realizadas por el Programa.
+VII.
+Avisar al Programa a través de la Plataforma Digital cuando no se realice la Capacitación o cualquier incumplimiento conforme a lo establecido en las presentes Reglas de Operación.
+VIII.
+Dar aviso al Programa cuando su condición de no trabajar y no estudiar cambie, y realizar su desvinculación a través de la Plataforma Digital.
+IX.
+Recibir atención de manera directa y sin intermediarios para todos los trámites relacionados con su participación en el Programa.
+X.
+Atender las convocatorias y/o requerimientos realizados por el Programa a través de alguno de sus medios oficiales.
+C) Derechos de los Centros de Trabajo.
+I.
+Recibir información y orientación por parte del personal autorizado por la STPS a través de la Plataforma Digital, del Centro de Atención Telefónica 079 o de los medios que para ello se determinen.
+II.
+Ser incluido en los registros del Programa como Centro de Trabajo, siempre y cuando cumpla los requisitos para ello.
+III.
+De ser necesario, aplicar las pruebas internas requeridas para garantizar la seguridad del Centro de Trabajo y la integridad de las y los Aprendices, de acuerdo con lo estipulado en las presentes Reglas de Operación.
+IV.
+En caso de Personas Físicas, incluyendo aquellas que forman parte de los Centros de Trabajo como Representante, Administradores o Tutores, recibir protección de sus datos personales conforme a la normatividad aplicable.
+V.
+Decidir de manera fundada y motivada la desvinculación de las y los Aprendices y/o las y los Beneficiarios, situación que implica que la o el Beneficiario agote una oportunidad de Capacitación.
+VI.
+Contratar, en cualquier momento del periodo de Capacitación, a la o el Aprendiz, concluyendo con la participación de la o el Joven en el Programa y debiendo notificar a este último.
+VII.
+Otorgar reconocimientos, premios o ayudas en efectivo o en especie a las y los Aprendices con la finalidad de incentivar su Capacitación para el trabajo, en el entendido de que esto no implicará en forma alguna subordinación o dependencia del Centro de Trabajo y, en consecuencia, no podrán ser considerados como elementos que constituyan una relación laboral.
+D) Obligaciones de los Centros de Trabajo.
+I.
+Proporcionar con veracidad la información requerida por el Programa para su registro.
+II.
+Elaborar un Plan de Actividades que contenga las acciones que realizarán los jóvenes durante el desarrollo de la Capacitación en el Centro de Trabajo, el cual deberá contener las características mínimas y el perfil con el que deben contar las y los Jóvenes postulantes; los horarios y días en que se brindará la Capacitación; y la o el Tutor a cargo de impartirla, mismo que podrá incluir, en su caso, un código de ética, reglamento interior o similar.
+III.
+Asegurar que la Capacitación se brinde a las y los Aprendices conforme al Plan de Actividades registrado en la Plataforma Digital, de acuerdo con lo que establecen las presentes Reglas de Operación en su regla Décima Primera.
+IV.
+Recibir y capacitar a las y los Aprendices hasta por 12 (doce) meses de manera gratuita de acuerdo con el Plan de Actividades registrado, asegurar las condiciones de seguridad y destinar los espacios adecuados para llevarlo a cabo.
+V.
+Establecer el número de horas diarias de Capacitación, tomando en cuenta lo señalado en la regla Décima Primera, fracción IV, último párrafo de las presentes Reglas de Operación.
+Cuando en la Capacitación se lleven a cabo actividades complementarias en un domicilio diferente al asentado en el registro del Centro de Trabajo, se deberá hacer el señalamiento correspondiente en el Plan de Actividades y, en su caso, indicar el tiempo y horario que la o el Aprendiz pasará en dichos espacios.
+VI.
+Realizar el primer encuentro con la o el Joven postulante previo al inicio de la Capacitación, de acuerdo con lo establecido en la regla Décima, apartado A), fracción II, de las presentes Reglas de Operación, y lo dispuesto por el artículo 1 de la Constitución Política de los Estados Unidos Mexicanos que prohíbe toda discriminación motivada por origen étnico o nacional, género, edad, discapacidades, condición social, condiciones de salud, religión, opiniones, preferencias sexuales, estado civil o cualquier otra que atente contra la dignidad humana y tenga por objeto anular o menoscabar los derechos y libertades de las personas.
+VII.
+Tratar con respeto a las y los Aprendices y procurar su aprendizaje e integración con el personal del Centro de Trabajo, garantizando siempre que se respeten sus derechos humanos. Asimismo, deberán velar por la integridad y la seguridad de cada una de las y los Aprendices mientras se encuentren en el Centro de Trabajo o Sucursales.
+VIII.
+Mantener actualizada la oferta de Espacios para Capacitación con toda la información y la documentación solicitada por el Programa, a través de la Plataforma Digital.
+IX.
+Informar, a través de la Plataforma Digital o personal autorizado por la STPS, debidamente identificado, cuando desvincule a la o el Aprendiz y fundamentar y motivar las razones de la misma.
+X.
+Informar al Programa en caso de ausencia de las y los Aprendices y las y los Beneficiarios, así como de las y los Tutores, por fallecimiento o alguna otra razón, por medio de la Plataforma Digital.
+XI.
+Destinar los espacios, el personal y la infraestructura necesaria y adecuada para el desarrollo del Plan de Actividades.
+XII.
+Proporcionar la tutoría, material y equipos necesarios para el desarrollo de la Capacitación, sin costo alguno para las y los Aprendices. En caso de realizar actividades de campo (fuera del Centro de Trabajo o Sucursal) que generen gastos a las y los Aprendices, estos deben ser cubiertos por el Centro de Trabajo y/o Tutora o Tutor a cargo.
+XIII.
+Designar a una o un Tutor para la Capacitación en cada uno de los Planes de Actividades propuestos, mismo que no deberá tener asignados a más de 20 Aprendices. Una Tutora o Tutor no podrá estar asignado en más de un Plan de Actividades en un mismo horario.
+XIV.
+Designar a un enlace representante, quien será el único responsable de la gestión del Centro de Trabajo ante el Programa; en caso de modificaciones sobre la designación, deberá informarlas al personal autorizado por la STPS por medio de la Plataforma o las oficinas autorizadas del Programa.
+XV.
+Dar facilidades al personal autorizado por la STPS, debidamente identificado, para realizar las visitas de verificación y supervisión física del Centro de Trabajo y/o de la Capacitación.
+XVI.
+No reemplazar a trabajadores por Aprendices, ni terminar una relación laboral con una o un Joven trabajador para incorporarlo posteriormente como Aprendiz.
+XVII.
+No realizar actividades de Tercerización de la Capacitación, de acuerdo con la definición establecida en las presentes Reglas de Operación.
+XVIII.
+Designar a una o un Administrador de sucursal por Centro de Trabajo, quien podrá ser el contacto entre la Sucursal y el Programa.
+XIX.
+Proponer el número de Aprendices que podría incorporar para recibir Capacitación, atendiendo a los límites establecidos en las presentes Reglas de Operación.
+La determinación del número de Espacios para Capacitación será fijada por el Programa, según los criterios establecidos por las presentes Reglas de Operación.
+XX.
+Mantener actualizada su información, así como la documentación proporcionada al Programa.
+XXI.
+Reportar al Programa, a través de la Plataforma Digital y/o del personal autorizado por la STPS, debidamente identificado, cualquier incumplimiento a las presentes Reglas de Operación.
+XXII.
+Permitir que las y los Aprendices acudan en tiempo y forma a las convocatorias realizadas por el Programa, las cuales serán remitidas por los canales oficiales del mismo, sin que el Tutor o Centro de Trabajo pueda solicitar a las y los Aprendices reponer el tiempo destinado para la atención a las convocatorias.
+XXIII.
+Tener el control y manejo de su acceso a la Plataforma Digital.
+XXIV.
+Atender los requerimientos del Programa que le son notificados a través de la Plataforma Digital.
+E) Derechos de las y los Tutores.
+I.
+Ser tratado con respeto y dignidad por las y los Aprendices en todo momento.
+II.
+Recibir protección de sus datos personales conforme a la normatividad aplicable.
+III.
+Generar a través de la Plataforma Digital su Constancia de Participación habiendo cumplido los requisitos que determine el Programa para su emisión.
+IV.
+Evaluar mensualmente el desempeño de las y los Aprendices a su cargo a través de la Plataforma Digital o el mecanismo determinado por el Programa, considerando el Plan de Actividades.
+F) Obligaciones de las y los Tutores.
+I.
+Tratar con respeto y dignidad a las y los Aprendices en todo momento y salvaguardar su integridad física y mental, mientras se lleva a cabo la Capacitación en el Centro de Trabajo.
+II.
+Estar presente y respetar los horarios y días de Capacitación establecidos en el Plan de Actividades de las y los Aprendices.
+III.
+Capacitar a las y los Aprendices conforme a lo establecido en el Plan de Actividades, con base en sus conocimientos y experiencia laboral en el puesto de trabajo que desempeña.
+IV.
+Otorgar las facilidades necesarias, de acuerdo con lo que establezca el Centro de Trabajo, para llevar a cabo la Capacitación de las y los Aprendices.
+V.
+Abstenerse de solicitar materiales, uniformes o dinero a las y los Aprendices para llevar a cabo la Capacitación.
+VI.
+Queda estrictamente prohibido solicitar parte o la totalidad del Apoyo económico a las y los Beneficiarios, así como solicitar a las y los Aprendices el instrumento bancario mediante el cual reciben el Apoyo económico.
+VII.
+Informar al Programa, a través de la Plataforma Digital, en caso de ausencia de las y los Aprendices y/o Beneficiarios por fallecimiento o alguna otra razón.
+VIII.
+Dar aviso al Programa cuando la condición de no estudiar y no trabajar de las y los Aprendices y/o Beneficiarios cambie, y realizar su desvinculación a través de la Plataforma Digital.
+IX.
+Atender los mecanismos de supervisión que les sean notificados por el Programa.
+X.
+Atender los requerimientos del Programa que le sean notificados a través de la Plataforma Digital.
+XI.
+Reportar al Programa, a través de la Plataforma Digital y/o del personal autorizado por la STPS, debidamente identificado, cualquier incumplimiento a las presentes Reglas de Operación.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-tercera" id="regla-decima-tercera">
+        <num>DÉCIMA TERCERA</num>
+        <heading>Medidas por incumplimiento.</heading>
+        <paragraph eId="regla-decima-tercera-para-1">
+          <content>
+            <p>Medidas por incumplimiento.
+A) Causales de desvinculación de las y los Aprendices y/o Beneficiarios.
+I.
+Ser Beneficiaria o Beneficiario de otro programa social que otorgue becas educativas.
+II.
+No cumplir con los horarios y actividades del Plan de Actividades.
+III.
+Presentarse al Centro de Trabajo en estado de ebriedad o bajo el efecto de sustancias psicoactivas, así como consumirlas durante la jornada de Capacitación.
+IV.
+Atentar en contra del Centro de Trabajo o del personal del mismo, así como de cualquier otra u otro Aprendiz.
+V.
+Incumplir con los plazos, solicitudes, convocatorias y requerimientos establecidos por el Programa en la presente normativa y aquellos que se notifiquen a través de la Plataforma Digital.
+VI.
+Que derivado de un proceso de revisión y/o supervisión del Centro de Trabajo, se haya determinado algún incumplimiento de las presentes Reglas de Operación.
+VII.
+Participar de manera simultánea como Representante de Centro de Trabajo, Administrador de sucursal o Tutor, mientras se encuentre en Capacitación como Aprendiz o viceversa.
+VIII.
+No atender los mecanismos de supervisión que les sean notificados por el Programa.
+IX.
+Cualquier incumplimiento a lo establecido en las presentes Reglas de Operación.
+La desvinculación realizada por alguna de las causales anteriores implica que la o el Aprendiz o la o el Beneficiario agote una oportunidad de Capacitación. Cuando la desvinculación esté relacionada con algún incumplimiento por parte del Centro de Trabajo, la o el Aprendiz o la o el Beneficiario no perderá una oportunidad de Capacitación y la o el Aprendiz o la o el Beneficiario podrá elegir un nuevo Centro de Trabajo de su interés para realizar su Capacitación.
+La desvinculación de una o un Aprendiz y/o una o un Beneficiario implica la suspensión de la entrega del Apoyo económico y del Seguro Médico. La o el Aprendiz y/o una o un Beneficiario podrá volverse a vincular a un Centro de Trabajo si cuenta con una segunda oportunidad, con base en la disponibilidad presupuestal y de Espacios para Capacitación.
+B) Causales de baja definitiva del Programa de las y los Aprendices y/o las y los Beneficiarios.
+I.
+Proporcionar requisitos, datos o documentos falsos, con ediciones y/o modificaciones.
+II.
+Haber agotado las dos oportunidades de Capacitación.
+III.
+Ser contratado por su Centro de Trabajo o registrarse en el Programa siendo trabajador y/o estudiante.
+IV.
+A solicitud expresa de la o el Aprendiz y/o la o el Beneficiario, por medio de la solicitud de baja de Aprendiz, a través de la Plataforma Digital o por medio de las oficinas autorizadas del Programa.
+V.
+Realizar cualquier actividad que implique obtener indebidamente los apoyos que otorga el Programa, para sí mismo o para un tercero, como:
+a) Consentir que acuda alguna persona distinta a la o el Aprendiz a recibir la Capacitación y/o que reciba el Apoyo económico en su nombre.
+b) Actuar en falsedad de declaración al reportar alguna queja o incumplimiento en contra del Centro de Trabajo y/o en contra de sus Tutoras o Tutores.
+c) Consentir que se simule su Capacitación, especialmente a cambio de entregar dinero a la o el Tutor y/o a cualquier otra persona involucrada.
+d) Ceder el manejo del instrumento bancario en el que reciba el Apoyo económico a la o el Tutor y/o a cualquier otra persona.
+VI.
+Incumplimiento de las presentes Reglas de Operación.
+C) Baja de los Centros de Trabajo y/o Sucursales.
+I.
+En caso de no cumplir con las obligaciones establecidas en las presentes Reglas de Operación.
+En caso de baja definitiva, por causas atribuibles al Centro de Trabajo, se les otorgará una nueva oportunidad de vinculación a las y los Aprendices que se encuentren en proceso de Capacitación, sin que ello implique que pierdan una de sus oportunidades, con la condición de cumplir con los mecanismos establecidos por el Programa para ello.
+II.
+En caso de baja definitiva por incumplimiento de obligaciones, por causas atribuibles tanto al Centro de Trabajo como a la o el Aprendiz y/o Beneficiarios, aquellos que se encuentren en Capacitación perderán una oportunidad de vinculación.
+III.
+En caso de que el Centro de Trabajo solicite la baja definitiva del Programa de manera voluntaria, no implica que los Aprendices y/o Beneficiarios pierdan una de sus oportunidades, con la condición de cumplir con los mecanismos establecidos por el Programa para ello.
+IV.
+No cumplir en los plazos establecidos los requerimientos notificados a través de la Plataforma Digital y/o por el personal autorizado por la STPS.
+V.
+El Centro de Trabajo contará con 5 (cinco) días hábiles, contados a partir de su notificación de baja, para solicitar aclaración o revisión.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-cuarta" id="regla-decima-cuarta">
+        <num>DÉCIMA CUARTA</num>
+        <paragraph eId="regla-decima-cuarta-para-1">
+          <content>
+            <p>Formatos.
+Los formatos para realizar las solicitudes correspondientes a las que se refieren las presentes Reglas de Operación son digitales y podrán reproducirse y utilizarse libremente, siempre y cuando no se altere su contenido y la impresión de los mismos se haga en hojas blancas tamaño carta.
+Las personas interesadas podrán obtener los formatos a través de la Plataforma Digital https:// www.jovenesconstruyendoelfuturo.stps.gob.mx o en oficinas autorizadas y con personal autorizado por el Programa, debidamente identificado.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-quinta" id="regla-decima-quinta">
+        <num>DÉCIMA QUINTA</num>
+        <heading>Recurso Federal asignado, no ejercido y gastos indirectos.</heading>
+        <paragraph eId="regla-decima-quinta-para-1">
+          <content>
+            <p>Recurso Federal asignado, no ejercido y gastos indirectos.
+Los recursos aprobados para la ejecución del Programa Jóvenes Construyendo el Futuro durante el ejercicio fiscal 2026 ascienden a $25,173,000,000.00 (veinticinco mil ciento setenta y tres millones de pesos 00/100 MN), los cuales estarán sujetos a la disponibilidad presupuestaria, de conformidad con lo establecido por la autoridad hacendaria en el ámbito de su competencia.
+El Programa Jóvenes Construyendo el Futuro podrá ejercer para sus gastos indirectos de operación, hasta $667,030,251.58 (seiscientos sesenta y siete millones treinta mil doscientos cincuenta y un pesos 58/100 MN) para el desarrollo de las diversas acciones asociadas con la planeación, operación, supervisión, seguimiento, atención ciudadana y evaluación.
+De conformidad con lo dispuesto en el artículo 179 del Reglamento de la Ley Federal de Presupuesto y Responsabilidad Hacendaria, se verificó que el programa objeto de las presentes Reglas de Operación no se contrapone, afecta ni presenta duplicidades con otros programas y acciones del Gobierno Federal en cuanto a su diseño, beneficios, apoyos otorgados y población objetivo.
+Los recursos que no hayan sido ejercidos en la ejecución de este Programa durante el ejercicio fiscal en curso deberán ser reintegrados a la Tesorería de la Federación en los tiempos y formas establecidos en la normatividad vigente.
+IV. TRANSPARENCIA.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-sexta" id="regla-decima-sexta">
+        <num>DÉCIMA SEXTA</num>
+        <paragraph eId="regla-decima-sexta-para-1">
+          <content>
+            <p>Difusión, Contraloría Social y Protección de Datos personales.
+A) Difusión.
+Para garantizar la transparencia en el ejercicio de los recursos, se dará amplia difusión al Programa a nivel nacional.
+La papelería, documentación oficial, así como la publicidad y promoción de este Programa, deberán incluir la siguiente leyenda: "Este Programa es público ajeno a cualquier partido político. Queda prohibido el uso para fines distintos a los establecidos en el Programa". Quien haga uso indebido de los recursos de este Programa deberá ser denunciado y sancionado, de acuerdo con la normatividad que resulte aplicable y ante la autoridad competente.
+Además, se deberán difundir todas aquellas medidas para garantizar los derechos humanos y la igualdad entre mujeres y hombres en la aplicación del Programa.
+Asimismo, en todo acto o promoción que se haga del Programa, deberá mencionarse que éste es financiado con recursos federales a través de la STPS y, en su caso, con recursos del estado o institución correspondiente.
+Con base en lo establecido en los artículos 106 de la LFPRH y 65 de la Ley General de Transparencia y Acceso a la Información Pública, el ejecutor publicará periódicamente en los medios que las leyes determinen, la información relativa al Apoyo económico, incluyendo el avance en el cumplimiento de sus metas y objetivos, para cumplir con lo establecido en el artículo 107 de la LFPRH. La documentación comprobatoria original del gasto quedará en poder de la Unidad del Programa, la cual preferentemente es electrónica.
+Por otro lado, las instancias gubernamentales competentes deberán proporcionar a la STPS la información relativa a las características del Programa para su incorporación a la página electrónica del portal https:// jovenesconstruyendoelfuturo.stps.gob.mx/ para mantenerla actualizada.
+B) Contraloría Social.
+La Contraloría Social es el mecanismo de las personas beneficiarias para verificar y vigilar de manera organizada o independiente, de forma voluntaria y honorífica, el cumplimiento de las metas y la correcta aplicación de los recursos públicos asignados a los programas de desarrollo social, relacionados con los derechos humanos en áreas como la educación, la salud, la alimentación, la vivienda, el trabajo, la seguridad social, el medio ambiente y la no discriminación, de conformidad con los artículos 6, 69, 70 y 71 de la Ley General de Desarrollo Social; así como 67, 68, 69 y 70 de su reglamento.
+Las dependencias y entidades de la Administración Pública Federal, así como los entes que reciban, administren, gestionen o ejerzan, total o parcialmente, recursos públicos federales, deberán observar las disposiciones normativas que para tal efecto emita la Secretaría Anticorrupción y Buen Gobierno, así como los instrumentos y documentos técnicos validados por dicha dependencia para su operación.
+Para la participación de las personas beneficiarias de Contraloría Social, se pondrá a disposición el mecanismo propicio a través de los operativos territoriales implementados por el Programa. Para solicitar su registro, la Contraloría Social deberá presentar ante la Unidad del Programa Jóvenes Construyendo el Futuro, instancia ejecutora y responsable de coordinar la planeación, programación y organización del Programa, mediante un escrito libre en el que se especifique como mínimo, el nombre del programa, el ejercicio fiscal, en su caso la representación del(los) Contralor(es) Social(es), el domicilio legal en donde se impulsó su participación, así como las actividades que realizarán y los mecanismos que utilizarán para el desarrollo de sus funciones.
+La Unidad del Programa Jóvenes Construyendo el Futuro, instancia ejecutora y responsable de coordinar la planeación, programación y organización del Programa, a través de las instancias ejecutoras, deberá verificar su calidad de personas beneficiarias y expedir las constancias de registro de los contralores sociales en un plazo no mayor de 15 días hábiles contados a partir de la solicitud y deberán registrarse en el sistema informático que establezca la Secretaría Anticorrupción y Buen Gobierno para tales fines.
+Asimismo, promoverá y difundirá el mecanismo de la Contraloría Social entre las personas beneficiarias, con el propósito de fomentar su participación informada en las actividades de seguimiento y vigilancia del Programa. Para tal efecto, se brindará asesoría, capacitación e información institucional que facilite el ejercicio de sus funciones, así como orientación sobre los procedimientos para la presentación de quejas y denuncias, conforme a las disposiciones aplicables en la materia.
+La Secretaría Anticorrupción y Buen Gobierno proporcionará asesoría en materia de contraloría social por medio del correo electrónico:
+contraloriasocial@buengobierno.gob.mx .
+Adicionalmente, la Unidad del Programa Jóvenes Construyendo el Futuro promoverá e implementará mecanismos de participación ciudadana orientados a la prevención y el combate a la corrupción, en coordinación con la Secretaría Anticorrupción y Buen Gobierno. Dichos mecanismos podrán apoyarse en herramientas digitales y medios de comunicación institucionales que faciliten a las personas beneficiarias y a la ciudadanía en general su participación activa e incidencia en la materia. Asimismo, fomentará la participación social y garantizará que la información relativa al Programa sea pública, clara, oportuna y comprensible, asegurando su difusión a través de los canales oficiales establecidos para tal efecto.
+La Contraloría Social fungirá como mecanismo de supervisión y el cumplimiento de sus documentos normativos será considerado un elemento en la atención de lo establecido en la Regla Décima, Inciso A, Fracción VIII de las presentes Reglas de Operación.
+C) Protección de Datos Personales.
+Los datos personales y demás información de quienes participen en el Programa estarán protegidos de conformidad con las normas en materia de transparencia y protección de datos personales que resulten aplicables en cada caso, así como lo dispuesto en el aviso de privacidad.
+D) Blindaje electoral.
+En la operación y ejecución de los recursos federales asignados a este programa social, se deberán observar y atender las medidas de carácter permanente contenidas en las leyes federales y/o locales en materia electoral aplicables, además de las disposiciones emitidas por las autoridades electorales federales y/o locales, así como otras disposiciones normativas aplicables.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-septima" id="regla-decima-septima">
+        <num>DÉCIMA SÉPTIMA</num>
+        <paragraph eId="regla-decima-septima-para-1">
+          <content>
+            <p>Quejas y denuncias contra personas servidoras públicas.
+Las personas que tengan quejas y/o denuncias contra personas servidoras públicas relacionadas con la operación del Programa, podrán presentarlas ante las siguientes instancias y/o medios de comunicación:
+I.
+En el Área de Denuncias e Investigaciones del Órgano Interno de Control en la Secretaría del Trabajo y Previsión Social, ubicado en Félix Cuevas número 301, Piso 7, colonia del Valle, C.P. 03100, Alcaldía de Benito Juárez, Ciudad de México, o bien al correo electrónico quejas_oic@stps.gob.mx o al número telefónico (55) 5002 3300 ext. 63368.
+II.
+En la SABG, las denuncias podrán realizarse a través del Sistema Integral de Denuncias Ciudadanas (SIDEC) en la liga electrónica https://sidec.buengobierno.gob.mx/ los 365 días del año; o mediante escrito presentado en la SABG, ubicada en Avenida Insurgentes Sur 1735, Colonia Guadalupe Inn, C.P. 01020, Alcaldía Álvaro Obregón, Ciudad de México.
+En caso de requerir asesoría para la presentación de denuncias, podrán comunicarse a los números telefónicos de la SABG (55) 2000 3000 en la Ciudad de México y al número (800) 112 87 00 en el interior de la República.
+En caso de cualquier cambio de domicilio, éste se informará a través de la página electrónica https://www.gob.mx/stps/</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-octava" id="regla-decima-octava">
+        <num>DÉCIMA OCTAVA</num>
+        <paragraph eId="regla-decima-octava-para-1">
+          <content>
+            <p>Denuncias contra terceros.
+Para el caso en que un tercero haya cometido una conducta atípica en contra de un participante en el Programa, que le haya dañado directamente su integridad o esfera jurídica, deberá levantar la querella o denuncia correspondiente ante la Fiscalía General de la República, ante el Ministerio Público más cercano a su localidad o de la zona en que ocurrieron los hechos, o a través de las siguientes ligas electrónicas:
+www.gob.mx (Gobierno de México);
+https://www.gob.mx/fgr/acciones- y-programas/denuncias-fgr ;
+https://fgr.org.mx/es/FEMDH/CEDAC y https://www.gob.mx/tramites/ficha/denuncias-fgr/ FGR1201 (Fiscalía General de la República).
+Dichas instancias son enunciativas más no limitativas, por lo que podrán acudir ante las instancias jurídicas competentes en las entidades federativas.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-decima-novena" id="regla-decima-novena">
+        <num>DÉCIMA NOVENA</num>
+        <heading>Medios de atención a participantes del Programa.</heading>
+        <paragraph eId="regla-decima-novena-para-1">
+          <content>
+            <p>Medios de atención a participantes del Programa.
+En el ejercicio de sus derechos o garantías de petición y audiencia, las y los participantes del Programa podrán presentar sus peticiones o dudas a través de los siguientes medios de contacto: 079; en la siguiente liga electrónica : https:// jovenesconstruyendoelfuturo.stps.gob.mx/oficinas/ ;
+o en las oficinas autorizadas por la STPS.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima" id="regla-vigesima">
+        <num>VIGÉSIMA</num>
+        <paragraph eId="regla-vigesima-para-1">
+          <content>
+            <p>Auditoría, Seguimiento y Evaluación.
+A) Auditoría.
+El ejercicio de los recursos está sujeto a las disposiciones federales aplicables, por lo que podrán ser fiscalizados por la Auditoría Superior de la Federación, la SABG, la Tesorería de la Federación, el Órgano Interno de Control en la Secretaría del Trabajo y Previsión Social, auditores independientes contratados por la STPS y demás instancias que resulten competentes para ello, en el ámbito de sus respectivas atribuciones.
+Los requerimientos de información que realicen dichos órganos fiscalizadores, así como los resultados obtenidos, deberán ser revisados y atendidos por la STPS en el ámbito de sus atribuciones y de conformidad con su competencia para resolver los asuntos planteados.
+B) Seguimiento.
+La STPS enviará a la Cámara de Diputados del H. Congreso de la Unión informes trimestrales sobre el presupuesto ejercido y el cumplimiento de metas y objetivos, conforme a lo dispuesto en el artículo 75, fracción X, de la LFPRH y en el artículo 181 de su Reglamento, turnando copia a la SHCP.
+Dichos informes se presentarán en los plazos establecidos en el artículo 75 de la LFPRH o en el que para tal efecto señale la SHCP.
+La Matriz de Indicadores para Resultados (MIR) del Programa, se compone de 10 indicadores, uno de fin, tres de propósito, tres de componente y 3 de actividad.
+Los indicadores del Programa que integran la MIR 2026, cuyo nivel de desagregación es nacional, son reportados por el Programa Jóvenes Construyendo el Futuro en el Módulo Presupuesto basado en Resultados (PbR) del Portal Aplicativo de la SHCP (PbR PASH).
+La MIR es pública y se encuentra disponible en la siguiente liga:
+https://www.transparenciapresupuestaria.gob.mx/es/ PTP/programas#inicio La consulta puede realizarse de la siguiente manera:
+1. En la pestaña Ramo, seleccionar "14-Trabajo y Previsión Social".
+2. En la pestaña Modalidad, seleccionar "S-Sujetos a Reglas de Operación".
+3. En la pestaña Clave, seleccionar "280".
+4. Dar clic en el nombre del Programa Presupuestario "Jóvenes Construyendo el Futuro".
+5. Posteriormente, aparecerá en la pantalla la "Ficha del Programa"; para acceder a la MIR, es necesario deslizar la pantalla a la sección " ¿Cuáles son sus resultados? " y seleccionar la opción "Descarga los objetivos, indicadores y metas".
+C) Evaluación.
+La evaluación externa del Programa se realizará conforme a la normatividad vigente para el ejercicio fiscal aplicable.
+Las evaluaciones se harán conforme a lo establecido en Ley General de Desarrollo Social, en el Programa Anual de Evaluación y lo dispuesto en la LFPRH.
+La STPS remitirá los resultados de la evaluación externa a las instancias correspondientes, de acuerdo con la normatividad aplicable.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-primera" id="regla-vigesima-primera">
+        <num>VIGÉSIMA PRIMERA</num>
+        <paragraph eId="regla-vigesima-primera-para-1">
+          <content>
+            <p>De los padrones.
+Las y los Beneficiarios serán integrados al Padrón de Beneficiarios, a fin de contar con una herramienta que permita la verificación de la identidad de las y los participantes.
+Las y los Beneficiarios serán incorporados también al Padrón Único de Beneficiarios administrado por la Secretaría de Bienestar, el cual estará integrado con las y los Beneficiarios de los Programas para el Desarrollo con información de las dependencias y entidades responsables, información de entrevistas domiciliarias, de visitas de campo y del registro e inscripción por los medios específicos establecidos para cada programa.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-segunda" id="regla-vigesima-segunda">
+        <num>VIGÉSIMA SEGUNDA</num>
+        <paragraph eId="regla-vigesima-segunda-para-1">
+          <content>
+            <p>El Programa podrá suscribir convenios, acuerdos y otros instrumentos interinstitucionales con el objeto de establecer mecanismos de control y supervisión, tales como ejecución de confrontas periódicas con padrones de Beneficiarios de otros programas sociales, que permitan identificar que las y los Beneficiarios del Programa cumplen con los criterios de elegibilidad establecidos en las presentes Reglas de Operación.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-tercera" id="regla-vigesima-tercera">
+        <num>VIGÉSIMA TERCERA</num>
+        <paragraph eId="regla-vigesima-tercera-para-1">
+          <content>
+            <p>Instancias normativas, ejecutoras, casos no previstos y de excepción a las Reglas de Operación del Programa.
+I.
+El Comité Técnico es la instancia normativa que será la encargada de interpretar para efectos administrativos las presentes Reglas de Operación.
+La STPS, conforme a sus atribuciones conferidas en la Ley Orgánica de la Administración Pública Federal y su Reglamento Interior vigente, podrá realizar actos jurídicos necesarios, emitir acuerdos administrativos y suscribir documentos para la ejecución del Programa en las Entidades Federativas conforme a las necesidades específicas para la atención de la población objetivo de acuerdo con la normatividad vigente.
+II.
+La Unidad es la instancia ejecutora y es la responsable de coordinar la planeación, programación, organización y ejecución del Programa; el ejercicio del presupuesto y acciones, así como la dirección, el control y la evaluación del mismo, conforme a sus atribuciones establecidas en el Reglamento Interior vigente de la STPS. Para la organización en las Entidades Federativas, la Unidad coordinará esquemas de trabajo y organización para la operación del Programa con la participación que corresponda a las Delegaciones de Programas para el Desarrollo, conforme a la Ley Orgánica de la Administración Pública Federal, así como de los instrumentos jurídicos que para tal efecto se suscriban.
+La Unidad es la encargada de coordinar y diseñar la Plataforma Digital a través de la unidad administrativa que para ello se disponga o la que determine el Reglamento Interior de la Secretaría. En la Plataforma Digital podrán interactuar las y los Aprendices y/o Beneficiarios, Centros de Trabajo de los sectores públicos, privados y sociales de toda la República Mexicana, y personal del Programa. La Unidad proporcionará acceso a la Plataforma Digital a través del sitio de Internet https://www.jovenesconstruyendoelfuturo.stps.gob.mx , conforme a los requisitos que se indican en las presentes Reglas de Operación.
+III.
+Los casos no previstos, así como las excepciones de las presentes Reglas de Operación, serán resueltos a través del Comité Técnico.
+Para la operación de los planes y ofertas de Capacitación que busquen atender a jóvenes con condiciones de discriminación histórica (jóvenes indígenas, jóvenes afromexicanos, jóvenes en conflicto con la ley, jóvenes en calidad de reinserción social, jóvenes víctimas o sobrevivientes, jóvenes con discapacidad, jóvenes vulnerables por condición de género, identidad y/u orientación sexual, jóvenes migrantes, jóvenes que habitan en municipios con alto y muy alto índice de rezago social, con alta incidencia delictiva y a integrantes de grupos históricamente discriminados, entre otros) el Programa, a través del Comité Técnico, podrá autorizar excepciones y emitirá los criterios específicos que favorezcan la atención de los mismos.
+IV.
+El Programa podrá determinar de manera excepcional y conforme a los términos que establezca el respectivo Acuerdo del Comité Técnico, la entrega del Apoyo económico a Tutores, siempre y cuando se encuentren brindando Capacitación en alguno de los Centros de Trabajo y Planes de Actividades autorizados, en concordancia con lo indicado en la fracción anterior.
+V.
+El Comité Técnico como instancia normativa podrá determinar la posibilidad de un segundo cambio de Centro de Trabajo en favor de las y los aprendices.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-cuarta" id="regla-vigesima-cuarta">
+        <num>VIGÉSIMA CUARTA</num>
+        <paragraph eId="regla-vigesima-cuarta-para-1">
+          <content>
+            <p>La operación del Programa, así como la entrega de los apoyos descritos en las presentes Reglas de Operación a las y los Beneficiarios, podrán suspenderse, aplazarse o modificarse, previo aviso a través de la Plataforma Digital u otros medios disponibles, por motivos de causa de fuerza mayor o caso fortuito ajenos al control de la Unidad, con posterior justificación ante el Comité Técnico.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-quinta" id="regla-vigesima-quinta">
+        <num>VIGÉSIMA QUINTA</num>
+        <paragraph eId="regla-vigesima-quinta-para-1">
+          <content>
+            <p>La entrega de los apoyos descritos en las presentes Reglas de Operación, de manera excepcional y extraordinaria, podrá otorgarse de forma anticipada a las y los Beneficiarios, previo aviso a través de la Plataforma Digital u otros medios disponibles, cuando las condiciones de localidad así lo requieran conforme a los criterios, métodos y vías de acción que permitan garantizar la entrega del Apoyo económico.
+Asimismo, la STPS, a través del Comité Técnico, podrá determinar la suspensión de manera excepcional y extraordinaria, el registro y/o vinculación al Programa de las y los Jóvenes y por ende toda solicitud de registro en la Plataforma Digital, precisando el período de suspensión en ese medio electrónico En el caso de que se presenten situaciones de emergencia en el territorio nacional, ya sean por causas naturales, económicas, sociales, caso fortuito o fuerza mayor, u otras, en cualquiera de las entidades federativas del país, sus municipios, comunidades o población, y que puedan requerir atención de manera extraordinaria, el Programa a través del Comité Técnico, podrá implementar acciones excepcionales y/o extraordinarias que favorezcan la atención de las y los jóvenes.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="regla-vigesima-sexta" id="regla-vigesima-sexta">
+        <num>VIGÉSIMA SEXTA</num>
+        <paragraph eId="regla-vigesima-sexta-para-1">
+          <content>
+            <p>Del Comité Técnico.
+Para la atención de lo establecido en las fracciones I y III, de la Regla VIGÉSIMA TERCERA y para el debido cumplimiento de metas y objetivos, el Programa contará con un Comité Técnico que se integrará conforme a lo siguiente:
+A) De los integrantes.
+I.
+La o el Presidente: Titular de la Subsecretaría de Empleo y Productividad Laboral.
+II.
+Vocales:
+a) La o el Titular de la Unidad del Programa Jóvenes Construyendo el Futuro;
+b) La o el Titular de la Dirección General de Operación Territorial; y c) La o el Titular de la Dirección General de Supervisión y Seguimiento.
+d) La o el Titular de la Dirección General de Administración de la Plataforma Digital.
+El Comité podrá invitar a sus sesiones a un Representante del Órgano Interno de Control en la Secretaría del Trabajo y Previsión Social y de la Dirección General de Asuntos Jurídicos o cualquier otra unidad administrativa que estime pertinente.
+El Comité contará con una Secretaría Técnica con nivel de Dirección de Área.
+III. Suplentes.
+Las personas integrantes podrán nombrar a su respectivo suplente de nivel jerárquico inmediato inferior, quienes intervendrán en su ausencia. La o el Presidente del Comité podrá suplirse únicamente por el o la Titular de la Unidad del Programa Jóvenes Construyendo el Futuro.
+B) De las funciones.
+El Comité tendrá las siguientes funciones:
+I.
+Contribuir al cumplimiento oportuno de metas y objetivos del Programa con enfoque a resultados, así como a la mejora del mismo;
+II.
+Conocer, revisar, analizar, dictaminar y determinar sobre los asuntos no previstos, de excepción, casos fortuitos y de fuerza mayor en las Reglas de Operación del Programa;
+III.
+Interpretar para efectos administrativos y operativos las Reglas de Operación del Programa;
+IV.
+Emitir y aprobar los Lineamientos de operación del propio Comité y, en su caso, las demás funciones que contribuyan al cumplimiento oportuno de metas y objetivos del Programa; y V.
+Conocer, revisar y aprobar las acciones a seguir derivadas de ajustes presupuestarios al Programa establecidas por la SHCP.
+C) Observancia y Vigencia Los Acuerdos tomados por el Comité Técnico serán de observancia obligatoria y se mantendrán vigentes hasta su cumplimiento en el marco de dicho Comité.</p>
+          </content>
+        </paragraph>
+      </article>
+    </body>
+  </act>
+</akomaNtoso>
