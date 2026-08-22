@@ -36,6 +36,7 @@ from .cross_reference_views import (
     batch_article_cross_references,
     law_cross_references,
 )
+from .egress_views import user_export, user_export_download
 from .export_views import (
     export_docx,
     export_epub,
@@ -246,6 +247,13 @@ urlpatterns = [
     ),
     path("user/alerts/", alert_list, name="alert-list"),
     path("user/alerts/<int:alert_id>/", alert_delete, name="alert-delete"),
+    # ── Account data egress (self-service takeout) ────────────────────
+    path("user/export/", user_export, name="user-export"),
+    path(
+        "user/export/download/",
+        user_export_download,
+        name="user-export-download",
+    ),
     # ── User API keys (self-serve) ───────────────────────────────────
     path("user/apikeys/", user_apikey_list_create, name="user-apikey-list-create"),
     path("user/apikeys/<str:prefix>/", user_apikey_update, name="user-apikey-update"),
