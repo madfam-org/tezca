@@ -1,0 +1,180 @@
+{
+  "schema": "tezca.sep_calendario/v1",
+  "ciclo": "2026-2027",
+  "nivel": "educacion_basica",
+  "dias_habiles": 185,
+  "source": {
+    "instrumento": "ACUERDO número 07/07/26 por el que se establecen los calendarios escolares para el ciclo lectivo 2026-2027, aplicables en toda la República para la educación preescolar, primaria, secundaria, normal y demás para la formación de maestras y maestros de educación básica",
+    "acuerdo": "07/07/26",
+    "dof_codigo": "5793645",
+    "dof_fecha_publicacion": "2026-07-15",
+    "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5793645&fecha=15/07/2026",
+    "sidof_url": "https://sidof.segob.gob.mx/notas/docFuente/5793645",
+    "emisor": "Secretaría de Educación Pública",
+    "vigente_desde": "2026-07-16"
+  },
+  "extraction": {
+    "verified_on": "2026-08-22",
+    "method": "cell-by-cell read of the DOF annex grid image, cross-checked against the SEP summary and the client's printed calendar",
+    "annex_image": "data/sep_calendario/sep-calendario-2026-2027-basica-annex.png"
+  },
+  "events": [
+    {
+      "date": "2026-08-24",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — fase intensiva",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE",
+      "end_date": "2026-08-28"
+    },
+    {
+      "date": "2026-08-31",
+      "type": "regreso_a_clases",
+      "title": "Inicio de cursos del ciclo lectivo 2026-2027 (educación básica)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, ARTÍCULO TERCERO"
+    },
+    {
+      "date": "2026-09-16",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (16 de septiembre)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-09-25",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 1a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-10-30",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 2a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-11-02",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (2 de noviembre)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-11-16",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (16 de noviembre)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-11-27",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 3a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2026-12-21",
+      "type": "periodo_vacacional",
+      "title": "Periodo vacacional de invierno (regreso a clases 7 de enero de 2027)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo (grid DGPPyEE) + resumen SEP educacionbasica.sep.gob.mx",
+      "end_date": "2027-01-05"
+    },
+    {
+      "date": "2026-12-25",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (25 de diciembre)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-01-01",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (1 de enero)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-01-06",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (6 de enero)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-01-29",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 4a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-02-01",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (1 de febrero)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-02-26",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 5a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-03-15",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (15 de marzo)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-03-22",
+      "type": "periodo_vacacional",
+      "title": "Periodo vacacional de primavera (regreso a clases 5 de abril de 2027)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo (grid DGPPyEE) + resumen SEP educacionbasica.sep.gob.mx",
+      "end_date": "2027-04-03"
+    },
+    {
+      "date": "2027-04-30",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 6a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-05-05",
+      "type": "suspension_sep",
+      "title": "Suspensión de labores docentes (5 de mayo)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-05-28",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 7a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-06-25",
+      "type": "junta_consejo_tecnico",
+      "title": "Consejo Técnico Escolar — 8a sesión ordinaria",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, anexo: Calendario Escolar 2026-2027 educación básica (185 días), grid DGPPyEE"
+    },
+    {
+      "date": "2027-07-09",
+      "type": "cierre_ciclo_preescolar",
+      "title": "Conclusión de cursos del ciclo lectivo 2026-2027 (educación básica)",
+      "source": "sep",
+      "source_ref": "acuerdo 07/07/26, ARTÍCULO TERCERO"
+    }
+  ]
+}

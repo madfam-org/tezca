@@ -1,0 +1,24 @@
+[
+  {
+    "official_id": "sep-calendario-escolar-2026-2027",
+    "name": "ACUERDO número 07/07/26 por el que se establecen los calendarios escolares para el ciclo lectivo 2026-2027, aplicables en toda la República para la educación preescolar, primaria, secundaria, normal y demás para la formación de maestras y maestros de educación básica",
+    "short_name": "Calendario Escolar SEP 2026-2027 (educación básica)",
+    "ciclo": "2026-2027",
+    "dof_codigo": "5793645",
+    "publication_date": "2026-07-15",
+    "valid_from": "2026-07-16",
+    "document_type": "acuerdo",
+    "status": "vigente",
+    "issuer": "Secretaría de Educación Pública",
+    "vigencia_note": "Instrumento primario en vigor para el ciclo lectivo 2026-2027. 185 días para educación básica (preescolar, primaria, secundaria) y 190 días para educación normal. Inicio de cursos lunes 31 de agosto de 2026; conclusión viernes 9 de julio de 2027 (básica) y martes 13 de julio de 2027 (normal). Transitorio Segundo abroga el Acuerdo 18/06/25 (calendario 2025-2026, DOF 2025-06-09) una vez concluida su vigencia. Las suspensiones, periodos vacacionales y sesiones de Consejo Técnico Escolar constan en la imagen del calendario anexa a la nota (grid DGPPyEE), no en el articulado; ver docs/data/SEP_CALENDARIO_ESCOLAR.md.",
+    "title_marker": "calendario",
+    "category": "calendario_escolar",
+    "domains": [
+      "education"
+    ],
+    "source": "sep_calendario_dof_fetcher",
+    "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5793645&fecha=15/07/2026",
+    "sidof_url": "https://sidof.segob.gob.mx/notas/docFuente/5793645",
+    "text_filename": "sep-calendario-escolar-2026-2027.xml"
+  }
+]

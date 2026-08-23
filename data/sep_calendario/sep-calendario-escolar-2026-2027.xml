@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+  <act name="acuerdo">
+    <meta>
+      <identification source="#tezca-sep-calendario-fetcher">
+        <FRBRWork>
+          <FRBRthis value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027/main"/>
+          <FRBRuri value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027"/>
+          <FRBRdate date="2026-07-15" name="Generation"/>
+          <FRBRauthor href="#sep"/>
+          <FRBRcountry value="mx"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027/spa@/main"/>
+          <FRBRuri value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027/spa@"/>
+          <FRBRdate date="2026-07-15" name="Generation"/>
+          <FRBRauthor href="#tezca-sep-calendario-fetcher"/>
+          <FRBRlanguage language="spa"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027/spa@/main.xml"/>
+          <FRBRuri value="/mx/fed/acuerdo/2026-07-15/sep-calendario-escolar-2026-2027/spa@/main.akn"/>
+          <FRBRdate date="2026-07-15" name="Generation"/>
+          <FRBRauthor href="#tezca-sep-calendario-fetcher"/>
+        </FRBRManifestation>
+      </identification>
+    </meta>
+    <body>
+      <article eId="articulo-primero" id="articulo-primero">
+        <num>ARTÍCULO PRIMERO</num>
+        <paragraph eId="articulo-primero-para-1">
+          <content>
+            <p>Se establece el calendario escolar de ciento ochenta y cinco días para el ciclo lectivo 2026- 2027, aplicable en toda la República para las escuelas de educación preescolar, primaria y secundaria, públicas y particulares incorporadas al Sistema Educativo Nacional.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="articulo-segundo" id="articulo-segundo">
+        <num>ARTÍCULO SEGUNDO</num>
+        <paragraph eId="articulo-segundo-para-1">
+          <content>
+            <p>Se establece el calendario escolar de ciento noventa días para el ciclo lectivo 2026-2027, aplicable en toda la República para las escuelas de educación normal y demás para la formación de maestras y maestros de educación básica, públicas y particulares incorporadas al Sistema Educativo Nacional.</p>
+          </content>
+        </paragraph>
+      </article>
+      <article eId="articulo-tercero" id="articulo-tercero">
+        <num>ARTÍCULO TERCERO</num>
+        <paragraph eId="articulo-tercero-para-1">
+          <content>
+            <p>Para la aplicación de los calendarios escolares a que se refieren los artículos que anteceden, se deberá tener en cuenta que el inicio de cursos del ciclo lectivo 2026-2027 para la educación preescolar, primaria, secundaria, normal y demás para la formación de maestras y maestros de educación básica será el lunes 31 de agosto de 2026, concluyendo para la educación preescolar, primaria y secundaria el viernes 9 de julio de 2027 y para la educación normal y demás para la formación de maestras y maestros de educación básica el martes 13 de julio de 2027.</p>
+          </content>
+        </paragraph>
+      </article>
+    </body>
+  </act>
+</akomaNtoso>
