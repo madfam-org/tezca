@@ -85,6 +85,7 @@ def check_dof_daily():
     # Pass existing law names so the scraper can match against actual DB laws
     from apps.api.models import Law
     from apps.scraper.federal.dof_daily import DofScraper
+    from apps.scraper.scheduling.corpus_watch import scan_entries
 
     existing_laws = list(Law.objects.values_list("name", flat=True))
 
@@ -93,6 +94,11 @@ def check_dof_daily():
 
     entries = results.get("entries", [])
     changes = results.get("changes", [])
+
+    # Corpus watch: flag yearly-reissued pinned instruments (SEP calendario,
+    # JCF ROP, …) that the generic change detector's DECRETO/LEY keyword
+    # filter would miss. Detection only — an operator adds the pinned codigo.
+    watch_hits = scan_entries(entries)
 
     materialized, materialize_failed = _materialize_dof_changes(changes)
 
@@ -113,6 +119,10 @@ def check_dof_daily():
                     }
                     for c in changes[:20]
                 ],
+                "corpus_watch_hits": [
+                    {"watch_key": h.watch_key, "title": h.title[:200], "url": h.url}
+                    for h in watch_hits
+                ],
             },
             found=len(entries),
             downloaded=materialized,
@@ -121,11 +131,19 @@ def check_dof_daily():
             # (0 when auto-ingest is off), not the prior detected-count misnomer.
             ingested=materialized,
         )
+        summary_bits = []
         if changes:
-            log_entry.error_summary = (
+            summary_bits.append(
                 f"{len(changes)} law changes detected, "
                 f"{materialized} materialized, {materialize_failed} failed"
             )
+        if watch_hits:
+            summary_bits.append(
+                f"{len(watch_hits)} corpus-watch hit(s): "
+                + ", ".join(sorted({h.watch_key for h in watch_hits}))
+            )
+        if summary_bits:
+            log_entry.error_summary = "; ".join(summary_bits)
         log_entry.finish()
     except Exception:
         # Log persistence failure — don't fail the actual DOF check, but
@@ -145,6 +163,18 @@ def check_dof_daily():
     else:
         logger.info("DOF daily: %d entries, no law changes detected", len(entries))
 
+    # Corpus-watch hits are actionable (a yearly instrument reappeared): log
+    # each at WARNING with its operator instruction so it is not lost among
+    # routine change detections.
+    for hit in watch_hits:
+        logger.warning(
+            "CORPUS WATCH [%s]: %s — %s (%s)",
+            hit.watch_key,
+            hit.title,
+            hit.action,
+            hit.url,
+        )
+
     return {
         "date": str(datetime.date.today()),
         "total_entries": len(entries),
@@ -152,4 +182,5 @@ def check_dof_daily():
         "materialized": materialized,
         "materialize_failed": materialize_failed,
         "changes": changes[:20],
+        "corpus_watch_hits": [h.to_dict() for h in watch_hits],
     }

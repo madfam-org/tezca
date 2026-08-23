@@ -4519,6 +4519,22 @@
             "status": "unknown",
             "category": "reglas_de_operacion",
             "notes": "Residual status - deliberately NOT marked abrogated. No instrument expressly abrogates these Lineamientos, and the corpus must not assert an abrogation the DOF never published. Displaced in practice by the successive annual ROP; controlling document is jcf-reglas-2026. Requires legal opinion before citing any numeral as vigente."
+        },
+        {
+            "id": "sep-calendario-escolar-2026-2027",
+            "name": "ACUERDO número 07/07/26 por el que se establecen los calendarios escolares para el ciclo lectivo 2026-2027, aplicables en toda la República para la educación preescolar, primaria, secundaria, normal y demás para la formación de maestras y maestros de educación básica",
+            "short_name": "Calendario Escolar SEP 2026-2027 (educación básica)",
+            "type": "acuerdo",
+            "slug": "sep-calendario-escolar-2026-2027",
+            "expected_articles": 3,
+            "publication_date": "2026-07-15",
+            "source": "dof",
+            "url": "https://dof.gob.mx/nota_detalle.php?codigo=5793645&fecha=15/07/2026",
+            "priority": 1,
+            "tier": "federal",
+            "status": "active",
+            "category": "calendario_escolar",
+            "notes": "SEP administrative instrument (acuerdo) - NOT a ley. Fixes the calendario escolar for the ciclo lectivo 2026-2027: 185 dias educacion basica / 190 dias normal; inicio 31-ago-2026, fin 9-jul-2027 (basica) / 13-jul-2027 (normal). In force from 2026-07-16 per Transitorio Primero; abrogates Acuerdo 18/06/25 (calendario 2025-2026). The operative prose has 3 articles (PRIMERO-TERCERO); the day-level suspensiones/vacaciones/Consejo Tecnico live in the DOF annex calendar image and are extracted to data/sep_calendario/dates-2026-2027.json for kalya. DOF codigo 5793645. Verified against DOF/SEP primary text 2026-08-22."
         }
     ],
     "categories": {
@@ -4665,17 +4681,23 @@
             "description": "Program operating rules issued by federal agencies and published in the DOF",
             "color": "forest",
             "icon": "📋"
+        },
+        "calendario_escolar": {
+            "name": "Calendario Escolar",
+            "description": "Yearly SEP school-calendar acuerdos for educación básica, published in the DOF",
+            "color": "stone",
+            "icon": "🗓️"
         }
     },
     "metadata": {
         "version": "2.0",
         "updated": "2026-08-22",
-        "total_laws": 50,
+        "total_laws": 51,
         "priority_1_count": 5,
         "priority_2_count": 45,
         "active_count": 10,
         "pending_count": 40,
-        "categories_count": 24,
-        "notes": "Updated with 40 additional Priority 2 laws based on 2024 legal practice research and legislative reforms | 2026-08-22: added the Jovenes Construyendo el Futuro (JCF) normative corpus - DOF Reglas de Operacion + the STPS simplification Acuerdo - as reglas_de_operacion, an administrative-rules type, not leyes. The abrogated 2025 ROP is intentionally absent: its DOF codigo could not be verified and registering an unverified one would mis-cite the corpus."
+        "categories_count": 25,
+        "notes": "Updated with 40 additional Priority 2 laws based on 2024 legal practice research and legislative reforms | 2026-08-22: added the Jovenes Construyendo el Futuro (JCF) normative corpus - DOF Reglas de Operacion + the STPS simplification Acuerdo - as reglas_de_operacion, an administrative-rules type, not leyes. The abrogated 2025 ROP is intentionally absent: its DOF codigo could not be verified and registering an unverified one would mis-cite the corpus. | 2026-08-22: added the SEP calendario escolar 2026-2027 acuerdo (07/07/26, DOF codigo 5793645) as calendario_escolar, an administrative-rules type (acuerdo), not a ley. The day-level dates are extracted to data/sep_calendario/dates-2026-2027.json for kalya organizational-calendar generator. The abrogated 2025-2026 acuerdo (18/06/25) is intentionally absent pending codigo verification."
     }
 }
