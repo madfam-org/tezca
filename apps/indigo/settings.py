@@ -265,6 +265,19 @@ DOF_AUTO_INGEST_ENABLED = os.environ.get(
     "yes",
 )
 
+# ── DOF exchange-rate (tipo de cambio) source ────────────────────────────
+# Which upstream feeds the /fiscal/tipo-cambio oracle. Default "operator": the
+# rate is seeded / operator-entered (like UMA + salario mínimo today), no
+# automated fetch. "banxico_sie" uses Banxico series SF60653 once a token is
+# provisioned (the reliable path). "dof_open_data" is a best-effort SIDOF fetch
+# whose nota shape is not yet verified — keep off until confirmed. See
+# apps/api/fiscal_fx_sources.py.
+DOF_FX_SOURCE = os.environ.get("DOF_FX_SOURCE", "operator").strip().lower()
+# Banxico SIE token for the SF60653 DOF reference series. Empty → the
+# banxico_sie source opts out (returns None) without blocking the operator
+# baseline. Provisioned "soon" per the FX SoC rollout.
+BANXICO_SIE_TOKEN = os.environ.get("BANXICO_SIE_TOKEN", "")
+
 # ── CRM Sync (Phynd-CRM) ────────────────────────────────────────────
 CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
 CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")

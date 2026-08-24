@@ -59,6 +59,21 @@ def serialize_minimum_wage(row):
     return data
 
 
+def serialize_tipo_cambio(row):
+    """Serialize a :class:`TipoDeCambio` (DOF reference exchange rate)."""
+    data = {
+        "from_currency": row.from_currency,
+        "to_currency": row.to_currency,
+        "pair": f"{row.from_currency}/{row.to_currency}",
+        "value": str(row.value),
+        "rate": str(row.value),  # alias: units of to_currency per 1 from_currency
+        "unit": row.unit,
+    }
+    data.update(_vigencia_block(row))
+    data.update(_provenance_block(row))
+    return data
+
+
 def serialize_fiscal_table(row):
     """Serialize a :class:`FiscalTable`."""
     data = {

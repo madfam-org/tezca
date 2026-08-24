@@ -1,10 +1,12 @@
 """Fiscal-value feed — Tezca as the ecosystem's source of fiscal values.
 
-    GET /api/v1/fiscal/uma/              UMA rows (filterable by year / ?on=)
-    GET /api/v1/fiscal/uma/current/      the UMA in force today
-    GET /api/v1/fiscal/minimos/          salario mínimo general + ZLFN
-    GET /api/v1/fiscal/tables/           ISR / subsidio / IMSS / ISN tables
-    GET /api/v1/fiscal/tables/<year>/    all tables for one fiscal year
+    GET /api/v1/fiscal/uma/                  UMA rows (filterable by year / ?on=)
+    GET /api/v1/fiscal/uma/current/          the UMA in force today
+    GET /api/v1/fiscal/minimos/              salario mínimo general + ZLFN
+    GET /api/v1/fiscal/tipo-cambio/          DOF exchange rates (?from=/?to=/?on=)
+    GET /api/v1/fiscal/tipo-cambio/current/  the DOF rate in force today
+    GET /api/v1/fiscal/tables/               ISR / subsidio / IMSS / ISN tables
+    GET /api/v1/fiscal/tables/<year>/        all tables for one fiscal year
 
 Requires an API key (or Janua JWT) carrying the 'read' scope — the same key
 scheme the changelog and bulk feeds use, so usage lands in APIUsageLog via
@@ -28,10 +30,11 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .fiscal_models import FiscalTable, MinimumWage, Provenance, UMAValue
+from .fiscal_models import FiscalTable, MinimumWage, Provenance, TipoDeCambio, UMAValue
 from .fiscal_serializers import (
     serialize_fiscal_table,
     serialize_minimum_wage,
+    serialize_tipo_cambio,
     serialize_uma,
 )
 
@@ -220,6 +223,127 @@ def uma_current(request):
 
     data = serialize_uma(row)
     # Flat keys match symbiosis-hcm's TezcaFiscalClient.get_current_uma().
+    data["on"] = today.isoformat()
+    data["effective_date"] = data["vigencia_from"]
+    data["disclaimer"] = DISCLAIMER
+    return Response(data)
+
+
+def _parse_pair(request):
+    """Read ?from=/?to= currency filters (default USD/MXN, the DOF daily pair)."""
+    frm = (request.query_params.get("from") or "USD").strip().upper()
+    to = (request.query_params.get("to") or "MXN").strip().upper()
+    return frm, to
+
+
+FROM_PARAM = OpenApiParameter(
+    name="from",
+    description="Base currency ISO 4217 (default USD — the DOF daily pair).",
+    required=False,
+    type=str,
+)
+TO_PARAM = OpenApiParameter(
+    name="to",
+    description="Quote currency ISO 4217 (default MXN).",
+    required=False,
+    type=str,
+)
+
+
+@extend_schema(
+    tags=["Fiscal"],
+    summary="Tipo de cambio (DOF)",
+    description=(
+        "DOF reference exchange rate — *tipo de cambio para solventar "
+        "obligaciones denominadas en moneda extranjera*, published by Banco "
+        "de México in the DOF each business day. This is the SAT-defensible "
+        "rate for converting foreign-currency fiscal obligations (LIVA Art. "
+        "20, CFF Art. 20), NOT a market/spot quote. Filter by ?from=/?to= "
+        "and ?on=. Requires an API key with 'read' scope."
+    ),
+    parameters=[ON_PARAM, FROM_PARAM, TO_PARAM],
+)
+@api_view(["GET"])
+def tipo_cambio_list(request):
+    """List DOF exchange rates, newest first, optionally filtered by date/pair."""
+    denied = _check_scope(request)
+    if denied is not None:
+        return denied
+
+    on_date, err = _parse_on(request)
+    if err is not None:
+        return err
+    frm, to = _parse_pair(request)
+
+    qs = TipoDeCambio.objects.filter(from_currency=frm, to_currency=to)
+    if on_date is not None:
+        qs = _in_force_on(qs, on_date)
+
+    rows = [serialize_tipo_cambio(row) for row in qs.order_by("-vigencia_from")]
+
+    payload = {
+        "count": len(rows),
+        "results": rows,
+        "disclaimer": DISCLAIMER,
+    }
+    if on_date is not None:
+        payload["on"] = on_date.isoformat()
+        if rows:
+            payload.update(
+                {
+                    "value": rows[0]["value"],
+                    "rate": rows[0]["value"],
+                    "pair": rows[0]["pair"],
+                    "effective_date": rows[0]["vigencia_from"],
+                    "provenance": rows[0]["provenance"],
+                }
+            )
+    return Response(payload)
+
+
+@extend_schema(
+    tags=["Fiscal"],
+    summary="Current tipo de cambio (DOF)",
+    description=(
+        "The DOF reference exchange rate in force today for the given pair "
+        "(default USD/MXN). Returns 404 when no row covers today — a "
+        "deliberate fail-closed: a consumer must never silently substitute a "
+        "stale or market rate on a fiscal document. Requires 'read' scope."
+    ),
+    parameters=[FROM_PARAM, TO_PARAM],
+)
+@api_view(["GET"])
+def tipo_cambio_current(request):
+    """Return the single DOF exchange rate in force today for the pair."""
+    denied = _check_scope(request)
+    if denied is not None:
+        return denied
+
+    frm, to = _parse_pair(request)
+    today = timezone.localdate()
+    row = (
+        _in_force_on(
+            TipoDeCambio.objects.filter(from_currency=frm, to_currency=to), today
+        )
+        .order_by("-vigencia_from")
+        .first()
+    )
+    if row is None:
+        return Response(
+            {
+                "error": f"No DOF exchange rate on file for {frm}/{to} today.",
+                "on": today.isoformat(),
+                "pair": f"{frm}/{to}",
+                "detail": (
+                    "Tezca fails closed rather than serving a stale or market "
+                    "rate. An operator must publish the current DOF rate."
+                ),
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    data = serialize_tipo_cambio(row)
+    # Flat keys mirror uma_current for an FX client's get_current_dof_rate().
     data["on"] = today.isoformat()
     data["effective_date"] = data["vigencia_from"]
     data["disclaimer"] = DISCLAIMER

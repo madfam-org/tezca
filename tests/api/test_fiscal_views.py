@@ -7,7 +7,13 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from apps.api.fiscal_models import FiscalTable, MinimumWage, Provenance, UMAValue
+from apps.api.fiscal_models import (
+    FiscalTable,
+    MinimumWage,
+    Provenance,
+    TipoDeCambio,
+    UMAValue,
+)
 from apps.api.middleware.janua_auth import JanuaUser
 
 AUTH_PATCH = "apps.api.middleware.combined_auth.CombinedAuthentication.authenticate"
@@ -377,3 +383,151 @@ class TestFiscalTables:
     def test_requires_authentication(self):
         response = self.client.get(self.list_url)
         assert response.status_code == 401
+
+
+def _make_tc(
+    value, v_from, v_to=None, frm="USD", to="MXN", provenance=Provenance.PUBLISHED
+):
+    return TipoDeCambio.objects.create(
+        from_currency=frm,
+        to_currency=to,
+        value=value,
+        unit="MXN",
+        vigencia_from=v_from,
+        vigencia_to=v_to,
+        dof_date=v_from,
+        provenance=provenance,
+        source_citation=f"DOF {v_from}",
+    )
+
+
+@pytest.mark.django_db
+class TestTipoCambioList:
+    """GET /api/v1/fiscal/tipo-cambio/."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.url = reverse("fiscal-tipo-cambio-list")
+        self.user = _make_user()
+
+    def test_requires_authentication(self):
+        assert self.client.get(self.url).status_code == 401
+
+    def test_requires_read_scope(self):
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (_make_user(scopes=["search"]), "tok")
+            response = self.client.get(self.url)
+        assert response.status_code == 403
+        assert "read" in response.json()["error"]
+
+    def test_lists_newest_first(self):
+        _make_tc("18.4400", "2026-08-20", "2026-08-20")
+        _make_tc("18.5100", "2026-08-21", None)
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["count"] == 2
+        assert data["results"][0]["value"] == "18.5100"
+        assert data["results"][0]["pair"] == "USD/MXN"
+
+    def test_on_date_returns_rate_in_force(self):
+        _make_tc("18.4400", "2026-08-20", "2026-08-20")
+        _make_tc("18.5100", "2026-08-21", None)
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url, {"on": "2026-08-20"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["value"] == "18.4400"
+        assert data["rate"] == "18.4400"
+        assert data["on"] == "2026-08-20"
+
+    def test_pair_filter_isolates_currency(self):
+        _make_tc("18.5100", "2026-08-21", None, frm="USD", to="MXN")
+        _make_tc("21.7000", "2026-08-21", None, frm="EUR", to="MXN")
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url, {"from": "EUR", "to": "MXN"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["count"] == 1
+        assert data["results"][0]["value"] == "21.7000"
+
+    def test_decimal_emitted_as_string(self):
+        """A rate must never round-trip through float on the wire."""
+        _make_tc("18.5137", "2026-08-21", None)
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url, {"on": "2026-08-21"})
+
+        assert response.json()["results"][0]["value"] == "18.5137"
+
+    def test_provenance_exposed_honestly(self):
+        _make_tc("18.5100", "2026-08-21", None, provenance=Provenance.SEED_UNVERIFIED)
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url)
+
+        row = response.json()["results"][0]
+        assert row["provenance"] == "seed-unverified"
+        assert row["is_verified"] is False
+
+
+@pytest.mark.django_db
+class TestTipoCambioCurrent:
+    """GET /api/v1/fiscal/tipo-cambio/current/."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.url = reverse("fiscal-tipo-cambio-current")
+        self.user = _make_user()
+
+    def test_returns_rate_in_force_today(self):
+        today = date.today()
+        _make_tc("18.5100", today, None)
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["value"] == "18.5100"
+        assert data["pair"] == "USD/MXN"
+        assert data["effective_date"]
+
+    def test_fails_closed_when_no_current_rate(self):
+        """No DOF rate for today → 404, never a stale or market fallback."""
+        _make_tc("17.0000", "2024-01-02", "2024-01-02")
+
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            response = self.client.get(self.url)
+
+        assert response.status_code == 404
+        assert "stale" in response.json()["detail"]
+
+    def test_pair_defaults_to_usd_mxn_and_isolates(self):
+        today = date.today()
+        _make_tc("18.5100", today, None, frm="USD", to="MXN")
+        # No EUR row today → EUR query fails closed even though USD exists.
+        with patch(AUTH_PATCH) as mock_auth:
+            mock_auth.return_value = (self.user, "tok")
+            eur = self.client.get(self.url, {"from": "EUR", "to": "MXN"})
+            usd = self.client.get(self.url)
+
+        assert usd.status_code == 200
+        assert eur.status_code == 404
+
+    def test_requires_authentication(self):
+        assert self.client.get(self.url).status_code == 401

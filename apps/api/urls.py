@@ -50,6 +50,8 @@ from .fiscal_views import (
     minimos_list,
     tables_by_year,
     tables_list,
+    tipo_cambio_current,
+    tipo_cambio_list,
     uma_current,
     uma_list,
 )
@@ -216,6 +218,12 @@ urlpatterns = [
     path("fiscal/uma/", uma_list, name="fiscal-uma-list"),
     path("fiscal/uma/current/", uma_current, name="fiscal-uma-current"),
     path("fiscal/minimos/", minimos_list, name="fiscal-minimos-list"),
+    path("fiscal/tipo-cambio/", tipo_cambio_list, name="fiscal-tipo-cambio-list"),
+    path(
+        "fiscal/tipo-cambio/current/",
+        tipo_cambio_current,
+        name="fiscal-tipo-cambio-current",
+    ),
     path("fiscal/tables/", tables_list, name="fiscal-tables-list"),
     path("fiscal/tables/<int:year>/", tables_by_year, name="fiscal-tables-by-year"),
     path("coverage/", public_coverage, name="public-coverage"),

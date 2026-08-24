@@ -17,12 +17,20 @@ import os
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from apps.api.fiscal_models import FiscalTable, MinimumWage, Provenance, UMAValue
+from apps.api.fiscal_models import (
+    FiscalTable,
+    MinimumWage,
+    Provenance,
+    TipoDeCambio,
+    UMAValue,
+)
 from apps.api.fiscal_seed_data import (
     FISCAL_TABLE_SEEDS,
     ISR_NOTE,
     MINIMUM_WAGE_SEEDS,
     SEED_NOTE,
+    TIPO_CAMBIO_NOTE,
+    TIPO_CAMBIO_SEEDS,
     UMA_SEEDS,
 )
 
@@ -49,12 +57,13 @@ class Command(BaseCommand):
             )
             return
 
-        created = {"uma": 0, "minimos": 0, "tables": 0}
-        skipped = {"uma": 0, "minimos": 0, "tables": 0}
+        created = {"uma": 0, "minimos": 0, "tables": 0, "tipo_cambio": 0}
+        skipped = {"uma": 0, "minimos": 0, "tables": 0, "tipo_cambio": 0}
 
         with transaction.atomic():
             self._seed_uma(dry_run, created, skipped)
             self._seed_minimos(dry_run, created, skipped)
+            self._seed_tipo_cambio(dry_run, created, skipped)
             self._seed_tables(dry_run, created, skipped)
 
             if dry_run:
@@ -64,9 +73,11 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"{verb}: {created['uma']} UMA, {created['minimos']} salario "
-                f"mínimo, {created['tables']} fiscal tables. "
+                f"mínimo, {created['tipo_cambio']} tipo de cambio, "
+                f"{created['tables']} fiscal tables. "
                 f"Skipped (already present): {skipped['uma']} / "
-                f"{skipped['minimos']} / {skipped['tables']}."
+                f"{skipped['minimos']} / {skipped['tipo_cambio']} / "
+                f"{skipped['tables']}."
             )
         )
         self.stdout.write(
@@ -92,8 +103,7 @@ class Command(BaseCommand):
                 vigencia_from=v_from,
                 vigencia_to=v_to,
                 source_citation=(
-                    f"INEGI, valor de la UMA {year} (DOF, enero {year}); "
-                    "LFVUMA Art. 4"
+                    f"INEGI, valor de la UMA {year} (DOF, enero {year}); LFVUMA Art. 4"
                 ),
                 provenance=Provenance.SEED_UNVERIFIED,
                 notes=SEED_NOTE,
@@ -134,6 +144,32 @@ class Command(BaseCommand):
                     provenance=Provenance.SEED_UNVERIFIED,
                     notes=SEED_NOTE,
                 )
+
+    def _seed_tipo_cambio(self, dry_run, created, skipped):
+        for frm, to, value, v_from in TIPO_CAMBIO_SEEDS:
+            if TipoDeCambio.objects.filter(
+                from_currency=frm, to_currency=to, vigencia_from=v_from
+            ).exists():
+                skipped["tipo_cambio"] += 1
+                continue
+            created["tipo_cambio"] += 1
+            self.stdout.write(f"  Tipo de cambio {frm}/{to} {v_from}: {value}")
+            if dry_run:
+                continue
+            TipoDeCambio.objects.create(
+                from_currency=frm,
+                to_currency=to,
+                value=value,
+                unit="MXN",
+                vigencia_from=v_from,
+                vigencia_to=None,
+                dof_date=v_from,
+                source_citation=f"DOF {v_from}, Banco de México (tipo de cambio FIX)",
+                # OPERATOR, not seed-unverified: a single hand-entered day, meant
+                # to be superseded by the automated source — not seed history.
+                provenance=Provenance.OPERATOR,
+                notes=TIPO_CAMBIO_NOTE,
+            )
 
     def _seed_tables(self, dry_run, created, skipped):
         for kind, year, period, rows, basis, v_from, v_to in FISCAL_TABLE_SEEDS:
