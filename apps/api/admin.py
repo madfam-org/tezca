@@ -13,7 +13,7 @@ closes its ``vigencia_to`` instead of erasing history.
 
 from django.contrib import admin
 
-from .fiscal_models import FiscalTable, MinimumWage, Provenance, UMAValue
+from .fiscal_models import FiscalTable, MinimumWage, Provenance, TipoDeCambio, UMAValue
 
 
 class _AppendOnlyAdmin(admin.ModelAdmin):
@@ -59,6 +59,22 @@ class MinimumWageAdmin(_AppendOnlyAdmin):
     list_filter = ["provenance", "zone", "year"]
     search_fields = ["year", "source_citation", "notes"]
     ordering = ["-vigencia_from", "zone"]
+
+
+@admin.register(TipoDeCambio)
+class TipoDeCambioAdmin(_AppendOnlyAdmin):
+    list_display = [
+        "from_currency",
+        "to_currency",
+        "value",
+        "vigencia_from",
+        "vigencia_to",
+        "provenance",
+        "dof_date",
+    ]
+    list_filter = ["provenance", "from_currency", "to_currency"]
+    search_fields = ["from_currency", "to_currency", "source_citation", "notes"]
+    ordering = ["-vigencia_from", "from_currency", "to_currency"]
 
 
 @admin.register(FiscalTable)

@@ -81,6 +81,23 @@ MINIMUM_WAGE_SEEDS = [
 ]
 
 # ---------------------------------------------------------------------------
+# Tipo de cambio (DOF) — Banco de México daily USD/MXN reference rate.
+# Unlike UMA/salario mínimo (annual constants), this is a daily series, so we
+# seed only ONE recent operator-entered placeholder so /fiscal/tipo-cambio/
+# current returns 200 in dev/demo. It is provenance=OPERATOR (not seed history)
+# and MUST be superseded by the automated source (Banxico SF60653) in prod.
+# (from_currency, to_currency, value, vigencia_from)
+TIPO_CAMBIO_SEEDS = [
+    ("USD", "MXN", "18.5100", "2026-08-21"),
+]
+
+TIPO_CAMBIO_NOTE = (
+    "Operator-entered placeholder so the DOF-rate endpoint is live in dev/demo; "
+    "a single day, NOT a maintained series. Prod must feed this from the "
+    "automated source (Banxico SIE SF60653) or an operator's daily DOF read."
+)
+
+# ---------------------------------------------------------------------------
 # ISR retención mensual — LISR Art. 96.
 # ---------------------------------------------------------------------------
 ISR_MONTHLY_2025 = [

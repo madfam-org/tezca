@@ -179,6 +179,61 @@ class MinimumWage(FiscalValueBase):
         )
 
 
+class TipoDeCambio(FiscalValueBase):
+    """DOF reference exchange rate — *tipo de cambio para solventar
+    obligaciones denominadas en moneda extranjera*, published by Banco de
+    México in the Diario Oficial de la Federación each business day.
+
+    This is the SAT-defensible rate: LIVA Art. 20 and CFF Art. 20 require
+    fiscal obligations denominated in foreign currency to be converted at
+    the DOF rate in force on the day the obligation arises. It is *not* a
+    market/spot rate — consumers who want a live spot quote go direct to a
+    market provider; those who need the legally-binding rate for a CFDI or a
+    tax figure read it here.
+
+    Append-only like every fiscal value: each business-day publication is a
+    new row (``vigencia_from`` = the day it is in force, normally the DOF
+    ``dof_date``), never an edit. ``value`` is the units of ``to_currency``
+    per one unit of ``from_currency`` (e.g. MXN per 1 USD).
+    """
+
+    from_currency = models.CharField(
+        max_length=3,
+        default="USD",
+        db_index=True,
+        help_text="ISO 4217 base currency (default USD — the only pair the DOF publishes daily)",
+    )
+    to_currency = models.CharField(
+        max_length=3,
+        default="MXN",
+        db_index=True,
+        help_text="ISO 4217 quote currency (default MXN)",
+    )
+
+    class Meta:
+        verbose_name = "tipo de cambio (DOF)"
+        verbose_name_plural = "tipos de cambio (DOF)"
+        ordering = ["-vigencia_from", "from_currency", "to_currency"]
+        indexes = [
+            models.Index(fields=["from_currency", "to_currency", "vigencia_from"]),
+            models.Index(fields=["vigencia_from", "vigencia_to"]),
+        ]
+        constraints = [
+            # One published rate per pair per in-force day. A correction is a
+            # later-vigencia row, so the natural key is (pair, vigencia_from).
+            models.UniqueConstraint(
+                fields=["from_currency", "to_currency", "vigencia_from"],
+                name="uniq_tipocambio_pair_vigencia",
+            )
+        ]
+
+    def __str__(self):
+        return (
+            f"TC {self.from_currency}/{self.to_currency} "
+            f"{self.vigencia_from}: {self.value} [{self.provenance}]"
+        )
+
+
 class FiscalTable(models.Model):
     """A structured, versioned fiscal table keyed by fiscal year.
 
