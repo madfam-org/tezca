@@ -91,6 +91,79 @@ MINIMAL_V2_XML = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+# AKN XML reproducing the LFPDPPP transitorio-collision (Defect 1).
+# Mirrors what apps/parsers/akn_generator_v2 emits: a substantive
+# <article id="art-8"><num>Artículo 8.</num> AND an "Octavo" transitorio
+# serialised as <article id="trans-8"><num>Octavo</num> inside a TRANSITORIOS
+# section. Both previously derived article_id "8" and collided on the ES
+# _id "{law}-8"; last-write-wins let the transitorio overwrite the real
+# article. Post-fix they must be two distinct docs.
+TRANSITORIO_COLLISION_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+    <act name="law">
+        <body>
+            <chapter id="capitulo-1">
+                <num>CAPÍTULO I</num>
+                <article id="art-8">
+                    <num>Artículo 8.</num>
+                    <content>
+                        <p>Artículo 8. El consentimiento del titular es requisito para el tratamiento de datos personales.</p>
+                    </content>
+                </article>
+            </chapter>
+            <chapter id="capitulo-trans">
+                <num>TRANSITORIOS</num>
+                <article id="trans-1">
+                    <num>Primero</num>
+                    <content>
+                        <p>El presente Decreto entrará en vigor al día siguiente de su publicación.</p>
+                    </content>
+                </article>
+                <article id="trans-8">
+                    <num>Octavo</num>
+                    <content>
+                        <p>El Instituto Nacional de Transparencia se extinguirá y la Plataforma Nacional migrará conforme al presente Decreto.</p>
+                    </content>
+                </article>
+            </chapter>
+        </body>
+    </act>
+</akomaNtoso>
+"""
+
+# AKN XML reproducing the real-world amparo case where a DOF reform decree,
+# appended after the body, re-uses substantive article numbers with the same
+# <num>Artículo N</num> shape (no ordinal, no "trans-" id). This is the harder
+# variant the source XML does not cleanly mark as transitorio; the defensive
+# de-dup pass must still keep both docs distinct.
+REFORM_DECREE_COLLISION_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+    <act name="law">
+        <body>
+            <chapter id="capitulo-4">
+                <num>CAPÍTULO IV</num>
+                <article id="art-27">
+                    <num>Artículo 27</num>
+                    <content>
+                        <p>Artículo 27. Las notificaciones personales se harán de acuerdo con las siguientes reglas.</p>
+                    </content>
+                </article>
+            </chapter>
+            <chapter id="capitulo-reform">
+                <num>CAPÍTULO III</num>
+                <article id="art-27">
+                    <num>Artículo 27</num>
+                    <content>
+                        <p>artículo 27; párrafos tercero y cuarto, a la fracción II del artículo 28, del decreto de reforma.</p>
+                    </content>
+                </article>
+            </chapter>
+        </body>
+    </act>
+</akomaNtoso>
+"""
+
+
 class TestIndexLawsCommand:
 
     @pytest.fixture
@@ -133,6 +206,126 @@ class TestIndexLawsCommand:
         assert art2["title"] is None
         assert art2["chapter"] is None
 
+    # ── Defect 1: transitorio / substantive-article id collision ────────────
+
+    def test_transitorio_and_substantive_article_coexist(self, command):
+        """A transitorio and a same-numbered substantive article must BOTH
+        survive extraction with DISTINCT ids and their own correct text.
+
+        This is the regression test that was missing: pre-fix the "Octavo"
+        transitorio and substantive article 8 both derived article_id "8" and
+        the transitorio overwrote the real article in Elasticsearch.
+        """
+        articles = command.extract_articles_from_xml(
+            TRANSITORIO_COLLISION_XML, "lfpdppp"
+        )
+
+        by_id = {a["article_id"]: a for a in articles}
+
+        # All three provisions survive as separate entries.
+        assert len(articles) == 3, f"expected 3 distinct articles, got {by_id.keys()}"
+
+        # The substantive article 8 keeps the bare number and its real text.
+        assert "8" in by_id, f"substantive article 8 missing: {list(by_id)}"
+        assert by_id["8"]["is_transitorio"] is False
+        assert "consentimiento del titular" in by_id["8"]["text"]
+
+        # The "Octavo" transitorio lives at a namespaced, non-colliding id.
+        assert "8" != "T-8"
+        assert "T-8" in by_id, f"transitorio Octavo missing/collided: {list(by_id)}"
+        assert by_id["T-8"]["is_transitorio"] is True
+        assert "Plataforma Nacional" in by_id["T-8"]["text"]
+
+        # The substantive text must NOT have been overwritten by the transitorio.
+        assert "Plataforma Nacional" not in by_id["8"]["text"]
+
+        # The "Primero" transitorio is likewise namespaced.
+        assert "T-1" in by_id
+        assert by_id["T-1"]["is_transitorio"] is True
+
+        # The resulting Elasticsearch _ids are all unique.
+        es_ids = [f"lfpdppp-{a['article_id']}" for a in articles]
+        assert len(es_ids) == len(set(es_ids)), f"duplicate ES _ids: {es_ids}"
+        assert "lfpdppp-8" in es_ids
+        assert "lfpdppp-T-8" in es_ids
+
+    def test_reform_decree_reused_numbers_do_not_overwrite(self, command):
+        """Even when the source XML does NOT cleanly mark a reform decree as
+        transitorio (same <num>Artículo N</num>, no ordinal, no trans- id),
+        the defensive de-dup pass must keep both occurrences as distinct docs
+        rather than silently overwriting the substantive article.
+        """
+        articles = command.extract_articles_from_xml(
+            REFORM_DECREE_COLLISION_XML, "amparo"
+        )
+
+        assert len(articles) == 2, "both art-27 occurrences must be retained"
+        ids = [a["article_id"] for a in articles]
+        assert len(set(ids)) == 2, f"ids must be distinct, got {ids}"
+
+        # First occurrence keeps the canonical number; the substantive text is
+        # served from it.
+        assert ids[0] == "27"
+        assert "notificaciones personales" in articles[0]["text"]
+
+        # Second occurrence is suffixed so it cannot clobber the first in ES.
+        assert ids[1].startswith("27-")
+        es_ids = [f"amparo-{a['article_id']}" for a in articles]
+        assert len(set(es_ids)) == 2
+
+    # ── Defect 2: newest LawVersion must be indexed ─────────────────────────
+
+    def test_indexes_newest_version_not_oldest(self, command):
+        """index_law must index the NEWEST version. LawVersion.Meta.ordering is
+        ["-publication_date"] (descending), so the queryset's .first() is the
+        newest. Regression: the code used .last() and indexed the OLDEST
+        (superseded) version.
+        """
+        newest_version = MagicMock()
+        newest_version.xml_file_path = "path/to/newest.xml"
+        newest_version.publication_date.isoformat.return_value = "2025-03-20"
+
+        oldest_version = MagicMock()
+        oldest_version.xml_file_path = "path/to/oldest.xml"
+        oldest_version.publication_date.isoformat.return_value = "2010-07-05"
+
+        mock_law = MagicMock()
+        mock_law.official_id = "lfpdppp"
+        mock_law.name = "LFPDPPP"
+        mock_law.category = "Ley"
+        mock_law.tier = "federal"
+        mock_law.municipality = ""
+        mock_law.state = ""
+        mock_law.status = "vigente"
+        mock_law.domains = []
+        mock_law.law_type = "legislative"
+        mock_law.short_name = None
+
+        # Simulate the Meta.ordering=["-publication_date"] queryset:
+        #   .first() → newest, .last() → oldest.
+        mock_law.versions.first.return_value = newest_version
+        mock_law.versions.last.return_value = oldest_version
+
+        mock_es = MagicMock()
+
+        with pytest.MonkeyPatch.context() as m:
+            from apps.api.management.commands import index_laws
+
+            captured = {}
+
+            def _fake_read(path):
+                captured["path"] = path
+                return MINIMAL_V2_XML
+
+            m.setattr(index_laws, "read_data_content", _fake_read)
+            m.setattr(index_laws, "helpers", MagicMock())
+
+            command.index_law(mock_law, mock_es, dry_run=False)
+
+        # The file that was read must be the newest version's, never the oldest.
+        assert captured["path"] == "path/to/newest.xml"
+        assert captured["path"] != "path/to/oldest.xml"
+
     def test_handle_indexing_municipality(self, command):
         """Verify municipality field is added to ES document."""
         # Mock Law object
@@ -148,7 +341,7 @@ class TestIndexLawsCommand:
         mock_version = MagicMock()
         mock_version.xml_file_path = "path/to/xml"
         mock_version.publication_date.isoformat.return_value = "2023-01-01"
-        mock_law.versions.order_by.return_value.first.return_value = mock_version
+        mock_law.versions.first.return_value = mock_version
 
         # Use the mock Law bound in the Command module (not a fresh import)
         mock_qs = MagicMock()
@@ -221,7 +414,7 @@ class TestIndexLawsCommand:
         mock_version = MagicMock()
         mock_version.xml_file_path = "path/to/embed_xml"
         mock_version.publication_date.isoformat.return_value = "2024-06-01"
-        mock_law.versions.last.return_value = mock_version
+        mock_law.versions.first.return_value = mock_version
 
         # Mock ES client
         mock_es = MagicMock()
@@ -278,7 +471,7 @@ class TestIndexLawsCommand:
         mock_version = MagicMock()
         mock_version.xml_file_path = "path/to/xml"
         mock_version.publication_date.isoformat.return_value = "2024-06-01"
-        mock_law.versions.last.return_value = mock_version
+        mock_law.versions.first.return_value = mock_version
 
         mock_es = MagicMock()
 
@@ -326,7 +519,7 @@ class TestIndexLawsCommand:
         mock_version = MagicMock()
         mock_version.xml_file_path = "path/to/xml"
         mock_version.publication_date.isoformat.return_value = "2024-06-01"
-        mock_law.versions.last.return_value = mock_version
+        mock_law.versions.first.return_value = mock_version
 
         mock_es = MagicMock()
 

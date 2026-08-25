@@ -31,6 +31,40 @@ class DatabaseSaver:
             logger.error(f"Failed to setup Django: {e}")
             raise
 
+    @staticmethod
+    def _resolve_status(raw_status):
+        """Normalise a registry status string to a valid Law.Status value.
+
+        The registry uses non-canonical markers that are not model choices:
+          - "active"      → a current, in-force law            → VIGENTE
+          - "discovered"  → known but not yet ingested; once we are saving a
+                            version it IS ingested and current  → VIGENTE
+          - missing/blank                                       → VIGENTE
+        Canonical values ("vigente", "abrogada", "derogada", "unknown") are
+        passed through unchanged (case-insensitively).
+        """
+        from apps.api.models import Law
+
+        if not raw_status:
+            return Law.Status.VIGENTE
+
+        normalized = str(raw_status).strip().lower()
+        valid = {choice.value for choice in Law.Status}
+        if normalized in valid:
+            return normalized
+
+        alias = {
+            "active": Law.Status.VIGENTE,
+            "vigent": Law.Status.VIGENTE,
+            "current": Law.Status.VIGENTE,
+            "discovered": Law.Status.VIGENTE,
+            "in_force": Law.Status.VIGENTE,
+            "abrogated": Law.Status.ABROGADA,
+            "repealed": Law.Status.ABROGADA,
+            "derogated": Law.Status.DEROGADA,
+        }
+        return alias.get(normalized, Law.Status.VIGENTE)
+
     def save_law_version(self, law_metadata, xml_path, pdf_path, quality_metrics=None):
         """
         Save law version to database.
@@ -45,6 +79,14 @@ class DatabaseSaver:
 
         from apps.api.models import Law, LawVersion
 
+        # Resolve the legal status. A law present in the registry with a current
+        # version is "vigente" by default. The registry historically carries
+        # non-canonical status strings ("active", "discovered") that are NOT
+        # valid Law.Status choices, so normalise them. Without this the Law is
+        # created with the model default (UNKNOWN) and the API serves
+        # status="unknown" for every freshly ingested law.
+        status = self._resolve_status(law_metadata.get("status"))
+
         # 1. Get or Create Law
         # Note: tier is hardcoded to "federal" because law_registry.json uses
         # "tier" for thematic categories (fiscal, constitutional, etc.), not
@@ -56,6 +98,7 @@ class DatabaseSaver:
                 "short_name": law_metadata.get("short_name", law_metadata["name"]),
                 "category": law_metadata.get("category"),
                 "tier": "federal",
+                "status": status,
             },
         )
 
@@ -63,6 +106,10 @@ class DatabaseSaver:
             # Update metadata if needed
             law.name = law_metadata["name"]
             law.short_name = law_metadata.get("short_name", law.short_name)
+            # Promote an unknown/blank status to the resolved one. Never
+            # downgrade an explicitly-curated status back to "unknown".
+            if status != Law.Status.UNKNOWN or not law.status:
+                law.status = status
             law.save()
 
         # 2. Extract dates

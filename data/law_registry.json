@@ -2599,6 +2599,22 @@
             "slug": "lfpdppp"
         },
         {
+            "id": "reg_reg_lfpdppp",
+            "name": "Reglamento de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares",
+            "short_name": "Reglamento de la LFPDPPP",
+            "type": "reglamento",
+            "slug": "reg_reg_lfpdppp",
+            "expected_articles": 132,
+            "publication_date": "2011-12-21",
+            "source": "chamber",
+            "url": "https://www.diputados.gob.mx/LeyesBiblio/regley/Reg_LFPDPPP.pdf",
+            "remote_path": "regley/Reg_LFPDPPP.pdf",
+            "priority": 3,
+            "tier": "federal",
+            "status": "vigente",
+            "category": "reglamento"
+        },
+        {
             "id": "lfppcpcia",
             "name": "Ley Federal de Protección del Patrimonio Cultural de los Pueblos y Comunidades Indígenas y Afromexicanas \t\t\t\t \t\t\t\tDOF 17/01/2022 \t\t\t\t \t\t\t\tNueva reforma",
             "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPPCPCIA.pdf",
