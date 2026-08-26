@@ -418,6 +418,16 @@ class Command(BaseCommand):
         else:
             _record("db_es_article_count", SKIP, "ES unavailable")
 
+        # 6.5. akn_es_parity — the invariant that would have caught the LFPDPPP
+        # transitorio-collision P0 (arts 1-10/20 silently overwritten by
+        # same-numbered transitorios, ES doc count dropping below the AKN count
+        # with no assertion). Checks 4 and 6 each PASSed independently; nothing
+        # compared them. Assert: distinct ES article docs == AKN <article> count.
+        if es and content is not None and self._is_akn_xml(content):
+            self._check_akn_es_parity(law, content, es, _record)
+        else:
+            _record("akn_es_parity", SKIP, "needs ES + AKN content")
+
         # 7. es_text_sample
         if es:
             self._check_es_text_samples(law, es, _record)
@@ -497,6 +507,74 @@ class Command(BaseCommand):
                 "db_es_article_count",
                 PASS,
                 f"{es_count:,} article(s) in ES",
+            )
+
+    def _check_akn_es_parity(self, law, content, es, _record):
+        """Assert the AKN <article> count equals the distinct ES article-doc count.
+
+        This is the invariant that would have caught the LFPDPPP transitorio
+        collision: a same-numbered transitorio overwrote a substantive article on
+        the shared ES `_id` (`{law}-{n}`), silently dropping the ES count below the
+        AKN count. Checks 4 and 6 each measured one side and PASSed; nothing
+        compared them. Here we compare.
+
+        Accounting for two legitimate, non-collision differences:
+        - the single degraded `{law}-full_text` fallback doc (raw-text path) is
+          excluded from the ES side;
+        - transitorios are now namespaced `T-*` (the collision fix), so both sides
+          count article nodes + transitorios alike — the totals still match.
+        """
+        from apps.api.config import INDEX_NAME
+
+        try:
+            akn_count = self._count_akn_articles(content)
+        except Exception as exc:
+            _record("akn_es_parity", WARNING, f"AKN parse error: {exc}")
+            return
+
+        try:
+            resp = es.count(
+                index=INDEX_NAME,
+                body={
+                    "query": {
+                        "bool": {
+                            "must": {"term": {"law_id": law.official_id}},
+                            # exclude the degraded full_text fallback doc
+                            "must_not": {"term": {"article": "full_text"}},
+                        }
+                    }
+                },
+            )
+            es_count = resp.get("count", 0)
+        except Exception as exc:
+            _record("akn_es_parity", SKIP, f"ES query failed: {exc}")
+            return
+
+        # AKN counts only <article> nodes; if the indexer namespaces transitorios
+        # from the same nodes, both sides move together. A shortfall on the ES
+        # side is the collision signature.
+        if akn_count == 0:
+            _record("akn_es_parity", SKIP, "0 AKN articles (nothing to compare)")
+        elif es_count == akn_count:
+            _record(
+                "akn_es_parity",
+                PASS,
+                f"AKN {akn_count} == ES {es_count} (no collision)",
+            )
+        elif es_count < akn_count:
+            _record(
+                "akn_es_parity",
+                FAIL,
+                f"ES {es_count} < AKN {akn_count}: "
+                f"{akn_count - es_count} article(s) missing/overwritten "
+                f"(collision — same _id overwrote a distinct article)",
+            )
+        else:
+            # ES > AKN is unexpected but not the collision failure mode; warn.
+            _record(
+                "akn_es_parity",
+                WARNING,
+                f"ES {es_count} > AKN {akn_count}: stale/orphan ES docs likely",
             )
 
     def _check_es_text_samples(self, law, es, _record):
