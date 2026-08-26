@@ -13,11 +13,34 @@ Both mutate production data (Elasticsearch documents / the Postgres `tezca` DB)
 and are gated behind the guarded legal-data-ops workflow. Run them from an
 operator context, Enclii-first, never as an unattended side effect of a merge.
 
+> **⚠️ INVOCATION CORRECTION (2026-08-26).** Earlier drafts of this runbook used
+> `enclii exec tezca-api -- python apps/manage.py …`. **`enclii exec` is NOT a real
+> subcommand** (`enclii --help` has no `exec`; `enclii ops pods` only diagnoses/
+> logs/restarts). The sanctioned in-cluster path is a **registered Celery task run
+> as an audited one-off job**:
+>
+> ```bash
+> # Re-index LFPDPPP in place (the transitorio/status/newest-version fix → live ES).
+> # Dry run first (counts, no ES writes), then the real run:
+> enclii jobs run dataops.reindex_law -- law_id=lfpdppp dry_run=true  --service tezca-worker --env production
+> enclii jobs run dataops.reindex_law -- law_id=lfpdppp               --service tezca-worker --env production
+> ```
+>
+> `dataops.reindex_law` (added in `apps/scraper/scheduling/tasks.py`) wraps
+> `index_laws --law-id <id>` — the in-place upsert path, and it **refuses** the
+> corpus-dropping `--reindex`/`--all` variants. It runs on the worker, which has
+> `ES_HOST`/DB env wired. (Confirm the exact `enclii jobs run` vs `run-once` flag
+> shape against `enclii jobs --help` / `enclii jobs list` for the current CLI —
+> the `-- key=val --service --env` form follows `docs/research/SCRAPER_FIRST_RUN_CHECKLIST.md`.)
+> The verification `curl` steps below are correct as-is. The raw `python apps/manage.py …`
+> lines in §1–§2 are the reference for an operator with a direct pod shell
+> (`ssh ssh.madfam.io` → `kubectl exec`), NOT for `enclii exec`.
+>
 > **Guard.** Local legal ingestion / indexing / export operations are refused
 > unless `LOCAL_LEGAL_DATA_OPS=yes` is set (`scripts/require-local-legal-data-ops.mjs`).
-> Set it only for the duration of an explicit, supervised operation. In-cluster
-> execution goes through `enclii exec tezca-api -- …` against the production API
-> pod, which already has `ES_HOST` / DB env wired.
+> That guard is on the LOCAL npm/script wrappers only — the `index_laws` Django
+> command (and thus `dataops.reindex_law`) has no such guard and runs cleanly on
+> the trusted worker.
 
 ---
 

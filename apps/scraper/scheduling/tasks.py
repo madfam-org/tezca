@@ -1092,3 +1092,74 @@ def check_scraper_health():
         len(row_growth_warnings),
     )
     return results
+
+
+@shared_task(name="dataops.reindex_law")
+def reindex_law(law_id, dry_run=False):
+    """Re-index a single law into Elasticsearch (in-place upsert by ``_id``).
+
+    First-class, audited invocation of the ``index_laws`` management command
+    for one law, so an operator can push an indexer fix to the live corpus with
+    ``enclii jobs run dataops.reindex_law -- law_id=<official_id>`` instead of a
+    shell into the pod. Wraps ``index_laws --law-id <law_id>`` — the in-place
+    path (no ``--reindex``), which upserts the law's article documents into the
+    current alias without touching the rest of the corpus.
+
+    This is the sanctioned way to make an ``index_laws`` fix reach production
+    (e.g. the LFPDPPP transitorio-collision / status / newest-version fixes):
+    the code fix only changes the OUTPUT of indexing; the live index is not
+    rewritten until the affected law is re-indexed. Idempotent by ``_id`` — safe
+    to re-run, and re-running from a prior image is the rollback.
+
+    Args:
+        law_id: the law's ``official_id`` (e.g. ``"lfpdppp"``,
+            ``"reg_reg_lfpdppp"``). Required.
+        dry_run: if true, pass ``--dry-run`` — count what WOULD be indexed with
+            no Elasticsearch writes. Use for a pre-flight before the real run.
+
+    Returns a status dict: ``{status, law_id, dry_run, output}`` on success, or
+    ``{status: "error", ...}`` on failure. ``output`` is the command's captured
+    stdout (article counts / the dry-run report).
+
+    NOTE: deliberately NOT a full-corpus re-index. This task refuses to build a
+    fresh index or swap the alias — ``index_laws --reindex --law-id`` would drop
+    every other law from the live alias (it swaps to an index containing only
+    this run's law). A clean full rebuild is a separate, explicit operation
+    (``index_laws --all --reindex``), out of scope here on purpose.
+    """
+    import io
+    from contextlib import redirect_stdout
+
+    from django.core.management import call_command
+
+    if not law_id or not str(law_id).strip():
+        return {"status": "error", "error": "law_id is required"}
+    law_id = str(law_id).strip()
+
+    log_entry = _start_log(
+        "reindex_law", parameters={"law_id": law_id, "dry_run": bool(dry_run)}
+    )
+    buffer = io.StringIO()
+    try:
+        with redirect_stdout(buffer):
+            call_command("index_laws", law_id=law_id, dry_run=bool(dry_run))
+        output = buffer.getvalue().strip()
+        logger.info("reindex_law %s complete (dry_run=%s)", law_id, bool(dry_run))
+        # A dry run touches nothing; a real run indexed one law.
+        _finish_log(log_entry, ingested=0 if dry_run else 1)
+        return {
+            "status": "completed",
+            "law_id": law_id,
+            "dry_run": bool(dry_run),
+            "output": output[-4000:],
+        }
+    except Exception as e:
+        logger.error("reindex_law %s failed: %s", law_id, e)
+        _finish_log(log_entry, error=str(e))
+        return {
+            "status": "error",
+            "law_id": law_id,
+            "dry_run": bool(dry_run),
+            "error": str(e),
+            "output": buffer.getvalue().strip()[-4000:],
+        }
