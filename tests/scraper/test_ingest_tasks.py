@@ -329,3 +329,117 @@ class TestReindexLaw:
         assert result["status"] == "error"
         assert "index boom" in result["error"]
         assert result["law_id"] == "lfpdppp"
+
+
+# ── ingest_law ────────────────────────────────────────────────────────
+
+
+class _FakeResult:
+    """Minimal stand-in for IngestionResult (success/error/grade)."""
+
+    def __init__(self, success=True, error="", grade="A"):
+        self.success = success
+        self.error = error
+        self.grade = grade
+
+
+class TestIngestLaw:
+    def test_missing_law_id_is_rejected(self):
+        from apps.scraper.scheduling import tasks
+
+        assert tasks.ingest_law("")["status"] == "error"
+        assert tasks.ingest_law("   ")["status"] == "error"
+
+    @patch("apps.scraper.utils.law_registry.LawRegistry")
+    def test_law_not_in_registry_is_a_clean_error(self, mock_registry_cls):
+        from apps.scraper.scheduling import tasks
+
+        mock_registry_cls.return_value.get_by_id.return_value = None
+        result = tasks.ingest_law("does_not_exist")
+        assert result["status"] == "error"
+        assert "not in data/law_registry.json" in result["error"]
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.scheduling.tasks.reindex_law")
+    @patch("apps.parsers.pipeline.IngestionPipeline")
+    @patch("apps.scraper.utils.law_registry.LawRegistry")
+    def test_happy_path_ingests_then_indexes(
+        self, mock_registry_cls, mock_pipeline_cls, mock_reindex, mock_log_cls
+    ):
+        from apps.scraper.scheduling import tasks
+
+        mock_registry_cls.return_value.get_by_id.return_value = {
+            "id": "reg_reg_lfpdppp"
+        }
+        mock_pipeline_cls.return_value.ingest_law.return_value = _FakeResult(
+            success=True, grade="B"
+        )
+        mock_reindex.return_value = {"status": "completed"}
+
+        result = tasks.ingest_law("reg_reg_lfpdppp")
+        assert result["status"] == "completed"
+        assert result["grade"] == "B"
+        assert result["quarantined"] is False
+        assert result["indexed"] is True
+        mock_pipeline_cls.return_value.ingest_law.assert_called_once()
+        mock_reindex.assert_called_once_with("reg_reg_lfpdppp")
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.scheduling.tasks.reindex_law")
+    @patch("apps.parsers.pipeline.IngestionPipeline")
+    @patch("apps.scraper.utils.law_registry.LawRegistry")
+    def test_quarantined_parse_is_saved_not_indexed(
+        self, mock_registry_cls, mock_pipeline_cls, mock_reindex, mock_log_cls
+    ):
+        from apps.scraper.scheduling import tasks
+
+        mock_registry_cls.return_value.get_by_id.return_value = {"id": "somelaw"}
+        # Quarantine: success=False with a "Quarantined:" error, DB version saved.
+        mock_pipeline_cls.return_value.ingest_law.return_value = _FakeResult(
+            success=False, error="Quarantined: Grade D (55.0%)", grade="D"
+        )
+
+        result = tasks.ingest_law("somelaw")
+        # Reported as a completed (quality) outcome, NOT an error, and NOT indexed.
+        assert result["status"] == "completed"
+        assert result["quarantined"] is True
+        assert result["indexed"] is False
+        assert "note" in result
+        mock_reindex.assert_not_called()
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.scraper.scheduling.tasks.reindex_law")
+    @patch("apps.parsers.pipeline.IngestionPipeline")
+    @patch("apps.scraper.utils.law_registry.LawRegistry")
+    def test_index_false_persists_only(
+        self, mock_registry_cls, mock_pipeline_cls, mock_reindex, mock_log_cls
+    ):
+        from apps.scraper.scheduling import tasks
+
+        mock_registry_cls.return_value.get_by_id.return_value = {"id": "somelaw"}
+        mock_pipeline_cls.return_value.ingest_law.return_value = _FakeResult(
+            success=True, grade="A"
+        )
+
+        result = tasks.ingest_law("somelaw", index=False)
+        assert result["status"] == "completed"
+        assert result["indexed"] is False
+        mock_reindex.assert_not_called()
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.parsers.pipeline.IngestionPipeline")
+    @patch("apps.scraper.utils.law_registry.LawRegistry")
+    def test_ingest_failure_surfaces_as_error(
+        self, mock_registry_cls, mock_pipeline_cls, mock_log_cls
+    ):
+        from apps.scraper.scheduling import tasks
+
+        mock_registry_cls.return_value.get_by_id.return_value = {"id": "somelaw"}
+        mock_pipeline_cls.return_value.ingest_law.return_value = _FakeResult(
+            success=False, error="download failed", grade=None
+        )
+
+        result = tasks.ingest_law("somelaw")
+        assert result["status"] == "error"
+        assert result["stage"] == "ingest"
+        assert "download failed" in result["error"]

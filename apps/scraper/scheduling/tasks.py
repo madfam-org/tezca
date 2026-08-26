@@ -1163,3 +1163,112 @@ def reindex_law(law_id, dry_run=False):
             "error": str(e),
             "output": buffer.getvalue().strip()[-4000:],
         }
+
+
+@shared_task(name="dataops.ingest_law")
+def ingest_law(law_id, index=True):
+    """Ingest ONE law end-to-end by its registry id, then index it.
+
+    First-class, audited invocation for bringing a single registry entry from
+    zero into the live corpus — download → extract → parse → quality-gate →
+    persist (``Law``/``LawVersion``) → index into Elasticsearch. The motivating
+    case is ``reg_reg_lfpdppp`` (the Reglamento de la LFPDPPP): #218 added its
+    ingest-ready registry entry but the actual download/parse/ingest is
+    side-effectful and was left to a runbook. This makes it:
+
+        enclii jobs run dataops.ingest_law -- law_id=reg_reg_lfpdppp --service tezca-worker --env production
+
+    The law MUST already exist in ``data/law_registry.json`` (this task does not
+    add registry entries — it ingests one that's there). ``IngestionPipeline``
+    runs the full pipeline and persists via ``DatabaseSaver``; ``ingest_law``
+    itself does NOT touch Elasticsearch, so this task then calls
+    ``index_laws --law-id`` (the in-place upsert, same as ``reindex_law``) unless
+    ``index=False``.
+
+    Args:
+        law_id: the registry ``official_id`` (e.g. ``"reg_reg_lfpdppp"``).
+        index: if true (default), index into ES after a successful DB ingest.
+            Pass ``index=False`` to persist only (e.g. to inspect the parse /
+            quality grade before it reaches the live index).
+
+    Returns a status dict with the ingest ``grade``/``articles``/``quarantined``
+    and whether indexing ran. A D/F-grade parse is quarantined from indexing by
+    the pipeline's own gate; ``ingest_law`` reports that rather than forcing it —
+    inspect the parse and index deliberately (``reindex_law`` /
+    ``index_laws --include-quarantined``) if you accept it.
+    """
+    from apps.scraper.utils.law_registry import LawRegistry
+
+    if not law_id or not str(law_id).strip():
+        return {"status": "error", "error": "law_id is required"}
+    law_id = str(law_id).strip()
+
+    entry = LawRegistry().get_by_id(law_id)
+    if entry is None:
+        return {
+            "status": "error",
+            "law_id": law_id,
+            "error": (
+                f"'{law_id}' is not in data/law_registry.json — this task "
+                "ingests an existing registry entry, it does not create one."
+            ),
+        }
+
+    log_entry = _start_log("ingest_law", parameters={"law_id": law_id})
+    try:
+        from apps.parsers.pipeline import IngestionPipeline
+
+        result = IngestionPipeline().ingest_law(entry)
+        grade = getattr(result, "grade", None)
+
+        # The pipeline's quality gate quarantines a D/F parse by setting
+        # success=False with an error that starts "Quarantined:" — the DB version
+        # IS saved, but it is deliberately NOT indexed. That is a quality outcome,
+        # not a hard failure: report it as such (don't mislabel it "error", and
+        # never force it into the live index here).
+        quarantined = bool(result.error and result.error.startswith("Quarantined"))
+
+        if not result.success and not quarantined:
+            _finish_log(log_entry, failed=1, error=result.error or "ingest failed")
+            return {
+                "status": "error",
+                "law_id": law_id,
+                "stage": "ingest",
+                "grade": grade,
+                "error": result.error or "ingest failed",
+            }
+
+        payload = {
+            "status": "completed",
+            "law_id": law_id,
+            "grade": grade,
+            "quarantined": quarantined,
+            "indexed": False,
+        }
+
+        if quarantined:
+            payload["note"] = (
+                f"parse quarantined ({result.error}) — DB version saved, NOT "
+                "indexed. Inspect the XML, then index deliberately via "
+                "dataops.reindex_law or index_laws --include-quarantined."
+            )
+        elif index:
+            reindex_result = reindex_law(law_id)
+            payload["indexed"] = reindex_result.get("status") == "completed"
+            payload["index_result"] = reindex_result.get("status")
+            if reindex_result.get("status") != "completed":
+                payload["index_error"] = reindex_result.get("error")
+
+        _finish_log(log_entry, ingested=1)
+        logger.info(
+            "ingest_law %s complete: grade=%s quarantined=%s indexed=%s",
+            law_id,
+            grade,
+            quarantined,
+            payload["indexed"],
+        )
+        return payload
+    except Exception as e:
+        logger.error("ingest_law %s failed: %s", law_id, e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "law_id": law_id, "error": str(e)}
