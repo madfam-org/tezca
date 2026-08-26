@@ -377,6 +377,179 @@ class TestTransitoriosDetection:
 
 
 # ===========================================================================
+# 3b. TRANSITORIOS past the 12th ordinal (compound-ordinal capture)
+# ===========================================================================
+
+
+class TestCompoundOrdinalTransitorios:
+    """Transitorios numbered past the 12th (DÉCIMO TERCERO … TRIGÉSIMO …).
+
+    The previous parser iterated only the 1–12 ORDINAL_PATTERNS map, so a law's
+    13th and later transitorios (CCF ~50, LFT ~33, LIVA ~27) were SILENTLY
+    DROPPED. These tests pin that every ordinal — including two-word compounds
+    — is captured with the correct number and the ``trans-N`` id the indexer
+    reads to namespace it.
+    """
+
+    def _law_with_transitorios(self, ordinals):
+        """Build a law with one substantive article + the given transitorio
+        ordinal headings (each with distinct content)."""
+        lines = [
+            "Artículo 1.- Disposición substantiva con contenido.",
+            "",
+            "TRANSITORIOS",
+            "",
+        ]
+        for word in ordinals:
+            lines.append(f"{word}.- Contenido del transitorio {word.lower()} aqui.")
+            lines.append("")
+        return "\n".join(lines)
+
+    def _parse_transitorios(self, ordinals):
+        text = self._law_with_transitorios(ordinals)
+        parser = AkomaNtosoGeneratorV2()
+        result = parser.parse_structure_v2(text)
+        trans = [e for e in result.elements if e["type"] == "transitorio"]
+        return {t["number"]: t for t in trans}
+
+    def test_thirteenth_transitorio_captured(self):
+        by_num = self._parse_transitorios(
+            ["PRIMERO", "SEGUNDO", "DÉCIMO SEGUNDO", "DÉCIMO TERCERO"]
+        )
+        assert 13 in by_num, f"13th transitorio dropped; got {sorted(by_num)}"
+        assert by_num[13]["id"] == "trans-13"
+
+    def test_twentieth_transitorio_captured(self):
+        by_num = self._parse_transitorios(["PRIMERO", "VIGÉSIMO"])
+        assert 20 in by_num, f"20th transitorio dropped; got {sorted(by_num)}"
+        assert by_num[20]["id"] == "trans-20"
+
+    def test_twenty_fifth_transitorio_captured(self):
+        by_num = self._parse_transitorios(["PRIMERO", "VIGÉSIMO QUINTO"])
+        assert 25 in by_num, f"25th transitorio dropped; got {sorted(by_num)}"
+        assert by_num[25]["id"] == "trans-25"
+
+    def test_thirtieth_transitorio_captured(self):
+        by_num = self._parse_transitorios(["PRIMERO", "TRIGÉSIMO"])
+        assert 30 in by_num, f"30th transitorio dropped; got {sorted(by_num)}"
+        assert by_num[30]["id"] == "trans-30"
+
+    def test_full_sequence_1_to_30_all_captured(self):
+        # A realistic long transitorios block: none may be dropped.
+        ordinals = [
+            "PRIMERO",
+            "SEGUNDO",
+            "TERCERO",
+            "CUARTO",
+            "QUINTO",
+            "SEXTO",
+            "SÉPTIMO",
+            "OCTAVO",
+            "NOVENO",
+            "DÉCIMO",
+            "UNDÉCIMO",
+            "DUODÉCIMO",
+            "DÉCIMO TERCERO",
+            "DÉCIMO CUARTO",
+            "DÉCIMO QUINTO",
+            "DÉCIMO SEXTO",
+            "DÉCIMO SÉPTIMO",
+            "DÉCIMO OCTAVO",
+            "DÉCIMO NOVENO",
+            "VIGÉSIMO",
+            "VIGÉSIMO PRIMERO",
+            "VIGÉSIMO SEGUNDO",
+            "VIGÉSIMO TERCERO",
+            "VIGÉSIMO CUARTO",
+            "VIGÉSIMO QUINTO",
+            "VIGÉSIMO SEXTO",
+            "VIGÉSIMO SÉPTIMO",
+            "VIGÉSIMO OCTAVO",
+            "VIGÉSIMO NOVENO",
+            "TRIGÉSIMO",
+        ]
+        by_num = self._parse_transitorios(ordinals)
+        expected = set(range(1, 31))
+        assert (
+            set(by_num) == expected
+        ), f"dropped transitorios: {sorted(expected - set(by_num))}"
+
+    def test_ultimo_transitorio_still_sentinel_999(self):
+        # "ÚLTIMO" has no cardinal position — keep the historical 999 sentinel.
+        by_num = self._parse_transitorios(["PRIMERO", "ÚLTIMO"])
+        assert 999 in by_num, f"ÚLTIMO transitorio dropped; got {sorted(by_num)}"
+        assert by_num[999]["id"] == "trans-999"
+
+    def test_unico_transitorio_captured_as_first(self):
+        # A lone "ÚNICO" transitorio (very common in short reglamentos) must be
+        # captured, consistent with the indexer already recognising "único".
+        text = (
+            "Artículo 1.- Contenido substantivo.\n\n"
+            "TRANSITORIO\n\n"
+            "ÚNICO.- La presente ley entra en vigor al dia siguiente.\n"
+        )
+        parser = AkomaNtosoGeneratorV2()
+        result = parser.parse_structure_v2(text)
+        trans = [e for e in result.elements if e["type"] == "transitorio"]
+        assert len(trans) == 1, f"ÚNICO transitorio dropped; got {trans}"
+        assert trans[0]["number"] == 1
+        assert trans[0]["id"] == "trans-1"
+
+    def test_compound_transitorio_content_does_not_bleed(self):
+        text = (
+            "Artículo 1.- Substantiva.\n\n"
+            "TRANSITORIOS\n\n"
+            "DÉCIMO TERCERO.- El decimotercero dice AAA.\n\n"
+            "VIGÉSIMO QUINTO.- El vigesimoquinto dice BBB.\n"
+        )
+        parser = AkomaNtosoGeneratorV2()
+        result = parser.parse_structure_v2(text)
+        by_num = {e["number"]: e for e in result.elements if e["type"] == "transitorio"}
+        assert "AAA" in by_num[13]["content"]
+        assert "BBB" not in by_num[13]["content"]
+        assert "BBB" in by_num[25]["content"]
+
+    def test_ordinal_numbered_substantive_articles_not_misclassified(self):
+        """JCF-style ordinal-numbered substantive articles must NOT be captured
+        as transitorios. The section boundary (text after the TRANSITORIOS
+        header) is the discriminator — reglas before it are substantive.
+        """
+        # No TRANSITORIOS header at all → zero transitorios, even though every
+        # provision is ordinal-numbered (JCF Reglas de Operación pattern).
+        jcf = (
+            "REGLAS DE OPERACIÓN\n\n"
+            "PRIMERA.- Las presentes reglas tienen por objeto establecer.\n\n"
+            "DÉCIMA QUINTA.- El comité técnico sesionará de manera ordinaria.\n\n"
+            "VIGÉSIMA.- Los recursos no ejercidos serán reintegrados.\n"
+        )
+        parser = AkomaNtosoGeneratorV2()
+        result = parser.parse_structure_v2(jcf)
+        trans = [e for e in result.elements if e["type"] == "transitorio"]
+        assert trans == [], (
+            "substantive ordinal reglas were misclassified as transitorios: "
+            f"{[(t['number'], t['ordinal']) for t in trans]}"
+        )
+
+    def test_substantive_ordinal_reglas_with_real_transitorios_section(self):
+        """When ordinal substantive reglas ARE followed by a real transitorios
+        section, only the post-header ordinals are captured as transitorios."""
+        text = (
+            "REGLAS\n\n"
+            "PRIMERA.- Regla substantiva uno.\n\n"
+            "DÉCIMA QUINTA.- Regla substantiva quince.\n\n"
+            "TRANSITORIOS\n\n"
+            "PRIMERO.- Las presentes reglas entran en vigor al dia siguiente.\n\n"
+            "SEGUNDO.- Se abrogan las reglas anteriores.\n"
+        )
+        parser = AkomaNtosoGeneratorV2()
+        result = parser.parse_structure_v2(text)
+        trans = [e for e in result.elements if e["type"] == "transitorio"]
+        # Only the 2 post-header transitorios, NOT the substantive PRIMERA/15th.
+        assert len(trans) == 2
+        assert {t["number"] for t in trans} == {1, 2}
+
+
+# ===========================================================================
 # 4. Confidence scoring
 # ===========================================================================
 
@@ -680,6 +853,15 @@ class TestOrdinalToNumber:
             ("UND\u00c9CIMO", 11),
             ("DUOD\u00c9CIMO", 12),
             ("VIG\u00c9SIMO", 20),
+            # Tens 30\u201390 (added so transitorios past the 29th are resolvable).
+            ("TRIG\u00c9SIMO", 30),
+            ("TRIGESIMO", 30),
+            ("CUADRAG\u00c9SIMO", 40),
+            ("QUINCUAG\u00c9SIMO", 50),
+            ("SEXAG\u00c9SIMO", 60),
+            ("SEPTUAG\u00c9SIMO", 70),
+            ("OCTOG\u00c9SIMO", 80),
+            ("NONAG\u00c9SIMO", 90),
         ],
     )
     def test_ordinals(self, ordinal, expected):
@@ -689,6 +871,16 @@ class TestOrdinalToNumber:
         assert ordinal_to_number("D\u00c9CIMO PRIMERO") == 11
         assert ordinal_to_number("DECIMO SEGUNDO") == 12
         assert ordinal_to_number("DECIMO TERCERO") == 13
+
+    def test_compound_ordinal_tens_beyond_twelfth(self):
+        # The defect: real laws carry transitorios well past the 12th. These
+        # compound ordinals must resolve, not return None.
+        assert ordinal_to_number("VIG\u00c9SIMO PRIMERO") == 21
+        assert ordinal_to_number("VIG\u00c9SIMO QUINTO") == 25
+        assert ordinal_to_number("TRIG\u00c9SIMO") == 30
+        assert ordinal_to_number("TRIG\u00c9SIMO PRIMERO") == 31
+        assert ordinal_to_number("CUADRAG\u00c9SIMO QUINTO") == 45
+        assert ordinal_to_number("QUINCUAG\u00c9SIMO NOVENO") == 59
 
     def test_unknown_ordinal_returns_none(self):
         assert ordinal_to_number("CENTESIMO") is None

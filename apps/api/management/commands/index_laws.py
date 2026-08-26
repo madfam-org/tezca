@@ -47,7 +47,8 @@ _ORDINAL_WORD_RE = re.compile(
     r"^(?:"
     r"primer|segund|tercer|cuart|quint|sext|s[ée]ptim|octav|noven|"
     r"d[ée]cim|und[ée]cim|duod[ée]cim|vig[ée]sim|trig[ée]sim|"
-    r"cuadrag[ée]sim|quincuag[ée]sim|[úu]ltim|[úu]nic"
+    r"cuadrag[ée]sim|quincuag[ée]sim|sexag[ée]sim|septuag[ée]sim|"
+    r"octog[ée]sim|nonag[ée]sim|[úu]ltim|[úu]nic"
     r")[oa]s?\b",
     re.IGNORECASE,
 )
