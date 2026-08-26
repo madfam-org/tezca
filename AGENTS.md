@@ -158,7 +158,10 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 2164 tests / 17 skipped as of 2026-04-28; 64% coverage)
+# Backend (pytest + django, 2571 passed / 18 skipped as of 2026-08-25; 64% coverage)
+# NOTE: run tests/integration/test_spot_check.py in a SEPARATE invocation from
+# tests/pipeline/test_index_laws.py — a pre-existing fixture-pollution flake fails
+# them only when batched together; each passes alone. Not a real regression.
 poetry run pytest tests/ -v
 poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 

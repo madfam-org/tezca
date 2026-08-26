@@ -254,3 +254,41 @@ def test_count_by_field_handles_missing_value(registry_file, tmp_path):
     summary = registry.summary()
     assert summary["by_tier"]["unknown"] == 1
     assert summary["by_tier"]["fiscal"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Real-registry contract: RLFPDPPP reglamento must be ingest-ready (Defect 4)
+# ---------------------------------------------------------------------------
+
+
+def _real_registry_path() -> Path:
+    # tests/scraper/test_law_registry.py → repo root → data/law_registry.json
+    return Path(__file__).resolve().parents[2] / "data" / "law_registry.json"
+
+
+def test_real_registry_is_valid_json():
+    """The shipped registry must always be parseable — a broken registry
+    breaks the entire ingest pipeline."""
+    data = json.loads(_real_registry_path().read_text(encoding="utf-8"))
+    assert isinstance(data.get("federal_laws"), list)
+    assert len(data["federal_laws"]) > 0
+
+
+def test_reg_lfpdppp_entry_is_ingest_ready():
+    """Reglamento de la LFPDPPP must be present in law_registry.json with a
+    real publication_date so db_saver creates a LawVersion (and therefore the
+    downstream parser/indexer can populate Art. 51 and the rest). Without a
+    non-empty, non-placeholder publication_date, db_saver skips version
+    creation and the reglamento stays a 0-article stub."""
+    registry = LawRegistry(registry_path=_real_registry_path())
+    entry = registry.get_by_id("reg_reg_lfpdppp")
+
+    assert entry is not None, "reg_reg_lfpdppp missing from law_registry.json"
+
+    pub_date = entry.get("publication_date")
+    assert pub_date, "publication_date must be set for a LawVersion to be created"
+    assert pub_date != "1900-01-01", "placeholder date is rejected by db_saver"
+
+    # Points at the official Cámara de Diputados Reglamento PDF.
+    assert entry.get("url", "").endswith("Reg_LFPDPPP.pdf")
+    assert entry.get("slug")

@@ -6,14 +6,97 @@ checking Docker prefix (/app/) first, then project BASE_DIR, then cwd.
 """
 
 import json
+import logging
 import os
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # Project root: 3 levels up from this file (utils/ -> api/ -> apps/ -> project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 # Re-export from centralized config for backward compat
 from apps.api.config import ES_HOST  # noqa: F401, E402
+
+
+def _decode_bytes(data: bytes, encoding: str = "utf-8") -> str:
+    """Decode raw file bytes to text without silently deleting content.
+
+    The old behaviour here decoded with ``errors="ignore"``, which is a data
+    -integrity hazard for the legal corpus: a latin-1 / cp1252 source (SAT,
+    some OJN feeds) decoded as UTF-8 does **not** raise and does **not**
+    produce the U+FFFD replacement char — ``errors="ignore"`` DELETES every
+    high-byte character (á/é/í/ñ/ó/ú, °, §, …) with no trace. The spot-check
+    encoding detector only counts U+FFFD, so the corruption was invisible by
+    construction and accented articles silently entered Elasticsearch stripped
+    of their accents.
+
+    Strategy (in order):
+      1. Decode strictly with the requested ``encoding`` — the common,
+         correct case (valid UTF-8) is unchanged and fast.
+      2. On UnicodeDecodeError, detect the real encoding with
+         ``charset_normalizer`` (always installed — it is a hard dependency of
+         ``requests``, which is a core direct dependency) and decode with it,
+         so latin-1 / cp1252 accents are PRESERVED, not lost. The import is
+         defensive: if it were ever absent, the code degrades to step 3 rather
+         than crashing.
+      3. If detection is unavailable or unusable, fall back to
+         ``errors="replace"`` — bad bytes become U+FFFD, which is DETECTABLE
+         by the spot-check ``encoding_check`` / ``es_text_sample`` guards.
+         Never ``errors="ignore"``: silent deletion is the defect.
+    """
+    # 1. Fast path: strict decode with the requested encoding.
+    try:
+        return data.decode(encoding)
+    except (UnicodeDecodeError, LookupError):
+        pass
+
+    # 2. Detect the true encoding and decode losslessly.
+    #
+    # The corpus is Mexican Spanish (Western European). charset_normalizer
+    # tends to mis-detect a short Spanish latin-1 sample as a Central-European
+    # code page (cp1250 / iso8859_2), which decodes 0xF1 as "ń" instead of "ñ"
+    # — still lossless but wrong for "niño / señor / año / compañía". Excluding
+    # the Eastern-European candidates biases detection back to cp1252 / latin-1,
+    # which decode Mexican accents correctly.
+    _NON_WESTERN_EXCLUSIONS = [
+        "cp1250",
+        "cp1251",
+        "cp1256",
+        "iso8859_2",
+        "iso8859_4",
+        "iso8859_5",
+        "iso8859_13",
+    ]
+    try:
+        from charset_normalizer import from_bytes
+
+        best = from_bytes(data, cp_exclusion=_NON_WESTERN_EXCLUSIONS).best()
+        if best is not None:
+            # ``str(best)`` yields the decoded text using the detected encoding.
+            decoded = str(best)
+            logger.warning(
+                "read_data_content: %r bytes were not valid %s; decoded as "
+                "detected encoding %r (accented content preserved)",
+                len(data),
+                encoding,
+                best.encoding,
+            )
+            return decoded
+    except Exception:  # noqa: BLE001 - detection is best-effort; fall through
+        logger.warning(
+            "read_data_content: charset detection failed; "
+            "falling back to errors='replace'",
+        )
+
+    # 3. Detectable fallback: bad bytes become U+FFFD (never silently dropped).
+    result = data.decode(encoding, errors="replace")
+    if "�" in result:
+        logger.warning(
+            "read_data_content: undecodable bytes replaced with U+FFFD "
+            "(flagged by the encoding spot-check)",
+        )
+    return result
 
 
 def _strip_host_prefix(path_str: str) -> str:
@@ -198,7 +281,10 @@ def read_data_content(relative_path: str, encoding: str = "utf-8") -> str | None
     # Try local filesystem first
     local_path = resolve_data_path_or_none(relative_path)
     if local_path:
-        return local_path.read_text(encoding=encoding, errors="ignore")
+        # Read bytes + decode via _decode_bytes so a mis-encoded (latin-1 /
+        # cp1252) source keeps its accents instead of having them silently
+        # deleted by errors="ignore". See _decode_bytes for the full rationale.
+        return _decode_bytes(local_path.read_bytes(), encoding)
 
     # Fall back to R2 storage if configured
     if os.environ.get("STORAGE_BACKEND") == "r2":
@@ -214,7 +300,10 @@ def read_data_content(relative_path: str, encoding: str = "utf-8") -> str | None
 
         try:
             data = storage.get(key)
-            return data.decode(encoding, errors="ignore")
+            # Same encoding-fidelity strategy as the local path: decode via
+            # _decode_bytes so mis-encoded bytes are preserved/flagged, never
+            # silently dropped by errors="ignore".
+            return _decode_bytes(data, encoding)
         except (FileNotFoundError, Exception):
             return None
 

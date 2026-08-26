@@ -77,6 +77,36 @@ ORDINAL_PATTERNS = {
     "[ÚU]LTIM[OA]": 999,  # Special case for last
 }
 
+# --- Compound-ordinal transitorio matching ---------------------------------
+# ORDINAL_PATTERNS above only reaches the 12th ordinal, so a law's 13th and
+# later transitorios (CCF has ~50, LFT ~33, LIVA ~27) were silently dropped by
+# the parser. The token alternation below covers every Spanish ordinal WORD —
+# units 1–9, the "-décimo/-undécimo/-duodécimo" forms, and the tens
+# 10/20/…/90 — so the transitorio finder can match single ("PRIMERO.-") and
+# two-word compound ("DÉCIMO TERCERO.-", "VIGÉSIMO QUINTO.-") ordinals alike.
+# The numeric value of a matched phrase is resolved by
+# apps.parsers.patterns.articles.ordinal_to_number (single source of truth),
+# which combines a tens base with a unit (e.g. TRIGÉSIMO PRIMERO → 31).
+_ORDINAL_WORD = (
+    r"(?:"
+    r"PRIMER[OA]|SEGUND[OA]|TERCER[OA]|CUART[OA]|QUINT[OA]|SEXT[OA]|"
+    r"S[ÉE]PTIM[OA]|OCTAV[OA]|NOVEN[OA]|"
+    r"UND[ÉE]CIM[OA]|DUOD[ÉE]CIM[OA]|D[ÉE]CIM[OA]|"
+    r"VIG[ÉE]SIM[OA]|TRIG[ÉE]SIM[OA]|CUADRAG[ÉE]SIM[OA]|QUINCUAG[ÉE]SIM[OA]|"
+    r"SEXAG[ÉE]SIM[OA]|SEPTUAG[ÉE]SIM[OA]|OCTOG[ÉE]SIM[OA]|NONAG[ÉE]SIM[OA]|"
+    # ÚLTIMO / ÚNICO have no cardinal position (see _transitorio_ordinal_number:
+    # ÚLTIMO→999 sentinel, ÚNICO→1). The indexer's _ORDINAL_WORD_RE already
+    # recognises "único" for the same reason, so emitting it here keeps the
+    # parser and the indexer's transitorio vocabulary consistent.
+    r"[ÚU]LTIM[OA]|[ÚU]NIC[OA]"
+    r")"
+)
+
+# A transitorio ordinal at line start: one ordinal word, optionally followed by
+# a second (the unit of a compound tens ordinal), then the "." / ".-" delimiter
+# these headings use. Captured as group 1 so callers can resolve the number.
+TRANSITORIO_ORDINAL_PATTERN = rf"^\s*({_ORDINAL_WORD}(?:\s+{_ORDINAL_WORD})?)\s*\.\-?"
+
 
 def compile_transitorios_patterns() -> dict:
     """Compile transitory article patterns."""
@@ -88,6 +118,11 @@ def compile_transitorios_patterns() -> dict:
             k: re.compile(f"^({k})\\.-", re.IGNORECASE | re.MULTILINE)
             for k in ORDINAL_PATTERNS.keys()
         },
+        # Single compiled pattern that matches any ordinal (incl. compounds
+        # past the 12th) at the start of a transitorio provision.
+        "ordinal_any": re.compile(
+            TRANSITORIO_ORDINAL_PATTERN, re.IGNORECASE | re.MULTILINE
+        ),
     }
 
 

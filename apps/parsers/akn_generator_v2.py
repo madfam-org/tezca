@@ -274,36 +274,79 @@ class AkomaNtosoGeneratorV2:
         if trans_start is None:
             return []
 
-        transitorios = []
         trans_text = text[trans_start:]
 
-        # Find ordinal articles
-        from apps.parsers.patterns.structure import ORDINAL_PATTERNS
+        # Match EVERY ordinal heading in the transitorios section — single
+        # ("PRIMERO.-") and two-word compound ("DÉCIMO TERCERO.-",
+        # "VIGÉSIMO QUINTO.-") alike. The previous implementation iterated only
+        # the 1–12 ORDINAL_PATTERNS map, so a law's 13th and later transitorios
+        # (CCF ~50, LFT ~33, LIVA ~27) were silently dropped. We now split the
+        # section at each ordinal marker and take the text between markers as
+        # that transitorio's content, so the count is unbounded.
+        ordinal_re = self.transitorios_patterns["ordinal_any"]
+        markers = list(ordinal_re.finditer(trans_text))
 
-        for ordinal_pattern, number in ORDINAL_PATTERNS.items():
-            pattern = re.compile(
-                f"^({ordinal_pattern})\\.-\\s+(.+?)(?=^[A-ZÚÉÍÓÁ]+\\.-|\\Z)",
-                re.MULTILINE | re.DOTALL | re.IGNORECASE,
+        transitorios = []
+        seen_numbers = set()
+        for idx, match in enumerate(markers):
+            ordinal_phrase = match.group(1).strip()
+            number = self._transitorio_ordinal_number(ordinal_phrase)
+            if number is None:
+                # Ordinal word we matched but could not resolve to a value;
+                # skip rather than emit a degenerate id.
+                continue
+
+            # Content runs from the end of this marker to the start of the next
+            # ordinal marker (or the end of the section).
+            content_start = match.end()
+            content_end = (
+                markers[idx + 1].start() if idx + 1 < len(markers) else len(trans_text)
             )
+            content = trans_text[content_start:content_end].strip()
 
-            for match in pattern.finditer(trans_text):
-                content = match.group(2).strip()
+            # Guard against duplicate ordinals (e.g. a stray repeated heading);
+            # keep the first occurrence so ids stay stable.
+            if number in seen_numbers:
+                continue
+            seen_numbers.add(number)
 
-                transitorios.append(
-                    {
-                        "type": "transitorio",
-                        "id": f"trans-{number}",
-                        "number": number,
-                        "ordinal": match.group(1),
-                        "content": content,
-                        "confidence": 0.95,  # High confidence for transitorios
-                    }
-                )
+            transitorios.append(
+                {
+                    "type": "transitorio",
+                    "id": f"trans-{number}",
+                    "number": number,
+                    "ordinal": ordinal_phrase,
+                    "content": content,
+                    "confidence": 0.95,  # High confidence for transitorios
+                }
+            )
 
         # Sort by number
         transitorios.sort(key=lambda x: x["number"])
 
         return transitorios
+
+    @staticmethod
+    def _transitorio_ordinal_number(ordinal_phrase: str):
+        """Resolve a transitorio ordinal phrase to its integer value.
+
+        Delegates to the shared ``ordinal_to_number`` (which handles units,
+        tens, and two-word compounds like ``DÉCIMO TERCERO`` → 13). Two ordinals
+        have no cardinal position and are mapped explicitly:
+          - ``ÚLTIMO`` / ``ÚLTIMA`` ("the last transitorio") → sentinel 999,
+            matching the historical ORDINAL_PATTERNS behaviour and the indexer's
+            trailing-digit id derivation (``trans-999``);
+          - ``ÚNICO`` / ``ÚNICA`` ("the single transitorio") → 1, since a lone
+            transitorio is effectively the first. The indexer already recognises
+            "único" as a transitorio ordinal, so emitting it keeps the layers
+            consistent.
+        """
+        clean = ordinal_phrase.strip().rstrip(".-").strip()
+        if re.match(r"^[ÚU]LTIM[OA]$", clean, re.IGNORECASE):
+            return 999
+        if re.match(r"^[ÚU]NIC[OA]$", clean, re.IGNORECASE):
+            return 1
+        return ordinal_to_number(clean)
 
     def _article_confidence(self, content: str) -> float:
         """
