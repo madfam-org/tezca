@@ -221,15 +221,32 @@ https://www.diputados.gob.mx/LeyesBiblio/regley/Reg_LFPDPPP.pdf
 
 ### Commands
 
-```sh
-# One law, synchronous, supervised. Federal-only, skip state/municipal scraping.
-# Runs the pipeline end-to-end for the reglamento entry now present in the registry.
-enclii exec tezca-api -- python apps/manage.py run_pipeline \
-  --local --skip-states --skip-municipal
+**Preferred — the registered one-law ingest task** (`dataops.ingest_law`, added
+alongside `dataops.reindex_law`). It ingests exactly the `reg_reg_lfpdppp`
+registry entry end-to-end (download → parse → quality-gate → persist) **and then
+indexes it** (via `dataops.reindex_law` internally) unless the parse is
+quarantined:
 
-# …then index just the reglamento in place (see §1A caveats):
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id reg_reg_lfpdppp --dry-run
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id reg_reg_lfpdppp
+```bash
+enclii jobs run dataops.ingest_law -- law_id=reg_reg_lfpdppp --service tezca-worker --env production
+```
+
+The task returns `{grade, quarantined, indexed}`. **If `quarantined: true`** (a
+D/F-grade parse), the DB version is saved but deliberately NOT indexed — inspect
+the XML, then index deliberately with `dataops.reindex_law -- law_id=reg_reg_lfpdppp`
+(or `index_laws --include-quarantined`). Pass `index=false` to persist only:
+`… dataops.ingest_law -- law_id=reg_reg_lfpdppp index=false …`.
+
+**Reference — direct pod shell** (`ssh ssh.madfam.io` → `kubectl exec`, NOT
+`enclii exec`). `run_pipeline` processes the whole federal registry; constrain to
+just the reglamento from a Django shell if needed
+(`IngestionPipeline().ingest_law(LawRegistry().get_by_id('reg_reg_lfpdppp'))`),
+then index:
+
+```sh
+python apps/manage.py run_pipeline --skip-states --skip-municipal
+python apps/manage.py index_laws --law-id reg_reg_lfpdppp --dry-run
+python apps/manage.py index_laws --law-id reg_reg_lfpdppp
 ```
 
 > `run_pipeline` processes the federal registry; if you need to constrain it to
