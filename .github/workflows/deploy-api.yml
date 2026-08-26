@@ -97,12 +97,38 @@ jobs:
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
 
+      # Retry the sign call: on 2026-08-26 crea-frontend run 33010085743 the
+      # GitHub OIDC endpoint transiently returned non-JSON ("invalid character
+      # 'u' looking for beginning of value"), the image was already pushed, and
+      # the chain stopped BEFORE the digest pin — main went green while the live
+      # host kept serving the previous build. Transient: a rerun succeeded.
       - name: Sign image with cosign
+        id: sign
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
         run: |
-          cosign sign --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          set -euo pipefail
+          signed=0
+          for wait in 0 20 60; do
+            if [ "$wait" -gt 0 ]; then
+              echo "::warning::cosign sign failed for ${IMAGE_REF} (transient OIDC/Fulcio/Rekor?); retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+            if cosign sign --yes "${IMAGE_REF}"; then
+              signed=1
+              break
+            fi
+          done
+          if [ "$signed" -ne 1 ]; then
+            echo "::error::cosign sign failed 3 times for ${IMAGE_REF}."
+            echo "::error::The image was BUILT AND PUSHED but is NOT signed, so it will not be"
+            echo "::error::pinned and ArgoCD will not roll it: the live host is still serving the"
+            echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
+            exit 1
+          fi
 
       - name: Commit image digest
+        id: pin
         run: |
           DIGEST="${{ steps.build.outputs.digest }}"
           git config user.name "madfam-bot"
@@ -151,3 +177,20 @@ jobs:
                 \"actor\": \"${{ github.actor }}\"
               }
             }" || true
+
+      # Loud-stale guard (2026-08-26 crea-frontend OIDC incident): the failure
+      # mode that hurts is a pushed image whose digest pin never ran — main goes
+      # green while the cluster still runs the previous digest. Make that state
+      # name itself instead of hiding behind a green checkmark.
+      - name: Fail loudly if image was pushed but never pinned
+        if: always()
+        run: |
+          set -uo pipefail
+          BUILD='${{ steps.build.outcome }}'
+          SIGN='${{ steps.sign.outcome }}'
+          PIN='${{ steps.pin.outcome }}'
+          echo "build=${BUILD} sign=${SIGN} pin=${PIN}"
+          if [ "${BUILD}" = "success" ] && { [ "${SIGN}" != "success" ] || [ "${PIN}" != "success" ]; }; then
+            echo "::error title=Image pushed but NOT pinned/deployed::The image for ${GITHUB_SHA} was built and pushed to the registry, but signing and/or the digest pin did not complete. ArgoCD was never handed a new digest, so THE LIVE HOST IS STILL SERVING THE PREVIOUS BUILD even though this commit is green on main. Rerun the failed jobs (gh run rerun ${GITHUB_RUN_ID} --failed)."
+            exit 1
+          fi
