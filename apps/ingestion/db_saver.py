@@ -141,6 +141,14 @@ class DatabaseSaver:
             version.xml_file_path = str(xml_path)
             version.dof_url = law_metadata.get("url")
             version.save()
+        else:
+            # A genuinely NEW version landed. Close the validity interval of the
+            # version it supersedes so the corpus carries a supersession signal.
+            # Without this, LawVersion.valid_to was READ by the API/UI
+            # (law_views.py, VersionTimeline.tsx) but WRITTEN nowhere — so every
+            # prior version stayed valid_to=null forever and a repealed/older
+            # text looked "current". See Defect #7.
+            self._close_superseded_version_validity(law, version)
 
         # Persist quality metrics
         if quality_metrics is not None:
@@ -149,6 +157,58 @@ class DatabaseSaver:
             version.save(update_fields=["quality_grade", "quality_score"])
 
         return version
+
+    @staticmethod
+    def _close_superseded_version_validity(law, new_version):
+        """Set ``valid_to`` on the version the new one supersedes.
+
+        Uses the half-open-interval convention: the prior version's
+        ``valid_to`` becomes the new version's ``valid_from`` (falling back to
+        its ``publication_date``). So a version is valid on ``[valid_from,
+        valid_to)`` and the boundary date belongs to the successor.
+
+        Robust to out-of-order ingestion (a reform published earlier arriving
+        after a later one): we close the interval of the version chronologically
+        *before* the new one, and — if a version already exists chronologically
+        *after* the new one — we also close the new version's own interval
+        against that successor. We never overwrite a ``valid_to`` that is
+        already set (a curated/earlier-computed value wins).
+        """
+        from apps.api.models import LawVersion
+
+        boundary = new_version.valid_from or new_version.publication_date
+        if boundary is None:
+            return
+
+        # The version immediately BEFORE the new one (newest older version).
+        prior = (
+            LawVersion.objects.filter(
+                law=law, publication_date__lt=new_version.publication_date
+            )
+            .exclude(pk=new_version.pk)
+            .order_by("-publication_date")
+            .first()
+        )
+        if prior is not None and prior.valid_to is None:
+            prior.valid_to = boundary
+            prior.save(update_fields=["valid_to"])
+
+        # If a later version already exists (out-of-order insert), the NEW
+        # version is itself superseded — close its interval against the
+        # successor's start so it doesn't read as current.
+        successor = (
+            LawVersion.objects.filter(
+                law=law, publication_date__gt=new_version.publication_date
+            )
+            .exclude(pk=new_version.pk)
+            .order_by("publication_date")
+            .first()
+        )
+        if successor is not None and new_version.valid_to is None:
+            successor_boundary = successor.valid_from or successor.publication_date
+            if successor_boundary is not None:
+                new_version.valid_to = successor_boundary
+                new_version.save(update_fields=["valid_to"])
 
     def get_law_history(self, law_id):
         """Get all versions for a law."""
