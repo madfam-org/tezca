@@ -274,3 +274,58 @@ class TestIngestStateCatalogs:
         result = tasks.ingest_state_catalogs()
         assert result["status"] == "error"
         assert "state boom" in result["error"]
+
+
+# ── reindex_law ───────────────────────────────────────────────────────
+
+
+class TestReindexLaw:
+    def test_missing_law_id_is_rejected(self):
+        """No law_id → error before any command runs."""
+        from apps.scraper.scheduling import tasks
+
+        assert tasks.reindex_law("")["status"] == "error"
+        assert tasks.reindex_law("   ")["status"] == "error"
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_runs_index_laws_in_place_for_the_law(
+        self, mock_call_command, mock_log_cls
+    ):
+        """Happy path calls index_laws with law_id and NO --reindex/--all."""
+        from apps.scraper.scheduling import tasks
+
+        result = tasks.reindex_law("lfpdppp")
+        assert result["status"] == "completed"
+        assert result["law_id"] == "lfpdppp"
+        assert result["dry_run"] is False
+        mock_call_command.assert_called_once()
+        args, kwargs = mock_call_command.call_args
+        assert args[0] == "index_laws"
+        assert kwargs["law_id"] == "lfpdppp"
+        assert kwargs["dry_run"] is False
+        # Must NOT drop the corpus: never a full-reindex / all-laws run.
+        assert "reindex" not in kwargs and "all" not in kwargs
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_dry_run_passes_through_and_writes_nothing(
+        self, mock_call_command, mock_log_cls
+    ):
+        from apps.scraper.scheduling import tasks
+
+        result = tasks.reindex_law("reg_reg_lfpdppp", dry_run=True)
+        assert result["status"] == "completed"
+        assert result["dry_run"] is True
+        assert mock_call_command.call_args.kwargs["dry_run"] is True
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("django.core.management.call_command")
+    def test_command_failure_surfaces_as_error(self, mock_call_command, mock_log_cls):
+        from apps.scraper.scheduling import tasks
+
+        mock_call_command.side_effect = RuntimeError("index boom")
+        result = tasks.reindex_law("lfpdppp")
+        assert result["status"] == "error"
+        assert "index boom" in result["error"]
+        assert result["law_id"] == "lfpdppp"
