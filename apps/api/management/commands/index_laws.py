@@ -518,7 +518,10 @@ class Command(BaseCommand):
                     if version.publication_date
                     else None
                 ),
-                "status": "active",
+                # Reflect the Law's real status (vigente/abrogada/derogada/unknown)
+                # instead of a blanket "active" — the hardcode contradicted the
+                # status the article-level docs carry and the db_saver fix.
+                "status": law.status or "unknown",
                 "total_articles": article_count,
                 "suggest": {
                     "input": [law.name] + ([law.short_name] if law.short_name else []),
