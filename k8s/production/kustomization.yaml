@@ -23,20 +23,20 @@ resources:
 - tezca-db-backup-cronjob.yaml
 - network-policies.yaml
 images:
+- digest: sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2
+  name: docker.elastic.co/elasticsearch/elasticsearch
+- digest: sha256:e2a778146a45cb7cdcc55e3051c0de38ea9f180ed88383447f7ead6b0ba5e9a4
+  name: docker.io/amazon/aws-cli
+- digest: sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+  name: docker.io/library/postgres
+- digest: sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+  name: docker.io/library/redis
 - digest: sha256:37eb441c5c4e1467f6735213e4493f9431f5491e94e2fe45990a3989175e2277
   name: ghcr.io/madfam-org/tezca/admin
   newName: ghcr.io/madfam-org/tezca-admin
-- digest: sha256:153f3d9d5ac038237e97736675d9933e3da91462dae9f87d0f2a5505ad42fbee
+- digest: sha256:14ef6533e516930c9bc44b2e6017f76d7368eedd9d1ea548bce96460060062b2
   name: ghcr.io/madfam-org/tezca/api
   newName: ghcr.io/madfam-org/tezca-api
 - digest: sha256:60a8cff8e7b2e1054b0a56c4883201f36599818100a9e8e442c4d9234f1541fe
   name: ghcr.io/madfam-org/tezca/web
   newName: ghcr.io/madfam-org/tezca-web
-- digest: sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
-  name: docker.io/library/postgres
-- digest: sha256:e2a778146a45cb7cdcc55e3051c0de38ea9f180ed88383447f7ead6b0ba5e9a4
-  name: docker.io/amazon/aws-cli
-- digest: sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2
-  name: docker.elastic.co/elasticsearch/elasticsearch
-- digest: sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
-  name: docker.io/library/redis
