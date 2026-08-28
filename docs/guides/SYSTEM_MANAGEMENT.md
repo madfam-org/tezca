@@ -289,16 +289,16 @@ Three separate workflows: `deploy-api.yml`, `deploy-web.yml`, `deploy-admin.yml`
 
 ```bash
 # Run database migration
-enclii exec tezca-api -- python apps/manage.py migrate
+enclii exec tezca-api -- python manage.py migrate
 
 # Collect static files
-enclii exec tezca-api -- python apps/manage.py collectstatic --noinput
+enclii exec tezca-api -- python manage.py collectstatic --noinput
 
 # Build search indices
-enclii exec tezca-api -- python apps/manage.py index_laws --all --create-indices
+enclii exec tezca-api -- python manage.py index_laws --all --create-indices
 
 # Check Django deployment security
-enclii exec tezca-api -- python apps/manage.py check --deploy
+enclii exec tezca-api -- python manage.py check --deploy
 
 # View pod logs
 enclii logs tezca-api

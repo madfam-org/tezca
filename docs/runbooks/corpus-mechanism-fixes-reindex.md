@@ -92,8 +92,8 @@ curl -s "https://api.tezca.mx/api/v1/laws/<law_id>/articles/" | \
 ```sh
 # Targeted in-place upsert (recommended for a hotfix). See the LFPDPPP runbook
 # §1A caveats — never combine --reindex with --law-id.
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id <law_id> --dry-run
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id <law_id>
+enclii exec tezca-api -- python manage.py index_laws --law-id <law_id> --dry-run
+enclii exec tezca-api -- python manage.py index_laws --law-id <law_id>
 ```
 
 ### Post-verify
@@ -102,7 +102,7 @@ Re-run the sample above — accented characters must now be present. The encodin
 spot-check should PASS (`encoding_check`, `es_text_sample`):
 
 ```sh
-enclii exec tezca-api -- python apps/manage.py spot_check --law-id <law_id>
+enclii exec tezca-api -- python manage.py spot_check --law-id <law_id>
 ```
 
 ---
@@ -137,14 +137,14 @@ the law needs a re-parse.
 # Re-run the pipeline for the law (download → extract → parse → grade → save).
 # This regenerates the AKN XML with ALL transitorios and updates the LawVersion.
 # Constrain to the single law from a shell if run_pipeline is too broad:
-enclii exec tezca-api -- python apps/manage.py shell -c \
+enclii exec tezca-api -- python manage.py shell -c \
   "import json; from apps.parsers.pipeline import IngestionPipeline; \
    reg=json.load(open('data/law_registry.json')); \
    entry=next(e for e in (reg if isinstance(reg,list) else reg.get('laws',reg.values())) if e.get('id')=='<law_id>'); \
    print(IngestionPipeline().ingest_law(entry))"
 
 # Then re-index in place (§1A caveats apply).
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id <law_id>
+enclii exec tezca-api -- python manage.py index_laws --law-id <law_id>
 ```
 
 > Adjust the registry-lookup shell snippet to the actual shape of
@@ -179,7 +179,7 @@ version's interval against its immediate successor (half-open:
 ### Preview (no writes)
 
 ```sh
-enclii exec tezca-api -- python apps/manage.py shell -c "
+enclii exec tezca-api -- python manage.py shell -c "
 from apps.api.models import Law, LawVersion
 open_older = 0
 for law in Law.objects.all():
@@ -198,7 +198,7 @@ print('older versions missing valid_to:', open_older)
 > ships for this one-off — run the guarded shell below.
 
 ```sh
-enclii exec tezca-api -- python apps/manage.py shell -c "
+enclii exec tezca-api -- python manage.py shell -c "
 from apps.api.models import Law
 closed = 0
 for law in Law.objects.all():
@@ -217,7 +217,7 @@ print('closed intervals:', closed)
 ```sh
 # The newest version of each law stays current (valid_to null); every older
 # version now has valid_to == the next version's valid_from.
-enclii exec tezca-api -- python apps/manage.py shell -c "
+enclii exec tezca-api -- python manage.py shell -c "
 from apps.api.models import Law
 bad = []
 for law in Law.objects.all():

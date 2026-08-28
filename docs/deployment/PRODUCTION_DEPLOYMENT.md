@@ -35,9 +35,9 @@
 | **M4** | Register Janua OAuth client | DevOps | Janua admin API access | `client_id: tezca-admin`, redirect: `https://admin.tezca.mx/auth/callback`, scopes: `openid email profile` |
 | **M5** | Configure Cloudflare DNS | DevOps | Cloudflare account | Zone: `tezca.mx`. Enclii auto-provisions CNAME records to `tunnel.enclii.dev` |
 | **M6** | Add to ArgoCD root application | DevOps | Infra repo access | Add `tezca` to `infra/argocd/root-application.yaml`, source: `k8s/production/`, destination: `tezca` namespace |
-| **M7** | Run initial database migration | DevOps | enclii CLI, cluster access | `enclii exec tezca-api -- python apps/manage.py migrate` |
-| **M8** | Collect static files | DevOps | enclii CLI | `enclii exec tezca-api -- python apps/manage.py collectstatic --noinput` |
-| **M9** | Build Elasticsearch indices | DevOps | enclii CLI | `enclii exec tezca-api -- python apps/manage.py index_laws --all --create-indices` |
+| **M7** | Run initial database migration | DevOps | enclii CLI, cluster access | `enclii exec tezca-api -- python manage.py migrate` |
+| **M8** | Collect static files | DevOps | enclii CLI | `enclii exec tezca-api -- python manage.py collectstatic --noinput` |
+| **M9** | Build Elasticsearch indices | DevOps | enclii CLI | `enclii exec tezca-api -- python manage.py index_laws --all --create-indices` |
 | **M10** | Smoke test all domains | QA | All above complete | See [Verification Checklist](#verification-checklist) |
 | **M11** | Create `tezca-r2-credentials` K8s Secret | DevOps | R2 API token | See [R2 Credentials](#k8s-secret-tezca-r2-credentials) |
 | **M12** | Create `tezca-sentry` K8s Secret | DevOps | Sentry DSN | See [Sentry Secret](#k8s-secret-tezca-sentry) |
@@ -216,7 +216,7 @@ After completing all manual steps (M1-M9), verify:
 | 6 | Admin API (no auth) | `curl https://api.tezca.mx/api/v1/admin/metrics/` | 401 Unauthorized |
 | 7 | Admin API (valid JWT) | `curl -H "Authorization: Bearer <token>" .../admin/metrics/` | 200 with metrics |
 | 8 | Admin login flow | Navigate to `admin.tezca.mx` | Redirect to /sign-in → login → dashboard |
-| 9 | Django security | `enclii exec tezca-api -- python apps/manage.py check --deploy` | No critical warnings |
+| 9 | Django security | `enclii exec tezca-api -- python manage.py check --deploy` | No critical warnings |
 | 10 | CI/CD pipeline | Push to `main` touching `apps/api/` | Image built → digest committed → ArgoCD syncs |
 
 ---

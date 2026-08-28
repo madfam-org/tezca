@@ -6,16 +6,16 @@ JudicialRecord entries with dedup by registro.
 
 Usage:
     # Ingest all judicial records
-    python apps/manage.py ingest_judicial --file data/judicial/scjn_records.json
+    python manage.py ingest_judicial --file data/judicial/scjn_records.json
 
     # Ingest specific type
-    python apps/manage.py ingest_judicial --file data/judicial/scjn_records.json --tipo jurisprudencia
+    python manage.py ingest_judicial --file data/judicial/scjn_records.json --tipo jurisprudencia
 
     # Dry run
-    python apps/manage.py ingest_judicial --file data/judicial/scjn_records.json --dry-run
+    python manage.py ingest_judicial --file data/judicial/scjn_records.json --dry-run
 
     # Merge multiple batch files
-    python apps/manage.py ingest_judicial --dir data/judicial/batches/
+    python manage.py ingest_judicial --dir data/judicial/batches/
 """
 
 import json

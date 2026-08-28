@@ -79,7 +79,7 @@ Choose **1A** (targeted, low blast-radius, recommended for a hotfix) or **1B**
 
 ```sh
 # Cluster + ES reachable, and the LFPDPPP law + newest version exist.
-enclii exec tezca-api -- python apps/manage.py shell -c \
+enclii exec tezca-api -- python manage.py shell -c \
   "from apps.api.models import Law; l=Law.objects.get(official_id='lfpdppp'); \
    v=l.versions.first(); print('status=',l.status,'newest=',v.publication_date, v.xml_file_path)"
 
@@ -105,10 +105,10 @@ and the new transitorio docs (`lfpdppp-T-1`, `lfpdppp-T-8`, …) are added.
 
 ```sh
 # Dry run first — prints how many articles WOULD be indexed, no ES writes.
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id lfpdppp --dry-run
+enclii exec tezca-api -- python manage.py index_laws --law-id lfpdppp --dry-run
 
 # Real run (no --reindex → in-place upsert into the current alias/index).
-enclii exec tezca-api -- python apps/manage.py index_laws --law-id lfpdppp
+enclii exec tezca-api -- python manage.py index_laws --law-id lfpdppp
 ```
 
 > **Stale-doc note.** In-place upsert cannot delete an id that no longer exists
@@ -125,10 +125,10 @@ entire corpus (~minutes, ~3.5M docs).
 
 ```sh
 # Dry run.
-enclii exec tezca-api -- python apps/manage.py index_laws --all --reindex --dry-run
+enclii exec tezca-api -- python manage.py index_laws --all --reindex --dry-run
 
 # Real run — new index + alias swap at the end.
-enclii exec tezca-api -- python apps/manage.py index_laws --all --reindex
+enclii exec tezca-api -- python manage.py index_laws --all --reindex
 ```
 
 > **⚠️ Never `--reindex --law-id lfpdppp`.** `--reindex` creates an *empty* index
@@ -177,7 +177,7 @@ PY
 - **1B**: `swap_alias` back to the previous versioned index, then delete the new
   one. List/point the alias with the helper command:
   ```sh
-  enclii exec tezca-api -- python apps/manage.py manage_es_alias --status
+  enclii exec tezca-api -- python manage.py manage_es_alias --status
   ```
 
 ---
@@ -244,9 +244,9 @@ just the reglamento from a Django shell if needed
 then index:
 
 ```sh
-python apps/manage.py run_pipeline --skip-states --skip-municipal
-python apps/manage.py index_laws --law-id reg_reg_lfpdppp --dry-run
-python apps/manage.py index_laws --law-id reg_reg_lfpdppp
+python manage.py run_pipeline --skip-states --skip-municipal
+python manage.py index_laws --law-id reg_reg_lfpdppp --dry-run
+python manage.py index_laws --law-id reg_reg_lfpdppp
 ```
 
 > `run_pipeline` processes the federal registry; if you need to constrain it to
@@ -305,3 +305,140 @@ curl -s https://api.tezca.mx/api/v1/laws/reg_reg_lfpdppp/articles/ | \
 | Defect 4 — RLFPDPPP stub | **Registry entry added (no side effects) + tested.** Full ingest is operator-run (§2). |
 | Prod re-index of LFPDPPP | **Not run** (side-effectful; operator, §1). |
 | Prod ingest of RLFPDPPP | **Not run** (side-effectful; operator, §2). |
+
+---
+
+## In-pod ingestion facts
+
+Hard-won operational facts from the live 2026-08-27 RLFPDPPP ingest. Read this
+before running §2 in production — each item below cost a failed attempt.
+
+### The registry JSONs now ship in the image
+
+`LawRegistry` (`apps/scraper/utils/law_registry.py`) resolves its registry
+relative to the repo root — `/app/data/law_registry.json` in the pod — and picks
+up `discovered_reglamentos.json` as its **sibling** in the same directory
+(`registry_path.parent`). `dataops.ingest_law` calls `LawRegistry().get_by_id()`
+before doing anything else, so a missing file fails the task at step one.
+
+Until 2026-08-27 `.dockerignore` excluded all of `data/`, so the API image
+shipped **without** either file and every in-pod registry operation died with
+`FileNotFoundError`. The workaround at the time was hand-copying the JSONs into
+a running pod — which does not survive a restart, a rescale, or a redeploy.
+
+Both files are now re-included in the image (`data/*` plus two `!` negations in
+`.dockerignore`, asserted by an explicit `COPY` in `apps/indigo/Dockerfile`).
+Confirm on any image before a long ingest:
+
+```sh
+kubectl -n tezca exec deploy/tezca-api -- ls -la /app/data/
+# expect law_registry.json (~206K) and discovered_reglamentos.json (~54K)
+```
+
+> **Nothing else under `data/` ships, deliberately.** The corpus lives in
+> Postgres + Elasticsearch. Only these two registry files — code-adjacent
+> metadata, ~259 KiB total — are in the image. Do not "fix" a missing corpus
+> file by widening the `.dockerignore` negations.
+
+### Pre-place the source PDF rather than relying on the download
+
+The ingest pipeline's fetch step
+(`apps/parsers/pipeline.py`, `_download_file`, ~L402–410) short-circuits on an
+existing file: if `/app/data/raw/pdfs/<law_id>.pdf` already exists **and is
+larger than 1024 bytes**, it is used as-is and no download is attempted. (The
+extension follows the registry `url` — `.doc`/`.docx` sources keep theirs.)
+
+Staging a file into a running pod has no Enclii adapter (see the gap recorded
+below), so this is **break-glass** — reach the cluster per the global SSH rule
+(`ssh ssh.madfam.io`, never a direct IP):
+
+```sh
+# Pre-place, then ingest. The >1KB size check is what makes the pipeline skip
+# the fetch — a truncated or zero-byte file is silently re-downloaded instead.
+kubectl -n tezca cp ./Reg_LFPDPPP.pdf tezca/<pod>:/app/data/raw/pdfs/reg_reg_lfpdppp.pdf
+kubectl -n tezca exec deploy/tezca-api -- ls -la /app/data/raw/pdfs/
+```
+
+Reach for this when a fetch is what is failing: it removes the download — and
+every way it can fail (upstream 403/slow TLS, a redirect to an HTML error page
+saved as a `.pdf`, plain-HTTP redirects) — from the critical path of a
+production ingest.
+
+> **Caveat: a pre-placed file does not survive the pod.** `/app/data/raw/pdfs`
+> is container-local (there is no PVC on it), so a restart, rescale, or redeploy
+> discards it and the next run downloads again. Stage it immediately before the
+> ingest, and treat it as a one-shot, not as a fixture. This is the same
+> impermanence that made the hand-copied registry JSONs untenable — hence
+> shipping those in the image instead.
+
+> **Egress is allowed on 443, so a failed fetch is not automatically a firewall
+> problem.** `allow-https-egress` in `k8s/production/network-policies.yaml`
+> permits TCP 443 to the public internet for every `app.kubernetes.io/part-of:
+> tezca` pod, and its comment names DOF crawls explicitly. Port **80 is not
+> allowed** — an upstream that redirects to plain HTTP fails here and looks like
+> a hang. Diagnose before assuming: `kubectl -n tezca exec deploy/tezca-api --
+> python -c "import requests;
+> print(requests.get('https://www.diputados.gob.mx/LeyesBiblio/regley/Reg_LFPDPPP.pdf',
+> timeout=30).status_code)"`.
+
+### Prefer the registered task; pod-shell is break-glass
+
+**Enclii-first remains the rule** (see `AGENTS.md`). The sanctioned path is the
+registered Celery task run as an audited one-off job, exactly as the banner at
+the top of this runbook specifies:
+
+```sh
+enclii jobs run dataops.ingest_law -- law_id=reg_reg_lfpdppp --service tezca-worker --env production
+```
+
+That job runs **on the worker deployment's pods**, which carry
+`app.kubernetes.io/part-of: tezca` and therefore inherit the NetworkPolicy
+allowances below. Use it whenever it works.
+
+> **Enclii adapter gap (recorded 2026-08-27).** There is no Enclii adapter for an
+> interactive shell in a running pod — `enclii exec` does not exist (see the
+> banner at the top of this file). An operation that needs to *stage a file into
+> a pod* (the pre-placed PDF above) or inspect state interactively therefore has
+> no Enclii path today and falls back to documented break-glass. Prefer
+> `dataops.ingest_law` whenever the source fetch is not the problem.
+
+**Break-glass only**, reached per the global SSH rule (`ssh ssh.madfam.io`,
+never a direct IP):
+
+```sh
+kubectl -n tezca exec -it deploy/tezca-api -- python manage.py shell -c "
+from apps.parsers.pipeline import IngestionPipeline
+from apps.scraper.utils.law_registry import LawRegistry
+entry = LawRegistry().get_by_id('reg_reg_lfpdppp')
+print(IngestionPipeline().ingest_law(entry))
+"
+```
+
+Why the API pod and not a bare one-off job pod: every NetworkPolicy in
+`k8s/production/network-policies.yaml` selects on
+`app.kubernetes.io/part-of: tezca` — including `allow-data-egress`, the **only**
+rule granting egress to the `data` namespace on 5432/6432. A pod that does not
+carry that label reaches neither Postgres nor the internet, and the failure
+surfaces as a connection timeout rather than as an obvious policy denial. Pods
+created by the tezca deployments always carry it.
+
+> **`manage.py` is at `/app/manage.py`, the repo root — never `apps/manage.py`.**
+> `tezca-api`'s own `migrate` initContainer runs the root-relative path, as does
+> CI. The `apps/manage.py` spelling was wrong everywhere it appeared and was
+> corrected across the runbooks, guides, and `apps/indigo/Dockerfile` on
+> 2026-08-27. `scripts/overnight_runner.sh` still carries it (lines 133/149/164)
+> and would fail at runtime — tracked separately, it is executable code rather
+> than docs.
+
+### Which pod is which
+
+| Pod (`app.kubernetes.io/name`) | Image | Runs | Has Python? |
+| --- | --- | --- | --- |
+| `tezca-api` | `…/tezca/api` | `gunicorn apps.indigo.wsgi` | **Yes** — the pod to exec into |
+| `tezca-worker` | `…/tezca/api` (same image) | `celery -A apps.indigo worker` | Yes — target of `enclii jobs run` |
+| `tezca-web` | `…/tezca/web` | `node apps/web/server.js` | **No** — Node/Next.js only |
+
+`tezca-web` is the frontend and has no Python, no `manage.py`, and no registry
+files; execing there is a dead end. Note also that `tezca-api` runs **no Celery
+worker**, so a `dataops.*` task dispatched as a job must target
+`--service tezca-worker` (as the banner at the top of this runbook does).

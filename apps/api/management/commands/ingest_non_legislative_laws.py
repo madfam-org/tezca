@@ -7,13 +7,13 @@ scraped by bulk_non_legislative_scraper.py.
 
 Usage:
     # Ingest all non-legislative laws
-    python apps/manage.py ingest_non_legislative_laws --all
+    python manage.py ingest_non_legislative_laws --all
 
     # Ingest specific state
-    python apps/manage.py ingest_non_legislative_laws --state colima
+    python manage.py ingest_non_legislative_laws --state colima
 
     # Dry run
-    python apps/manage.py ingest_non_legislative_laws --all --dry-run
+    python manage.py ingest_non_legislative_laws --all --dry-run
 """
 
 from django.core.management.base import BaseCommand
