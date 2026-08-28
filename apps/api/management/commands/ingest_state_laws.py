@@ -4,13 +4,13 @@ Creates Law and LawVersion records from processed text + metadata.
 
 Usage:
     # Ingest specific state
-    docker-compose exec api python apps/manage.py ingest_state_laws --state colima
+    docker-compose exec api python manage.py ingest_state_laws --state colima
 
     # Ingest all states
-    docker-compose exec api python apps/manage.py ingest_state_laws --all
+    docker-compose exec api python manage.py ingest_state_laws --all
 
     # Dry run
-    docker-compose exec api python apps/manage.py ingest_state_laws --all --dry-run
+    docker-compose exec api python manage.py ingest_state_laws --all --dry-run
 """
 
 from django.core.management.base import BaseCommand

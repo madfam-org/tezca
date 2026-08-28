@@ -130,7 +130,7 @@ log_section "PHASE D: Database Ingestion"
 METADATA_FILE="$PROJECT_ROOT/data/state_laws_non_legislative_metadata.json"
 if [ -f "$METADATA_FILE" ]; then
     log "Running ingest_non_legislative_laws --all..."
-    python apps/manage.py ingest_non_legislative_laws --all >> "$LOG_FILE" 2>&1 || {
+    python manage.py ingest_non_legislative_laws --all >> "$LOG_FILE" 2>&1 || {
         log "ERROR: Ingestion failed"
         exit 1
     }
@@ -146,7 +146,7 @@ fi
 log_section "PHASE E: Elasticsearch Indexing"
 
 log "Running index_laws --all --tier state..."
-python apps/manage.py index_laws --all --tier state --create-indices >> "$LOG_FILE" 2>&1 || {
+python manage.py index_laws --all --tier state --create-indices >> "$LOG_FILE" 2>&1 || {
     log "WARNING: ES indexing failed (DB ingestion still succeeded)"
 }
 log "Phase E complete."
@@ -161,7 +161,7 @@ log_section "OVERNIGHT RUN COMPLETE"
 log "Total duration: ${TOTAL_DURATION} minutes ($(( TOTAL_DURATION / 60 ))h $(( TOTAL_DURATION % 60 ))m)"
 
 # Print law count if Django is available
-python apps/manage.py shell -c "
+python manage.py shell -c "
 from apps.api.models import Law
 total = Law.objects.count()
 state = Law.objects.filter(tier='state').count()

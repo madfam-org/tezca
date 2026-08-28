@@ -9,8 +9,23 @@ __pycache__
 *.pyc
 *.pyo
 
-# Data files (mounted or ingested separately)
-data/
+# Data files (bulk scraped corpora — the corpus itself lives in Postgres + ES).
+# Exclude the CONTENTS of data/ rather than the directory itself: a bare
+# `data/` directory-exclusion is re-includable on current BuildKit, but the
+# contents form (`data/*`) is the portable spelling that keeps the `!`
+# re-inclusions below working across builder versions.
+#
+# The two REGISTRY files are re-included on purpose: they are code-adjacent
+# metadata (~259 KiB total), not corpus. Every in-pod registry operation reads
+# them — `LawRegistry` (apps/scraper/utils/law_registry.py) defaults to
+# data/law_registry.json, the `dataops.ingest_law` Celery task resolves law ids
+# through it, and apps/scraper/dataops/coverage_dashboard.py reads both. Without
+# them in the image these all die with FileNotFoundError (bit us live on the
+# 2026-08-27 LFPDPPP Reglamento ingest, worked around by hand-copying into the
+# pod). Nothing else under data/ ships.
+data/*
+!data/law_registry.json
+!data/discovered_reglamentos.json
 db.sqlite3
 
 # Documentation
