@@ -332,7 +332,7 @@ Confirm on any image before a long ingest:
 
 ```sh
 kubectl -n tezca exec deploy/tezca-api -- ls -la /app/data/
-# expect law_registry.json (~206K) and discovered_reglamentos.json (~54K)
+# expect law_registry.json (~205K) and discovered_reglamentos.json (~53K)
 ```
 
 > **Nothing else under `data/` ships, deliberately.** The corpus lives in
