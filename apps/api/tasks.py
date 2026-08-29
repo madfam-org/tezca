@@ -730,6 +730,55 @@ def deliver_crm_webhook(self, event: str, payload: dict):
         raise self.retry(exc=Exception(error_msg))
 
 
+OPERATOR_ALERT_TIMEOUT = 10
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=5)
+def deliver_operator_alert(self, event: str, payload: dict):
+    """Deliver an operator-facing alert webhook (HMAC-signed), Celery-retried.
+
+    A separate channel from the CRM webhook on purpose: this carries INTERNAL
+    ops signals (e.g. a corpus-watch hit — the next ciclo's SEP calendario
+    acuerdo appeared and an operator must pin+re-vendor+re-seed), which must not
+    ride a customer-CRM channel. No-ops when OPERATOR_ALERT_WEBHOOK_URL/SECRET
+    are unset, so an unconfigured deploy simply keeps the existing log +
+    AcquisitionLog trail without an extra failure.
+    """
+    from django.conf import settings
+
+    url = getattr(settings, "OPERATOR_ALERT_WEBHOOK_URL", "")
+    secret = getattr(settings, "OPERATOR_ALERT_WEBHOOK_SECRET", "")
+    if not url or not secret:
+        return
+
+    body = json.dumps(
+        {"event": event, "timestamp": timezone.now().isoformat(), "data": payload},
+        ensure_ascii=False,
+    )
+    signature = hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
+    headers = {
+        "Content-Type": "application/json",
+        "X-Webhook-Signature": f"sha256={signature}",
+        "X-Webhook-Timestamp": timezone.now().isoformat(),
+        "User-Agent": "Tezca-Operator-Alert/1.0",
+    }
+
+    try:
+        resp = http_requests.post(
+            url, data=body, headers=headers, timeout=OPERATOR_ALERT_TIMEOUT
+        )
+        if resp.status_code < 400:
+            logger.info("Operator alert delivered: event=%s", event)
+            return
+        error_msg = f"HTTP {resp.status_code}"
+    except http_requests.RequestException as exc:
+        error_msg = str(exc)
+
+    logger.warning("Operator alert failed: event=%s error=%s", event, error_msg)
+    if self.request.retries < self.max_retries:
+        raise self.retry(exc=Exception(error_msg))
+
+
 # ---------------------------------------------------------------------------
 # Billing event stream consumer
 # ---------------------------------------------------------------------------

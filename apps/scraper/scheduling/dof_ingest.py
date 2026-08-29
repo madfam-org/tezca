@@ -175,6 +175,23 @@ def check_dof_daily():
             hit.url,
         )
 
+    # Durability hook (FF3): push an operator-facing NOTIFY for each NEW hit, so
+    # the year-over-year trigger reaches a person instead of waiting in a log.
+    # De-duplicated by URL (alerts once per publication) and no-op when the
+    # operator-alert webhook is unconfigured — detection above still logs +
+    # records regardless. Never an auto-seed: the alert says "pin+re-vendor+
+    # re-seed", the human does it. Best-effort — a notify failure must not fail
+    # the DOF check.
+    if watch_hits:
+        try:
+            from apps.scraper.scheduling.corpus_watch_notify import (
+                notify_corpus_watch_hits,
+            )
+
+            notify_corpus_watch_hits(watch_hits)
+        except Exception:
+            logger.exception("Failed to notify corpus-watch hits")
+
     return {
         "date": str(datetime.date.today()),
         "total_entries": len(entries),
