@@ -20,6 +20,7 @@ from apps.scraper.scheduling.corpus_watch import (
     CorpusWatch,
     scan_entries,
 )
+from apps.scraper.scheduling.corpus_watch_notify import notify_corpus_watch_hits
 
 # A real-shaped DOF entry for the 2027-2028 SEP calendario acuerdo (the
 # publication that must trip the watch next year).
@@ -289,3 +290,124 @@ class TestCheckCorpusWatchesCommand:
     def test_invalid_date_is_an_error(self):
         with pytest.raises(CommandError):
             call_command("check_corpus_watches", "--date", "not-a-date")
+
+
+class TestCorpusWatchNotify:
+    """The durability hook (FF3): a corpus-watch hit fires an operator NOTIFY,
+    once per publication (de-duplicated by URL), and never seeds. AcquisitionLog
+    and the Celery delivery task are mocked so this stays a pure unit test."""
+
+    @staticmethod
+    def _set_prior_alerts(mock_log_cls, rows):
+        """Configure the de-dup query chain
+        (AcquisitionLog.objects.filter(...).order_by(...)[:N]) to return `rows`."""
+        sliced = MagicMock()
+        sliced.__iter__ = lambda self: iter(rows)
+        sliced.__getitem__ = lambda self, key: rows
+        mock_log_cls.objects.filter.return_value.order_by.return_value = sliced
+
+    @patch("apps.api.tasks.deliver_operator_alert")
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    def test_a_hit_fires_the_operator_alert_and_records_it(
+        self, mock_log_cls, mock_deliver
+    ):
+        # No prior alert rows → the de-dup scan finds nothing.
+        self._set_prior_alerts(mock_log_cls, [])
+        mock_log_cls.objects.create.return_value = MagicMock()
+
+        hits = scan_entries([SEP_2027_ENTRY])
+        newly = notify_corpus_watch_hits(hits)
+
+        assert newly == 1
+        # The alert was delivered with the hit's serializable payload…
+        mock_deliver.delay.assert_called_once()
+        event, payload = mock_deliver.delay.call_args[0]
+        assert event == "corpus_watch.hit"
+        assert payload["watch_key"] == "sep_calendario_escolar"
+        assert "ingest_sep_calendario" in payload["action"]  # the operator runbook
+        # …and it was recorded (so tomorrow's scan de-dups it).
+        mock_log_cls.objects.create.assert_called_once()
+        recorded = mock_log_cls.objects.create.call_args[1]
+        assert recorded["operation"] == "corpus_watch_alert"
+        assert recorded["parameters"]["url"] == SEP_2027_ENTRY["url"]
+
+    @patch("apps.api.tasks.deliver_operator_alert")
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    def test_a_hit_already_alerted_is_not_re_sent(self, mock_log_cls, mock_deliver):
+        # A prior alert row for the SAME url → de-dup skips it.
+        prior = MagicMock()
+        prior.parameters = {"url": SEP_2027_ENTRY["url"]}
+        self._set_prior_alerts(mock_log_cls, [prior])
+
+        hits = scan_entries([SEP_2027_ENTRY])
+        newly = notify_corpus_watch_hits(hits)
+
+        assert newly == 0
+        mock_deliver.delay.assert_not_called()
+        mock_log_cls.objects.create.assert_not_called()
+
+    @patch("apps.api.tasks.deliver_operator_alert")
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    def test_no_hits_fires_nothing(self, mock_log_cls, mock_deliver):
+        assert notify_corpus_watch_hits([]) == 0
+        mock_deliver.delay.assert_not_called()
+
+    @patch("apps.api.tasks.deliver_operator_alert")
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    def test_a_notify_failure_does_not_raise(self, mock_log_cls, mock_deliver):
+        # An unexpected error per hit is swallowed (best-effort): the alert must
+        # never fail the DOF check.
+        mock_log_cls.objects.filter.side_effect = RuntimeError("db down")
+        hits = scan_entries([SEP_2027_ENTRY])
+        # Does not raise; nothing counted as newly alerted.
+        assert notify_corpus_watch_hits(hits) == 0
+
+
+class TestCheckDofDailyNotifyWiring:
+    """The daily task must PUSH the notify hook for hits, on top of the existing
+    log + AcquisitionLog record — without changing detection behavior."""
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.api.models.Law")
+    @patch("apps.scraper.federal.dof_daily.DofScraper")
+    def test_daily_check_notifies_on_a_hit(
+        self, mock_scraper_cls, mock_law, mock_log_cls
+    ):
+        from apps.scraper.scheduling.tasks import check_dof_daily
+
+        mock_law.objects.values_list.return_value = []
+        mock_scraper = MagicMock()
+        mock_scraper.run.return_value = {"entries": [SEP_2027_ENTRY], "changes": []}
+        mock_scraper_cls.return_value = mock_scraper
+        mock_log_cls.objects.create.return_value = MagicMock()
+
+        # Patch the lazily-imported notify function at its source module so the
+        # daily task's `from … import notify_corpus_watch_hits` picks up the mock.
+        with patch(
+            "apps.scraper.scheduling.corpus_watch_notify.notify_corpus_watch_hits"
+        ) as mock_notify:
+            check_dof_daily()
+            mock_notify.assert_called_once()
+            passed_hits = mock_notify.call_args[0][0]
+            assert len(passed_hits) == 1
+            assert passed_hits[0].watch_key == "sep_calendario_escolar"
+
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    @patch("apps.api.models.Law")
+    @patch("apps.scraper.federal.dof_daily.DofScraper")
+    def test_daily_check_does_not_notify_without_a_hit(
+        self, mock_scraper_cls, mock_law, mock_log_cls
+    ):
+        from apps.scraper.scheduling.tasks import check_dof_daily
+
+        mock_law.objects.values_list.return_value = []
+        mock_scraper = MagicMock()
+        mock_scraper.run.return_value = {"entries": [SEP_OTHER_ENTRY], "changes": []}
+        mock_scraper_cls.return_value = mock_scraper
+        mock_log_cls.objects.create.return_value = MagicMock()
+
+        with patch(
+            "apps.scraper.scheduling.corpus_watch_notify.notify_corpus_watch_hits"
+        ) as mock_notify:
+            check_dof_daily()
+            mock_notify.assert_not_called()

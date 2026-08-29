@@ -282,6 +282,17 @@ BANXICO_SIE_TOKEN = os.environ.get("BANXICO_SIE_TOKEN", "")
 CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
 CRM_WEBHOOK_SECRET = os.environ.get("CRM_WEBHOOK_SECRET", "")
 
+# ── Operator alerts (corpus-watch durability hook) ───────────────────
+# An out-of-band operator-facing webhook for actionable, non-paging signals
+# that need a human — e.g. a corpus-watch hit (the next ciclo's SEP calendario
+# acuerdo appeared in the DOF; an operator must pin+re-vendor+re-seed the SEP
+# dates). Distinct from the CRM webhook on purpose: this is an INTERNAL ops
+# signal, not a customer-CRM event, so it must not ride that channel. Unset ⇒
+# the alert task no-ops (detection still logs + records to AcquisitionLog), so
+# an unconfigured deploy loses nothing it has today.
+OPERATOR_ALERT_WEBHOOK_URL = os.environ.get("OPERATOR_ALERT_WEBHOOK_URL", "")
+OPERATOR_ALERT_WEBHOOK_SECRET = os.environ.get("OPERATOR_ALERT_WEBHOOK_SECRET", "")
+
 # ── Dhanam Billing ───────────────────────────────────────────────────
 DHANAM_WEBHOOK_SECRET = os.environ.get("DHANAM_WEBHOOK_SECRET", "")
 DHANAM_CHECKOUT_URL = os.environ.get(
