@@ -590,3 +590,69 @@ class TestSafeErrorSummary:
         raw = "x" * 1000
         result = _safe_error_summary(raw)
         assert len(result) == 500
+
+
+@pytest.mark.django_db
+class TestHealthCheckRedisReporting:
+    """A real Redis outage must be reported, not raised.
+
+    redis-py raises redis.exceptions.RedisError, which is neither an OSError
+    nor the builtin ConnectionError. The previous
+    `except (ConnectionError, OSError)` could not catch it, so a Redis outage
+    escaped health_check as an unhandled 500 and the documented
+    services["redis"] == "error" was unreachable.
+    """
+
+    def setup_method(self):
+        self.client = APIClient()
+        _start_admin_patches(self)
+
+    def teardown_method(self):
+        _stop_admin_patches(self)
+
+    def _get_health_with_cache_error(self, exc):
+        """Fail only the health probe's own cache write.
+
+        Patching cache.set wholesale also breaks the tier throttle, which
+        shares the cache — so raise for the "_health" key and pass everything
+        else through to the real backend.
+        """
+        from django.core.cache import cache
+
+        real_set = cache.set
+
+        def _selective_set(key, *args, **kwargs):
+            if key == "_health":
+                raise exc
+            return real_set(key, *args, **kwargs)
+
+        with patch("django.core.cache.cache.set", side_effect=_selective_set):
+            return self.client.get(reverse("admin-health"))
+
+    def test_redis_connection_error_is_reported_not_raised(self):
+        from redis.exceptions import ConnectionError as RedisConnectionError
+
+        response = self._get_health_with_cache_error(
+            RedisConnectionError("Error connecting to redis:6379")
+        )
+
+        assert response.status_code == 200, (
+            "Redis outage escaped health_check as an unhandled error instead of "
+            "being reported in services['redis']"
+        )
+        assert response.json()["services"]["redis"] == "error"
+
+    def test_redis_timeout_is_reported_not_raised(self):
+        from redis.exceptions import TimeoutError as RedisTimeoutError
+
+        response = self._get_health_with_cache_error(RedisTimeoutError("timeout"))
+
+        assert response.status_code == 200
+        assert response.json()["services"]["redis"] == "error"
+
+    def test_os_level_socket_error_is_still_reported(self):
+        """The original OSError path must keep working."""
+        response = self._get_health_with_cache_error(OSError("socket closed"))
+
+        assert response.status_code == 200
+        assert response.json()["services"]["redis"] == "error"

@@ -11,6 +11,7 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from elasticsearch.exceptions import ConnectionError as ESConnectionError
 from elasticsearch.exceptions import ConnectionTimeout
+from redis.exceptions import RedisError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -99,7 +100,14 @@ def health_check(request):
             services["redis"] = "connected"
         else:
             services["redis"] = "error"
-    except (ConnectionError, OSError):
+    except RedisError:
+        # redis-py raises redis.exceptions.RedisError, which is NOT an OSError
+        # and NOT the builtin ConnectionError. The previous
+        # `except (ConnectionError, OSError)` therefore could not catch a real
+        # Redis outage: the view raised instead of reporting
+        # services["redis"] = "error".
+        services["redis"] = "error"
+    except OSError:
         services["redis"] = "error"
 
     is_healthy = services["database"] == "connected"

@@ -15,17 +15,24 @@ __pycache__
 # contents form (`data/*`) is the portable spelling that keeps the `!`
 # re-inclusions below working across builder versions.
 #
-# The two REGISTRY files are re-included on purpose: they are code-adjacent
-# metadata (~259 KiB total), not corpus. Every in-pod registry operation reads
-# them — `LawRegistry` (apps/scraper/utils/law_registry.py) defaults to
-# data/law_registry.json, the `dataops.ingest_law` Celery task resolves law ids
-# through it, and apps/scraper/dataops/coverage_dashboard.py reads both. Without
-# them in the image these all die with FileNotFoundError (bit us live on the
-# 2026-08-27 LFPDPPP Reglamento ingest, worked around by hand-copying into the
-# pod). Nothing else under data/ ships.
+# The REGISTRY files are re-included on purpose: they are code-adjacent metadata,
+# not corpus. Every in-pod registry operation reads them — `LawRegistry`
+# (apps/scraper/utils/law_registry.py) defaults to data/law_registry.json, the
+# `dataops.ingest_law` Celery task resolves law ids through it, and
+# apps/scraper/dataops/coverage_dashboard.py reads both. Without them in the image
+# these all die with FileNotFoundError (bit us live on the 2026-08-27 LFPDPPP
+# Reglamento ingest, worked around by hand-copying into the pod).
+#
+# universe_registry.json is re-included for the same class of reason: it is the
+# source of the coverage universe counts served by /api/v1/coverage/ and
+# /api/v1/stats/. Excluding it made the public /cobertura page fall back to
+# hardcoded literals (e.g. "state legislation 12,468 / 100%") that were never
+# measured against the database. It is tracked in git for the same reason (see
+# the `!` rule in .gitignore). Nothing else under data/ ships.
 data/*
 !data/law_registry.json
 !data/discovered_reglamentos.json
+!data/universe_registry.json
 db.sqlite3
 
 # Documentation

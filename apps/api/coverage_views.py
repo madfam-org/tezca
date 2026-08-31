@@ -44,15 +44,40 @@ VIEW_LABELS = {
 }
 
 
+# Absolute path, resolved from this module rather than the process CWD:
+# coverage_views.py -> api/ -> apps/ -> project root. The previous relative
+# `Path("data/universe_registry.json")` only resolved when the process happened
+# to be started from the repo root, so under gunicorn (WORKDIR /app) it silently
+# resolved to nothing and every request fell through to the hardcoded literals
+# below. Mirrors REGISTRY_PATH in law_views.py.
+REGISTRY_PATH = Path(__file__).resolve().parent.parent.parent / (
+    "data/universe_registry.json"
+)
+
+
 def _load_universe_registry():
-    """Load universe_registry.json from data/ (local only, fast)."""
+    """Load universe_registry.json from data/ (local only, fast).
+
+    Returns None when the registry is unavailable. Callers then fall back to
+    hardcoded literals, so an absence here is not cosmetic — log it loudly
+    enough to be visible at production log level.
+    """
     try:
-        path = Path("data/universe_registry.json")
-        if path.exists():
-            with open(path, "r", encoding="utf-8") as f:
+        if REGISTRY_PATH.exists():
+            with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
                 return json.load(f)
-    except Exception:
-        logger.debug("Failed to load universe_registry.json", exc_info=True)
+        logger.warning(
+            "universe_registry.json not found at %s — coverage will report "
+            "hardcoded fallback counts instead of measured ones",
+            REGISTRY_PATH,
+        )
+    except (OSError, json.JSONDecodeError):
+        logger.warning(
+            "Failed to load universe_registry.json from %s — coverage will "
+            "report hardcoded fallback counts instead of measured ones",
+            REGISTRY_PATH,
+            exc_info=True,
+        )
     return None
 
 
@@ -136,7 +161,9 @@ def _get_total_articles():
 
         return es_client.count(index=INDEX_NAME)["count"]
     except Exception:
-        logger.debug("Failed to get ES article count", exc_info=True)
+        # WARNING, not DEBUG: this surfaces to the public /cobertura page as a
+        # missing article count, so it needs an operator-visible signal.
+        logger.warning("Failed to get ES article count", exc_info=True)
         return None
 
 
