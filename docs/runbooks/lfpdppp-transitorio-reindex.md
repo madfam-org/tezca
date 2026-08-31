@@ -326,18 +326,28 @@ shipped **without** either file and every in-pod registry operation died with
 `FileNotFoundError`. The workaround at the time was hand-copying the JSONs into
 a running pod — which does not survive a restart, a rescale, or a redeploy.
 
-Both files are now re-included in the image (`data/*` plus two `!` negations in
-`.dockerignore`, asserted by an explicit `COPY` in `apps/indigo/Dockerfile`).
+Both files are now re-included in the image (`data/*` plus `!` negations in
+`.dockerignore`). `law_registry.json` and `discovered_reglamentos.json` are also
+carried by an explicit belt-and-suspenders `COPY` in `apps/indigo/Dockerfile`.
+
+A third registry file joined them on 2026-08-30 (#204): `universe_registry.json`
+is the source of the coverage-universe counts served by `/api/v1/coverage/` and
+`/api/v1/stats/`. Before it shipped, `coverage_views.py` fell back to hardcoded
+literals (e.g. "state legislation 12,468 / 100%") that were never measured against
+the database. It rides in on the `.dockerignore` negation plus `COPY . .` — the
+explicit `COPY` line still lists only the two `LawRegistry` files.
+
 Confirm on any image before a long ingest:
 
 ```sh
 kubectl -n tezca exec deploy/tezca-api -- ls -la /app/data/
-# expect law_registry.json (~205K) and discovered_reglamentos.json (~53K)
+# expect law_registry.json (~205K), discovered_reglamentos.json (~53K),
+# and universe_registry.json (~9K)
 ```
 
 > **Nothing else under `data/` ships, deliberately.** The corpus lives in
-> Postgres + Elasticsearch. Only these two registry files — code-adjacent
-> metadata, ~259 KiB total — are in the image. Do not "fix" a missing corpus
+> Postgres + Elasticsearch. Only these three registry files — code-adjacent
+> metadata, ~268 KiB total — are in the image. Do not "fix" a missing corpus
 > file by widening the `.dockerignore` negations.
 
 ### Pre-place the source PDF rather than relying on the download
