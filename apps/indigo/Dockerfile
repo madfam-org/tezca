@@ -84,13 +84,15 @@ COPY --from=builder /app/.venv ./.venv
 # Copy application code last — most frequent invalidation point.
 COPY . .
 
-# The law-registry JSONs. `.dockerignore` re-includes exactly these two out of
-# an otherwise-excluded data/ (see the comment there), so `COPY . .` above
-# already carries them on current BuildKit. This explicit COPY is a belt-and-
-# braces assertion: if a builder ever drops the `!` re-inclusion, the build
-# FAILS here loudly instead of silently shipping an image whose every in-pod
-# registry operation dies with FileNotFoundError at runtime.
-COPY data/law_registry.json data/discovered_reglamentos.json /app/data/
+# The registry JSONs. `.dockerignore` re-includes exactly these three out of an
+# otherwise-excluded data/ (see the comment there), so `COPY . .` above already
+# carries them on current BuildKit. This explicit COPY is a belt-and-braces
+# assertion: if a builder ever drops the `!` re-inclusion, the build FAILS here
+# loudly instead of silently shipping an image whose registry operations die with
+# FileNotFoundError at runtime — law_registry/discovered_reglamentos break the
+# scraper/ingest paths, and universe_registry makes /api/v1/coverage/ silently
+# fall back to hardcoded literals (the failure fixed in #204).
+COPY data/law_registry.json data/discovered_reglamentos.json data/universe_registry.json /app/data/
 
 # Collect static files (needs Django available).
 # manage.py lives at the repo ROOT (/app/manage.py) — NOT apps/manage.py.
