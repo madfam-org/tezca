@@ -197,9 +197,29 @@ pero sí alimenta apoyo a la decisión hoy, y el mismo origen
 el error.
 
 **No se tocó en esta rama**: corregirla exige leer el Anexo 8 de la RMF 2025 en
-el DOF, y este carril sólo verificó 2026. Queda levantado como trabajo aparte.
-Lo que sí se agregó es la prueba de coherencia aritmética para 2026, que es la
-que caza esta clase de error antes de que se publique.
+el DOF, y este carril sólo verificó 2026. Lo que sí se agregó es la prueba de
+coherencia aritmética, que es la que caza esta clase de error antes de que se
+publique.
+
+> **Seguimiento (2026-09-05).** Ese trabajo aparte ya se hizo: ver
+> [`2025-errata-isr-dof.md`](2025-errata-isr-dof.md). Al leer el Anexo 8 de la
+> RMF 2025 resultaron **seis** cuotas fijas equivocadas, no cuatro — los tramos
+> 9 y 10 traían −1,000.00 exactos y la compuerta no los ve, porque un desfase
+> constante se propaga sin romper la identidad. La columna «cuota fija esperada»
+> de la tabla de arriba encadena desde el valor erróneo anterior; las cifras del
+> DOF son 1,640.18 · 5,004.12 · 9,236.89 · 22,665.17 · 32,691.18 · 117,912.32.
+>
+> Ese mismo carril invalidó una afirmación de este documento: **la tarifa 2026
+> NO es idéntica a la de 2025.** Los importes 2026 tienen cero ocurrencias en el
+> texto de la RMF 2025 (el primer tramo mensual de 2025 termina en 746.04, no en
+> 844.59). Los valores 2026 publicados aquí **no quedan invalidados** — se
+> leyeron de su propio instrumento, `codigo` 5777219 — pero sí la equivalencia,
+> y con ella cualquier idea de reutilizar una tabla para el otro año. Las tasas
+> sí coinciden entre años; los límites se actualizaron ≈13.2 %.
+>
+> La compuerta de coherencia se extendió a **toda** tarifa ISR del repo,
+> mensual o anual y de cualquier año, y vive ahora en
+> `apps/api/fiscal_coherence.py`.
 
 ---
 

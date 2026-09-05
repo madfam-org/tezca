@@ -116,11 +116,18 @@ MINIMUM_WAGE_2026 = {
 # en el DOF 28/12/2025 (codigo 5777219). La RMF 2026 misma es el codigo
 # 5777217, vigente del 01-01-2026 al 31-12-2026.
 #
-# Los valores son IDÉNTICOS a los de 2025 — LISR Art. 152 sólo obliga a
-# actualizar cuando la inflación acumulada rebasa 10 % — pero el INSTRUMENTO
-# es nuevo. Ésa es precisamente la razón de publicar una fila 2026 en lugar
-# de dejar que un consumidor reutilice la de 2025: la cita que defiende el
-# cálculo ante el SAT es el Anexo 8 de 2026, no el de 2025.
+# CORRECCIÓN 2026-09-05: aquí se afirmaba que los valores eran IDÉNTICOS a los
+# de 2025. No lo son. Al leer el Anexo 8 de la RMF 2025 (codigo 5746354, ver
+# apps/api/fiscal_dof_2025.py) resultó que 844.59, 7,168.51, 133,488.54 y
+# 425,641.99 tienen CERO ocurrencias en ese texto: el primer tramo mensual de
+# 2025 termina en 746.04 y el último arranca en 375,975.62 con cuota
+# 117,912.32. Las TASAS sí coinciden entre años; los LÍMITES se actualizaron
+# ≈13.2 %, consistente con haber rebasado el umbral de inflación acumulada del
+# 10 % del Art. 152 LISR.
+#
+# Los importes de abajo no cambian —se leyeron del instrumento de 2026— pero
+# la conclusión práctica se refuerza: publicar una fila 2026 propia es lo que
+# impide que un consumidor reutilice la de 2025, que además es distinta.
 #
 # Forma de cada renglón: la misma que ISR_MONTHLY_2025 (lower/upper/
 # fixed_fee/rate), para que symbiosis-hcm no cambie de parser. ``rate`` va en
@@ -191,10 +198,14 @@ ISR_2026_DOF = {
         "01-01-2026 a 31-12-2026; LISR Art. 96"
     ),
     "notes": (
-        VERIFIED_NOTE + " Los importes coinciden con los de 2025 (LISR Art. "
-        "152: la tarifa se actualiza sólo cuando la inflación acumulada rebasa "
-        "10 %), pero el instrumento y la cita son nuevos: quien defienda una "
-        "retención de 2026 cita el Anexo 8 de la RMF 2026, no el de 2025."
+        VERIFIED_NOTE + " CORRECCIÓN 2026-09-05: esta nota afirmaba que los "
+        "importes coincidían con los de 2025. Es FALSO — la lectura del Anexo "
+        "8 de la RMF 2025 (codigo 5746354) encontró cero ocurrencias de "
+        "844.59, 7,168.51, 133,488.54 y 425,641.99 en ese texto: el primer "
+        "tramo mensual de 2025 termina en 746.04. Las tasas sí coinciden entre "
+        "años; los límites se actualizaron ≈13.2 %. Los importes de abajo no "
+        "cambian (se leyeron del instrumento de 2026), pero ninguna tabla debe "
+        "reutilizarse para el otro año."
     ),
 }
 
@@ -282,25 +293,38 @@ SUBSIDIO_2026_PERIODS = [
 ]
 
 
-def subsidio_rule_rows(uma_monthly: str, monthly_amount: str) -> list[dict]:
+def subsidio_rule_rows(
+    uma_monthly: str,
+    monthly_amount: str,
+    rate_of_uma: str = SUBSIDIO_RATE_OF_UMA,
+) -> list[dict]:
     """La regla del subsidio como la consume un motor de nómina.
 
     Se devuelve una lista de un solo objeto (y no una tabla de rangos) para
     que la forma del campo ``rows`` siga siendo una lista, igual que en los
     demás ``FiscalTable``, sin fingir que existen tramos que el decreto ya
     no tiene.
+
+    ``rate_of_uma`` es parámetro porque el TRANSITORIO SEGUNDO del decreto
+    (DOF 31-12-2024) sustituyó el 13.8 % por **14.39 % durante enero de 2025**
+    — un mes, un porcentaje distinto, la misma regla. Por omisión es el 13.8 %
+    del Artículo Segundo, que es el que rige todos los demás periodos, así que
+    ningún llamador de 2026 cambia. La fórmula se redacta con el porcentaje
+    efectivo para que la fila publicada sea auto-verificable: quien lea el
+    renglón puede rehacer la multiplicación.
     """
+    percent = f"{float(rate_of_uma) * 100:g} %"
     return [
         {
-            "rate_of_uma": SUBSIDIO_RATE_OF_UMA,
+            "rate_of_uma": rate_of_uma,
             "uma_monthly": uma_monthly,
             "monthly_amount": monthly_amount,
             "income_cap": SUBSIDIO_INCOME_CAP,
             "days_divisor": SUBSIDIO_DAYS_DIVISOR,
             "formula": (
-                "monto mensual = UMA mensual x 13.8 %, aplicable cuando el "
+                f"monto mensual = UMA mensual x {percent}, aplicable cuando el "
                 "ingreso base no excede 10,171.00; para periodos menores a un "
-                "mes: (UMA mensual x 13.8 %) / 30.4 x dias"
+                f"mes: (UMA mensual x {percent}) / 30.4 x dias"
             ),
         }
     ]

@@ -10,7 +10,6 @@ from apps.api.fiscal_seed_data import (
     FISCAL_TABLE_SEEDS,
     ISR_MONTHLY_2025,
     MINIMUM_WAGE_SEEDS,
-    SUBSIDIO_MONTHLY_2025,
     UMA_SEEDS,
 )
 
@@ -73,8 +72,31 @@ class TestSeedDataIntegrity:
         rates = [float(row["rate"]) for row in ISR_MONTHLY_2025]
         assert rates == sorted(rates)
 
-    def test_subsidio_top_row_is_zero(self):
-        assert SUBSIDIO_MONTHLY_2025[-1]["subsidio"] == "0.00"
+    def test_the_repealed_subsidio_bracket_table_is_gone(self):
+        """Replaces ``test_subsidio_top_row_is_zero``, which pinned bad data.
+
+        That test asserted the last row of ``SUBSIDIO_MONTHLY_2025`` was
+        ``0.00`` — a true statement about a table that had been **repealed**
+        since the DOF 01-05-2024 decreto. It passed for a year while the seed
+        served brackets no employer may apply. The honest assertion is that
+        the table is not seeded at all; the rule that replaced it is published
+        as ``subsidio_rule`` from ``apps.api.fiscal_dof_2025``.
+        """
+        import apps.api.fiscal_seed_data as seed
+
+        assert not hasattr(seed, "SUBSIDIO_MONTHLY_2025")
+        assert all(row[0] != "subsidio_monthly" for row in FISCAL_TABLE_SEEDS)
+
+    def test_isr_fixed_fees_match_the_dof(self):
+        """The seed floor may not drift from the verified reading.
+
+        Six of these were wrong until 2026-09-05 (transcribed from
+        symbiosis-hcm with a lost thousands digit). ``fiscal_dof_2025`` is the
+        cited source; this keeps the seed from silently diverging again.
+        """
+        from apps.api.fiscal_dof_2025 import ISR_MONTHLY_2025 as VERIFIED
+
+        assert ISR_MONTHLY_2025 == VERIFIED
 
     def test_no_2026_tables_are_seeded(self):
         """The *seed* claims no 2026 table — it never sourced one.
