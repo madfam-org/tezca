@@ -198,7 +198,7 @@ spec:
         - protocol: TCP
           port: 8000
 ---
-# Allow karafiel-api → tezca-api ingress on port 8000.
+# Allow karafiel api/worker/beat → tezca-api ingress on port 8000.
 #
 # Counterpart to karafiel's `karafiel-tezca-egress` policy
 # (karafiel/infra/k8s/production/network-policies.yaml). NetworkPolicy is
@@ -233,8 +233,17 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: karafiel
           podSelector:
-            matchLabels:
-              app: karafiel-api
+            # The API pod AND the Celery worker + beat: the changelog sync
+            # (integrations.tezca_sync) and the obligation reactor run in the
+            # worker, not in the API — with only karafiel-api admitted, every
+            # sync_tezca_changelog run answered ECONNREFUSED (k3s rejects a
+            # policy denial rather than dropping it; verified 2026-09-04 through
+            # `enclii ops pods logs` on karafiel-worker). Karafiel's egress half
+            # widens in the same way.
+            matchExpressions:
+              - key: app
+                operator: In
+                values: [karafiel-api, karafiel-worker, karafiel-beat]
       ports:
         - protocol: TCP
           port: 8000
