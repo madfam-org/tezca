@@ -77,6 +77,19 @@ class FiscalValueBase(models.Model):
         blank=True,
         help_text="Publication date in the Diario Oficial de la Federación",
     )
+    dof_codigo = models.CharField(
+        max_length=20,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text=(
+            "DOF nota_detalle 'codigo' — the stable identifier of the exact "
+            "publication, e.g. '5778072'. Together with dof_date it resolves "
+            "to one document: "
+            "https://dof.gob.mx/nota_detalle.php?codigo=<codigo>&fecha=<dd/mm/yyyy>. "
+            "Empty when the row is not tied to a single DOF publication."
+        ),
+    )
     provenance = models.CharField(
         max_length=20,
         choices=Provenance.choices,
@@ -251,6 +264,15 @@ class FiscalTable(models.Model):
         ISR_MONTHLY = "isr_monthly", "ISR retención mensual (LISR 96)"
         ISR_ANNUAL = "isr_annual", "ISR tarifa anual (LISR 152)"
         SUBSIDIO_MONTHLY = "subsidio_monthly", "Subsidio al empleo mensual"
+        # Since the DOF 01-05-2024 decreto (as modified 31-12-2024), the
+        # subsidio is no longer a bracket table: it is a single amount —
+        # 13.8 % of the monthly UMA — payable while the ingreso base does not
+        # exceed a fixed cap. That is a *rule*, not a table, so it gets its own
+        # kind rather than being flattened into fake brackets. The rule's
+        # ``rows`` carry the parameters; a consumer that only knows
+        # ``subsidio_monthly`` sees no row and fails closed, which is correct:
+        # it must not apply pre-2025 brackets to a post-decreto year.
+        SUBSIDIO_RULE = "subsidio_rule", "Subsidio al empleo (regla derivada)"
         IMSS_RATES = "imss_rates", "Cuotas obrero-patronales IMSS"
         ISN_RATES = "isn_rates", "Impuesto sobre nóminas por entidad"
 
@@ -279,6 +301,17 @@ class FiscalTable(models.Model):
     source_citation = models.TextField(blank=True, default="")
     source_url = models.URLField(max_length=500, blank=True, default="")
     dof_date = models.DateField(null=True, blank=True)
+    dof_codigo = models.CharField(
+        max_length=20,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text=(
+            "DOF nota_detalle 'codigo' of the publication carrying this table "
+            "(e.g. '5777219' for the Anexo 8 de la RMF 2026). Empty when the "
+            "table is not tied to a single DOF publication."
+        ),
+    )
     provenance = models.CharField(
         max_length=20,
         choices=Provenance.choices,

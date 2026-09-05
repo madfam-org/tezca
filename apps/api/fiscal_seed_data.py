@@ -10,7 +10,19 @@ returns nothing). So none of these seeds could be derived from the corpus.
 
 They are therefore all stamped ``seed-unverified``: well-known published
 figures, entered so the feed is useful on day one, but **not verified by
-this repo against a DOF document**. The API says so on every response, and
+this repo against a DOF document**.
+
+.. note::
+
+   The **2026** values have since been verified. They live in
+   :mod:`apps.api.fiscal_dof_2026`, transcribed from the DOF text with each
+   publication's ``codigo``, and ``manage.py publish_fiscal_values_2026``
+   promotes the seeded 2026 rows to ``published``. The 2026 entries below
+   remain as the seed floor — for a database that has never had the publish
+   command run — and are deliberately left ``seed-unverified``. Where the two
+   disagree, ``fiscal_dof_2026`` is right: the seed's UMA 2026 monthly/annual
+   (3,566.28 / 42,795.36) were derived by hand; INEGI published 3,566.22 /
+   42,794.64. The API says so on every response, and
 ``is_verified`` is False for all of them. Promoting a row to ``published``
 is a deliberate operator act performed after reading the actual DOF
 publication — that is what the admin surface is for.
@@ -58,6 +70,12 @@ UMA_SEEDS = [
     (2023, "103.74", "3153.70", "37844.40", "2023-02-01", "2024-01-31"),
     (2024, "108.57", "3300.53", "39606.36", "2024-02-01", "2025-01-31"),
     (2025, "113.14", "3439.46", "41273.52", "2025-02-01", "2026-01-31"),
+    # NOTE: monthly/annual here are hand-derived and DIFFER from the figures
+    # INEGI actually published (3,566.22 / 42,794.64 — DOF 09-01-2026, codigo
+    # 5778072). Left as-is so this file stays a record of what the unverified
+    # seed claimed; apps/api/fiscal_dof_2026.py carries the verified values and
+    # `manage.py publish_fiscal_values_2026` corrects the row in place while
+    # promoting it to provenance='published'.
     (2026, "117.31", "3566.28", "42795.36", "2026-02-01", None),
 ]
 

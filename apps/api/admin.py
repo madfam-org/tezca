@@ -39,9 +39,10 @@ class UMAValueAdmin(_AppendOnlyAdmin):
         "vigencia_to",
         "provenance",
         "dof_date",
+        "dof_codigo",
     ]
     list_filter = ["provenance", "year"]
-    search_fields = ["year", "source_citation", "notes"]
+    search_fields = ["year", "source_citation", "notes", "dof_codigo"]
     ordering = ["-vigencia_from"]
 
 
@@ -55,9 +56,10 @@ class MinimumWageAdmin(_AppendOnlyAdmin):
         "vigencia_to",
         "provenance",
         "dof_date",
+        "dof_codigo",
     ]
     list_filter = ["provenance", "zone", "year"]
-    search_fields = ["year", "source_citation", "notes"]
+    search_fields = ["year", "source_citation", "notes", "dof_codigo"]
     ordering = ["-vigencia_from", "zone"]
 
 
@@ -71,9 +73,16 @@ class TipoDeCambioAdmin(_AppendOnlyAdmin):
         "vigencia_to",
         "provenance",
         "dof_date",
+        "dof_codigo",
     ]
     list_filter = ["provenance", "from_currency", "to_currency"]
-    search_fields = ["from_currency", "to_currency", "source_citation", "notes"]
+    search_fields = [
+        "from_currency",
+        "to_currency",
+        "source_citation",
+        "notes",
+        "dof_codigo",
+    ]
     ordering = ["-vigencia_from", "from_currency", "to_currency"]
 
 
@@ -87,9 +96,17 @@ class FiscalTableAdmin(_AppendOnlyAdmin):
         "vigencia_from",
         "provenance",
         "dof_date",
+        "dof_codigo",
     ]
     list_filter = ["provenance", "kind", "year"]
-    search_fields = ["year", "kind", "legal_basis", "source_citation", "notes"]
+    search_fields = [
+        "year",
+        "kind",
+        "legal_basis",
+        "source_citation",
+        "notes",
+        "dof_codigo",
+    ]
     ordering = ["-year", "kind"]
 
     @admin.display(description="Rows")

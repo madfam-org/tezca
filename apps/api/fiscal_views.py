@@ -488,8 +488,11 @@ def tables_list(request):
         "All fiscal tables for one fiscal year, grouped by kind. This is the "
         "shape symbiosis-hcm's TezcaFiscalClient.get_fiscal_tables(year) "
         "consumes: isr_brackets, subsidio, imss_rates, isn_rates. "
+        "Pass ?on=YYYY-MM-DD to pin the vigencia in force on a day — needed "
+        "for kinds that change mid-year, like the UMA-derived subsidio_rule. "
         "Requires an API key with 'read' scope."
     ),
+    parameters=[ON_PARAM],
 )
 @api_view(["GET"])
 def tables_by_year(request, year: int):
@@ -498,7 +501,14 @@ def tables_by_year(request, year: int):
     if denied is not None:
         return denied
 
-    rows = list(FiscalTable.objects.filter(year=year).order_by("kind"))
+    on_date, err = _parse_on(request)
+    if err is not None:
+        return err
+
+    qs = FiscalTable.objects.filter(year=year)
+    if on_date is not None:
+        qs = _in_force_on(qs, on_date)
+    rows = list(qs.order_by("kind", "vigencia_from"))
     if not rows:
         return Response(
             {
@@ -512,7 +522,26 @@ def tables_by_year(request, year: int):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    by_kind = {row.kind: serialize_fiscal_table(row) for row in rows}
+    # A kind can hold several vigencias within one year — the subsidio al
+    # empleo does, because it is derived from the UMA and the UMA changes on
+    # 1 February. Collapsing silently to "whichever row sorted last" would
+    # hand January's caller February's amount, so this picks the LATEST
+    # vigencia deliberately and reports the rest in ``superseded_within_year``.
+    # A caller that needs a specific day passes ``?on=`` and gets exactly the
+    # row in force then.
+    by_kind = {}
+    extra_vigencias = {}
+    for row in rows:
+        previous = by_kind.get(row.kind)
+        if (
+            previous is None
+            or row.vigencia_from.isoformat() > previous["vigencia_from"]
+        ):
+            if previous is not None:
+                extra_vigencias.setdefault(row.kind, []).append(previous)
+            by_kind[row.kind] = serialize_fiscal_table(row)
+        else:
+            extra_vigencias.setdefault(row.kind, []).append(serialize_fiscal_table(row))
 
     def _rows_for(kind):
         entry = by_kind.get(kind)
@@ -523,7 +552,15 @@ def tables_by_year(request, year: int):
             "year": year,
             # Consumer-facing names (symbiosis TezcaFiscalClient).
             "isr_brackets": _rows_for(FiscalTable.Kind.ISR_MONTHLY),
+            "isr_annual": _rows_for(FiscalTable.Kind.ISR_ANNUAL),
+            # Bracket-shaped subsidio, as it existed before the DOF 01-05-2024
+            # decreto. NULL for a year that has none — never substituted.
             "subsidio": _rows_for(FiscalTable.Kind.SUBSIDIO_MONTHLY),
+            # The post-decreto subsidio: a derived rule (13.8 % of the monthly
+            # UMA under an income cap), not a table of brackets. A consumer
+            # that only knows "subsidio" sees NULL there and fails closed
+            # rather than applying repealed brackets.
+            "subsidio_rule": _rows_for(FiscalTable.Kind.SUBSIDIO_RULE),
             "imss_rates": _rows_for(FiscalTable.Kind.IMSS_RATES),
             "isn_rates": _rows_for(FiscalTable.Kind.ISN_RATES),
             # Full rows with per-table provenance, so a caller can check
@@ -536,6 +573,11 @@ def tables_by_year(request, year: int):
                 entry["provenance"] == Provenance.PUBLISHED
                 for entry in by_kind.values()
             ),
+            # Earlier vigencias of the same kind within this year. Non-empty
+            # means the top-level rows are the latest period, not the whole
+            # year — pass ?on=YYYY-MM-DD to pin a day.
+            "superseded_within_year": extra_vigencias,
+            "on": on_date.isoformat() if on_date is not None else None,
             "disclaimer": DISCLAIMER,
         }
     )

@@ -77,8 +77,30 @@ class TestSeedDataIntegrity:
         assert SUBSIDIO_MONTHLY_2025[-1]["subsidio"] == "0.00"
 
     def test_no_2026_tables_are_seeded(self):
-        """2026 tables were not sourced, so none are claimed — fail closed."""
+        """The *seed* claims no 2026 table — it never sourced one.
+
+        2026 tables do exist in the feed, but they arrive through
+        ``publish_fiscal_values_2026`` with a DOF citation, not through this
+        unverified seed. Keeping the seed empty for 2026 is what makes the
+        distinction real rather than cosmetic.
+        """
         assert all(row[1] != 2026 for row in FISCAL_TABLE_SEEDS)
+
+    def test_seeded_uma_2026_diverges_from_the_dof_figures(self):
+        """A guard on a known divergence, so nobody "fixes" it in the wrong file.
+
+        The seed derived the 2026 monthly/annual by hand; INEGI published
+        3,566.22 / 42,794.64 (DOF 09-01-2026, codigo 5778072). The verified
+        figures live in ``apps.api.fiscal_dof_2026`` and the publish command
+        corrects this row while promoting it. If someone edits the seed to
+        match, this test fails and points at the right file.
+        """
+        from apps.api.fiscal_dof_2026 import UMA_2026
+
+        seeded = next(r for r in UMA_SEEDS if r[0] == 2026)
+        assert seeded[1] == UMA_2026["daily"], "the daily figure did match"
+        assert seeded[2] != UMA_2026["monthly"]
+        assert seeded[3] != UMA_2026["annual"]
 
 
 @pytest.mark.django_db
@@ -114,7 +136,12 @@ class TestSeedCommand:
         assert FiscalTable.objects.count() == len(FISCAL_TABLE_SEEDS)
 
     def test_every_seeded_row_is_marked_unverified(self, monkeypatch):
-        """The feed must never claim DOF verification it does not have."""
+        """The seed must never claim DOF verification it does not have.
+
+        Only the seed command runs here: rows promoted later by
+        ``publish_fiscal_values_2026`` are ``published`` on purpose, and that
+        is covered in ``test_fiscal_dof_2026.py``.
+        """
         monkeypatch.setenv("LOCAL_DB", "yes")
         call_command("seed_fiscal_values", stdout=StringIO())
 
