@@ -27,23 +27,32 @@ Consumers **must not** present a value whose provenance is not `published` as
 a compliance assertion. Tezca states what it knows and how well; the caller
 decides what to assert. Every response repeats this as a `disclaimer` field.
 
-### Current seed status (2026-08-22)
+### Status
 
-**Every seeded row is `seed-unverified`.** Tezca's law corpus carries law text,
-not fiscal values — there is no UMA figure, no CONASAMI resolution and no LISR
-Art. 96 bracket table anywhere under `data/`. So no seed could be derived from
-the corpus, and none claims to be. Promoting rows to `published` is a
-deliberate operator act performed after reading the actual DOF publication.
+The seed (2026-08-22) entered every row as `seed-unverified`: Tezca's law
+corpus carries law text, not fiscal values — there is no UMA figure, no
+CONASAMI resolution and no LISR Art. 96 bracket table anywhere under `data/`.
+So no seed could be derived from the corpus, and none claimed to be.
 
-| Dataset | Rows seeded | Coverage | Provenance |
-|---|---|---|---|
-| UMA | 11 | 2016–2026 (daily/monthly/annual) | `seed-unverified` |
-| Salario mínimo | 19 | 2016–2026 general; 2019–2026 ZLFN | `seed-unverified` |
-| Fiscal tables | 2 | ISR monthly 2025, subsidio monthly 2025 | `seed-unverified` |
+**2026 has since been verified against the DOF** (2026-09-05) and published.
+See [`fiscal/2026-publicacion-dof.md`](fiscal/2026-publicacion-dof.md) for the
+full table, the pending items and the operator's deploy checklist.
 
-**2026 ISR/subsidio tables are deliberately absent.** They were not sourced,
-so no row claims them: `/fiscal/tables/2026/` returns 404 rather than serving
-2025 brackets stamped 2026. Fail-closed is the point.
+| Dataset | Coverage | Provenance |
+|---|---|---|
+| UMA | 2016–2025 | `seed-unverified` |
+| UMA | **2026** (117.31 / 3,566.22 / 42,794.64) | **`published`**, DOF 09-01-2026 codigo 5778072 |
+| Salario mínimo | 2016–2025 general; 2019–2025 ZLFN | `seed-unverified` |
+| Salario mínimo | **2026** general 315.04 · ZLFN 440.87 | **`published`**, DOF 09-12-2025 codigo 5775534 |
+| `isr_monthly` | 2025 | `seed-unverified` |
+| `isr_monthly` | **2026** (11 tramos) | **`published`**, DOF 28-12-2025 codigo 5777219 |
+| `subsidio_monthly` | 2025 (brackets) | `seed-unverified` |
+| `subsidio_rule` | **2026**, two vigencias | **`published`**, DOF 31-12-2024 codigo 5746529 |
+
+Still absent for 2026, because no primary source was read for them: the annual
+Art. 152 tarifa, the 61 salarios mínimos profesionales, `imss_rates` and
+`isn_rates`. They return `null` — absent, never substituted — so
+`all_published` for 2026 is `false` even though what is there is verified.
 
 ---
 
@@ -130,12 +139,22 @@ Structured tables that do not reduce to a scalar.
 |---|---|---|
 | `isr_monthly` | Retention brackets: `lower`, `upper`, `fixed_fee`, `rate` | LISR Art. 96 |
 | `isr_annual` | Annual tarifa, same bracket shape | LISR Art. 152 |
-| `subsidio_monthly` | `lower`, `upper`, `subsidio` | Decreto de subsidio al empleo |
+| `subsidio_monthly` | `lower`, `upper`, `subsidio` — the pre-2025 bracket table | Decreto de subsidio al empleo |
+| `subsidio_rule` | `rate_of_uma`, `uma_monthly`, `monthly_amount`, `income_cap`, `days_divisor`, `formula` | Decreto DOF 01-05-2024 (mod. 31-12-2024) |
 | `imss_rates` | Cuotas obrero-patronales | LSS 25, 106, 107, 147, 168 |
 | `isn_rates` | Impuesto sobre nóminas by entidad | Ley de Hacienda de cada entidad |
 
 A bracket's `upper` is `null` in the top (open-ended) row. Filter with
 `?kind=`, `?year=` or `?on=`.
+
+> **`subsidio_rule` is not a bracket table.** The DOF 01-05-2024 decreto
+> replaced the subsidio's rate table with a single amount — 13.8 % of the
+> monthly UMA, payable while the ingreso base does not exceed a fixed cap — so
+> it gets its own `kind` instead of being flattened into fake brackets. A
+> consumer that only knows `subsidio_monthly` sees no row for such a year and
+> fails closed, which is correct: it must not apply repealed brackets. Because
+> the amount derives from the UMA, and the UMA changes on 1 February, a year
+> holds **more than one `subsidio_rule` vigencia** — use `?on=` to pin a day.
 
 ### `GET /fiscal/tables/<year>/`
 
@@ -160,12 +179,38 @@ Every table for one fiscal year, grouped under the field names
 year's tables as citable. A kind with no row for that year is `null` — absent,
 never substituted from another year. A year with no tables at all returns 404.
 
+This endpoint also accepts **`?on=YYYY-MM-DD`**. Without it, a kind holding
+several vigencias in one year (the UMA-derived `subsidio_rule` does) reports
+its **latest** period at the top level and lists the earlier ones under
+`superseded_within_year`. With `?on=`, you get exactly the row in force that
+day. Pass `?on=` whenever the figure feeds a dated calculation.
+
+### Provenance fields
+
+Every row in every response carries:
+
+| Field | Meaning |
+|---|---|
+| `provenance` / `is_verified` | The honesty contract above |
+| `dof_date` | Publication date in the DOF |
+| `dof_codigo` | The DOF `nota_detalle` identifier, e.g. `"5778072"` |
+| `source_url` | The resolved `nota_detalle` URL |
+| `source_citation` | Human-readable citation |
+| `notes` | Caveats — including anything the row deliberately does not assert |
+
+`dof_codigo` with `dof_date` resolves to exactly one document:
+`https://dof.gob.mx/nota_detalle.php?codigo=<codigo>&fecha=<dd/mm/yyyy>`. It is
+the same identity discipline `apps.scraper` applies to pinned corpus documents:
+an opaque codigo can resolve to the wrong instrument, so it is pinned together
+with its date. Empty when a row is not tied to a single DOF publication.
+
 ---
 
 ## Data model
 
-Three models in `apps/api/fiscal_models.py`: `UMAValue`, `MinimumWage`,
-`FiscalTable`. All share the same provenance and vigencia shape.
+Four models in `apps/api/fiscal_models.py`: `UMAValue`, `MinimumWage`,
+`TipoDeCambio`, `FiscalTable`. All share the same provenance and vigencia
+shape.
 
 **Append-only.** A value is never edited in place once published; a correction
 is a new row with a later `vigencia_from`. `vigencia_from` / `vigencia_to`
@@ -192,6 +237,19 @@ LOCAL_DB=yes python manage.py seed_fiscal_values # write
 
 The command is idempotent and, per AGENTS.md, refuses to write without the
 `LOCAL_DB=yes` guard.
+
+To publish the DOF-verified 2026 values (see
+[`fiscal/2026-publicacion-dof.md`](fiscal/2026-publicacion-dof.md)):
+
+```bash
+python manage.py publish_fiscal_values_2026 --dry-run    # report only
+LOCAL_DB=yes python manage.py publish_fiscal_values_2026 # write
+```
+
+It writes `published` rows with their `dof_codigo`, promotes the matching
+`seed-unverified` rows rather than duplicating them, closes the prior year's
+vigencia, and **never touches a row that is already `published`** — an
+operator's hand correction is respected.
 
 ## Provenance of this feed's existence
 

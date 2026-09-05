@@ -17,6 +17,9 @@ def _provenance_block(row):
         "source_citation": row.source_citation,
         "source_url": row.source_url,
         "dof_date": row.dof_date.isoformat() if row.dof_date else None,
+        # The DOF nota_detalle 'codigo': with dof_date it resolves to the one
+        # publication a consumer would cite to defend the number.
+        "dof_codigo": row.dof_codigo,
         "notes": row.notes,
     }
 
