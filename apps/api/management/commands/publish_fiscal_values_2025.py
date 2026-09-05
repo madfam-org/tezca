@@ -40,18 +40,7 @@ import os
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from apps.api.fiscal_dof_2025 import (
-    ISR_2025_DOF,
-    ISR_ANNUAL_2025,
-    ISR_ANNUAL_2025_DOF,
-)
-from apps.api.fiscal_dof_2025 import ISR_MONTHLY_2025 as ISR_MONTHLY_2025_DOF_ROWS
-from apps.api.fiscal_dof_2025 import (
-    ISR_MONTHLY_2025_NOTES,
-    SUBSIDIO_2025_DOF,
-    SUBSIDIO_2025_PERIODS,
-    SUBSIDIO_2025_RETIRO_RAZON,
-)
+from apps.api import fiscal_dof_2025 as dof2025
 from apps.api.fiscal_dof_2026 import subsidio_rule_rows
 from apps.api.fiscal_models import FiscalTable, Provenance
 
@@ -135,7 +124,7 @@ class Command(BaseCommand):
         existing = FiscalTable.objects.filter(
             kind=FiscalTable.Kind.ISR_MONTHLY, year=2025, vigencia_from="2025-01-01"
         ).first()
-        label = f"ISR mensual 2025 ({len(ISR_MONTHLY_2025_DOF_ROWS)} tramos)"
+        label = f"ISR mensual 2025 ({len(dof2025.ISR_MONTHLY_2025)} tramos)"
         if self._skip_if_published(existing, label):
             return
         self._record(existing, label)
@@ -153,16 +142,16 @@ class Command(BaseCommand):
                 "kind": FiscalTable.Kind.ISR_MONTHLY,
                 "year": 2025,
                 "period": "monthly",
-                "rows": ISR_MONTHLY_2025_DOF_ROWS,
+                "rows": dof2025.ISR_MONTHLY_2025,
                 "legal_basis": "LISR Art. 96; Anexo 8 RMF 2025, apartado A fr. V",
                 "vigencia_from": "2025-01-01",
                 "vigencia_to": "2025-12-31",
-                "dof_date": ISR_2025_DOF["dof_date"],
-                "dof_codigo": ISR_2025_DOF["dof_codigo"],
-                "source_url": ISR_2025_DOF["source_url"],
-                "source_citation": ISR_2025_DOF["source_citation"],
+                "dof_date": dof2025.ISR_2025_DOF["dof_date"],
+                "dof_codigo": dof2025.ISR_2025_DOF["dof_codigo"],
+                "source_url": dof2025.ISR_2025_DOF["source_url"],
+                "source_citation": dof2025.ISR_2025_DOF["source_citation"],
                 "provenance": Provenance.PUBLISHED,
-                "notes": ISR_MONTHLY_2025_NOTES,
+                "notes": dof2025.ISR_MONTHLY_2025_NOTES,
             },
         )
 
@@ -170,7 +159,7 @@ class Command(BaseCommand):
         existing = FiscalTable.objects.filter(
             kind=FiscalTable.Kind.ISR_ANNUAL, year=2025, vigencia_from="2025-01-01"
         ).first()
-        label = f"ISR anual 2025 ({len(ISR_ANNUAL_2025)} tramos)"
+        label = f"ISR anual 2025 ({len(dof2025.ISR_ANNUAL_2025)} tramos)"
         if self._skip_if_published(existing, label):
             return
         self._record(existing, label)
@@ -183,21 +172,28 @@ class Command(BaseCommand):
                 "kind": FiscalTable.Kind.ISR_ANNUAL,
                 "year": 2025,
                 "period": "annual",
-                "rows": ISR_ANNUAL_2025,
+                "rows": dof2025.ISR_ANNUAL_2025,
                 "legal_basis": "LISR Art. 152; Anexo 8 RMF 2025, apartado C fr. II",
                 "vigencia_from": "2025-01-01",
                 "vigencia_to": "2025-12-31",
-                "dof_date": ISR_ANNUAL_2025_DOF["dof_date"],
-                "dof_codigo": ISR_ANNUAL_2025_DOF["dof_codigo"],
-                "source_url": ISR_ANNUAL_2025_DOF["source_url"],
-                "source_citation": ISR_ANNUAL_2025_DOF["source_citation"],
+                "dof_date": dof2025.ISR_ANNUAL_2025_DOF["dof_date"],
+                "dof_codigo": dof2025.ISR_ANNUAL_2025_DOF["dof_codigo"],
+                "source_url": dof2025.ISR_ANNUAL_2025_DOF["source_url"],
+                "source_citation": dof2025.ISR_ANNUAL_2025_DOF["source_citation"],
                 "provenance": Provenance.PUBLISHED,
-                "notes": ISR_ANNUAL_2025_DOF["notes"],
+                "notes": dof2025.ISR_ANNUAL_2025_DOF["notes"],
             },
         )
 
     def _publish_subsidio(self, dry_run):
-        for v_from, v_to, uma_monthly, rate, amount, note in SUBSIDIO_2025_PERIODS:
+        for (
+            v_from,
+            v_to,
+            uma_monthly,
+            rate,
+            amount,
+            note,
+        ) in dof2025.SUBSIDIO_2025_PERIODS:
             existing = FiscalTable.objects.filter(
                 kind=FiscalTable.Kind.SUBSIDIO_RULE, year=2025, vigencia_from=v_from
             ).first()
@@ -221,12 +217,12 @@ class Command(BaseCommand):
                     ),
                     "vigencia_from": v_from,
                     "vigencia_to": v_to,
-                    "dof_date": SUBSIDIO_2025_DOF["dof_date"],
-                    "dof_codigo": SUBSIDIO_2025_DOF["dof_codigo"],
-                    "source_url": SUBSIDIO_2025_DOF["source_url"],
-                    "source_citation": SUBSIDIO_2025_DOF["source_citation"],
+                    "dof_date": dof2025.SUBSIDIO_2025_DOF["dof_date"],
+                    "dof_codigo": dof2025.SUBSIDIO_2025_DOF["dof_codigo"],
+                    "source_url": dof2025.SUBSIDIO_2025_DOF["source_url"],
+                    "source_citation": dof2025.SUBSIDIO_2025_DOF["source_citation"],
                     "provenance": Provenance.PUBLISHED,
-                    "notes": f"{SUBSIDIO_2025_DOF['notes']} {note}",
+                    "notes": f"{dof2025.SUBSIDIO_2025_DOF['notes']} {note}",
                 },
             )
 
@@ -257,6 +253,6 @@ class Command(BaseCommand):
                     f"  - subsidio_monthly {row.year} (tramos derogados): " "retirada"
                 )
             )
-        self.stdout.write(f"    · razón: {SUBSIDIO_2025_RETIRO_RAZON}")
+        self.stdout.write(f"    · razón: {dof2025.SUBSIDIO_2025_RETIRO_RAZON}")
         if not dry_run:
             derogadas.delete()

@@ -16,6 +16,7 @@ import pytest
 from django.core.management import call_command
 from rest_framework.test import APIClient
 
+from apps.api import fiscal_seed_data as seed
 from apps.api.fiscal_dof_2025 import (
     ISR_2025_DOF,
     ISR_ANNUAL_2025,
@@ -27,10 +28,6 @@ from apps.api.fiscal_dof_2025 import (
 )
 from apps.api.fiscal_dof_2026 import ISR_MONTHLY_2026, subsidio_rule_rows
 from apps.api.fiscal_models import FiscalTable, Provenance
-from apps.api.fiscal_seed_data import (
-    FISCAL_TABLE_SEEDS,
-)
-from apps.api.fiscal_seed_data import ISR_MONTHLY_2025 as ISR_MONTHLY_2025_SEED
 from tests.api.test_fiscal_views import AUTH_PATCH, _make_user
 
 # Las seis cuotas fijas que el seed traía mal, tramo → (mala, buena).
@@ -93,7 +90,7 @@ class TestConstantesContraElDOF:
         porcentajes coincidían con el DOF desde el principio. Fijarlo evita
         que una corrección futura «arregle» de más.
         """
-        for corregida, sembrada in zip(ISR_MONTHLY_2025, ISR_MONTHLY_2025_SEED):
+        for corregida, sembrada in zip(ISR_MONTHLY_2025, seed.ISR_MONTHLY_2025):
             assert corregida["lower"] == sembrada["lower"]
             assert corregida["upper"] == sembrada["upper"]
             assert corregida["rate"] == sembrada["rate"]
@@ -105,7 +102,7 @@ class TestConstantesContraElDOF:
         publicación. Si difiere de la lectura del DOF, esa base sirve cifras
         equivocadas sin que nadie lo note.
         """
-        assert ISR_MONTHLY_2025_SEED == ISR_MONTHLY_2025
+        assert seed.ISR_MONTHLY_2025 == ISR_MONTHLY_2025
 
     def test_isr_2025_difiere_de_2026(self):
         """La equivalencia «2025 ≡ 2026» que se llegó a suponer es FALSA.
@@ -231,10 +228,8 @@ class TestConstantesContraElDOF:
         La tabla de montos por tramos (límite superior 7,382.33) es la que el
         considerando del decreto cita como el defecto que vino a corregir.
         """
-        import apps.api.fiscal_seed_data as seed
-
         assert not hasattr(seed, "SUBSIDIO_MONTHLY_2025")
-        assert all(row[0] != "subsidio_monthly" for row in FISCAL_TABLE_SEEDS)
+        assert all(row[0] != "subsidio_monthly" for row in seed.FISCAL_TABLE_SEEDS)
 
     def test_toda_cita_trae_codigo_del_dof(self):
         for spec in (ISR_2025_DOF, ISR_ANNUAL_2025_DOF, SUBSIDIO_2025_DOF):
