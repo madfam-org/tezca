@@ -38,21 +38,46 @@ So no seed could be derived from the corpus, and none claimed to be.
 See [`fiscal/2026-publicacion-dof.md`](fiscal/2026-publicacion-dof.md) for the
 full table, the pending items and the operator's deploy checklist.
 
+**The 2025 ISR tables were verified on the same date and turned out to be
+WRONG** — six of the eleven monthly fixed fees, plus a repealed subsidio table
+and a missing annual tarifa. See
+[`fiscal/2025-errata-isr-dof.md`](fiscal/2025-errata-isr-dof.md). The seed had
+always declared itself unverified, which is why that was a finding and not an
+incident; the upstream source of the error is
+`symbiosis-hcm/packages/mx-payroll/mx_payroll/isr.py`.
+
 | Dataset | Coverage | Provenance |
 |---|---|---|
 | UMA | 2016–2025 | `seed-unverified` |
 | UMA | **2026** (117.31 / 3,566.22 / 42,794.64) | **`published`**, DOF 09-01-2026 codigo 5778072 |
 | Salario mínimo | 2016–2025 general; 2019–2025 ZLFN | `seed-unverified` |
 | Salario mínimo | **2026** general 315.04 · ZLFN 440.87 | **`published`**, DOF 09-12-2025 codigo 5775534 |
-| `isr_monthly` | 2025 | `seed-unverified` |
+| `isr_monthly` | **2025** (11 tramos, 6 cuotas corregidas) | **`published`**, DOF 30-12-2024 codigo 5746354 |
 | `isr_monthly` | **2026** (11 tramos) | **`published`**, DOF 28-12-2025 codigo 5777219 |
-| `subsidio_monthly` | 2025 (brackets) | `seed-unverified` |
-| `subsidio_rule` | **2026**, two vigencias | **`published`**, DOF 31-12-2024 codigo 5746529 |
+| `isr_annual` | **2025** (11 tramos) | **`published`**, DOF 30-12-2024 codigo 5746354 |
+| `subsidio_monthly` | — | **retirada**: derogada por el decreto DOF 01-05-2024 |
+| `subsidio_rule` | **2025**, two vigencias (474.95 / 474.65) | **`published`**, DOF 31-12-2024 codigo 5746529 |
+| `subsidio_rule` | **2026**, two vigencias (474.65 / 492.14) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 
 Still absent for 2026, because no primary source was read for them: the annual
 Art. 152 tarifa, the 61 salarios mínimos profesionales, `imss_rates` and
-`isn_rates`. They return `null` — absent, never substituted — so
-`all_published` for 2026 is `false` even though what is there is verified.
+`isn_rates`. For 2025: `imss_rates` and `isn_rates`, plus the 7/10/15-day and
+Art. 106 tarifas. They return `null` — absent, never substituted — so
+`all_published` is `false` for both years even though what is there is verified.
+
+**Never reuse one year's ISR table for another.** The 2026 lane assumed
+2025 ≡ 2026; reading the RMF 2025 disproved it (the 2026 figures have zero
+occurrences in that text). The rates match across years; the brackets do not.
+
+### Coherence gate
+
+`apps/api/fiscal_coherence.py` checks that every seeded or published ISR
+tarifa — monthly or annual, any year — satisfies the progressive-tariff
+identity `fixed_fee[n] == fixed_fee[n-1] + rate[n-1] × (lower[n] − lower[n-1])`
+within two centavos. It is falsifiable without consulting the DOF and would
+have caught four of the six 2025 errors on its own. Tarifas are discovered by
+reflection over `apps.api.fiscal_*`, so a future year is covered the day it is
+added.
 
 ---
 
@@ -250,6 +275,22 @@ It writes `published` rows with their `dof_codigo`, promotes the matching
 `seed-unverified` rows rather than duplicating them, closes the prior year's
 vigencia, and **never touches a row that is already `published`** — an
 operator's hand correction is respected.
+
+To publish the DOF-verified 2025 correction (see
+[`fiscal/2025-errata-isr-dof.md`](fiscal/2025-errata-isr-dof.md)):
+
+```bash
+python manage.py publish_fiscal_values_2025 --dry-run    # report only
+LOCAL_DB=yes python manage.py publish_fiscal_values_2025 # write
+```
+
+Same discipline, plus one thing the 2026 command never has to do: it **retires**
+the repealed `subsidio_monthly` bracket table from an already-seeded database.
+That row is not history worth preserving — it was never in force during 2025,
+it is a mistranscription — so it is deleted rather than vigencia-closed. If an
+operator promoted it to `published` by hand, the command leaves it alone and
+says so. No migration is required: both `isr_annual` and `subsidio_rule` already
+exist in the model.
 
 ## Provenance of this feed's existence
 

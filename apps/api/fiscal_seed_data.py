@@ -33,11 +33,26 @@ end. Shipping values that *announce their own uncertainty* is strictly
 better than silent hardcoded constants, and strictly weaker than a DOF
 citation. That is the honest middle, and it is deliberate.
 
-The ISR/subsidio tables are transcribed from
+.. note::
+
+   Los valores **2025** también se verificaron (2026-09-05) y viven en
+   :mod:`apps.api.fiscal_dof_2025`, con ``manage.py
+   publish_fiscal_values_2025`` para promoverlos. Esa verificación encontró
+   que la tarifa ISR de este seed traía **seis cuotas fijas equivocadas**
+   —transcritas de ``symbiosis-hcm``, con un dígito de millar perdido— y que
+   la tabla de subsidio al empleo estaba **derogada**. Ambas cosas ya están
+   corregidas aquí: las cuotas fijas coinciden con el Anexo 8 de la RMF 2025
+   y la tabla derogada se retiró en lugar de conservarse «por
+   compatibilidad». El diseño fail-closed funcionó — el seed nunca afirmó
+   estar verificado — pero un piso equivocado es peor que ninguno.
+
+The ISR table was originally transcribed from
 ``symbiosis-hcm/packages/mx-payroll/mx_payroll/isr.py`` (the 2025 SAT
-monthly tables the consumer already computes with). Serving them here does
-not make them more true — it makes them *one* value with *one* provenance
-stamp instead of a constant copied into every consumer.
+monthly tables the consumer already computes with). Serving it here does
+not make it more true — it makes it *one* value with *one* provenance
+stamp instead of a constant copied into every consumer. That upstream file
+is where the errata originated and, unlike this seed, it probably computes
+production payroll: correcting it is a separate, higher-priority lane.
 """
 
 SEED_NOTE = (
@@ -47,10 +62,14 @@ SEED_NOTE = (
 )
 
 ISR_NOTE = (
-    "Transcribed from symbiosis-hcm/packages/mx-payroll/mx_payroll/isr.py "
-    "(2025 SAT monthly tables), so the ecosystem holds one copy instead of "
-    "one per consumer. NOT independently verified against the DOF/RMF anexo "
-    "by Tezca."
+    "Originally transcribed from symbiosis-hcm/packages/mx-payroll/"
+    "mx_payroll/isr.py (2025 SAT monthly tables), so the ecosystem holds one "
+    "copy instead of one per consumer. Six fixed fees were WRONG there and "
+    "were corrected on 2026-09-05 against Anexo 8 de la RMF 2025 (DOF "
+    "30-12-2024, codigo 5746354). This row still says seed-unverified because "
+    "the seed command never asserts a citation: run "
+    "'manage.py publish_fiscal_values_2025' to publish it with its DOF "
+    "citation."
 )
 
 # ---------------------------------------------------------------------------
@@ -117,6 +136,19 @@ TIPO_CAMBIO_NOTE = (
 
 # ---------------------------------------------------------------------------
 # ISR retención mensual — LISR Art. 96.
+#
+# ERRATA 2026-09-05: seis de estas once cuotas fijas estaban MAL transcritas
+# (tramos 6 a 11: 1639.32, 4005.47, 8236.89, 21665.17, 31691.18, 116890.10),
+# con un patrón de dígito de millar perdido — la tarifa sembrada subestimaba
+# el ISR retenido hasta ≈$1,022 mensuales por trabajador. Corregidas contra el
+# Anexo 8 de la RMF 2025 (DOF 30-12-2024, codigo 5746354, apartado A fr. V).
+# Los once límites y las once tasas ya eran correctos.
+#
+# Las cifras verificadas viven en :mod:`apps.api.fiscal_dof_2025` con su cita;
+# aquí se repiten porque este seed es el piso para una base que nunca corrió
+# el comando de publicación, y un piso equivocado es peor que ninguno. La
+# prueba ``test_toda_tarifa_isr_sembrada_es_coherente`` impide que la errata
+# vuelva a entrar.
 # ---------------------------------------------------------------------------
 ISR_MONTHLY_2025 = [
     {"lower": "0.01", "upper": "746.04", "fixed_fee": "0.00", "rate": "0.0192"},
@@ -132,57 +164,63 @@ ISR_MONTHLY_2025 = [
     {
         "lower": "15487.72",
         "upper": "31236.49",
-        "fixed_fee": "1639.32",
+        "fixed_fee": "1640.18",
         "rate": "0.2136",
     },
     {
         "lower": "31236.50",
         "upper": "49233.00",
-        "fixed_fee": "4005.47",
+        "fixed_fee": "5004.12",
         "rate": "0.2352",
     },
     {
         "lower": "49233.01",
         "upper": "93993.90",
-        "fixed_fee": "8236.89",
+        "fixed_fee": "9236.89",
         "rate": "0.3000",
     },
     {
         "lower": "93993.91",
         "upper": "125325.20",
-        "fixed_fee": "21665.17",
+        "fixed_fee": "22665.17",
         "rate": "0.3200",
     },
     {
         "lower": "125325.21",
         "upper": "375975.61",
-        "fixed_fee": "31691.18",
+        "fixed_fee": "32691.18",
         "rate": "0.3400",
     },
     {
         "lower": "375975.62",
         "upper": None,
-        "fixed_fee": "116890.10",
+        "fixed_fee": "117912.32",
         "rate": "0.3500",
     },
 ]
 
 # ---------------------------------------------------------------------------
-# Subsidio al empleo mensual.
+# Subsidio al empleo — RETIRADO del seed el 2026-09-05.
+#
+# Aquí vivía ``SUBSIDIO_MONTHLY_2025``: once renglones de montos por tramos,
+# de $407.02 a $0.00, con límite superior $7,382.33. Esa tabla está
+# **DEROGADA**. El «Decreto que otorga el subsidio para el empleo» (DOF
+# 01-05-2024), modificado el 31-12-2024 (codigo 5746529), la sustituyó por
+# una cuota fija: 13.8 % de la UMA mensual, para ingresos base que no excedan
+# $10,171.00. El considerando de ese decreto cita precisamente ese límite de
+# 7,382.33 como el defecto que vino a corregir — es decir, el seed sembraba
+# literalmente la tabla que el legislador declaró obsoleta.
+#
+# NO se conserva «por compatibilidad». Un consumidor que aplique tramos
+# derogados a 2025 calcula mal y no se entera; uno que reciba ``null`` en
+# ``subsidio`` falla en claro, que es el comportamiento que este feed existe
+# para producir. La regla vigente se publica como ``subsidio_rule`` desde
+# :mod:`apps.api.fiscal_dof_2025` (dos vigencias: enero al 14.39 %,
+# febrero-diciembre al 13.8 %), el mismo ``kind`` que usa 2026.
+#
+# Una base ya sembrada conserva la fila vieja hasta que el operador corra
+# ``manage.py publish_fiscal_values_2025``, que la retira.
 # ---------------------------------------------------------------------------
-SUBSIDIO_MONTHLY_2025 = [
-    {"lower": "0.01", "upper": "1768.96", "subsidio": "407.02"},
-    {"lower": "1768.97", "upper": "2653.38", "subsidio": "406.83"},
-    {"lower": "2653.39", "upper": "3472.84", "subsidio": "406.62"},
-    {"lower": "3472.85", "upper": "3537.87", "subsidio": "392.77"},
-    {"lower": "3537.88", "upper": "4446.15", "subsidio": "382.46"},
-    {"lower": "4446.16", "upper": "4717.18", "subsidio": "354.23"},
-    {"lower": "4717.19", "upper": "5335.42", "subsidio": "324.87"},
-    {"lower": "5335.43", "upper": "6224.67", "subsidio": "294.63"},
-    {"lower": "6224.68", "upper": "7113.90", "subsidio": "253.54"},
-    {"lower": "7113.91", "upper": "7382.33", "subsidio": "217.61"},
-    {"lower": "7382.34", "upper": None, "subsidio": "0.00"},
-]
 
 # ---------------------------------------------------------------------------
 # Fiscal tables to seed: (kind, year, period, rows, legal_basis, from, to)
@@ -200,15 +238,6 @@ FISCAL_TABLE_SEEDS = [
         "monthly",
         ISR_MONTHLY_2025,
         "LISR Art. 96",
-        "2025-01-01",
-        "2025-12-31",
-    ),
-    (
-        "subsidio_monthly",
-        2025,
-        "monthly",
-        SUBSIDIO_MONTHLY_2025,
-        "Decreto de subsidio al empleo",
         "2025-01-01",
         "2025-12-31",
     ),
