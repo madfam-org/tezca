@@ -201,7 +201,21 @@ class TestSeedCoherencia:
         assert cortos == []
 
     def test_todo_texto_empieza_por_su_propio_articulo(self, filas):
-        """Atrapa el desalineamiento entre el número pedido y el texto traído."""
+        """Atrapa el desalineamiento entre el número pedido y el texto traído.
+
+        T-1f generalizó el patrón sin aflojarlo. Un documento del corpus puede
+        rotular su unidad de cita de tres maneras distintas, y las tres se
+        siguen verificando contra el número pedido:
+
+        * ``Artículo 39-B`` — las leyes que publica la Cámara;
+        * ``ARTICULO 52.-`` — los reglamentos viejos, sin acento;
+        * ``2. Campo de aplicación`` — las NOM, que se numeran por **numeral**
+          y no llevan la palabra «artículo» en ninguna parte.
+
+        Lo exigible es lo mismo en los tres casos: que el texto empiece por el
+        número que la fila dice traer. Aceptar cualquier comienzo habría
+        convertido la compuerta en decorado.
+        """
         import re
 
         malos = []
@@ -213,8 +227,12 @@ class TestSeedCoherencia:
             numero = rf"{cuerpo}(?:o\.?)?"
             if sufijo:
                 numero += rf"\s*[-\s.]\s*-?{sufijo}"
-            patron = rf"^Art[íi]culo\s+{numero}\b"
-            if not re.match(patron, f["text"], re.I):
+            patrones = [
+                rf"^Art[íi]culo\s+{numero}\b",
+                # NOM: el numeral abre el texto, con punto y sin rótulo.
+                rf"^{re.escape(f['article'])}\.\s",
+            ]
+            if not any(re.match(p, f["text"], re.I) for p in patrones):
                 malos.append(f"{f['official_id']}/{f['article']}")
         assert malos == []
 

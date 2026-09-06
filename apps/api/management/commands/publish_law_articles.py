@@ -135,8 +135,17 @@ class Command(BaseCommand):
         # La última reforma del artículo es también la publicación del DOF que
         # fija su texto; se guarda como dof_date para que el consumidor pueda
         # citarla. Los artículos que nunca se reformaron no tienen una.
+        #
+        # T-1f: un documento que NO viene de LeyesBiblio —una NOM, que sólo
+        # existe como nota del DOF— no tiene nota de reforma de la que sacar la
+        # fecha, y su emisor tampoco es la Cámara. Por eso la fila puede
+        # declarar su propia `source`, `dof_date` y `dof_codigo`. Las filas que
+        # no los declaran se comportan exactamente igual que antes: el emisor
+        # sigue siendo LeyesBiblio y la fecha sigue saliendo de la reforma.
         reformas = fila.get("reformas_dof") or []
-        dof_date = parse_date(reformas[-1]) if reformas else None
+        dof_date = parse_date(fila["dof_date"]) if fila.get("dof_date") else None
+        if dof_date is None and reformas:
+            dof_date = parse_date(reformas[-1])
 
         campos = {
             "text": fila["text"],
@@ -144,9 +153,10 @@ class Command(BaseCommand):
             "derogado": fila.get("derogado", False),
             "reformas_dof": reformas,
             "effective_to": None,
-            "source": SOURCE,
+            "source": fila.get("source") or SOURCE,
             "source_url": fila.get("source_url", ""),
             "dof_date": dof_date,
+            "dof_codigo": fila.get("dof_codigo", ""),
             "provenance": Provenance.PUBLISHED,
             "notes": (
                 "Fechado por la nota de reforma que imprime la Cámara bajo el "
