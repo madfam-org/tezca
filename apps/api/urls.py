@@ -63,11 +63,7 @@ from .judicial_views import (
     judicial_search,
     judicial_stats,
 )
-from .labor_views import (
-    labor_rules_list,
-    law_article_vigente,
-    sat_catalogos_list,
-)
+from .labor_views import labor_rules_list, law_article_vigente, sat_catalogos_list
 from .law_views import (
     LawDetailView,
     LawListView,
