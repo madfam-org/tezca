@@ -238,6 +238,17 @@ REGLAS_HCM = [
         "article": "Reglas de Operación JCF, apartado V y obligaciones del Centro de Trabajo",
         # Transitorio PRIMERO: en vigor el día de su publicación.
         "effective_from": "2024-12-31",
+        # CERRADA POR T-1g, append-only. Las Reglas de Operación 2026 (DOF
+        # 31-12-2025, codigo 5777674) abrogan expresamente estas de 2024 y
+        # rigen desde el 1 de enero de 2026. La fila NO se edita —su texto y
+        # su cita siguen siendo lo que Tezca respondió durante 2025— sino que
+        # se le pone fin, y la sucesora vive en `labor_seed_t1g`. La nota de
+        # abajo, escrita por T-1c, afirmaba que estas Reglas seguirían
+        # vigentes en 2026 por su transitorio TERCERO: era cierto al
+        # escribirla y dejó de serlo cuando aparecieron las sucesoras. Se
+        # conserva tal cual, porque reescribirla borraría la razón por la que
+        # se creyó eso y el barrido del DOF que la sostuvo.
+        "effective_to": "2025-12-31",
         "source": STPS,
         "source_url": URL["jcf"],
         "dof_date": "2024-12-31",
