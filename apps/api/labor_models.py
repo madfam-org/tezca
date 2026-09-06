@@ -327,6 +327,22 @@ class LaborRule(VigenciaProvenanceBase):
             "jcf_validacion_periodicidad_dias",
             "Jóvenes Construyendo el Futuro: periodicidad de la validación",
         )
+        # -- Los que HP-2 y HP-5 piden (T-1g). ------------------------------
+        SBC_TOPE_VECES_UMA = (
+            "sbc_tope_veces_uma",
+            "Tope superior del salario base de cotización (veces la UMA)",
+        )
+        # El nombre lo fija HP-5 (`seguro_facultativo_ventana_dias`), pero el
+        # decreto que rige a las personas estudiantes **no fija ventana
+        # alguna** y —peor— tampoco es un «seguro facultativo»: la LSS de 1997
+        # suprimió esa figura, y el decreto las incorpora al régimen
+        # OBLIGATORIO. Publicar el nombre pedido con un número de días
+        # inventado sería lo contrario de lo que pide este feed, así que el
+        # kind se llama por lo que la fuente dice y HP-5 recibe la corrección.
+        SEGURO_ESTUDIANTES_INCORPORACION = (
+            "seguro_facultativo_estudiantes_incorporacion",
+            "Estudiantes: incorporación al régimen obligatorio del IMSS",
+        )
 
     class PayerLegalForm(models.TextChoices):
         """Forma legal de quien paga. ``ANY`` = la regla no distingue."""
@@ -439,6 +455,13 @@ class SatCatalogEntry(VigenciaProvenanceBase):
         TIPO_REGIMEN = "c_TipoRegimen", "c_TipoRegimen"
         TIPO_CONTRATO = "c_TipoContrato", "c_TipoContrato"
         TIPO_JORNADA = "c_TipoJornada", "c_TipoJornada"
+        # Los tres del complemento de nómina que HP-3 pide (T-1g): sin ellos,
+        # la clave 046 «Ingresos asimilados a salarios» vivía como constante
+        # en el código del HCM, que es justo la transcripción a mano que este
+        # feed existe para evitar.
+        TIPO_PERCEPCION = "c_TipoPercepcion", "c_TipoPercepcion"
+        TIPO_DEDUCCION = "c_TipoDeduccion", "c_TipoDeduccion"
+        TIPO_OTRO_PAGO = "c_TipoOtroPago", "c_TipoOtroPago"
 
     catalog = models.CharField(max_length=32, choices=Catalog.choices, db_index=True)
     code = models.CharField(
