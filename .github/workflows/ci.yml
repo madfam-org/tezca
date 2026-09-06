@@ -65,6 +65,69 @@ jobs:
       - name: Run .dockerignore seed lint
         run: python3 scripts/check-dockerignore-seeds.py
 
+  test-publication-postgres:
+    name: Publication commands on Postgres
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # La suite corre sobre SQLite, que **ignora** el ancho declarado de un
+    # VARCHAR(n) y guarda la cadena entera. Postgres lo aplica. Por eso el
+    # 2026-09-06 `publish_labor_rules --dry-run` reventó en el pod con
+    # `DataError: value too long for type character varying(32)` con la suite
+    # en verde: ninguna prueba que sólo escriba y lea sobre SQLite podía verlo.
+    #
+    # `desbordes_de_longitud` (apps/api/labor_coherence.py) atrapa esa clase
+    # sin base de datos, midiendo contra el `max_length` del modelo, y es la
+    # compuerta principal. Este job es el cinturón sobre el tirante: corre los
+    # comandos de publicación contra el motor real, así que también atraparía
+    # una diferencia de backend que la aritmética no modela (una restricción
+    # de la migración, una colación, un tipo).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: leyes_mx
+          POSTGRES_PASSWORD: leyes_mx
+          POSTGRES_DB: leyes_mx
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Run publication-command tests against Postgres
+        run: |
+          poetry run pytest \
+            tests/api/test_labor_field_limits.py \
+            tests/api/test_labor_rules.py \
+            tests/api/test_labor_articles.py \
+            tests/api/test_labor_seed_hcm.py \
+            -v --no-cov
+        env:
+          PYTHONPATH: apps:.
+          DJANGO_SETTINGS_MODULE: apps.indigo.settings
+          # settings.py elige Postgres cuando DATABASE_URL o DB_ENGINE están
+          # puestos; sin esto el job repetiría la corrida sobre SQLite y no
+          # probaría nada nuevo.
+          DB_ENGINE: django.db.backends.postgresql
+          DB_NAME: leyes_mx
+          DB_USER: leyes_mx
+          DB_PASSWORD: leyes_mx
+          DB_HOST: localhost
+          DB_PORT: '5432'
+
   test-backend:
     name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest

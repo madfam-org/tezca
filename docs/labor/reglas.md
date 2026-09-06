@@ -115,6 +115,8 @@ Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 | **`cfdi_nomina_por_periodo`** | — | objeto: `disparo = erogacion` | **LISR 99 fr. III** | desde 2014-01-01 | published |
 | **`comisiones_mixtas_umbral_personas`** | — | `> 50` personas (obligatoria desde 51) | **LFT 153-E** (no el 132) | desde 2012-12-01 | published |
 | **`jcf_validacion_periodicidad_dias`** | — | ciclo mensual, última semana del mes | Reglas de Operación JCF (DOF 31-12-2024, `codigo` 5746424) | desde 2024-12-31 | published |
+
+> **T-1e.** El `article` de esta fila es la única cita en prosa del seed —«Reglas de Operación JCF, apartado V y obligaciones del Centro de Trabajo», 72 caracteres— porque las Reglas de Operación no se numeran por artículos. No cabía en el `varchar(32)` de la columna y por eso `publish_labor_rules --dry-run` abortaba en producción. Se ensanchó la columna a 200; la cita **no** se truncó. Ver «Validación previa y límites de campo» en `docs/labor/README.md`.
 | `recaracterizacion_indicios` | — | 3 elementos de ley + 7 indicios orientativos | LFT 20 ¶1 | desde 1970-04-01 | **seed-unverified** |
 
 ### Catálogos del SAT: 55 claves, las 55 `published`
@@ -261,6 +263,8 @@ Todas con **lista de exenciones vacía**: ninguna fila del seed las incumple.
 | `test_la_opinion_32d_no_se_atribuye_al_cff` · `test_las_comisiones_mixtas_no_se_atribuyen_al_132` (T-1c) | Que alguien «corrija» el fundamento de vuelta al artículo que el HCM cita y que no dice el número | — |
 | `TestElHcmPuedeLeerlas` (T-1c) | Que la fila exista en el seed pero no llegue a la base ni se pueda consultar por vigencia (el camino comando → modelo → consulta) | — |
 | `TestPublicacion` | Que el comando escriba sin `LOCAL_DB`, que no sea idempotente, que promueva solo un `seed-unverified`, o que escriba a medias con el catálogo ilegible | — |
+| `desbordes_de_longitud` (T-1e) | Un valor del seed más largo que el `max_length` de su columna. Es la clase que reventó `--dry-run` en producción con `value too long for type character varying(32)` **con el CI en verde**: la suite corre sobre SQLite, que ignora el ancho de un `VARCHAR(n)`. La compuerta mide contra el modelo, así que no depende del backend | Sí: **estaba roja sobre `main`**, nombrando `fila 42 (kind=jcf_validacion_periodicidad_dias), campo article: 72 caracteres > max_length 32` |
+| `TestDryRunNoEscribe` (T-1e) | Que `--dry-run` vuelva a implementarse como «escribe y deshaz». Hoy hace 98 consultas y **cero** `INSERT`/`UPDATE`/`DELETE`, y una fila inválida sale con `CommandError` —fila, campo y cifras— sin traceback | Sí: muta el seed en memoria con la fila que reventó en el pod |
 
 ## Pasos de operador
 

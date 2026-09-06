@@ -53,10 +53,21 @@ class VigenciaProvenanceBase(models.Model):
         db_index=True,
         help_text="Identificador de la ley en el corpus, p. ej. 'lft', 'lss', 'cff'",
     )
+    # 200 y no 32 (T-1e). Los 32 originales cabían para un número de artículo
+    # y para nada más, pero no todo documento se numera por artículos: las
+    # Reglas de Operación del programa JCF se citan por apartado y el Acuerdo
+    # REPSE por ordinales en letra. La fila del JCF que publicó T-1c mide 72
+    # caracteres, y Postgres —no SQLite, donde corre la suite— la rechazó con
+    # `value too long for type character varying(32)`. Truncar la cita no era
+    # opción: «Reglas de Operación JCF, apart» no lleva a ningún documento.
     article = models.CharField(
-        max_length=32,
+        max_length=200,
         db_index=True,
-        help_text="Artículo normalizado: '59', '39-A', '1-A', '113-J', '5-A'",
+        help_text=(
+            "Artículo normalizado ('59', '39-A', '113-J') o, cuando el "
+            "documento no se numera por artículos, su unidad de cita: "
+            "'Reglas de Operación JCF, apartado V', 'RMF 2026 regla 2.1.36'"
+        ),
     )
     effective_from = models.DateField(
         db_index=True,
@@ -315,8 +326,10 @@ class LaborRule(VigenciaProvenanceBase):
             "kind se documenta en docs/labor/README.md."
         )
     )
+    # 64 y no 40 por la misma holgura: 'fraccion_del_iva_trasladado' ya mide
+    # 27 y una unidad compuesta nueva llegaría al tope sin avisar.
     unit = models.CharField(
-        max_length=40,
+        max_length=64,
         blank=True,
         default="",
         help_text='p. ej. "dias_habiles", "horas/semana", "percent", "MXN", "tabla"',

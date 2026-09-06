@@ -394,3 +394,122 @@ distintas, y conviene no confundirlas.
 | `test_la_semilla_no_esta_excluida` | Que `.dockerignore` no vuelva a dejar la semilla fuera de la imagen — nombra el patrón culpable y su línea |
 | `test_el_dockerfile_copia_las_semillas` | Que siga en pie el `COPY` explícito que convierte una re-inclusión rota en un **build fallido** en vez de una imagen silenciosamente incompleta |
 | `test_la_semilla_existe_en_el_arbol` | Que la semilla no se borre ni se renombre sin actualizar el comando |
+
+## Validación previa y límites de campo (T-1e)
+
+### Lo que pasó
+
+El 2026-09-06, con la suite en verde y la imagen de #236 ya en el pod, el
+comando de operador abortó:
+
+```
+$ python manage.py publish_labor_rules --dry-run
+…
+django.db.utils.DataError: value too long for type character varying(32)
+```
+
+Con `--dry-run`. Dos fallas distintas, encadenadas:
+
+1. **Una fila no cabía en su columna.** `LaborRule.article` medía
+   `max_length=32`, suficiente para un número de artículo (`59`, `39-A`,
+   `113-J`) y para nada más. La regla `jcf_validacion_periodicidad_dias` que
+   publicó T-1c no cita un artículo sino un apartado — «Reglas de Operación
+   JCF, apartado V y obligaciones del Centro de Trabajo», **72 caracteres** —,
+   porque las Reglas de Operación del programa no se numeran por artículos.
+   Era **una** fila de 43; las otras 42, los 87 artículos y las 55 claves del
+   catálogo del SAT cabían.
+2. **El `--dry-run` podía reventar la base.** Estaba implementado como
+   «escribe y deshaz»: abría `transaction.atomic()`, hacía los `INSERT` y
+   llamaba `set_rollback(True)` al final. El rollback deshacía los efectos,
+   pero los `INSERT` habían llegado a Postgres igual — así que el modo «no
+   toques nada» fallaba exactamente igual que el modo que escribe, y encima
+   con un traceback en vez de un mensaje.
+
+### Por qué el CI no podía verlo
+
+La suite corre sobre **SQLite**, que ignora el ancho declarado de un
+`VARCHAR(n)` y guarda la cadena entera; Postgres lo aplica. Una prueba que
+escriba la fila y la vuelva a leer pasa en SQLite y revienta en el pod, y eso
+no se arregla añadiendo más pruebas del mismo tipo:
+
+```python
+>>> sqlite3.connect(":memory:").execute("CREATE TABLE t (a varchar(32))")
+>>> ...execute("INSERT INTO t VALUES (?)", ("x" * 72,))   # aceptado
+```
+
+### La compuerta
+
+`desbordes_de_longitud(filas, modelo, alias=None)`, en
+`apps/api/labor_coherence.py`, mide cada valor del seed contra el
+`max_length` **del modelo** — el mismo dato del que la migración deriva el
+`VARCHAR(n)`. Es aritmética pura: no toca la base, así que da el mismo
+resultado en SQLite, en Postgres y en el pod. Los límites se leen del modelo
+con `_meta.get_fields()`, de modo que un campo nuevo, o un `max_length` que
+alguien baje, entra a la compuerta sin tocarla.
+
+`tests/api/test_labor_field_limits.py` la corre sobre las tres fuentes con la
+lista de exenciones **vacía**. Sobre `main` está en rojo y nombra la fila:
+
+```
+AssertionError: fila 42 (kind=jcf_validacion_periodicidad_dias),
+                campo article: 72 caracteres > max_length 32
+```
+
+| Prueba | Qué atrapa |
+|---|---|
+| `test_ninguna_regla_desborda_su_columna` | Un valor de `REGLAS` más largo que su columna — **rojo sobre `main`** |
+| `test_ningun_articulo_desborda_su_columna` | Lo mismo en `articulos_vigentes.json` (87 filas, 0 desbordes hoy) |
+| `test_ninguna_clave_del_catalogo_desborda_su_columna` | Lo mismo en `sat_catalogos.json` (55 filas, 0 desbordes hoy) |
+| `test_el_articulo_del_jcf_cabe_entero` | Que la cita del JCF no se «arregle» truncándola |
+| `test_un_kind_demasiado_largo_se_detecta` | Falsabilidad: un `kind` de 65 caracteres |
+| `test_el_mensaje_nombra_la_fila_el_campo_y_las_cifras` | Que el operador pueda arreglarlo sin abrir el traceback |
+| `test_un_campo_nuevo_entra_solo_a_la_compuerta` | Que los límites se lean del modelo y no de una lista a mano |
+| `test_un_valor_que_cabe_justo_no_se_reporta` | Que la frontera sea `<=` y no `<` |
+| `test_una_fila_invalida_aborta_sin_traceback_y_sin_escribir` | Que en seco salga con `CommandError` y cero filas |
+| `test_la_validacion_corre_tambien_al_escribir_de_verdad` | Que la validación no sea sólo del `--dry-run` |
+
+### El cinturón sobre el tirante: Postgres en CI
+
+El job `test-publication-postgres` de `.github/workflows/ci.yml` corre las
+pruebas de los comandos de publicación contra un `services: postgres:16`
+real, con `DB_ENGINE=django.db.backends.postgresql`. La compuerta de
+longitudes es la principal —atrapa la clase sin base de datos y en cualquier
+backend—; este job existe para lo que la aritmética no modela: una
+restricción de la migración, una colación, un tipo.
+
+### El comando en seco ya no abre escritura
+
+`publish_labor_rules --dry-run` hace **98 consultas y cero
+`INSERT`/`UPDATE`/`DELETE`**: cuenta lo que haría con las mismas lecturas y
+no abre transacción de escritura. Una fila que no quepa sale antes, con
+código distinto de cero y sin traceback:
+
+```
+CommandError: No se escribió nada: hay valores que no caben en su columna.
+fila 42 (kind=jcf_validacion_periodicidad_dias), campo article:
+72 caracteres > max_length 32
+```
+
+`publish_law_articles` recibió el mismo trato. Ya devolvía antes de escribir
+en seco, pero comparte el patrón y ahora también valida longitudes antes de
+abrir la transacción.
+
+### Qué se ensanchó
+
+| Campo | Antes | Ahora | Por qué |
+|---|---|---|---|
+| `article` (`LaborRule`, `LawArticle`, `SatCatalogEntry`) | 32 | 200 | No todo documento se numera por artículos: el JCF se cita por apartado y el Acuerdo REPSE por ordinales en letra («ARTÍCULO DÉCIMO TERCERO»). El valor más largo de hoy mide 72 |
+| `unit` (`LaborRule`) | 40 | 64 | `fraccion_del_iva_trasladado` ya mide 27; una unidad compuesta nueva llegaría al tope sin avisar |
+
+La migración `0035_labor_article_cabe_la_cita` es **aditiva y reversible**:
+ensanchar un `varchar(n)` en Postgres es un cambio de catálogo —no reescribe
+la tabla ni toma un lock largo— y ninguna fila existente deja de caber.
+
+**Ningún `kind` se renombró.** El contrato C1 y el catálogo de obligaciones
+del HCM los usan como clave; `jcf_validacion_periodicidad_dias` sigue
+llamándose así. El comando de operador tampoco cambió:
+
+```bash
+python manage.py publish_labor_rules --dry-run
+LOCAL_DB=yes python manage.py publish_labor_rules
+```
