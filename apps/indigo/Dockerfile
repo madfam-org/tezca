@@ -94,6 +94,16 @@ COPY . .
 # fall back to hardcoded literals (the failure fixed in #204).
 COPY data/law_registry.json data/discovered_reglamentos.json data/universe_registry.json /app/data/
 
+# Las semillas del feed laboral, con la misma lógica de aserción ruidosa. Los
+# comandos `publish_law_articles` y `publish_labor_rules` sólo corren DENTRO
+# del pod (mutan la base de producción), así que su insumo tiene que viajar en
+# la imagen. El 2026-09-06 no viajaba: `data/*` en .dockerignore los excluía y
+# ambos --dry-run abortaron en producción, dejando el feed laboral vacío y a
+# symbiosis-hcm sin poder publicar una sola obligación. Si un builder vuelve a
+# perder la re-inclusión, el build FALLA aquí en vez de producir otra imagen
+# que sólo se descubre rota cuando un operador entra al pod a publicar.
+COPY data/labor/articulos_vigentes.json data/labor/sat_catalogos.json /app/data/labor/
+
 # Collect static files (needs Django available).
 # manage.py lives at the repo ROOT (/app/manage.py) — NOT apps/manage.py.
 RUN python manage.py collectstatic --noinput 2>/dev/null || true

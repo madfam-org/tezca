@@ -285,7 +285,80 @@ Es **append-only e idempotente**: una fila ya `published` no se toca (la segunda
 corrida reporta «Intactos: 87»). Una fila `seed-unverified` de la misma vigencia
 se promueve en su lugar, igual que `publish_fiscal_values_2026`.
 
-En el pod, `manage.py` vive en `/app/apps/api/manage.py`.
+En el pod, `manage.py` vive en **`/app/manage.py`** — en la raíz de la imagen,
+no bajo `apps/api/`. (Este documento decía `/app/apps/api/manage.py` hasta el
+carril T-1d; esa ruta no existe.) Desde el 2026-09-06 el directorio de trabajo
+ya no importa: ver la sección siguiente.
+
+## Qué ocurre si el seed no está en la imagen
+
+Los dos comandos leen su insumo de `data/labor/`, y los dos son **fail-closed**:
+si el archivo no está, abortan **sin escribir nada**. Eso es lo correcto —
+publicar medio catálogo del SAT haría que un timbrado rechazara claves buenas —
+pero el mensaje de error es el mismo tanto si el archivo falta de verdad como si
+sólo no se le encontró. Los dos modos se han visto:
+
+**1. La semilla no viajó en la imagen.** El 2026-09-06, en el pod `tezca-api`
+con la imagen de #234 y cwd `/app`:
+
+```
+python manage.py publish_law_articles --dry-run
+  → No existe el seed: data/labor/articulos_vigentes.json
+python manage.py publish_labor_rules  --dry-run
+  → No se pudo leer el catálogo del SAT en data/labor/sat_catalogos.json:
+    [Errno 2] ... No se escribió nada.
+```
+
+Los dos JSON estaban en git desde #233 y #234. Lo que faltaba era el archivo
+**dentro de la imagen**: `.dockerignore` excluye `data/*` (el corpus vive en
+Postgres + Elasticsearch, no en la imagen) y re-incluía a mano sólo tres
+registros. `data/labor/*.json` no estaba en esa lista, así que `COPY . .` nunca
+los subió. Corregido en T-1d re-incluyendo `data/labor/` con
+`!data/labor/*.json`, y con un `COPY` explícito en `apps/indigo/Dockerfile` que
+hace **fallar el build** si un builder vuelve a perder la re-inclusión — mejor
+un build rojo que otra imagen que sólo se descubre rota cuando un operador entra
+al pod a publicar.
+
+**2. El comando se corrió desde otro directorio.** Hasta T-1d los valores por
+omisión eran `Path("data")/labor/...`, relativos al **cwd**. Corrido desde
+cualquier directorio que no fuera la raíz, el comando abortaba con el mismo «No
+existe el seed» aunque el archivo estuviera perfectamente presente. Ahora
+`DEFAULT_SEED` y `DEFAULT_CATALOGOS` se anclan a `settings.BASE_DIR`, así que
+resuelven igual desde cualquier cwd. En el pod el valor no cambia (`BASE_DIR` es
+`/app`); lo que cambia es que deja de depender de dónde estés parado.
+
+Aguas abajo el costo no es un error visible: es un **feed laboral vacío**.
+symbiosis-hcm es fail-closed contra Tezca, así que traduce la ausencia a
+`disclosed: pending` y no publica ni una obligación — se ve como «todavía no
+hay datos», no como una imagen mal armada.
+
+### El chequeo que lo atrapa antes
+
+`scripts/check-dockerignore-seeds.py` (job `dockerignore-seed-lint` en CI)
+simula las reglas de `.dockerignore` —con la precedencia real de Docker: gana el
+último patrón que casa— sobre la lista de semillas que los comandos de
+publicación leen por omisión, y **falla nombrando el patrón culpable y su número
+de línea** si alguna vuelve a quedar excluida. También exige que cada ruta exista
+en el árbol: un `.dockerignore` correcto sobre un archivo borrado o renombrado
+produce el mismo síntoma en el pod.
+
+Sobre `main` el chequeo está en rojo con exactamente el diagnóstico del
+incidente:
+
+```
+[FAIL] data/labor/articulos_vigentes.json: EXCLUIDA de la imagen por el
+       patrón `data/*` (.dockerignore:32).
+```
+
+Al añadir una semilla nueva bajo `data/`, agrégala a `SEMILLAS_REQUERIDAS` en
+ese script: es una línea, y es la diferencia entre que lo atrape CI y que lo
+atrape un operador en producción.
+
+> El chequeo **simula** `.dockerignore`, no construye la imagen: en el entorno
+> del carril no había un demonio de Docker con el que ejercer un build real. La
+> aserción de verdad —un `docker build` que falla si el archivo no está— vive en
+> el `COPY` explícito del Dockerfile, que sí corre en cada build de
+> `deploy-api`.
 
 ## Compuerta falsable
 
@@ -307,3 +380,17 @@ sin base de datos**, y entra con la lista de exenciones **vacía**: cero de las
 Las pruebas de API cubren el `?on=` **en la frontera de vigencia** (30 de abril
 contra 1 de mayo de 2026), el 404 explicado, el 401/403 por scope y la
 insensibilidad a mayúsculas del número de artículo.
+
+### Empaquetado (T-1d)
+
+`tests/api/test_labor_seed_packaging.py` cubre la otra mitad: que la semilla
+esté **donde el comando la busca**. Sobre `main` está en rojo por dos razones
+distintas, y conviene no confundirlas.
+
+| Prueba | Qué atrapa |
+|---|---|
+| `test_las_rutas_resuelven_desde_otro_cwd` | Resuelve los valores por omisión en un subproceso cuyo cwd **no** es la raíz del repo. Con `Path("data")/...` no resuelven a nada: es el «No existe el seed» que no distingue un archivo ausente de un directorio equivocado |
+| `test_default_seed_es_absoluto_y_existe` / `test_default_catalogos_es_absoluto_y_existe` | Que el valor por omisión siga anclado a `settings.BASE_DIR` y apunte a un archivo real |
+| `test_la_semilla_no_esta_excluida` | Que `.dockerignore` no vuelva a dejar la semilla fuera de la imagen — nombra el patrón culpable y su línea |
+| `test_el_dockerfile_copia_las_semillas` | Que siga en pie el `COPY` explícito que convierte una re-inclusión rota en un **build fallido** en vez de una imagen silenciosamente incompleta |
+| `test_la_semilla_existe_en_el_arbol` | Que la semilla no se borre ni se renombre sin actualizar el comando |
