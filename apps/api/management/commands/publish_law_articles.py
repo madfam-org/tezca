@@ -18,6 +18,14 @@ artículos sin nota de reforma se fechan en la publicación original de la ley.
 
 Append-only, igual que el feed fiscal: una fila ``published`` no se toca. Una
 fila ``seed-unverified`` de la misma vigencia se promueve en su lugar.
+
+**Validación previa (T-1e).** Antes de escribir, el comando mide cada fila
+contra los ``max_length`` del modelo y aborta con ``CommandError`` —fila,
+campo y cifras— si alguna no cabe. Este comando ya no escribía en seco (el
+``--dry-run`` sólo contaba), pero comparte el seed y el patrón con
+``publish_labor_rules``, y un artículo con una cita larga en ``article``
+tendría el mismo final en Postgres. Ver ``docs/labor/README.md``, «Validación
+previa y límites de campo».
 """
 
 import json
@@ -25,11 +33,12 @@ import os
 from pathlib import Path
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils.dateparse import parse_date
 
 from apps.api.fiscal_models import Provenance
+from apps.api.labor_coherence import desbordes_de_longitud, describe_desbordes
 from apps.api.labor_models import LawArticle
 
 # Anclado a la raíz del repo/imagen, NO al cwd. Con `Path("data")/...` el
@@ -78,13 +87,28 @@ class Command(BaseCommand):
             return
 
         filas = json.loads(seed_path.read_text(encoding="utf-8"))
+
+        # Antes de abrir escritura alguna, por el mismo motivo que en
+        # `publish_labor_rules`: la aritmética de longitudes no depende del
+        # backend, el VARCHAR(n) de Postgres sí.
+        problemas = desbordes_de_longitud(filas, LawArticle)
+        if problemas:
+            raise CommandError(
+                "No se escribió nada: hay valores que no caben en su columna. "
+                + describe_desbordes(problemas)
+            )
+
         counts = {"created": 0, "promoted": 0, "kept": 0}
 
-        with transaction.atomic():
+        if dry_run:
+            # `_publish` ya devolvía antes de escribir en seco; sin la
+            # transacción queda explícito que el modo seco no abre escritura.
             for fila in filas:
                 self._publish(fila, counts, dry_run)
-            if dry_run:
-                transaction.set_rollback(True)
+        else:
+            with transaction.atomic():
+                for fila in filas:
+                    self._publish(fila, counts, dry_run)
 
         verbo = "Publicaría" if dry_run else "Publicó"
         self.stdout.write(

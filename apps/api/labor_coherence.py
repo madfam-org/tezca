@@ -108,3 +108,71 @@ def describe(problemas) -> str:
         " ".join(f"{campo}={valor}" for campo, valor in problema.items())
         for problema in problemas
     )
+
+
+def _limites(modelo) -> dict[str, int]:
+    """``{campo: max_length}`` de cada ``CharField`` acotado del modelo.
+
+    Se lee del modelo, no de una lista escrita a mano: un campo nuevo, o un
+    ``max_length`` que alguien baje, entra a la compuerta sin tocarla.
+    """
+    from django.db import models
+
+    return {
+        campo.name: campo.max_length
+        for campo in modelo._meta.get_fields()
+        if isinstance(campo, models.CharField) and campo.max_length
+    }
+
+
+def desbordes_de_longitud(filas, modelo, alias=None) -> list[dict]:
+    """Devuelve los valores del seed que no caben en su columna.
+
+    La razón de existir de esta compuerta: la suite corre sobre SQLite, que
+    **ignora** el ancho declarado de un ``VARCHAR`` y guarda la cadena entera.
+    Postgres no: rechaza la fila con ``value too long for type character
+    varying(N)``. Una fila que la prueba daba por buena reventaba en el pod.
+    Medir la longitud contra el ``max_length`` del modelo no depende del
+    backend y por eso atrapa el error donde sí se corre la suite.
+
+    ``alias`` mapea ``campo del modelo -> clave del seed`` para los seeds que
+    no usan el mismo nombre (los catálogos del SAT guardan ``catalog`` en la
+    columna ``article``).
+    """
+    limites = _limites(modelo)
+    alias = alias or {}
+    problemas = []
+    for indice, fila in enumerate(filas):
+        for campo, maximo in sorted(limites.items()):
+            clave = alias.get(campo, campo)
+            valor = fila.get(clave)
+            if isinstance(valor, str) and len(valor) > maximo:
+                problemas.append(
+                    {
+                        "fila": indice,
+                        "identidad": _identidad(fila),
+                        "campo": campo,
+                        "clave_seed": clave,
+                        "longitud": len(valor),
+                        "max_length": maximo,
+                        "valor": valor,
+                    }
+                )
+    return problemas
+
+
+def _identidad(fila) -> str:
+    """Cómo nombrar la fila culpable en el mensaje de falla."""
+    for clave in ("kind", "catalog", "official_id"):
+        if fila.get(clave):
+            return f"{clave}={fila[clave]}"
+    return "fila sin kind ni catalog"
+
+
+def describe_desbordes(problemas) -> str:
+    """El mensaje del operador: fila, campo, cuántos caracteres y el tope."""
+    return "; ".join(
+        f"fila {p['fila']} ({p['identidad']}), campo {p['campo']}: "
+        f"{p['longitud']} caracteres > max_length {p['max_length']}"
+        for p in problemas
+    )
