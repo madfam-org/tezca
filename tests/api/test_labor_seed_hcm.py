@@ -230,7 +230,15 @@ class TestElHcmPuedeLeerlas:
     @pytest.mark.parametrize("kind", sorted(ESPERADO_T1C))
     def test_cada_kind_nuevo_llega_a_la_base_como_published(self, kind):
         filas = LaborRule.objects.filter(kind=kind, provenance=Provenance.PUBLISHED)
-        assert filas.count() == 1, f"'{kind}' no quedó publicado exactamente una vez"
+        # El JCF tiene DOS filas desde T-1g: la de las Reglas 2024 (cerrada el
+        # 31-12-2025) y la de las Reglas 2026. Es append-only funcionando, no
+        # una duplicación: `TestJcfReglas2026` comprueba que sólo una rige
+        # cualquier día dado, y `vigencias_traslapadas` lo respalda.
+        esperadas = 2 if kind == "jcf_validacion_periodicidad_dias" else 1
+        assert filas.count() == esperadas, (
+            f"'{kind}' quedó publicado {filas.count()} veces y se esperaban "
+            f"{esperadas}"
+        )
 
     def test_la_opinion_32d_responde_dentro_de_su_vigencia_y_calla_fuera(self):
         """La RMF 2026 no puede contestar por 2027: es otra Resolución."""
@@ -250,11 +258,23 @@ class TestElHcmPuedeLeerlas:
         assert not fuera.exists()
 
     def test_la_regla_del_jcf_es_utilizable_pese_a_no_tener_official_id(self):
-        """El consumidor sólo exige provenance='published', no official_id."""
-        fila = LaborRule.objects.get(kind="jcf_validacion_periodicidad_dias")
+        """El consumidor sólo exige provenance='published', no official_id.
+
+        Se comprueba sobre la fila de 2024, que es la que nació sin
+        identificador en el corpus. Su sucesora de T-1g sí lo tiene
+        (``jcf-reglas-2026``), y eso NO invalida la propiedad que esta prueba
+        fija: una fila sin ``official_id`` sigue siendo utilizable, porque la
+        procedencia la sostienen ``dof_codigo`` y ``dof_date``.
+        """
+        fila = LaborRule.objects.get(
+            kind="jcf_validacion_periodicidad_dias",
+            effective_from=date(2024, 12, 31),
+        )
         assert fila.is_verified
         assert fila.official_id == ""
         assert fila.dof_codigo == "5746424"
+        # Cerrada por T-1g: las Reglas 2026 la abrogan.
+        assert fila.effective_to == date(2025, 12, 31)
 
 
 class TestFalsabilidadDeLaCompuerta:

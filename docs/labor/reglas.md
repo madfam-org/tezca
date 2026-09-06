@@ -5,6 +5,15 @@ Carriles **T-1b** y **T-1c** del programa «Cobertura laboral del HCM»
 2, 3 y 4). El punto 1 —los textos de los artículos con vigencia— es T-1a y se
 documenta en [`README.md`](README.md).
 
+**T-1g** publica el tope del salario base de cotización (LSS 28, con la unidad
+que corresponde a cada época), la incorporación de las personas estudiantes al
+régimen obligatorio del IMSS, los tres catálogos del complemento de nómina que
+HP-3 pide (`c_TipoPercepcion`, `c_TipoDeduccion`, `c_TipoOtroPago`) y corrige
+—append-only— la fila del JCF, que citaba unas Reglas de Operación abrogadas.
+Sus filas viven en `apps/api/labor_seed_t1g.py` y su compuerta en
+`tests/api/test_labor_t1g.py`. **Las tres citas que se le pidieron seguir
+estaban mal**, y la sección «T-1g» de abajo dice por qué.
+
 **T-1c** cierra los cuatro `kind` que el catálogo de obligaciones del HCM
 consulta y que T-1a/T-1b no publicaban: la vigencia de la opinión 32-D, el CFDI
 de nómina, el umbral de las comisiones mixtas y la validación del programa JCF.
@@ -75,7 +84,7 @@ GET /api/v1/labor/catalogos/?catalog=&code=&on=YYYY-MM-DD
 Campos: `catalog`, `code`, `label`, `effective_from`/`effective_to`,
 `aplica_fisica`/`aplica_moral` (sólo `c_RegimenFiscal`), más la procedencia común.
 
-## Cobertura: 46 reglas, 45 `published`, 1 hueco declarado
+## Cobertura: 50 reglas, 49 `published`, 1 hueco declarado
 
 Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 
@@ -116,13 +125,17 @@ Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 | **`opinion_32d_vigencia_dias`** | — | `30` días naturales | **RMF 2026 regla 2.1.36** (no el CFF) | **2026-01-01 → 2026-12-31** | published |
 | **`cfdi_nomina_por_periodo`** | — | objeto: `disparo = erogacion` | **LISR 99 fr. III** | desde 2014-01-01 | published |
 | **`comisiones_mixtas_umbral_personas`** | — | `> 50` personas (obligatoria desde 51) | **LFT 153-E** (no el 132) | desde 2012-12-01 | published |
-| **`jcf_validacion_periodicidad_dias`** | — | ciclo mensual, última semana del mes | Reglas de Operación JCF (DOF 31-12-2024, `codigo` 5746424) | desde 2024-12-31 | published |
+| **`jcf_validacion_periodicidad_dias`** | — | ciclo mensual, última semana del mes | Reglas de Operación JCF **2025** (DOF 31-12-2024, `codigo` 5746424), `official_id` vacío | 2024-12-31 → **2025-12-31** | published (**abrogada**, ver T-1g) |
+| **`jcf_validacion_periodicidad_dias`** | — | el mismo ciclo, **sin obligación del Centro de Trabajo** | **Reglas de Operación JCF 2026**, regla Décima A) fr. V (`official_id` **`jcf-reglas-2026`**, DOF **5777674**) | desde 2026-01-01 | published (**T-1g**) |
 
 > **T-1e.** El `article` de esta fila es la única cita en prosa del seed —«Reglas de Operación JCF, apartado V y obligaciones del Centro de Trabajo», 72 caracteres— porque las Reglas de Operación no se numeran por artículos. No cabía en el `varchar(32)` de la columna y por eso `publish_labor_rules --dry-run` abortaba en producción. Se ensanchó la columna a 200; la cita **no** se truncó. Ver «Validación previa y límites de campo» en `docs/labor/README.md`.
 | `relacion_trabajo_elementos` | — | los **3 elementos** del art. 20 + la regla de los «mismos efectos» | **LFT 20 ¶1 y ¶3** | desde 1970-04-01 | published (**T-1f**) |
 | `recaracterizacion_indicios` | — | los 7 indicios orientativos, **sin** los elementos de ley | LFT 20 (doctrina, no texto) | desde 1970-04-01 | **seed-unverified** |
+| `sbc_tope_veces_uma` | — | `25` veces el **salario mínimo**, piso 1 salario mínimo | LSS 28 | 1997-07-01 → **2016-01-27** | published (**T-1g**) |
+| `sbc_tope_veces_uma` | — | `25` veces la **UMA**, piso 1 salario mínimo (**no se desindexa**) | LSS 28 leído por el **transitorio 3º del decreto de desindexación** (DOF 27-01-2016, `codigo` 5423663) | desde **2016-01-28** | published (**T-1g**) |
+| `seguro_facultativo_estudiantes_incorporacion` | — | régimen **obligatorio**, prestaciones en especie de E&M, **sin ventana** | **LSS 12 fr. III + Decreto de estudiantes** (DOF 14-09-1998, `codigo` 4892913) — **ni LSS 13 fr. V ni LSS 240** | desde 1998-09-15 | published (**T-1g**) |
 
-### Catálogos del SAT: 55 claves, las 55 `published`
+### Catálogos del SAT: 216 claves, las 216 `published`
 
 | Catálogo | Claves | Archivo leído | Versión que el archivo declara | Vigencias |
 |---|---|---|---|---|
@@ -130,8 +143,12 @@ Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 | `c_TipoRegimen` | 13 | `catNomina.xls` | 2.0 (rev. 1, publicado 2019-12-05) | 2017-01-01 · 2017-03-27 (12) · 2018-10-15 (13) |
 | `c_TipoContrato` | 11 | `catNomina.xls` | 1.0 (rev. 0) | 2017-01-01 |
 | `c_TipoJornada` | 9 | `catNomina.xls` | 1.0 (rev. A) | 2017-01-01 |
+| `c_TipoPercepcion` | 44 | `catNomina.xls` | 2.0 (rev. 1, publicado 2019-12-05) | 2016-11-01 · altas posteriores por clave (**T-1g**) |
+| `c_TipoDeduccion` | 107 | `catNomina.xls` | 4.0 (rev. 0, publicado 2019-12-05) | 2016-11-01 · la **072 con baja el 2018-10-14** (**T-1g**) |
+| `c_TipoOtroPago` | 10 | `catNomina.xls` | 4.0 (rev. 0, publicado 2020-04-17) | 2017-01-01 · altas 2018 y 2020 (**T-1g**) |
 
-Las versiones se leyeron del encabezado de cada hoja con `xlrd` y están fijadas
+Las versiones se leyeron del encabezado de **cada hoja** —no del libro: las
+siete difieren entre sí— con `xlrd`, y están fijadas
 por `test_cada_catalogo_declara_la_version_que_el_xls_imprime`: si alguien
 reimporta de una edición nueva y olvida mover el campo, la prueba se pone roja.
 
@@ -344,6 +361,183 @@ lo que Tezca respondió entre 2019 y hoy. La fila nueva añade además el últim
 párrafo del numeral 2, que T-1b no había transcrito: la equivalencia por
 certificado **NMX-R-025-SCFI-2015**, que da por cumplidos cuatro incisos.
 
+## T-1g · Lo que HP-2, HP-3, HP-5 y HP-0d pidieron, y las tres citas que estaban mal
+
+Este carril publicó tres cosas nuevas y corrigió una fila, y en las cuatro la
+lectura primaria contradijo lo que se pidió. Se publica la fuente y se reporta
+la discrepancia, como en T-1c: **el feed no cuadra el número con el artículo
+que le den, cuadra el artículo con lo que dice**.
+
+### 8. El tope del SBC se lee en UMA por un **transitorio**, no por una reforma
+
+HP-2 (#97) pidió «el tope de LSS 28 (25 veces el mínimo) como número», y el
+brief de este carril lo pidió como «25 veces la UMA». Las dos formulaciones son
+verdad a medias, y la diferencia importa porque decide qué se cita.
+
+El **art. 28 de la LSS no se ha reformado nunca**. Su texto vigente (LeyesBiblio,
+última reforma de la ley DOF 15-01-2026) sigue diciendo, palabra por palabra:
+
+> «estableciéndose como límite superior el equivalente a **veinticinco veces el
+> salario mínimo general que rija en el Distrito Federal** y como límite
+> inferior el salario mínimo general del área geográfica respectiva.»
+
+Lo que convierte esa mención en UMA es el **transitorio TERCERO** del decreto
+de desindexación del salario mínimo (DOF 27-01-2016, `codigo` 5423663):
+
+> «todas las menciones al salario mínimo como unidad de cuenta, índice, base,
+> medida o referencia para determinar la cuantía de las obligaciones y
+> supuestos previstos en las leyes federales […] se entenderán referidas a la
+> Unidad de Medida y Actualización.»
+
+Su transitorio PRIMERO lo pone en vigor **al día siguiente** de la publicación,
+o sea el **28-01-2016**. El transitorio CUARTO dio un año a los congresos para
+ajustar la letra de las leyes; en la LSS ese plazo no se ejerció, y por eso el
+artículo sigue diciendo «salario mínimo» diez años después.
+
+Consecuencias que la fila publica y las pruebas fijan:
+
+1. **Dos vigencias, no una.** La de 1997 con `unidad = "salario_minimo"` y la
+   de 2016 con `unidad = "uma"`. Un consumidor que reconstruya un SBC de 2010
+   para una diferencia de cuotas recibiría, con una sola fila, una UMA que en
+   2010 no existía.
+2. **El piso NO se desindexa.** El límite inferior sigue en salario mínimo en
+   las dos filas. El mismo decreto reformó el art. 123 A fr. VI constitucional
+   para prohibir usar el salario mínimo «para fines ajenos a su naturaleza», y
+   el piso del SBC es precisamente su naturaleza: ahí es un **salario**, no una
+   unidad de cuenta. Convertir el artículo entero a UMA es el error fácil, y
+   `test_el_piso_no_se_desindexa` lo atrapa.
+3. **La procedencia de la fila en UMA es el decreto, no la ley.** Citar una
+   reforma al art. 28 sería inventarla.
+
+El `kind` conserva el nombre `sbc_tope_veces_uma` que el brief fijó, aunque la
+fila vieja esté en salario mínimo: renombrarlo rompería al consumidor, y el
+`unit` (`veces_salario_minimo` / `veces_uma`) dice cuál es cuál. Tezca publica
+el **multiplicador**; el importe de la UMA lo sirve el feed fiscal.
+
+### 9. El seguro de estudiantes: **las dos citas del plan están mal**
+
+El plan dice **LSS 13 fr. V**; el catálogo del HCM sembró **LSS 240**. Se
+leyeron los dos artículos del texto vigente, y ninguno es:
+
+| Cita | Qué dice de verdad |
+|---|---|
+| **LSS 13 fr. V** | «Los trabajadores al servicio de las administraciones públicas de la Federación, entidades federativas y municipios que estén excluidas o no comprendidas en otras leyes o decretos como sujetos de seguridad social.» Nada de estudiantes. Las fracciones **III y IV están derogadas** (DOF 01-12-2023 y 02-07-2019) |
+| **LSS 240** | «Todas las familias en México tienen derecho a un **seguro de salud para sus miembros**…» Es el seguro de salud para la **familia**, no para estudiantes |
+
+Más aún: **la palabra «estudiante» no aparece una sola vez en la LSS vigente**,
+y «facultativo» sólo aparece en el transitorio OCTAVO de 1995, que deja
+extinguirse los seguros facultativos anteriores.
+
+**El fundamento correcto** es el art. **12 fr. III** de la LSS —«las personas
+que determine el Ejecutivo Federal a través del Decreto respectivo»— **más el
+Decreto** que lo ejerce: el *Decreto por el que se incorporan al régimen
+obligatorio del Seguro Social […] a las personas que cursen estudios de los
+tipos medio superior y superior en instituciones educativas del Estado*
+(DOF **14-09-1998**, `codigo` **4892913**), que se funda expresamente en los
+arts. 12 fr. III, 91 y 94 fr. I de la LSS.
+
+El propio decreto explica por qué el nombre «seguro facultativo» sobrevive y
+por qué es incorrecto, en su segundo considerando:
+
+> «Que la Ley del Seguro Social vigente a partir del 1o. de julio de 1997, **no
+> contempla el seguro facultativo**, con base en el cual se encuentran
+> asegurados los estudiantes…»
+
+Su transitorio SEGUNDO abroga el Acuerdo Presidencial de 1987 que sí usaba esa
+figura. Jurídicamente esto es una incorporación al régimen **obligatorio**, y
+la fila lo dice (`es_seguro_facultativo: false`).
+
+**No hay ventana, y eso es la respuesta.** El decreto no fija plazo alguno: la
+incorporación la hace el IMSS «en términos de los acuerdos que para tal efecto
+emita el Consejo Técnico» (art. 1 ¶2) y mediante convenios con las
+instituciones educativas (art. 4). HP-5 pidió el `kind` como
+`seguro_facultativo_ventana_dias`; publicar un número de días para que el
+nombre cuadre habría sido justo lo que este feed existe para impedir. El
+`kind` se llama `seguro_facultativo_estudiantes_incorporacion` y su `value`
+trae `hay_ventana: false` con el motivo.
+
+**Lo que HP-5 necesita saber para no pintarlo mal:** esta cobertura **no
+deriva del vínculo formativo** con el centro de trabajo, sino de ser estudiante
+de una institución educativa del Estado. Un centro que recibe a una persona en
+prácticas o servicio social **no la da de alta por este Decreto** ni puede
+acreditarlo como cumplimiento propio; el Gobierno Federal paga las cuotas
+íntegras (art. 3). Cubre **sólo prestaciones en especie** de enfermedades y
+maternidad, y **sólo a la persona estudiante** (art. 2 ¶2): sin prestaciones en
+dinero, sin riesgos de trabajo, sin invalidez y vida, y sin extensión a
+familiares.
+
+### 10. La regla del JCF citaba las Reglas de 2025, y al corregirla **cambió el fondo**
+
+HP-0d (#103) pidió la corrección de cita: la fila de T-1c cita el DOF
+`5746424` (Reglas de Operación **2025**, publicadas el 31-12-2024) con
+`official_id` vacío, cuando el corpus ya tiene `jcf-reglas-2026` (DOF
+`5777674`, 31-12-2025), que las **abroga expresamente**.
+
+Se corrigió **append-only**: la fila de 2024 se cierra el **31-12-2025** —su
+texto y su cita siguen siendo lo que Tezca respondió durante 2025— y la nueva
+rige desde el **01-01-2026** con `official_id = "jcf-reglas-2026"`. La serie
+queda contigua: ni traslape ni hueco, y `vigencias_traslapadas` lo respalda.
+
+**Pero al leer las Reglas 2026 completas cambió más que la cita**, y esto es lo
+que un consumidor fail-closed necesita:
+
+| | Reglas 2024 (`5746424`) | Reglas 2026 (`5777674`) |
+|---|---|---|
+| Evaluación mensual | Obligación del **Centro de Trabajo**: «Verificar que cada Tutora o Tutor designado evalúe mensualmente…» (obligaciones del Centro, fr. X) | **Esa fracción ya no existe.** Las **XXIV** obligaciones del Centro de Trabajo (regla Décima Segunda, apartado D) no mencionan la evaluación |
+| Quién la hace | La Tutora o Tutor, verificado por el Centro | **Derecho** de la Tutora o Tutor (apartado E fr. IV) y de la persona aprendiz (apartado A fr. XIII) |
+| Cómo se enuncia | Obligatoria | Regla Décima A) fr. V: «**Podrá** realizarse mutuamente […] durante la última semana de cada mes» |
+| Efecto de no validar | Afirmativa ficta para el pago | **La frase «afirmativa ficta» no aparece** en el documento de 2026. El pago se condiciona a que la Capacitación siga el Plan de Actividades (regla Décima A) fr. VI) |
+
+Copiar la nota de 2024 sobre la cita de 2026 —que es lo que una corrección
+mecánica habría hecho— habría dejado a HCM exigiendo al Centro de Trabajo una
+obligación que las Reglas vigentes **ya no le imponen**. La fila nueva publica
+`es_obligacion_del_centro_de_trabajo: false` y explica el cambio, y
+`test_las_reglas_2026_ya_no_obligan_al_centro_de_trabajo` lo fija.
+
+### 11. Los tres catálogos del complemento de nómina (HP-3)
+
+HP-3 (#100) reportó que la clave **046 «Ingresos asimilados a salarios»** vivía
+como constante en `payroll/asimilados_cfdi.py` del HCM, que es exactamente la
+transcripción a mano que la regla del ecosistema prohíbe. Se transcribieron los
+tres catálogos **completos** del mismo `catNomina.xls` del que T-1b sacó
+`c_TipoRegimen`, `c_TipoContrato` y `c_TipoJornada`, leído con `xlrd`:
+
+* `c_TipoPercepcion` — **44 claves**, versión 2.0 (rev. 1, publicado 2019-12-05)
+* `c_TipoDeduccion` — **107 claves**, versión 4.0 (rev. 0, publicado 2019-12-05)
+* `c_TipoOtroPago` — **10 claves**, versión 4.0 (rev. 0, publicado 2020-04-17)
+
+Las versiones son **de cada hoja, no del libro**: las siete difieren entre sí, y
+`test_cada_catalogo_declara_la_version_que_el_xls_imprime` las fija una por una.
+
+Dos decisiones que conviene dejar por escrito:
+
+1. **Completos, no sólo las claves que hoy se usan.** El archivo es manejable
+   (161 filas nuevas) y un catálogo a medias hace que un timbrado rechace
+   claves buenas — el mismo motivo por el que `publish_labor_rules` aborta
+   entero si el JSON no se puede leer.
+2. **Las bajas se conservan.** La deducción **072** tiene fin de vigencia el
+   **2018-10-14**. Un consumidor que timbre un CFDI de 2018 necesita saber que
+   existía; uno que timbre hoy, que ya no. Descartar las claves con baja habría
+   perdido esa respuesta, y `test_la_baja_de_una_clave_se_conserva` lo impide.
+
+### Lo que este carril verificó y **no** cambió
+
+HP-6 (#98) y HP-7 (#102) reclaman en sus documentos que `nom035_umbral_personas`,
+`comisiones_mixtas_umbral_personas`, `teletrabajo_umbral_pct`,
+`opinion_32d_vigencia_dias`, `recargos_tasa_mensual` y `actualizacion_factor`
+«siguen sin publicar». **Los seis están `published` en Tezca hoy** —los cuatro
+primeros desde T-1b y T-1c, los dos últimos desde T-1b— y este carril lo
+verificó fila por fila. En particular, lo que el brief pidió comprobar:
+
+| `kind` | Estado verificado | Vigencia |
+|---|---|---|
+| `recargos_tasa_mensual` | `published`, `2.07 %` mensual (= `1.38 × 1.5`) | **2026-01-01 → 2026-12-31** |
+| `actualizacion_factor` | `published`, la fórmula del CFF 17-A con piso 1 | desde 1982-01-01 (sin cierre) |
+
+Los documentos de HP-6 y HP-7 quedaron escritos antes de que T-1b/T-1c
+fusionaran; **son reclamos vencidos, no huecos**. Se reporta al coordinador
+para que esos carriles actualicen sus notas, y no se toca nada aquí.
+
 ## Huecos declarados: lo que no se publicó, y por qué
 
 Ninguno se rellenó de memoria.
@@ -358,6 +552,10 @@ Ninguno se rellenó de memoria.
 | **Acuerdo REPSE como texto** | Se numera con ordinales en letra («ARTÍCULO DÉCIMO TERCERO»). Su vigencia de tres años y la ventana de renovación **sí** se publican como regla | Lo mismo que arriba |
 | **Umbral de personas para el reglamento interior** | **No existe en la ley.** Ver la lectura 4 | Nada: el plan se corrige, no el feed |
 | **LFT 57** | El brief pide «56–61»; el 57 (modificación judicial de condiciones) no se publicó en T-1a | Una fila más en `articulos_vigentes.json`. No sostiene ninguna regla de T-1b |
+| **La ventana del seguro de estudiantes** (T-1g) | **No existe.** El Decreto de 1998 no fija plazo: la incorporación la hace el IMSS por acuerdos de su Consejo Técnico y por convenios con las instituciones educativas. La regla se publica **sin ventana** y lo declara en su `value` | Nada del lado de Tezca. HP-5 debe pintar la obligación sin vencimiento; el `kind` que pidió (`seguro_facultativo_ventana_dias`) presupone un plazo que la fuente no da |
+| **Los acuerdos del Consejo Técnico del IMSS sobre estudiantes** | El art. 1 ¶2 del Decreto delega en ellos las modalidades de incorporación, y este carril no los leyó: no se publican en el DOF con la regularidad de un ordenamiento | Una lectura primaria de los acuerdos vigentes del Consejo Técnico. Sin ella, la regla dice lo que el Decreto dice y no finge saber más |
+| **El texto de las Reglas de Operación JCF 2026 como `LawArticle`** | La regla estructurada ya cita `jcf-reglas-2026` y el corpus tiene el documento (`data/jcf/jcf-reglas-2026.xml`), pero sus reglas —«DÉCIMA», «DÉCIMA SEGUNDA»— no se publicaron como artículos con vigencia | Lo mismo que el Acuerdo REPSE: se numeran con ordinales en letra, que caben en los 200 caracteres de `article` desde T-1e |
+| **Los catálogos del SAT que el complemento usa y no se transcribieron** | `catNomina.xls` trae además `c_Banco`, `c_OrigenRecurso`, `c_PeriodicidadPago`, `c_TipoHoras`, `c_TipoIncapacidad`, `c_TipoNomina` y `c_RiesgoPuesto`. **Ningún carril los pidió**, y transcribir por si acaso engorda el seed sin consumidor | El mismo procedimiento, cuando un carril los pida: `xlrd` sobre la hoja, versión del encabezado y una fila por clave |
 
 ## Compuertas
 
@@ -383,6 +581,15 @@ Todas con **lista de exenciones vacía**: ninguna fila del seed las incumple.
 | `test_es_el_unico_sin_verificar_del_feed` (T-1f) | Promover los indicios doctrinales a `published` «para que HCM los use» | Sí: **verificado en el carril** — cambiar la procedencia pone rojas dos pruebas |
 | `test_los_dos_formativos_no_se_inventaron` (T-1f) | Publicar una regla `convenio_institucion` o `carta_aceptacion` con un artículo plausible del Reglamento del art. 5o, que **no dice eso** | Sí: añadir cualquiera de los dos `kind` al seed la pone roja |
 | `test_el_valor_esta_en_el_texto_del_articulo` (T-1f) | Un dedazo en los topes del art. 39-B. Cruza la cifra contra el **texto** que Tezca sirve, no contra sí misma | — |
+| `test_todo_lo_que_los_carriles_piden_existe` (T-1g) | Que un carril HP-* pida un `kind` o un catálogo del SAT que Tezca no publica **ni** declara como hueco con motivo. Entra con `HUECOS_DECLARADOS` **vacío** | Sí: **roja sobre `main`** nombrando los **cinco** que faltaban — `sbc_tope_veces_uma`, `seguro_facultativo_estudiantes_incorporacion`, `c_TipoPercepcion`, `c_TipoDeduccion`, `c_TipoOtroPago` |
+| `test_el_piso_no_se_desindexa` (T-1g) | Convertir el art. 28 **entero** a UMA. El límite inferior sigue en salario mínimo: ahí el mínimo es un salario, no una unidad de cuenta, y el art. 123 A fr. VI reformado lo protege | Sí: cambiar la unidad del `limite_inferior` la pone roja en las dos filas |
+| `test_el_dia_del_corte_no_es_ambiguo` (T-1g) | Que el 27 o el 28 de enero de 2016 devuelvan cero filas o dos. Recorre el camino comando → modelo → consulta con la fecha exacta del corte | — |
+| `test_no_se_atribuye_al_articulo_13` · `test_no_se_atribuye_al_articulo_240` (T-1g) | Que alguien «corrija» el seguro de estudiantes de vuelta a LSS 13 fr. V (trabajadores de administraciones públicas) o a LSS 240 (seguro de salud para la **familia**) | — |
+| `test_no_inventa_ventana` (T-1g) | Publicar un número de días para que el nombre `seguro_facultativo_ventana_dias` que pidió HP-5 cuadre. El decreto no fija plazo | — |
+| `test_las_reglas_2026_ya_no_obligan_al_centro_de_trabajo` (T-1g) | Copiar la nota de las Reglas JCF 2024 sobre la cita de 2026, dejando a HCM exigiendo una obligación que las Reglas vigentes suprimieron | Sí: poner `true` en `es_obligacion_del_centro_de_trabajo` la pone roja |
+| `test_la_nueva_no_arrastra_el_codigo_abrogado` (T-1g) | Que la fila vigente del JCF vuelva a citar el DOF 5746424 (Reglas de **2025**) | — |
+| `test_la_baja_de_una_clave_se_conserva` (T-1g) | Una reimportación que filtre las claves del SAT con fin de vigencia. La deducción **072** cerró el 2018-10-14 y un CFDI de 2018 la necesita | — |
+| `test_la_clave_que_el_carril_usa_existe` (T-1g) | Que el catálogo esté pero la clave concreta no: 046 asimilados, 001 seguridad social, 002 subsidio. Un timbrado falla igual | — |
 
 ## Pasos de operador
 
@@ -417,7 +624,7 @@ siempre en este orden:
 ```bash
 # 1. En seco, los dos, y leer las cifras antes de escribir nada
 python manage.py publish_law_articles --dry-run     # 95 artículos (87 + 8 de T-1f)
-python manage.py publish_labor_rules  --dry-run     # 101 filas: 46 reglas + 55 claves SAT
+python manage.py publish_labor_rules  --dry-run     # 266 filas: 50 reglas + 216 claves SAT
 
 # 2. Escribir, artículos primero
 LOCAL_DB=yes python manage.py publish_law_articles
@@ -455,6 +662,48 @@ UPDATE api_laborrule
 --    WHERE kind = 'nom035_umbral_personas' ORDER BY effective_from;
 ```
 
+### T-1g: una fila que cerrar a mano, por la misma razón que la NOM-035
+
+`publish_labor_rules` **no toca** una fila ya `published`, que es la regla
+append-only y es la correcta. Eso significa que el `effective_to` nuevo de la
+fila del JCF de 2024 —cerrada en el seed el 31-12-2025— **no se aplica solo**:
+en producción quedarán las dos filas vigentes a la vez.
+
+El consumidor **recibe la respuesta correcta desde el primer día** (el endpoint
+ordena por `-effective_from`, así que la de 2026 gana), pero cerrar la vieja
+queda pendiente. Es una escritura de un solo campo sobre una fila publicada,
+que este carril deliberadamente no automatiza — promover un `UPDATE` sobre
+filas `published` dentro del comando abriría justo la puerta que el diseño
+append-only cierra:
+
+```sql
+-- Cerrar la fila del JCF que citaba las Reglas de Operación 2025 (abrogadas
+-- por las de 2026, DOF 5777674). Idempotente: si ya está cerrada, no cambia
+-- nada.
+UPDATE api_laborrule
+   SET effective_to = DATE '2025-12-31'
+ WHERE kind = 'jcf_validacion_periodicidad_dias'
+   AND dof_codigo = '5746424'
+   AND effective_from = DATE '2024-12-31'
+   AND effective_to IS NULL;
+-- Debe reportar UPDATE 1. Verificar después que quedan dos filas y sólo una
+-- vigente hoy:
+--   SELECT official_id, dof_codigo, effective_from, effective_to
+--     FROM api_laborrule
+--    WHERE kind = 'jcf_validacion_periodicidad_dias'
+--    ORDER BY effective_from;
+-- Se esperan dos renglones: ('', '5746424', 2024-12-31, 2025-12-31) y
+-- ('jcf-reglas-2026', '5777674', 2026-01-01, NULL).
+```
+
+Las filas **nuevas** de T-1g (las dos del tope del SBC, la del seguro de
+estudiantes, la del JCF 2026 y las 161 claves de catálogo) sí las escribe el
+comando: no existen todavía en producción, así que entran como altas.
+
+**La migración `0037` es aditiva y reversible**: sólo amplía las listas de
+`choices` de `LaborRule.kind` y `SatCatalogEntry.catalog`. No toca datos ni
+ancho de columna alguno.
+
 ## Mantenimiento recurrente
 
 | Cuándo | Qué |
@@ -463,6 +712,8 @@ UPDATE api_laborrule
 | Cada 1 de enero, hasta 2030 | Nada: los cinco escalones de la jornada y del tiempo extra ya están publicados con su vigencia |
 | Cuando el SAT publique una edición nueva de sus catálogos | Reimportar y **mover `catalogo_version`**; la prueba lo exige |
 | Cada diciembre, con la RMF del año entrante | Leer la regla 2.1.36 de la RMF nueva y añadir la fila de `opinion_32d_vigencia_dias`, cerrando la anterior el 31 de diciembre. La RMF es **anual**: sin ella, el feed calla en vez de arrastrar un plazo vencido |
-| Cuando la STPS publique Reglas de Operación nuevas del JCF | Añadir la fila de `jcf_validacion_periodicidad_dias` con su `dof_codigo`. Las de 2024 siguen vigentes por su Transitorio TERCERO hasta que otras las sustituyan |
+| Cuando la STPS publique Reglas de Operación nuevas del JCF | Añadir la fila de `jcf_validacion_periodicidad_dias` con su `dof_codigo` y **cerrar la anterior**, como hizo T-1g con las de 2024 → 2026. Y **leer el documento entero**, no sólo la regla que cambia de número: en 2026 desapareció la obligación del Centro de Trabajo de verificar la evaluación |
+| Cuando el SAT publique una edición nueva de `catNomina.xls` | Reimportar los **seis** catálogos de nómina con `xlrd` y mover `catalogo_version` **hoja por hoja**: las versiones no son la del libro y difieren entre sí. Conservar las claves con fin de vigencia |
+| Si el Congreso ajusta la letra del art. 28 de la LSS a UMA | Añadir una fila con `effective_from` de la reforma y `official_id`/`source` de la ley, cerrando la del decreto. Hoy la fila vigente se funda en el **transitorio 3º del decreto de desindexación** porque el artículo nunca se reformó |
 | Cuando el catálogo del HCM añada un `regla_ventana_kind` | Añadirlo a `KINDS_DEL_CATALOGO_HCM` en `tests/api/test_labor_seed_hcm.py`. La compuerta obliga entonces a publicarlo con lectura primaria o a declararlo hueco con motivo |
 | Cuando se reforme un artículo citado | Añadir la fila nueva con `effective_from` de la reforma y cerrar la anterior el día anterior; nunca editar la existente |

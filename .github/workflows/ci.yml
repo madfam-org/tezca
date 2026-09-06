@@ -115,6 +115,7 @@ jobs:
             tests/api/test_labor_articles.py \
             tests/api/test_labor_seed_hcm.py \
             tests/api/test_labor_fundamentos_t1f.py \
+            tests/api/test_labor_t1g.py \
             -v --no-cov
         env:
           PYTHONPATH: apps:.

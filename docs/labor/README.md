@@ -508,7 +508,7 @@ AssertionError: fila 42 (kind=jcf_validacion_periodicidad_dias),
 |---|---|
 | `test_ninguna_regla_desborda_su_columna` | Un valor de `REGLAS` más largo que su columna — **rojo sobre `main`** |
 | `test_ningun_articulo_desborda_su_columna` | Lo mismo en `articulos_vigentes.json` (87 filas, 0 desbordes hoy) |
-| `test_ninguna_clave_del_catalogo_desborda_su_columna` | Lo mismo en `sat_catalogos.json` (55 filas, 0 desbordes hoy) |
+| `test_ninguna_clave_del_catalogo_desborda_su_columna` | Lo mismo en `sat_catalogos.json` (216 filas desde T-1g, 0 desbordes hoy) |
 | `test_el_articulo_del_jcf_cabe_entero` | Que la cita del JCF no se «arregle» truncándola |
 | `test_un_kind_demasiado_largo_se_detecta` | Falsabilidad: un `kind` de 65 caracteres |
 | `test_el_mensaje_nombra_la_fila_el_campo_y_las_cifras` | Que el operador pueda arreglarlo sin abrir el traceback |
