@@ -592,5 +592,1615 @@
     "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catCFDI.xls",
     "catalogo_origen": "sat_cat_cfdi",
     "catalogo_version": "2.0 (rev. 0, publicado 2020-05-25)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "001",
+    "label": "Sueldos, Salarios  Rayas y Jornales",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "002",
+    "label": "Gratificación Anual (Aguinaldo)",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "003",
+    "label": "Participación de los Trabajadores en las Utilidades PTU",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "004",
+    "label": "Reembolso de Gastos Médicos Dentales y Hospitalarios",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "005",
+    "label": "Fondo de Ahorro",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "006",
+    "label": "Caja de ahorro",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "009",
+    "label": "Contribuciones a Cargo del Trabajador Pagadas por el Patrón",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "010",
+    "label": "Premios por puntualidad",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "011",
+    "label": "Prima de Seguro de vida",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "012",
+    "label": "Seguro de Gastos Médicos Mayores",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "013",
+    "label": "Cuotas Sindicales Pagadas por el Patrón",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "014",
+    "label": "Subsidios por incapacidad",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "015",
+    "label": "Becas para trabajadores y/o hijos",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "019",
+    "label": "Horas extra",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "020",
+    "label": "Prima dominical",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "021",
+    "label": "Prima vacacional",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "022",
+    "label": "Prima por antigüedad",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "023",
+    "label": "Pagos por separación",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "024",
+    "label": "Seguro de retiro",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "025",
+    "label": "Indemnizaciones",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "026",
+    "label": "Reembolso por funeral",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "027",
+    "label": "Cuotas de seguridad social pagadas por el patrón",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "028",
+    "label": "Comisiones",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "029",
+    "label": "Vales de despensa",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "030",
+    "label": "Vales de restaurante",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "031",
+    "label": "Vales de gasolina",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "032",
+    "label": "Vales de ropa",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "033",
+    "label": "Ayuda para renta",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "034",
+    "label": "Ayuda para artículos escolares",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "035",
+    "label": "Ayuda para anteojos",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "036",
+    "label": "Ayuda para transporte",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "037",
+    "label": "Ayuda para gastos de funeral",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "038",
+    "label": "Otros ingresos por salarios",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "039",
+    "label": "Jubilaciones, pensiones o haberes de retiro",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "044",
+    "label": "Jubilaciones, pensiones o haberes de retiro en parcialidades",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "045",
+    "label": "Ingresos en acciones o títulos valor que representan bienes",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "046",
+    "label": "Ingresos asimilados a salarios",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "047",
+    "label": "Alimentación diferentes a los establecidos en el Art 94 último párrafo LISR",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "048",
+    "label": "Habitación",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "049",
+    "label": "Premios por asistencia",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "050",
+    "label": "Viáticos",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "051",
+    "label": "Pagos por gratificaciones, primas, compensaciones, recompensas u otros a extrabajadores derivados de jubilación en parcialidades",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "052",
+    "label": "Pagos que se realicen a extrabajadores que obtengan una jubilación en parcialidades derivados de la ejecución de resoluciones judicial o de un laudo",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoPercepcion",
+    "code": "053",
+    "label": "Pagos que se realicen a extrabajadores que obtengan una jubilación en una sola exhibición derivados de la ejecución de resoluciones judicial o de un laudo",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "2.0 (rev. 1, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "001",
+    "label": "Seguridad social",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "002",
+    "label": "ISR",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "003",
+    "label": "Aportaciones a retiro, cesantía en edad avanzada y vejez.",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "004",
+    "label": "Otros",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "005",
+    "label": "Aportaciones a Fondo de vivienda",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "006",
+    "label": "Descuento por incapacidad",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "007",
+    "label": "Pensión alimenticia",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "008",
+    "label": "Renta",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "009",
+    "label": "Préstamos provenientes del Fondo Nacional de la Vivienda para los Trabajadores",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "010",
+    "label": "Pago por crédito de vivienda",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "011",
+    "label": "Pago de abonos INFONACOT",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "012",
+    "label": "Anticipo de salarios",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "013",
+    "label": "Pagos hechos con exceso al trabajador",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "014",
+    "label": "Errores",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "015",
+    "label": "Pérdidas",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "016",
+    "label": "Averías",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "017",
+    "label": "Adquisición de artículos producidos por la empresa o establecimiento",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "018",
+    "label": "Cuotas para la constitución y fomento de sociedades cooperativas y de cajas de ahorro",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "019",
+    "label": "Cuotas sindicales",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "020",
+    "label": "Ausencia (Ausentismo)",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "021",
+    "label": "Cuotas obrero patronales",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "022",
+    "label": "Impuestos Locales",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "023",
+    "label": "Aportaciones voluntarias",
+    "effective_from": "2016-11-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "024",
+    "label": "Ajuste en Gratificación Anual (Aguinaldo) Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "025",
+    "label": "Ajuste en Gratificación Anual (Aguinaldo) Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "026",
+    "label": "Ajuste en Participación de los Trabajadores en las Utilidades PTU Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "027",
+    "label": "Ajuste en Participación de los Trabajadores en las Utilidades PTU Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "028",
+    "label": "Ajuste en Reembolso de Gastos Médicos Dentales y Hospitalarios Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "029",
+    "label": "Ajuste en Fondo de ahorro Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "030",
+    "label": "Ajuste en Caja de ahorro Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "031",
+    "label": "Ajuste en Contribuciones a Cargo del Trabajador Pagadas por el Patrón Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "032",
+    "label": "Ajuste en Premios por puntualidad Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "033",
+    "label": "Ajuste en Prima de Seguro de vida Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "034",
+    "label": "Ajuste en Seguro de Gastos Médicos Mayores Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "035",
+    "label": "Ajuste en Cuotas Sindicales Pagadas por el Patrón Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "036",
+    "label": "Ajuste en Subsidios por incapacidad Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "037",
+    "label": "Ajuste en Becas para trabajadores y/o hijos Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "038",
+    "label": "Ajuste en Horas extra Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "039",
+    "label": "Ajuste en Horas extra Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "040",
+    "label": "Ajuste en Prima dominical Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "041",
+    "label": "Ajuste en Prima dominical Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "042",
+    "label": "Ajuste en Prima vacacional Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "043",
+    "label": "Ajuste en Prima vacacional Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "044",
+    "label": "Ajuste en Prima por antigüedad Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "045",
+    "label": "Ajuste en Prima por antigüedad Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "046",
+    "label": "Ajuste en Pagos por separación Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "047",
+    "label": "Ajuste en Pagos por separación Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "048",
+    "label": "Ajuste en Seguro de retiro Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "049",
+    "label": "Ajuste en Indemnizaciones Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "050",
+    "label": "Ajuste en Indemnizaciones Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "051",
+    "label": "Ajuste en Reembolso por funeral Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "052",
+    "label": "Ajuste en Cuotas de seguridad social pagadas por el patrón Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "053",
+    "label": "Ajuste en Comisiones Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "054",
+    "label": "Ajuste en Vales de despensa Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "055",
+    "label": "Ajuste en Vales de restaurante Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "056",
+    "label": "Ajuste en Vales de gasolina Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "057",
+    "label": "Ajuste en Vales de ropa Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "058",
+    "label": "Ajuste en Ayuda para renta Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "059",
+    "label": "Ajuste en Ayuda para artículos escolares Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "060",
+    "label": "Ajuste en Ayuda para anteojos Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "061",
+    "label": "Ajuste en Ayuda para transporte Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "062",
+    "label": "Ajuste en Ayuda para gastos de funeral Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "063",
+    "label": "Ajuste en Otros ingresos por salarios Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "064",
+    "label": "Ajuste en Otros ingresos por salarios Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "065",
+    "label": "Ajuste en Jubilaciones, pensiones o haberes de retiro en una sola exhibición Exento",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "066",
+    "label": "Ajuste en Jubilaciones, pensiones o haberes de retiro en una sola exhibición Gravado",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "067",
+    "label": "Ajuste en Pagos por separación Acumulable",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "068",
+    "label": "Ajuste en Pagos por separación No acumulable",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "069",
+    "label": "Ajuste en Jubilaciones, pensiones o haberes de retiro en parcialidades Exento",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "070",
+    "label": "Ajuste en Jubilaciones, pensiones o haberes de retiro en parcialidades Gravado",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "071",
+    "label": "Ajuste en Subsidio para el empleo (efectivamente entregado al trabajador)",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "072",
+    "label": "Ajuste en Ingresos en acciones o títulos valor que representan bienes Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": "2018-10-14",
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "073",
+    "label": "Ajuste en Ingresos en acciones o títulos valor que representan bienes Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "074",
+    "label": "Ajuste en Alimentación Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "075",
+    "label": "Ajuste en Alimentación Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "076",
+    "label": "Ajuste en Habitación Exento",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "077",
+    "label": "Ajuste en Habitación Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "078",
+    "label": "Ajuste en Premios por asistencia",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "079",
+    "label": "Ajuste en Pagos distintos a los listados y que no deben considerarse como ingreso por sueldos, salarios o ingresos asimilados.",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "080",
+    "label": "Ajuste en Viáticos gravados",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "081",
+    "label": "Ajuste en Viáticos (entregados al trabajador)",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "082",
+    "label": "Ajuste en Fondo de ahorro Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "083",
+    "label": "Ajuste en Caja de ahorro Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "084",
+    "label": "Ajuste en Prima de Seguro de vida Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "085",
+    "label": "Ajuste en Seguro de Gastos Médicos Mayores Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "086",
+    "label": "Ajuste en Subsidios por incapacidad Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "087",
+    "label": "Ajuste en Becas para trabajadores y/o hijos Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "088",
+    "label": "Ajuste en Seguro de retiro Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "089",
+    "label": "Ajuste en Vales de despensa Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "090",
+    "label": "Ajuste en Vales de restaurante Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "091",
+    "label": "Ajuste en Vales de gasolina Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "092",
+    "label": "Ajuste en Vales de ropa Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "093",
+    "label": "Ajuste en Ayuda para renta Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "094",
+    "label": "Ajuste en Ayuda para artículos escolares Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "095",
+    "label": "Ajuste en Ayuda para anteojos Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "096",
+    "label": "Ajuste en Ayuda para transporte Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "097",
+    "label": "Ajuste en Ayuda para gastos de funeral Gravado",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "098",
+    "label": "Ajuste a ingresos asimilados a salarios gravados",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "099",
+    "label": "Ajuste a ingresos por sueldos y salarios gravados",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "100",
+    "label": "Ajuste en Viáticos exentos",
+    "effective_from": "2017-01-06",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "101",
+    "label": "ISR Retenido de ejercicio anterior",
+    "effective_from": "2017-12-05",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "102",
+    "label": "Ajuste a pagos por gratificaciones, primas, compensaciones, recompensas u otros a extrabajadores derivados de jubilación en parcialidades, gravados",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "103",
+    "label": "Ajuste a pagos que se realicen a extrabajadores que obtengan una jubilación en parcialidades derivados de la ejecución de una resolución judicial o de un laudo gravados",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "104",
+    "label": "Ajuste a pagos que se realicen a extrabajadores que obtengan una jubilación en parcialidades derivados de la ejecución de una resolución judicial o de un laudo exentos",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "105",
+    "label": "Ajuste a pagos que se realicen a extrabajadores que obtengan una jubilación en una sola exhibición derivados de la ejecución de una resolución judicial o de un laudo gravados",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "106",
+    "label": "Ajuste a pagos que se realicen a extrabajadores que obtengan una jubilación en una sola exhibición derivados de la ejecución de una resolución judicial o de un laudo exentos",
+    "effective_from": "2018-10-15",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoDeduccion",
+    "code": "107",
+    "label": "Ajuste al Subsidio Causado",
+    "effective_from": "2020-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2019-12-05)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "001",
+    "label": "Reintegro de ISR pagado en exceso (siempre que no haya sido enterado al SAT).",
+    "effective_from": "2017-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "002",
+    "label": "Subsidio para el empleo (efectivamente entregado al trabajador).",
+    "effective_from": "2017-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "003",
+    "label": "Viáticos (entregados al trabajador).",
+    "effective_from": "2017-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "004",
+    "label": "Aplicación de saldo a favor por compensación anual.",
+    "effective_from": "2017-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "005",
+    "label": "Reintegro de ISR retenido en exceso de ejercicio anterior (siempre que no haya sido enterado al SAT).",
+    "effective_from": "2017-12-05",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "006",
+    "label": "Alimentos en bienes (Servicios de comedor y comida) Art 94 último párrafo LISR.",
+    "effective_from": "2020-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "007",
+    "label": "ISR ajustado por subsidio.",
+    "effective_from": "2020-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "008",
+    "label": "Subsidio efectivamente entregado que no correspondía (Aplica sólo cuando haya ajuste al cierre de mes en relación con el Apéndice 7 de la guía de llenado de nómina).",
+    "effective_from": "2020-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "009",
+    "label": "Reembolso de descuentos efectuados para el crédito de vivienda.",
+    "effective_from": "2020-04-20",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
+  },
+  {
+    "catalog": "c_TipoOtroPago",
+    "code": "999",
+    "label": "Pagos distintos a los listados y que no deben considerarse como ingreso por sueldos, salarios o ingresos asimilados.",
+    "effective_from": "2017-01-01",
+    "effective_to": null,
+    "source_url": "http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/catNomina.xls",
+    "catalogo_origen": "sat_cat_nomina",
+    "catalogo_version": "4.0 (rev. 0, publicado 2020-04-17)"
   }
 ]
