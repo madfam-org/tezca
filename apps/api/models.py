@@ -12,6 +12,16 @@ from .fiscal_models import (  # noqa: F401
     UMAValue,
 )
 
+# Feed laboral (artículos con vigencia, reglas estructuradas y catálogos del
+# SAT). Mismo motivo que el fiscal: mantener este archivo bajo el techo de la
+# auditoría de tamaño y que el registro de apps de Django los descubra.
+from .labor_models import (  # noqa: F401
+    LaborRule,
+    LawArticle,
+    SatCatalogEntry,
+    VigenciaProvenanceBase,
+)
+
 
 class Law(models.Model):
     OFFICIAL_ID_MAX_LENGTH = 200
