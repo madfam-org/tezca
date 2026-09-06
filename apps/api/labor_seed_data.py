@@ -22,13 +22,17 @@ Este módulo cubre la mitad **laboral** del seed (LFT y LSS: jornada, prueba,
 prestaciones, alta al IMSS). La mitad **fiscal y de normas oficiales** —
 retenciones, RESICO, recargos, actualización, REPSE, teletrabajo, NOM-035 y la
 lista de recaracterización — vive en ``labor_seed_fiscal``, separada por la
-compuerta de tamaño del repo. ``REGLAS`` las une: es la única lista que un
-consumidor importa.
+compuerta de tamaño del repo. Las cuatro reglas que el catálogo de obligaciones
+del HCM consulta y que faltaban —la vigencia de la opinión 32-D, el CFDI de
+nómina, el umbral de las comisiones mixtas y la validación del JCF— viven en
+``labor_seed_hcm``. ``REGLAS`` las une: es la única lista que un consumidor
+importa.
 """
 
 from apps.api.fiscal_models import Provenance
 from apps.api.labor_models import LaborRule
 from apps.api.labor_seed_fiscal import REGLAS_FISCALES
+from apps.api.labor_seed_hcm import REGLAS_HCM
 
 # Fuentes, para no repetir la cadena en cada fila.
 CAMARA = "Cámara de Diputados, LeyesBiblio (texto vigente)"
@@ -473,4 +477,4 @@ _REGLAS_LABORALES = _jornada_rows() + [
     },
 ]
 
-REGLAS = _REGLAS_LABORALES + REGLAS_FISCALES
+REGLAS = _REGLAS_LABORALES + REGLAS_FISCALES + REGLAS_HCM
