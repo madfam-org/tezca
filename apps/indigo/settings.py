@@ -1,9 +1,26 @@
 import os
+import sys
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# ── ¿Estamos corriendo la suite? ────────────────────────────────────────
+# Cubre pytest (`PYTEST_VERSION` lo exporta al arrancar; `sys.argv[0]` cubre a
+# quien importe settings antes de eso) y `manage.py test`. Se consulta abajo,
+# en Celery y en el caché.
+#
+# Sólo señales de INVOCACIÓN, nunca `"pytest" in sys.modules`: la imagen de
+# producción instala el grupo dev, así que pytest viaja en ella y un import
+# suelto pondría la producción en eager con broker en memoria. Tampoco `DEBUG`,
+# que es True en dev — y en dev sí queremos que `.delay()` llegue al broker.
+RUNNING_TESTS = (
+    "PYTEST_VERSION" in os.environ
+    or "PYTEST_CURRENT_TEST" in os.environ
+    or os.path.basename(sys.argv[0] or "").startswith("pytest")
+    or (len(sys.argv) > 1 and sys.argv[1] == "test")
+)
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-mock-key-for-dev")
 DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
@@ -369,15 +386,46 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/
 CELERY_RESULT_BACKEND = os.environ.get(
     "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
 )
+
+# La suite NO habla con un broker: `.delay()` corre en el mismo proceso y el
+# transporte vive en memoria, así que el resultado no depende de si hay un Redis
+# escuchando. `task_eager_propagates` va obligatoriamente con eager: sin él una
+# tarea que revienta queda guardada en el resultado y la prueba pasa igual.
+# El porqué completo y la compuerta falsable están en
+# `tests/test_celery_eager_under_pytest.py`; para probar el ENCOLADO en vez de
+# la ejecución, el fixture `celery_eager_off` de `tests/conftest.py`.
+if RUNNING_TESTS:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    CELERY_BROKER_URL = "memory://"
+    CELERY_RESULT_BACKEND = "cache+memory://"
+else:
+    CELERY_TASK_ALWAYS_EAGER = os.environ.get(
+        "CELERY_TASK_ALWAYS_EAGER", "False"
+    ).lower() in ("true", "1", "yes")
+    CELERY_TASK_EAGER_PROPAGATES = CELERY_TASK_ALWAYS_EAGER
 # ── Cache ──────────────────────────────────────────────────────────────
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": CELERY_BROKER_URL,
-        "TIMEOUT": 300,  # 5 minutes default
-        "KEY_PREFIX": "tezca",
+# Bajo pruebas el caché tampoco sale a la red: `CELERY_BROKER_URL` ya es
+# `memory://`, que `RedisCache` no sabe abrir. `tests/conftest.py` inyecta
+# DummyCache por fixture autouse; fijarlo aquí quita la dependencia de que la
+# prueba use ese fixture.
+if RUNNING_TESTS:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "tezca-tests",
+            "KEY_PREFIX": "tezca",
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": CELERY_BROKER_URL,
+            "TIMEOUT": 300,  # 5 minutes default
+            "KEY_PREFIX": "tezca",
+        }
+    }
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
