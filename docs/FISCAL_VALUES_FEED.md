@@ -36,7 +36,7 @@ So no seed could be derived from the corpus, and none claimed to be.
 
 **2026 has since been verified against the DOF** (2026-09-05) and published.
 See [`fiscal/2026-publicacion-dof.md`](fiscal/2026-publicacion-dof.md) for the
-full table, the pending items and the operator's deploy checklist.
+full table, the pending items and the operator's deploy record.
 
 **The 2025 ISR tables were verified on the same date and turned out to be
 WRONG** — six of the eleven monthly fixed fees, plus a repealed subsidio table
@@ -45,6 +45,14 @@ and a missing annual tarifa. See
 always declared itself unverified, which is why that was a finding and not an
 incident; the upstream source of the error is
 `symbiosis-hcm/packages/mx-payroll/mx_payroll/isr.py`.
+
+**Both years are live in production.** The operator ran the two publish
+commands on 2026-09-05 at ~17:45 CDMX against the `tezca-api` pod: 2026 wrote 6
+new rows and 2025 wrote 4, each reporting 0 rows left intact — that is, neither
+run found an already-`published` row it had to respect. The rows below marked
+**`published`** are what the production feed serves today. What is *not* listed
+as published below is still genuinely missing, and `all_published` is `false`
+for both years accordingly.
 
 | Dataset | Coverage | Provenance |
 |---|---|---|
@@ -60,14 +68,27 @@ incident; the upstream source of the error is
 | `subsidio_rule` | **2026**, two vigencias (474.65 / 492.14) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 
 Still absent for 2026, because no primary source was read for them: the annual
-Art. 152 tarifa, the 61 salarios mínimos profesionales, `imss_rates` and
+Art. 152 tarifa (the verification captured only its two extreme rows, not the
+intermediate ones), the 61 salarios mínimos profesionales, `imss_rates` and
 `isn_rates`. For 2025: `imss_rates` and `isn_rates`, plus the 7/10/15-day and
 Art. 106 tarifas. They return `null` — absent, never substituted — so
 `all_published` is `false` for both years even though what is there is verified.
+The 2025 and 2026 UMA/salario-mínimo scalars listed as `seed-unverified` above
+stayed that way; publishing the ISR work did not touch them.
+
+One caveat outlives the publication: both years were read from the **text**
+served by the DOF's endpoints, not from the facsimile PDF of the morning
+edition. Cross-checking against that PDF is still pending and is what a formal
+seal would require.
 
 **Never reuse one year's ISR table for another.** The 2026 lane assumed
 2025 ≡ 2026; reading the RMF 2025 disproved it (the 2026 figures have zero
 occurrences in that text). The rates match across years; the brackets do not.
+
+[`fiscal/README.md`](fiscal/README.md) indexes both verification lanes, lists
+every gap in one place, and carries the transferable method for reading the DOF
+(which endpoints work for old dates, the apartado-C trap, why one year's tarifa
+must never be reused for another).
 
 ### Coherence gate
 
@@ -263,6 +284,10 @@ LOCAL_DB=yes python manage.py seed_fiscal_values # write
 The command is idempotent and, per AGENTS.md, refuses to write without the
 `LOCAL_DB=yes` guard.
 
+Both DOF publication commands below **have already been run against production**
+(2026-09-05, ~17:45 CDMX). They are idempotent, so the recipes stand for any
+other environment — a fresh database, staging, or a local checkout.
+
 To publish the DOF-verified 2026 values (see
 [`fiscal/2026-publicacion-dof.md`](fiscal/2026-publicacion-dof.md)):
 
@@ -275,6 +300,11 @@ It writes `published` rows with their `dof_codigo`, promotes the matching
 `seed-unverified` rows rather than duplicating them, closes the prior year's
 vigencia, and **never touches a row that is already `published`** — an
 operator's hand correction is respected.
+
+In production it reported `6 filas nuevas, 0 promovidas… Intactas: 0`. The six
+are the UMA, the two salarios mínimos, the ISR tarifa and the two
+`subsidio_rule` vigencias; the two 2025 vigencia closures the doc also describes
+are edits to existing rows, not new ones.
 
 To publish the DOF-verified 2025 correction (see
 [`fiscal/2025-errata-isr-dof.md`](fiscal/2025-errata-isr-dof.md)):
@@ -291,6 +321,11 @@ it is a mistranscription — so it is deleted rather than vigencia-closed. If an
 operator promoted it to `published` by hand, the command leaves it alone and
 says so. No migration is required: both `isr_annual` and `subsidio_rule` already
 exist in the model.
+
+In production it reported `4 filas nuevas, 0 promovidas, 0 retiradas por
+derogación… Intactas: 0`. The zero retirements mean the production database had
+never been seeded with the repealed bracket table in the first place — there was
+nothing to delete, not a deletion that failed.
 
 ## Provenance of this feed's existence
 

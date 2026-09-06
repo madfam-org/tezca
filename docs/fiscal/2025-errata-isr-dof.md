@@ -1,7 +1,8 @@
 # Errata ISR 2025 — corregida contra el DOF
 
 **Fecha de verificación:** 2026-09-05
-**Estado:** filas escritas con `provenance='published'`
+**Estado:** publicado en producción el 2026-09-05 ~17:45 CDMX — 4 filas nuevas,
+0 promovidas, 0 retiradas por derogación, 0 intactas. Ver [«Handoff»](#handoff).
 **Fuente:** lectura directa del texto del DOF, sin fuentes secundarias.
 Insumo: `claudedocs/hcm-hardening/dof-2025-isr-verificacion.md` (labspace).
 
@@ -281,7 +282,8 @@ II**, y la cita lo dice.
 - **`imss_rates` e `isn_rates` 2025** siguen ausentes, como para todos los años.
   `all_published` para 2025 no es `true`.
 - Este carril **no tocó escalares**: la UMA y los salarios mínimos 2025 quedan
-  como estaban. Su verificación es otro trabajo.
+  como estaban, es decir `seed-unverified`, y la publicación en producción no
+  los cambió. Su verificación es otro trabajo.
 - **No se corrigió `symbiosis-hcm`.** Ver abajo.
 
 ---
@@ -292,7 +294,21 @@ II**, y la cita lo dice.
    error y, a diferencia de Tezca, probablemente calcula nómina en producción
    con estos números.** Prioridad más alta que este propio seed. Fuera del
    alcance de este repo.
-2. **Operador**: publicar es un acto deliberado, en este orden.
+2. **Operador — hecho en producción el 2026-09-05, ~17:45 CDMX.** Se corrió en
+   el pod `tezca-api` con la imagen de #231, después del ensayo:
+
+   ```
+   LOCAL_DB=yes python manage.py publish_fiscal_values_2025
+   Published: 4 filas nuevas, 0 promovidas, 0 retiradas por derogación… Intactas: 0
+   ```
+
+   Las cuatro filas de [«Qué quedó»](#qué-quedó) son, desde esa fecha, lo que
+   sirve el feed en producción. «0 retiradas por derogación» dice que la base de
+   producción **nunca tuvo sembrada** la tabla de subsidio por tramos derogada:
+   no había nada que borrar, no que el borrado fallara. «Intactas: 0» dice que
+   no había ninguna fila ya `published` que el comando debiera respetar.
+
+   La receta sigue válida para otros entornos, en este orden:
 
    ```bash
    python manage.py publish_fiscal_values_2025 --dry-run
@@ -301,7 +317,9 @@ II**, y la cita lo dice.
 
    No hay migración que correr. El comando es idempotente, **nunca toca una
    fila ya `published`**, y reporta cuántas filas creó, promovió y retiró.
-3. **Cotejar contra el PDF facsimilar** antes de considerar el sello formal.
+3. **Cotejar contra el PDF facsimilar** — **sigue pendiente**. La publicación de
+   arriba no lo incluye: la lectura fue del texto de `nota_to_doc.php`, no del
+   facsímil de la edición matutina. Es el paso que falta para el sello formal.
 4. **La afirmación «2025 ≡ 2026» quedó invalidada.** Los importes 2026
    (844.59, 7,168.51, 133,488.54, 425,641.99) tienen **cero ocurrencias** en el
    texto de la RMF 2025. Las tasas sí coinciden entre años; los límites se
