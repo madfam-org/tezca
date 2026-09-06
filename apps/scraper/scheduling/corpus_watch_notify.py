@@ -89,6 +89,13 @@ def notify_corpus_watch_hits(hits) -> int:
     Best-effort and non-fatal: any failure per hit is logged and swallowed — the
     alert is a durability nicety on top of the existing WARNING log +
     AcquisitionLog record, never a reason to fail the daily DOF check.
+
+    The hit is RECORDED BEFORE the alert is dispatched. ``.delay()`` reaches the
+    Celery broker, so a Redis outage raises there; recording afterwards meant a
+    broker blip during the 7 AM beat run left no ``corpus_watch_alert`` row at
+    all, and the once-a-year SEP/JCF trigger was lost with nothing to replay
+    from. Recording first costs at most a duplicate alert next run (the far
+    cheaper failure) and keeps the trail even when delivery is impossible.
     """
     newly = 0
     for hit in hits:
@@ -103,13 +110,27 @@ def notify_corpus_watch_hits(hits) -> int:
                 )
                 continue
 
+            # Record first — the durable trail must not depend on the broker.
+            _record_alert(hit_dict)
+
             # Import the delivery task lazily (Celery task in apps.api.tasks) to
             # keep this module import-light and match the scheduling package's
             # lazy-import convention.
             from apps.api.tasks import deliver_operator_alert
 
-            deliver_operator_alert.delay("corpus_watch.hit", hit_dict)
-            _record_alert(hit_dict)
+            try:
+                deliver_operator_alert.delay("corpus_watch.hit", hit_dict)
+            except Exception:
+                # Delivery failed (broker down, queue refused). The hit is
+                # already recorded, so the operator trail survives; log loudly
+                # because nothing was pushed to a human.
+                logger.exception(
+                    "Corpus-watch hit %s recorded but its operator alert could "
+                    "NOT be dispatched — check the Celery broker",
+                    hit_dict.get("watch_key", "?"),
+                )
+                continue
+
             newly += 1
         except Exception:
             logger.exception(

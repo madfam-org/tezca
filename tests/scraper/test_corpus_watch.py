@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django.core.management import CommandError, call_command
+from kombu.exceptions import OperationalError
 
 from apps.scraper.scheduling.corpus_watch import (
     CORPUS_WATCHES,
@@ -147,16 +148,49 @@ class TestScanEntries:
         assert set(d) == {"watch_key", "corpus", "title", "url", "action"}
 
 
+def _created_parameters(mock_log_cls, operation):
+    """The ``parameters`` of the single AcquisitionLog row created for
+    ``operation``.
+
+    ``check_dof_daily`` writes MORE than one AcquisitionLog row on a hit: the
+    ``dof_daily_check`` row, and then a ``corpus_watch_alert`` row from the
+    notify hook. Reading ``call_args`` (the LAST call) therefore reads whichever
+    row happened to be written last, so an assertion about the daily-check row
+    must select it by operation instead. Asserting there is exactly one such row
+    also pins the "one daily-check row per run" invariant.
+    """
+    matching = [
+        call
+        for call in mock_log_cls.objects.create.call_args_list
+        if call.kwargs.get("operation") == operation
+    ]
+    assert len(matching) == 1, (
+        f"expected exactly one {operation!r} AcquisitionLog row, got "
+        f"{[c.kwargs.get('operation') for c in mock_log_cls.objects.create.call_args_list]}"
+    )
+    return matching[0].kwargs["parameters"]
+
+
 class TestCheckDofDailyWiring:
     """The daily task must run the watch and surface hits, without changing
     its existing change-detection behavior."""
 
+    @patch("apps.scraper.scheduling.corpus_watch_notify.notify_corpus_watch_hits")
     @patch("apps.scraper.dataops.models.AcquisitionLog")
     @patch("apps.api.models.Law")
     @patch("apps.scraper.federal.dof_daily.DofScraper")
     def test_watch_hits_are_recorded_and_returned(
-        self, mock_scraper_cls, mock_law, mock_log_cls
+        self, mock_scraper_cls, mock_law, mock_log_cls, mock_notify
     ):
+        """Detection + recording, isolated from the notify hop.
+
+        ``notify_corpus_watch_hits`` is patched (as in
+        ``TestCheckDofDailyNotifyWiring``) so this stays a unit test of
+        detection: unpatched, the real hook calls ``deliver_operator_alert
+        .delay()``, which reaches for the Celery broker — making the outcome
+        depend on whether a Redis happens to be listening on the machine running
+        the suite. That hop has its own tests in ``TestCorpusWatchNotify``.
+        """
         from apps.scraper.scheduling.tasks import check_dof_daily
 
         mock_law.objects.values_list.return_value = []
@@ -178,8 +212,8 @@ class TestCheckDofDailyWiring:
         assert len(result["corpus_watch_hits"]) == 1
         assert result["corpus_watch_hits"][0]["watch_key"] == "sep_calendario_escolar"
 
-        # Recorded on the AcquisitionLog parameters.
-        params = mock_log_cls.objects.create.call_args[1]["parameters"]
+        # Recorded on the daily-check AcquisitionLog parameters.
+        params = _created_parameters(mock_log_cls, "dof_daily_check")
         assert params["corpus_watch_hits"][0]["watch_key"] == "sep_calendario_escolar"
 
     @patch("apps.scraper.dataops.models.AcquisitionLog")
@@ -361,6 +395,36 @@ class TestCorpusWatchNotify:
         hits = scan_entries([SEP_2027_ENTRY])
         # Does not raise; nothing counted as newly alerted.
         assert notify_corpus_watch_hits(hits) == 0
+
+    @patch("apps.api.tasks.deliver_operator_alert")
+    @patch("apps.scraper.dataops.models.AcquisitionLog")
+    def test_a_broker_outage_still_records_the_hit(self, mock_log_cls, mock_deliver):
+        """A dead Celery broker must not erase the year-over-year trigger.
+
+        ``.delay()`` reaches the broker; when Redis is down it raises
+        (``kombu.exceptions.OperationalError``). Previously that exception was
+        raised BEFORE the hit was recorded and then swallowed wholesale, so a
+        broker blip during the 7 AM beat run left NO ``corpus_watch_alert`` row
+        at all — the once-a-year SEP/JCF signal vanished with nothing to replay
+        from. The record must survive the delivery failure.
+        """
+        self._set_prior_alerts(mock_log_cls, [])
+        mock_log_cls.objects.create.return_value = MagicMock()
+        mock_deliver.delay.side_effect = OperationalError(
+            "Error 61 connecting to localhost:6379. Connection refused."
+        )
+
+        hits = scan_entries([SEP_2027_ENTRY])
+        # Best-effort contract preserved: it does not raise…
+        newly = notify_corpus_watch_hits(hits)
+
+        # …and the hit is still recorded, so the trigger is not lost.
+        mock_log_cls.objects.create.assert_called_once()
+        recorded = mock_log_cls.objects.create.call_args[1]
+        assert recorded["operation"] == "corpus_watch_alert"
+        assert recorded["parameters"]["url"] == SEP_2027_ENTRY["url"]
+        # Delivery did not succeed, so it is not counted as newly alerted.
+        assert newly == 0
 
 
 class TestCheckDofDailyNotifyWiring:
