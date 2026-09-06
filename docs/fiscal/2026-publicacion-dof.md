@@ -1,7 +1,8 @@
 # Publicación fiscal 2026 — verificada contra el DOF
 
 **Fecha de verificación:** 2026-09-05
-**Estado:** filas escritas con `provenance='published'`
+**Estado:** publicado en producción el 2026-09-05 ~17:45 CDMX — 6 filas nuevas,
+0 promovidas, 0 intactas. Ver [«Despliegue (operador)»](#despliegue-operador).
 **Fuente:** lectura directa del texto del DOF (`nota_detalle`), sin fuentes
 secundarias. Insumo: `claudedocs/hcm-hardening/dof-2026-verificacion.md`.
 
@@ -37,7 +38,10 @@ https://dof.gob.mx/nota_detalle.php?codigo=<codigo>&fecha=<dd/mm/aaaa>
 | Subsidio al empleo (desde febrero) | $492.14/mes | desde 2026-02-01 | 01/05/2024 mod. 31/12/2024 | 5746529 |
 
 Ocho filas: 1 UMA, 2 salarios mínimos, 1 tabla ISR, 2 reglas de subsidio, más
-el cierre de vigencia de la UMA 2025 y de los salarios mínimos 2025.
+el cierre de vigencia de la UMA 2025 y de los salarios mínimos 2025. Las seis
+primeras son escrituras nuevas y las dos últimas son cierres de vigencia sobre
+filas que ya existían: por eso la corrida en producción reportó «6 filas
+nuevas» y no ocho.
 
 ### UMA 2026
 
@@ -225,8 +229,34 @@ publique.
 
 ## Despliegue (operador)
 
-Nada de esto corre solo contra producción. La publicación es un despliegue del
-operador, en este orden:
+### Hecho en producción — 2026-09-05, ~17:45 CDMX
+
+**Ya se ejecutó.** El operador corrió la publicación en el pod `tezca-api` con
+la imagen de #231, después del ensayo correspondiente:
+
+```
+LOCAL_DB=yes python manage.py publish_fiscal_values_2026
+Published: 6 filas nuevas, 0 promovidas… Intactas: 0
+```
+
+«Intactas: 0» es la lectura que importa: el comando no encontró ninguna fila ya
+`published` que respetar, así que escribió todo lo que traía. Las cifras de este
+documento son, desde esa fecha, lo que sirve el feed en producción con
+`provenance='published'`.
+
+Lo que sigue **no** quedó publicado y no lo cambia esta corrida: la tarifa anual
+del Art. 152 de 2026, los 61 salarios mínimos profesionales, las tarifas del
+Art. 106 y `imss_rates`/`isn_rates`. Ver [«Lo que quedó pendiente»](#lo-que-quedó-pendiente-por-falta-de-fuente-primaria).
+`all_published` en `/fiscal/tables/2026/` sigue siendo `false`, correctamente.
+
+Falta todavía el **cotejo contra el PDF facsimilar** de la edición matutina del
+DOF antes de considerar el sello formal; la lectura fue del texto servido por
+los endpoints del DOF, no del facsímil.
+
+### La receta, para otros entornos
+
+Nada de esto corre solo. La publicación es un despliegue del operador, en este
+orden:
 
 1. **Migración.** `python manage.py migrate api` — agrega `dof_codigo` y el
    `kind` nuevo. Es aditiva: columna opcional con `default=""`, sin backfill y
@@ -263,6 +293,11 @@ operador, en este orden:
    contrato, pero sí conviene avisar que la UMA 2026 y la tarifa ISR 2026 ya
    son citables (`is_verified: true`), porque hasta hoy cualquier gate sobre
    `provenance == "published"` las rechazaba.
+
+   `symbiosis-hcm` ya está en producción y lee `isr_brackets`, `subsidio_rule`
+   y la UMA por `?on=`; el comando `sync_fiscal_basis` está disponible del lado
+   de HCM para que el operador refresque su base fiscal contra este feed. Ese
+   comando vive en HCM, no en Tezca.
 
 ### Reversión
 
