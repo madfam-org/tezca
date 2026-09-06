@@ -271,8 +271,9 @@ def labor_rules_list(request):
     tags=["Labor"],
     summary="Catálogos del SAT para el CFDI 4.0",
     description=(
-        "Claves de c_RegimenFiscal, c_TipoRegimen, c_TipoContrato y "
-        "c_TipoJornada con su vigencia, tal como las publica el SAT. Un "
+        "Claves de c_RegimenFiscal, c_TipoRegimen, c_TipoContrato, "
+        "c_TipoJornada, c_TipoPercepcion, c_TipoDeduccion y c_TipoOtroPago "
+        "con su vigencia, tal como las publica el SAT. Un "
         "timbrado necesita saber que la clave estaba vigente el día del "
         "comprobante. Filtra con ?catalog=, ?code= y ?on=. "
         "Requiere API key con scope 'read'."
@@ -282,8 +283,9 @@ def labor_rules_list(request):
         OpenApiParameter(
             name="catalog",
             description=(
-                "'c_RegimenFiscal', 'c_TipoRegimen', 'c_TipoContrato' o "
-                "'c_TipoJornada'."
+                "'c_RegimenFiscal', 'c_TipoRegimen', 'c_TipoContrato', "
+                "'c_TipoJornada', 'c_TipoPercepcion', 'c_TipoDeduccion' o "
+                "'c_TipoOtroPago'."
             ),
             required=False,
             type=str,

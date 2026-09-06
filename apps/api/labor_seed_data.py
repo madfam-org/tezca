@@ -25,14 +25,17 @@ lista de recaracterización — vive en ``labor_seed_fiscal``, separada por la
 compuerta de tamaño del repo. Las cuatro reglas que el catálogo de obligaciones
 del HCM consulta y que faltaban —la vigencia de la opinión 32-D, el CFDI de
 nómina, el umbral de las comisiones mixtas y la validación del JCF— viven en
-``labor_seed_hcm``. ``REGLAS`` las une: es la única lista que un consumidor
-importa.
+``labor_seed_hcm``. El tope del SBC del art. 28 de la LSS, la incorporación de
+las personas estudiantes al régimen obligatorio y la regla del JCF que cita las
+Reglas de Operación **2026** viven en ``labor_seed_t1g``. ``REGLAS`` las une:
+es la única lista que un consumidor importa.
 """
 
 from apps.api.fiscal_models import Provenance
 from apps.api.labor_models import LaborRule
 from apps.api.labor_seed_fiscal import REGLAS_FISCALES
 from apps.api.labor_seed_hcm import REGLAS_HCM
+from apps.api.labor_seed_t1g import REGLAS_T1G
 
 # Fuentes, para no repetir la cadena en cada fila.
 CAMARA = "Cámara de Diputados, LeyesBiblio (texto vigente)"
@@ -477,4 +480,4 @@ _REGLAS_LABORALES = _jornada_rows() + [
     },
 ]
 
-REGLAS = _REGLAS_LABORALES + REGLAS_FISCALES + REGLAS_HCM
+REGLAS = _REGLAS_LABORALES + REGLAS_FISCALES + REGLAS_HCM + REGLAS_T1G

@@ -415,13 +415,17 @@ class TestCatalogosSat:
     def filas(cls):
         return json.loads(CATALOGOS_PATH.read_text(encoding="utf-8"))
 
-    def test_estan_los_cuatro_catalogos(self, filas):
+    def test_estan_los_siete_catalogos(self, filas):
+        """Cuatro de T-1b más los tres del complemento de nómina (T-1g)."""
         catalogos = {f["catalog"] for f in filas}
         assert catalogos == {
             "c_RegimenFiscal",
             "c_TipoRegimen",
             "c_TipoContrato",
             "c_TipoJornada",
+            "c_TipoPercepcion",
+            "c_TipoDeduccion",
+            "c_TipoOtroPago",
         }
 
     def test_toda_clave_trae_vigencia_y_fuente(self, filas):
@@ -485,6 +489,12 @@ class TestCatalogosSat:
             "c_TipoRegimen": "2.0 (rev. 1, publicado 2019-12-05)",
             "c_TipoContrato": "1.0 (rev. 0)",
             "c_TipoJornada": "1.0 (rev. A)",
+            # Los tres de T-1g, leídos del mismo catNomina.xls con xlrd. Cada
+            # hoja imprime su propia versión y revisión: no son la del libro,
+            # y por eso las tres difieren entre sí y de las de arriba.
+            "c_TipoPercepcion": "2.0 (rev. 1, publicado 2019-12-05)",
+            "c_TipoDeduccion": "4.0 (rev. 0, publicado 2019-12-05)",
+            "c_TipoOtroPago": "4.0 (rev. 0, publicado 2020-04-17)",
         }
         observado = {(f["catalog"], f["catalogo_version"]) for f in filas}
         assert observado == set(esperado.items())
