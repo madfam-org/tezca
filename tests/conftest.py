@@ -2,6 +2,7 @@
 Shared pytest fixtures for testing.
 """
 
+import os
 import shutil
 import sys
 import tempfile
@@ -12,6 +13,60 @@ import pytest
 # Add apps to path for all tests
 sys.path.insert(0, str(Path(__file__).parent.parent / "apps"))
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# ── El broker de la suite vive en memoria ───────────────────────────────
+#
+# `apps/indigo/settings.py` fija `CELERY_TASK_ALWAYS_EAGER` y el broker en
+# memoria cuando detecta que corre bajo pruebas; ahí está el porqué completo.
+# Esto cierra los dos huecos que el módulo de settings no alcanza, y se hace en
+# el import de conftest — antes de que Django o Celery lean nada.
+#
+# 1. Celery lee `CELERY_BROKER_URL` del ENTORNO y el entorno gana sobre el
+#    objeto de settings de Django. Verificado: con `CELERY_BROKER_URL` exportado,
+#    `celery_app.conf.broker_url` seguía siendo esa URL aunque
+#    `settings.CELERY_BROKER_URL` dijera `memory://`. Con eager encendido nada
+#    marcaba a la red, pero dejar el broker apuntando a un Redis es apoyarse en
+#    una sola línea de defensa.
+# 2. `apps/api/billing_stream_consumer._get_redis_client()` no lee settings sino
+#    `os.environ`, cayendo a `CELERY_BROKER_URL` y de ahí a
+#    `redis://localhost:6379/0`.
+#
+# Se SOBREESCRIBE (no `setdefault`): un `CELERY_BROKER_URL` heredado del shell
+# del desarrollador o de un job de CI es justamente lo que vuelve ambiental el
+# resultado de la suite. Quien de verdad necesite un broker real en una prueba
+# debe pedirlo explícitamente en esa prueba, no por variable de entorno.
+os.environ["CELERY_BROKER_URL"] = "memory://"
+os.environ["CELERY_RESULT_BACKEND"] = "cache+memory://"
+
+
+@pytest.fixture
+def celery_eager_off(settings):
+    """Apaga `task_always_eager` SÓLO dentro de la prueba que lo pida.
+
+    Para pruebas de *wiring* que necesitan comprobar que algo se ENCOLA (que
+    `apply_async` fue llamado) en vez de que se ejecute. El broker sigue siendo
+    `memory://`, así que ni siquiera con eager apagado se toca la red; aun así,
+    mockea el `.delay()`/`apply_async` de la tarea concreta en la prueba en vez
+    de dejar que kombu haga el viaje.
+    """
+    settings.CELERY_TASK_ALWAYS_EAGER = False
+    settings.CELERY_TASK_EAGER_PROPAGATES = False
+
+    from apps.indigo.celery import app as celery_app
+
+    previous = (
+        celery_app.conf.task_always_eager,
+        celery_app.conf.task_eager_propagates,
+    )
+    celery_app.conf.task_always_eager = False
+    celery_app.conf.task_eager_propagates = False
+    try:
+        yield celery_app
+    finally:
+        (
+            celery_app.conf.task_always_eager,
+            celery_app.conf.task_eager_propagates,
+        ) = previous
 
 
 @pytest.fixture(autouse=True)

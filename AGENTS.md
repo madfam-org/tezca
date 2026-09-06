@@ -415,6 +415,14 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 ### Celery
 
 - Broker and result backend: Redis
+- **Bajo pruebas NO hay broker.** `apps/indigo/settings.py` detecta pytest /
+  `manage.py test` (`RUNNING_TESTS`) y fija `CELERY_TASK_ALWAYS_EAGER`,
+  `CELERY_TASK_EAGER_PROPAGATES` y un broker `memory://`, así que un `.delay()`
+  corre en el mismo proceso y la suite da el mismo resultado haya o no un Redis
+  escuchando (era la causa del flake de `test_corpus_watch` del 2026-09-06).
+  Para probar el ENCOLADO en vez de la ejecución, usa el fixture
+  `celery_eager_off` de `tests/conftest.py`. La compuerta está en
+  `tests/test_celery_eager_under_pytest.py`.
 - Beat scheduler: `django_celery_beat.schedulers:DatabaseScheduler`
 - Scheduled tasks defined in `apps/indigo/settings.py` (`CELERY_BEAT_SCHEDULE`)
 - Worker concurrency: 4
