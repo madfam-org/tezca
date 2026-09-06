@@ -33,6 +33,22 @@ data/*
 !data/law_registry.json
 !data/discovered_reglamentos.json
 !data/universe_registry.json
+# Las SEMILLAS LABORALES se re-incluyen por la misma razón que los registros:
+# no son corpus, son el insumo de dos comandos de publicación que sólo se
+# pueden correr DENTRO del pod, contra la base de producción.
+# `publish_law_articles` lee data/labor/articulos_vigentes.json y
+# `publish_labor_rules` lee data/labor/sat_catalogos.json; sin ellos en la
+# imagen ambos abortan (bien: fail-closed, sin escribir a medias) pero el feed
+# laboral queda vacío y symbiosis-hcm, que es fail-closed contra Tezca, no
+# puede publicar ni una obligación. Verificado en producción el 2026-09-06:
+# con la imagen de #234 los dos --dry-run murieron con «No existe el seed» y
+# «No se pudo leer el catálogo del SAT», porque `data/*` los excluía.
+# Es un directorio entero y no tres archivos sueltos a propósito: los carriles
+# T-1c y siguientes añaden semillas ahí, y una lista por archivo se olvida de
+# actualizar exactamente cuando duele. `scripts/check-dockerignore-seeds.py`
+# falla en CI si alguna ruta que los comandos necesitan vuelve a quedar fuera.
+!data/labor/
+!data/labor/*.json
 db.sqlite3
 
 # Documentation

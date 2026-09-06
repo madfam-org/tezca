@@ -46,6 +46,25 @@ jobs:
       - name: Run NetworkPolicy port lint
         run: python3 scripts/check-networkpolicy-ports.py k8s/
 
+  dockerignore-seed-lint:
+    name: Publication seeds ship in the image
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    # Prevents the 2026-09-06 class: a seed that a publication command reads by
+    # default, excluded from the image by `.dockerignore`. Invisible in CI and
+    # in local dev (the git tree is complete); it only surfaces when an operator
+    # execs into the pod to publish, and downstream it means an empty labor feed
+    # and a fail-closed symbiosis-hcm that can't publish a single obligation.
+    # See scripts/check-dockerignore-seeds.py for the full rationale.
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Run .dockerignore seed lint
+        run: python3 scripts/check-dockerignore-seeds.py
+
   test-backend:
     name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest

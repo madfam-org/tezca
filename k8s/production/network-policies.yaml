@@ -247,3 +247,50 @@ spec:
       ports:
         - protocol: TCP
           port: 8000
+---
+# Allow symbiosis-hcm → tezca-api ingress on port 8000.
+#
+# Contrato C1 del feed laboral: el HCM lee `GET /api/v1/labor/rules/` y
+# `GET /api/v1/labor/catalogos/` (reglas estructuradas y catálogos del SAT,
+# carriles T-1a/T-1b) además del feed fiscal, para no transcribir a mano ni un
+# número ni un artículo. Ver docs/labor/README.md y docs/labor/reglas.md.
+#
+# Como en `allow-karafiel-ingress`, NetworkPolicy se aplica en AMBOS lados de
+# una llamada entre namespaces: aunque symbiosis-hcm permita el egress,
+# tezca-api está aislado en ingreso por `allow-cloudflared-ingress` (que
+# selecciona todo pod `part-of: tezca` con policyTypes: [Ingress]), y sus
+# únicas fuentes admitidas son el namespace cloudflare-tunnel y —vía
+# `allow-intra-namespace`— los pods de tezca. Verificado el 2026-09-06 desde el
+# pod `hcm-api`: `Connection refused` contra
+# tezca-api.tezca.svc.cluster.local:8000 en 0.01 s — en k3s una denegación de
+# NetworkPolicy REJECTa en vez de descartar, así que la respuesta inmediata es
+# la firma de la política, no un servicio caído.
+#
+# Sólo `namespaceSelector`, deliberadamente SIN `podSelector`: en este clúster
+# (k3s + kube-router) se ha visto que la combinación de ambos selectores dentro
+# de un mismo elemento `from` se renderiza como deny (2026-08-26). El lado del
+# HCM restringe qué pods salen, con su mitad de egress; aquí basta con admitir
+# el namespace. El `ports:` sí se conserva: acota el ingreso a la API (8000) y
+# no abre tezca-web (3000) ni tezca-admin (3001).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-symbiosis-hcm-ingress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: symbiosis-hcm
+      ports:
+        - protocol: TCP
+          port: 8000

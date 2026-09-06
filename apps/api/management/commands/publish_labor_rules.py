@@ -22,6 +22,7 @@ import json
 import os
 from pathlib import Path
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils.dateparse import parse_date
@@ -30,7 +31,11 @@ from apps.api.fiscal_models import Provenance
 from apps.api.labor_models import LaborRule, SatCatalogEntry
 from apps.api.labor_seed_data import REGLAS
 
-DEFAULT_CATALOGOS = Path("data") / "labor" / "sat_catalogos.json"
+# Anclado a la raíz del repo/imagen, NO al cwd — mismo motivo que en
+# `publish_law_articles`: el fail-closed de la lectura del catálogo es
+# correcto, pero con una ruta relativa se disparaba también por estar
+# parado en el directorio equivocado, no sólo por un catálogo ausente.
+DEFAULT_CATALOGOS = Path(settings.BASE_DIR) / "data" / "labor" / "sat_catalogos.json"
 
 SAT = "Servicio de Administración Tributaria"
 

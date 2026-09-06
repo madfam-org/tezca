@@ -24,6 +24,7 @@ import json
 import os
 from pathlib import Path
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils.dateparse import parse_date
@@ -31,7 +32,14 @@ from django.utils.dateparse import parse_date
 from apps.api.fiscal_models import Provenance
 from apps.api.labor_models import LawArticle
 
-DEFAULT_SEED = Path("data") / "labor" / "articulos_vigentes.json"
+# Anclado a la raíz del repo/imagen, NO al cwd. Con `Path("data")/...` el
+# comando sólo funcionaba si se le invocaba parado exactamente en la raíz;
+# desde cualquier otro directorio abortaba con «No existe el seed», que es
+# indistinguible del seed genuinamente ausente. En el pod el cwd es /app y
+# BASE_DIR es /app, así que el valor por omisión es el mismo: lo que cambia
+# es que ahora lo sigue siendo desde cualquier cwd. Ver
+# `docs/labor/README.md`, «Qué ocurre si el seed no está en la imagen».
+DEFAULT_SEED = Path(settings.BASE_DIR) / "data" / "labor" / "articulos_vigentes.json"
 
 # Fuente primaria de todos los textos de este seed.
 SOURCE = "Cámara de Diputados, LeyesBiblio (texto vigente)"
