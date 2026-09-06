@@ -63,6 +63,7 @@ from .judicial_views import (
     judicial_search,
     judicial_stats,
 )
+from .labor_views import labor_rules_list, law_article_vigente, sat_catalogos_list
 from .law_views import (
     LawDetailView,
     LawListView,
@@ -192,6 +193,17 @@ urlpatterns = [
         article_cross_references,
         name="article-references",
     ),
+    # Texto del artículo VIGENTE en una fecha (contrato C1 del feed laboral).
+    # Va después de las rutas ".../references/" y ".../references/batch/" a
+    # propósito: Django resuelve en orden, así que aquéllas siguen ganando y
+    # esta sólo atrapa lo que ninguna otra reclamó. El sufijo "/vigente/" la
+    # separa del índice de búsqueda ("laws/<id>/articles/", servido por
+    # Elasticsearch y sin vigencia), que sigue intacto.
+    path(
+        "laws/<str:law_id>/articles/<str:article>/vigente/",
+        law_article_vigente,
+        name="law-article-vigente",
+    ),
     path("laws/<str:law_id>/structure/", law_structure, name="law-structure"),
     path("laws/<str:law_id>/references/", law_cross_references, name="law-references"),
     path("laws/<str:law_id>/graph/", law_graph, name="law-graph"),
@@ -226,6 +238,11 @@ urlpatterns = [
     ),
     path("fiscal/tables/", tables_list, name="fiscal-tables-list"),
     path("fiscal/tables/<int:year>/", tables_by_year, name="fiscal-tables-by-year"),
+    # ── Reglas laborales (API key con scope 'read') ──────────────────────
+    # Contrato C1: symbiosis-hcm lee de aquí ventanas, topes, porcentajes y
+    # catálogos del SAT en lugar de incrustarlos.
+    path("labor/rules/", labor_rules_list, name="labor-rules-list"),
+    path("labor/catalogos/", sat_catalogos_list, name="labor-catalogos-list"),
     path("coverage/", public_coverage, name="public-coverage"),
     path("graph/overview/", graph_overview, name="graph-overview"),
     path("graph/showcase/", graph_public_showcase, name="graph-showcase"),
