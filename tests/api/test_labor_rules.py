@@ -85,12 +85,24 @@ class TestSeedCoherencia:
         assert sin_fuente == []
 
     def test_toda_fila_cita_su_articulo(self):
-        sin_articulo = [
+        """Toda fila debe poder citarse: artículo, más ley o documento del DOF.
+
+        El ``official_id`` puede faltar cuando el documento no tiene id estable
+        en el corpus —las Reglas de Operación del programa JCF son el caso, y
+        el catálogo del HCM ya lo declara así—, pero entonces la fila tiene que
+        resolver a un documento único por ``dof_codigo``. Lo que nunca se
+        acepta es una fila sin artículo, ni una sin ninguna de las dos anclas:
+        eso sería un número sin lugar donde ir a leerlo.
+        """
+        sin_articulo = [r["kind"] for r in REGLAS if not r.get("article")]
+        assert sin_articulo == []
+
+        sin_ancla = [
             r["kind"]
             for r in REGLAS
-            if not r.get("official_id") or not r.get("article")
+            if not r.get("official_id") and not r.get("dof_codigo")
         ]
-        assert sin_articulo == []
+        assert sin_ancla == []
 
     def test_toda_fila_explica_de_donde_sale_el_numero(self):
         """Sin nota, nadie puede revisar la lectura sin rehacerla."""

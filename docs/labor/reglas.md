@@ -1,9 +1,16 @@
 # Reglas laborales estructuradas, catálogos del SAT y costos de regularización
 
-Carril **T-1b** del programa «Cobertura laboral del HCM»
+Carriles **T-1b** y **T-1c** del programa «Cobertura laboral del HCM»
 (`claudedocs/hcm-hardening/plan-cobertura-laboral-hcm-2026-09-05.md`, §7 puntos
 2, 3 y 4). El punto 1 —los textos de los artículos con vigencia— es T-1a y se
 documenta en [`README.md`](README.md).
+
+**T-1c** cierra los cuatro `kind` que el catálogo de obligaciones del HCM
+consulta y que T-1a/T-1b no publicaban: la vigencia de la opinión 32-D, el CFDI
+de nómina, el umbral de las comisiones mixtas y la validación del programa JCF.
+Sus filas viven en `apps/api/labor_seed_hcm.py` y su compuerta —la que fija que
+**ningún** `kind` del catálogo del HCM quede sin respuesta ni sin motivo— en
+`tests/api/test_labor_seed_hcm.py`.
 
 **La diferencia entre los dos carriles es la que separa leer de calcular.** T-1a
 publica la prosa: «la duración máxima de la jornada ordinaria de trabajo será de
@@ -68,7 +75,7 @@ GET /api/v1/labor/catalogos/?catalog=&code=&on=YYYY-MM-DD
 Campos: `catalog`, `code`, `label`, `effective_from`/`effective_to`,
 `aplica_fisica`/`aplica_moral` (sólo `c_RegimenFiscal`), más la procedencia común.
 
-## Cobertura: 39 reglas, 38 `published`, 1 hueco declarado
+## Cobertura: 43 reglas, 42 `published`, 1 hueco declarado
 
 Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 
@@ -104,6 +111,10 @@ Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 | `repse_vigencia_anios` | — | `3` años, renovación 3 meses antes | LFT 15 ¶2 + Acuerdo REPSE arts. 13º y 16º | desde 2021-05-25 | published |
 | **`teletrabajo_umbral_pct`** | — | `40` | LFT 330-A ¶4 | desde 2021-01-12 | published |
 | **`nom035_umbral_personas`** | — | tres tramos: ≤15 · 16–50 · >50, con numerales por tramo | NOM-035-STPS-2018 numeral 4 | desde 2019-10-23 | published |
+| **`opinion_32d_vigencia_dias`** | — | `30` días naturales | **RMF 2026 regla 2.1.36** (no el CFF) | **2026-01-01 → 2026-12-31** | published |
+| **`cfdi_nomina_por_periodo`** | — | objeto: `disparo = erogacion` | **LISR 99 fr. III** | desde 2014-01-01 | published |
+| **`comisiones_mixtas_umbral_personas`** | — | `> 50` personas (obligatoria desde 51) | **LFT 153-E** (no el 132) | desde 2012-12-01 | published |
+| **`jcf_validacion_periodicidad_dias`** | — | ciclo mensual, última semana del mes | Reglas de Operación JCF (DOF 31-12-2024, `codigo` 5746424) | desde 2024-12-31 | published |
 | `recaracterizacion_indicios` | — | 3 elementos de ley + 7 indicios orientativos | LFT 20 ¶1 | desde 1970-04-01 | **seed-unverified** |
 
 ### Catálogos del SAT: 55 claves, las 55 `published`
@@ -119,7 +130,7 @@ Las versiones se leyeron del encabezado de cada hoja con `xlrd` y están fijadas
 por `test_cada_catalogo_declara_la_version_que_el_xls_imprime`: si alguien
 reimporta de una edición nueva y olvida mover el campo, la prueba se pone roja.
 
-## Cuatro lecturas primarias que corrigen el plan
+## Siete lecturas primarias que corrigen el plan
 
 Todas verificadas contra el documento oficial en este carril.
 
@@ -170,6 +181,54 @@ interior de trabajo a ningún número de personas. **El umbral no tiene base leg
 y no se publicó.** HP-6 debe pedir el reglamento a todo centro de trabajo, no
 sólo a los que pasen de veinte.
 
+
+### 5. La vigencia de la opinión 32-D **no** está en el CFF (T-1c)
+
+El catálogo del HCM funda `opinion_32d_vigencia_dias` en **CFF 32-D**. Ese
+artículo **no fija plazo alguno**: delega el procedimiento en «reglas de
+carácter general», y sólo impone periodicidad propia (mensual) a las sociedades
+anónimas que cotizan en bolsa. Los **treinta días naturales** están en la
+**RMF 2026 regla 2.1.36**:
+
+> «La opinión del cumplimiento de obligaciones fiscales […] que se emita en
+> sentido positivo, tendrá una vigencia de treinta días naturales a partir de
+> la fecha de emisión.»
+
+La regla **2.1.37** que cita el brief es otra cosa: la aplicación en línea para
+que quien ejerce recursos públicos consulte la opinión en contrataciones
+mayores a $300,000.00. **Sólo la opinión positiva vence**; una negativa no
+caduca, se corrige. Como la RMF es anual, la fila se cierra el **31-12-2026**:
+preguntar por 2027 debe devolver «no hay regla», no la de 2026 extrapolada.
+
+### 6. El CFDI de nómina **no** es «por periodo» (T-1c)
+
+El `kind` se llama `cfdi_nomina_por_periodo`, pero **LISR 99 fr. III** ata el
+comprobante a la **erogación**, no a un periodo de calendario:
+
+> «Expedir y entregar comprobantes fiscales a las personas que reciban pagos
+> por los conceptos a que se refiere este Capítulo, **en la fecha en que se
+> realice la erogación correspondiente**».
+
+El `kind` conserva el nombre porque el contrato C1 ya lo fijó y renombrarlo
+rompería al consumidor sin mover una coma de la ley; el **valor** dice la
+verdad (`disparo: "erogacion"`). La periodicidad de pago (`c_PeriodicidadPago`)
+describe la nómina en el complemento, no es el plazo para timbrar.
+
+### 7. Las comisiones mixtas son **más de 50**, y no las funda el art. 132 (T-1c)
+
+El catálogo del HCM funda `comisiones_mixtas_umbral_personas` en **LFT 132**,
+cuya fracción XXVIII obliga a «participar en la integración y funcionamiento de
+las Comisiones que deban formarse» **sin fijar número alguno**. El umbral está
+en **LFT 153-E**: «En las empresas que tengan más de 50 trabajadores se
+constituirán Comisiones Mixtas de Capacitación, Adiestramiento y Productividad».
+El segundo párrafo confirma el corte por el otro lado: «las micro y pequeñas
+empresas, que son aquellas que cuentan con **hasta 50** trabajadores».
+
+El umbral es **estricto**: con 50 personas no hay obligación; con 51 sí. Es el
+mismo error de fundamento que la lectura 4 corrigió para el reglamento interior,
+y se resuelve igual — se publica el artículo que sí dice el número, en vez de
+inventar uno para que cuadre el renglón.
+
 ## Huecos declarados: lo que no se publicó, y por qué
 
 Ninguno se rellenó de memoria.
@@ -180,7 +239,6 @@ Ninguno se rellenó de memoria.
 | **`c_RegimenFiscal` 626 (RESICO)** | El `catCFDI.xls` que el SAT sirve en esa ruta es la **versión 2.0 de 2020** y no trae la clave: RESICO nació en 2022. La regla de retención del 1.25 % sí la cita por su clave, porque la sostiene la LISR 113-J sin necesidad del catálogo | Una lectura primaria del catálogo de CFDI 4.0 vigente. `test_el_hueco_del_626_esta_declarado_y_no_inventado` se pone roja el día que se publique, y obliga a actualizar este documento |
 | **`actualizacion_factor`: la serie del INPC** | Se publica la **fórmula** del CFF 17-A, no un número. La serie mensual del INPC es de INEGI y no se leyó en este carril | Un consumidor que necesite el factor trae los dos INPC. Si HCM va a estimar costos de regularización sin traerlos, hace falta un carril que publique la serie |
 | **`recargos_tasa_mensual` a partir de 2027** | La LIF es **anual**. La fila de 2026 se cierra el 31-12-2026 a propósito: sin LIF 2027 leída, el feed prefiere fallar en claro a arrastrar una tasa vencida | Leer el art. 11 de la LIF 2027 cuando se publique. Es trabajo recurrente cada noviembre, como el feed fiscal |
-| **Lineamientos JCF** | No se localizó publicación vigente en el DOF que los fije con fecha cierta | Localizar el acuerdo o los lineamientos vigentes. HP-5 los necesita para el contador de dos oportunidades |
 | **NOM-035 y NOM-037 como texto** | Se numeran por **numeral** (`5.3`, `7.1 inciso b`), no por artículo; `LawArticle` no lo modela sin forzarlo. Los **umbrales** de la NOM-035 sí se publican como regla, leídos del DOF (`codigo` 5541828) | Un modelo de «numeral» o aceptar `article` como cadena libre. Se decidió no forzarlo en este carril |
 | **Acuerdo REPSE como texto** | Se numera con ordinales en letra («ARTÍCULO DÉCIMO TERCERO»). Su vigencia de tres años y la ventana de renovación **sí** se publican como regla | Lo mismo que arriba |
 | **Umbral de personas para el reglamento interior** | **No existe en la ley.** Ver la lectura 4 | Nada: el plan se corrige, no el feed |
@@ -199,6 +257,9 @@ Todas con **lista de exenciones vacía**: ninguna fila del seed las incumple.
 | `test_las_reglas_minimas_del_contrato_estan_publicadas` | Que falte cualquiera de los 24 `kind` que C1 exige por nombre | — |
 | `test_recargos_son_la_tasa_de_la_lif_incrementada_en_cincuenta` | La identidad `2.07 == 1.38 × 1.5` **se verifica, no se transcribe**: copiar el 1.38 como tasa de mora la pone roja | — |
 | `test_cada_catalogo_declara_la_version_que_el_xls_imprime` | Una reimportación que olvide mover la versión, dejando claves nuevas atribuidas a la edición vieja | Sí: verificado en el carril |
+| `test_todo_kind_del_hcm_existe` (T-1c) | Que el catálogo de obligaciones del HCM consulte un `kind` que Tezca no publica **ni** declara como hueco con motivo. Fija los **14** `regla_ventana_kind` del catálogo; entra con `HUECOS_DECLARADOS` **vacío** | Sí: vaciar `REGLAS_HCM` la pone roja nombrando los cuatro `kind` que faltarían |
+| `test_la_opinion_32d_no_se_atribuye_al_cff` · `test_las_comisiones_mixtas_no_se_atribuyen_al_132` (T-1c) | Que alguien «corrija» el fundamento de vuelta al artículo que el HCM cita y que no dice el número | — |
+| `TestElHcmPuedeLeerlas` (T-1c) | Que la fila exista en el seed pero no llegue a la base ni se pueda consultar por vigencia (el camino comando → modelo → consulta) | — |
 | `TestPublicacion` | Que el comando escriba sin `LOCAL_DB`, que no sea idempotente, que promueva solo un `seed-unverified`, o que escriba a medias con el catálogo ilegible | — |
 
 ## Pasos de operador
@@ -231,4 +292,7 @@ apunta al artículo cuyo texto sirve aquel comando. No es una dependencia dura
 | Cada noviembre/diciembre | Leer el art. 11 de la LIF del año entrante y añadir la fila de `recargos_tasa_mensual`, cerrando la anterior el 31 de diciembre |
 | Cada 1 de enero, hasta 2030 | Nada: los cinco escalones de la jornada y del tiempo extra ya están publicados con su vigencia |
 | Cuando el SAT publique una edición nueva de sus catálogos | Reimportar y **mover `catalogo_version`**; la prueba lo exige |
+| Cada diciembre, con la RMF del año entrante | Leer la regla 2.1.36 de la RMF nueva y añadir la fila de `opinion_32d_vigencia_dias`, cerrando la anterior el 31 de diciembre. La RMF es **anual**: sin ella, el feed calla en vez de arrastrar un plazo vencido |
+| Cuando la STPS publique Reglas de Operación nuevas del JCF | Añadir la fila de `jcf_validacion_periodicidad_dias` con su `dof_codigo`. Las de 2024 siguen vigentes por su Transitorio TERCERO hasta que otras las sustituyan |
+| Cuando el catálogo del HCM añada un `regla_ventana_kind` | Añadirlo a `KINDS_DEL_CATALOGO_HCM` en `tests/api/test_labor_seed_hcm.py`. La compuerta obliga entonces a publicarlo con lectura primaria o a declararlo hueco con motivo |
 | Cuando se reforme un artículo citado | Añadir la fila nueva con `effective_from` de la reforma y cerrar la anterior el día anterior; nunca editar la existente |

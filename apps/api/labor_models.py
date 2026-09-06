@@ -283,6 +283,23 @@ class LaborRule(VigenciaProvenanceBase):
             "Indicios de relación laboral (LFT 20)",
         )
         SAT_CATALOGO = ("sat_catalogo", "Catálogo del SAT para el CFDI 4.0")
+        # -- Los que el catálogo de obligaciones del HCM consulta (T-1c). ----
+        OPINION_32D_VIGENCIA_DIAS = (
+            "opinion_32d_vigencia_dias",
+            "Opinión del cumplimiento (32-D): vigencia en días",
+        )
+        CFDI_NOMINA_POR_PERIODO = (
+            "cfdi_nomina_por_periodo",
+            "CFDI de nómina: cuándo debe expedirse",
+        )
+        COMISIONES_MIXTAS_UMBRAL_PERSONAS = (
+            "comisiones_mixtas_umbral_personas",
+            "Comisiones mixtas de capacitación: umbral de personas",
+        )
+        JCF_VALIDACION_PERIODICIDAD_DIAS = (
+            "jcf_validacion_periodicidad_dias",
+            "Jóvenes Construyendo el Futuro: periodicidad de la validación",
+        )
 
     class PayerLegalForm(models.TextChoices):
         """Forma legal de quien paga. ``ANY`` = la regla no distingue."""
