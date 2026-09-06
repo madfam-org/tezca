@@ -71,6 +71,17 @@ PDF intercala espacios dentro de las palabras (`su bsiste`, `Artículo 39 -A`) y
 repite el encabezado en cada página. Se cotejó que ambas ediciones declaran la
 misma «última reforma».
 
+**No todo el corpus viene de LeyesBiblio (T-1f).** Una NOM no se publica como
+ley: existe sólo como nota del DOF, sin nota de reforma de la que sacar una
+fecha y con la STPS —no la Cámara— como emisor. Por eso una fila del seed puede
+declarar su propia `source`, `dof_date` y `dof_codigo`; las que no lo hacen se
+comportan igual que siempre. El texto de las NOM se obtiene con la receta del
+DOF para documentos íntegros —`nota_to_doc.php?codnota=<codigo>`, convertido
+con `textutil` en macOS—, no con `nota_detalle.php`, que devuelve un cascarón.
+El Reglamento del art. 5o constitucional sí está en LeyesBiblio, pero **sólo en
+PDF** (no hay `.doc`), así que su transcripción se revisó a mano contra los
+cortes que el PDF mete dentro de las palabras (`serv icio`, `ca mpo`).
+
 `effective_from` es **la fecha de la reforma que tocó al artículo**, no la de la
 última reforma de la ley entera. El artículo 20 de la LFT conserva su texto de
 1970 aunque la ley se haya reformado el 14 de mayo de 2026; fecharlo en 2026
@@ -134,8 +145,9 @@ del centro. El «aviso si falta con > 20 personas» del plan no tiene base legal
 
 ## Cobertura — artículo por artículo
 
-87 artículos, todos `provenance='published'` con lectura primaria. Cero
-`seed-unverified` en T-1a.
+95 artículos, todos `provenance='published'` con lectura primaria. Cero
+`seed-unverified`. Los 87 primeros son de T-1a; los **8 últimos**, de T-1f
+(seis del Reglamento del art. 5o constitucional y el numeral 2 de cada NOM).
 
 ### `lft` — Ley Federal del Trabajo (Última reforma DOF 14-05-2026)
 
@@ -258,6 +270,43 @@ del centro. El «aviso si falta con > 20 personas» del plan no tiene base legal
 | 17-A | 1981-12-31 | publicación original | vigente |
 | 21 | 2021-11-12 | reforma DOF | vigente |
 | 32-D | 2021-11-12 | reforma DOF | vigente |
+
+### `reg_lrart5c` — Reglamento de la Ley Reglamentaria del art. 5o Constitucional (Última reforma DOF 05-04-2018)
+
+Lo que funda el vínculo **formativo** (prácticas profesionales y servicio
+social) hasta donde un ordenamiento federal lo funda. Añadido en **T-1f** para
+los huecos `convenio_institucion` y `carta_aceptacion` de HP-0c — que **no se
+cerraron**, porque el Reglamento no exige ninguno de los dos documentos; ver
+`docs/labor/reglas.md`, sección T-1f.
+
+| Artículo | Vigente desde | Fechado por | Estado |
+|---|---|---|---|
+| 51 | 1945-10-01 | publicación original | vigente — define «pasante» |
+| 52 | 1945-10-01 | publicación original | vigente — los 6 requisitos para autorizar la práctica profesional |
+| 85 | 1945-10-01 | publicación original | vigente — el servicio social queda al cuidado de las escuelas |
+| 86 | 1945-10-01 | publicación original | vigente — duración no menor de un año |
+| 87 | 1945-10-01 | publicación original | vigente — informe anual de los Colegios |
+| 88 | 1975-05-08 | reforma DOF | vigente — profesionistas no colegiados |
+
+> Los arts. 52–57 son la **práctica profesional del pasante** y los 58–60 las
+> **Comisiones Técnicas Consultivas**; el servicio social vive en el Capítulo
+> VIII, arts. 85–93. Conviene dejarlo escrito porque el brief de T-1f pedía
+> «arts. 52–60» para prácticas y servicio social, y esa atribución es errónea.
+
+### `nom_NOM-035-STPS-2018` — Factores de riesgo psicosocial (DOF 23-10-2018, `codigo` 5541828)
+
+| Numeral | Vigente desde | Fechado por | Estado |
+|---|---|---|---|
+| 2 | 2019-10-23 | publicación original | vigente — campo de aplicación: los tres tramos por tamaño |
+
+### `nom_NOM-037-STPS-2023` — Teletrabajo (DOF 08-06-2023, `codigo` 5691672)
+
+| Numeral | Vigente desde | Fechado por | Estado |
+|---|---|---|---|
+| 2 | 2023-12-05 | publicación original | vigente — aplica a todo centro con al menos una persona en teletrabajo |
+
+> `effective_from` es **2023-12-05** y no la fecha de publicación: el
+> TRANSITORIO PRIMERO da 180 días naturales para la entrada en vigor.
 ## Huecos declarados
 
 Nada de esto se publicó, y nada debe rellenarse sin volver a leer el documento
@@ -265,7 +314,7 @@ primario:
 
 | Hueco | Por qué | Dónde llega |
 |---|---|---|
-| **NOM-035-STPS-2018 y NOM-037-STPS-2023** como texto | Son normas, no leyes con articulado numerado: su unidad de cita es el numeral (`5.3`, `7.1 inciso b`), que `LawArticle` no modela hoy sin forzarlo. Sus **umbrales** sí se publican como reglas en T-1b, leídos del DOF | T-1b (reglas) / carril futuro (texto) |
+| ~~**NOM-035-STPS-2018 y NOM-037-STPS-2023** como texto~~ — **cerrado en T-1f** | Se daba por imposible porque su unidad de cita es el numeral (`5.3`, `7.1 inciso b`) y `article` medía 32 caracteres. T-1e la ensanchó a 200 por otra razón (la cita en prosa de las Reglas JCF), y con eso un numeral cabe como cualquier artículo. El **numeral 2** (campo de aplicación) de ambas NOM ya está en el corpus, leído íntegro del DOF | T-1f (numeral 2) / los numerales 5 y 7, por demanda |
 | **Acuerdo REPSE (STPS, DOF 24-05-2021)** como texto | Mismo motivo: se numera con ordinales en letra («ARTÍCULO DÉCIMO TERCERO»). Su vigencia de tres años y la ventana de renovación se publican como reglas | T-1b (reglas) |
 | **Lineamientos JCF vigentes** | No se localizó una publicación vigente en el DOF que los fije con fecha cierta; el programa cambió de reglas de operación varias veces. Publicar una versión sin poder citarla sería inventar | Pendiente, con ticket |
 | **Reformas anteriores de cada artículo** | Se publica **una** vigencia por artículo: la actual. `reformas_dof` lista las fechas de las anteriores, pero sus textos no están: exigirían leer cada decreto histórico del DOF, uno por uno | Carril futuro, por demanda |

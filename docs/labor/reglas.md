@@ -75,7 +75,7 @@ GET /api/v1/labor/catalogos/?catalog=&code=&on=YYYY-MM-DD
 Campos: `catalog`, `code`, `label`, `effective_from`/`effective_to`,
 `aplica_fisica`/`aplica_moral` (sólo `c_RegimenFiscal`), más la procedencia común.
 
-## Cobertura: 43 reglas, 42 `published`, 1 hueco declarado
+## Cobertura: 46 reglas, 45 `published`, 1 hueco declarado
 
 Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 
@@ -110,14 +110,17 @@ Los `kind` en **negrita** son los que el contrato C1 exige por nombre.
 | **`repse_obligatorio_condiciones`** | — | texto estructurado: prohibición, permitido con registro, 4 condiciones | **LFT 12, 13, 14 y 15** | desde 2021-04-24 | published |
 | `repse_vigencia_anios` | — | `3` años, renovación 3 meses antes | LFT 15 ¶2 + Acuerdo REPSE arts. 13º y 16º | desde 2021-05-25 | published |
 | **`teletrabajo_umbral_pct`** | — | `40` | LFT 330-A ¶4 | desde 2021-01-12 | published |
-| **`nom035_umbral_personas`** | — | tres tramos: ≤15 · 16–50 · >50, con numerales por tramo | NOM-035-STPS-2018 numeral 4 | desde 2019-10-23 | published |
+| **`nom035_umbral_personas`** | — | tres tramos: ≤15 · 16–50 · >50, con numerales por tramo | NOM-035-STPS-2018 numeral 4 | 2019-10-23 → **2026-09-05** | published (**superada**, ver T-1f) |
+| **`nom035_umbral_personas`** | — | los mismos tres tramos **corregidos** + equivalencia NMX-R-025 | **NOM-035-STPS-2018 numeral 2** | desde 2026-09-06 | published |
+| `nom037_aplicabilidad` | — | sin umbral de personas: basta una en teletrabajo | **NOM-037-STPS-2023 numeral 2** | desde 2023-12-05 | published |
 | **`opinion_32d_vigencia_dias`** | — | `30` días naturales | **RMF 2026 regla 2.1.36** (no el CFF) | **2026-01-01 → 2026-12-31** | published |
 | **`cfdi_nomina_por_periodo`** | — | objeto: `disparo = erogacion` | **LISR 99 fr. III** | desde 2014-01-01 | published |
 | **`comisiones_mixtas_umbral_personas`** | — | `> 50` personas (obligatoria desde 51) | **LFT 153-E** (no el 132) | desde 2012-12-01 | published |
 | **`jcf_validacion_periodicidad_dias`** | — | ciclo mensual, última semana del mes | Reglas de Operación JCF (DOF 31-12-2024, `codigo` 5746424) | desde 2024-12-31 | published |
 
 > **T-1e.** El `article` de esta fila es la única cita en prosa del seed —«Reglas de Operación JCF, apartado V y obligaciones del Centro de Trabajo», 72 caracteres— porque las Reglas de Operación no se numeran por artículos. No cabía en el `varchar(32)` de la columna y por eso `publish_labor_rules --dry-run` abortaba en producción. Se ensanchó la columna a 200; la cita **no** se truncó. Ver «Validación previa y límites de campo» en `docs/labor/README.md`.
-| `recaracterizacion_indicios` | — | 3 elementos de ley + 7 indicios orientativos | LFT 20 ¶1 | desde 1970-04-01 | **seed-unverified** |
+| `relacion_trabajo_elementos` | — | los **3 elementos** del art. 20 + la regla de los «mismos efectos» | **LFT 20 ¶1 y ¶3** | desde 1970-04-01 | published (**T-1f**) |
+| `recaracterizacion_indicios` | — | los 7 indicios orientativos, **sin** los elementos de ley | LFT 20 (doctrina, no texto) | desde 1970-04-01 | **seed-unverified** |
 
 ### Catálogos del SAT: 55 claves, las 55 `published`
 
@@ -231,17 +234,127 @@ mismo error de fundamento que la lectura 4 corrigió para el reglamento interior
 y se resuelve igual — se publica el artículo que sí dice el número, en vez de
 inventar uno para que cuadre el renglón.
 
+## T-1f · Los fundamentos que HP-1 y HP-0c piden, y qué resolvió cada uno
+
+Este carril no publicó reglas nuevas de la nada: **verificó contra fuente
+primaria lo que ya estaba, partió en dos una fila que mezclaba ley con
+doctrina, y cerró tres de los cinco huecos de corpus que HP-0c declaró.** Los
+otros dos no se cerraron porque no se pueden cerrar, y eso también se afirma
+aquí con la lectura que lo demuestra.
+
+### Lo que HP-1 (symbiosis-hcm #93) consulta
+
+| `kind` | Artículo | Procedencia | Cómo se verificó |
+|---|---|---|---|
+| `capacitacion_inicial_meses_max` = `3` | **LFT 39-B ¶2** | `published` | El texto vigente dice «duración máxima de **tres meses**». Ya estaba publicado por T-1b; T-1f añade el cruce contra el texto del artículo, de modo que un dedazo en la cifra pone roja la prueba |
+| `capacitacion_inicial_meses_max_direccion` = `6` | **LFT 39-B ¶2** | `published` | «hasta de **seis meses** sólo cuando se trate de trabajadores para puestos de dirección, gerenciales… o que requieran conocimientos profesionales especializados» |
+| `relacion_trabajo_elementos` | **LFT 20 ¶1 y ¶3** | `published` (**nuevo**) | Los tres elementos que el art. 20 sí enuncia: trabajo personal, subordinación, salario. Más la regla del ¶3: la prestación y el contrato «producen los mismos efectos» |
+| `recaracterizacion_indicios` | LFT 20 (doctrina) | `seed-unverified` | Los siete indicios **no están en la LFT**. Siguen sin verificar |
+
+**Por qué se partió la fila en dos.** T-1b publicó una sola fila
+`recaracterizacion_indicios` que era honesta —declaraba en su propio `value`
+que los indicios no eran de ley— pero tenía un efecto que la honestidad no
+arreglaba: al ser toda la fila `seed-unverified`, el consumidor fail-closed la
+descartaba **entera**, y con ella los tres elementos que el art. 20 enuncia
+palabra por palabra. HCM se quedaba sin poder afirmar la definición legal de
+relación de trabajo, que es justo lo que necesita para levantar el aviso del
+principio 4 del programa. Partida en dos, HCM lee la ley como `published` y ve
+los indicios como lo que son. La prueba
+`test_los_indicios_ya_no_arrastran_a_la_ley` impide que vuelvan a mezclarse.
+
+### Los cinco huecos de corpus de HP-0c (`catalogo_huecos.py`, motivo `corpus`)
+
+| Hueco | Estado tras T-1f | Ruta exacta que el HCM debe citar |
+|---|---|---|
+| `registro_stps_jcf` | **RESUELTO** — ya estaba, con otro nombre | `official_id` = **`jcf-reglas-2026`** (DOF **5777674**, 31-12-2025), ingresado por `manage.py ingest_jcf` desde `data/jcf/catalog.json`. HP-0c citó el DOF 5746424, que son las Reglas de **2025**, expresamente abrogadas por las de 2026 |
+| `nom035` | **RESUELTO** | `GET /api/v1/laws/nom_NOM-035-STPS-2018/articles/2/vigente/?on=` — numeral 2 (campo de aplicación), leído íntegro del DOF 5541828 |
+| `nom037_si_aplica` | **RESUELTO** | `GET /api/v1/laws/nom_NOM-037-STPS-2023/articles/2/vigente/?on=` — numeral 2, DOF 5691672. Más el `kind` `nom037_aplicabilidad` |
+| `convenio_institucion` | **SIGUE HUECO** — y no por falta de ingesta | Ver abajo |
+| `carta_aceptacion` | **SIGUE HUECO** — mismo motivo | Ver abajo |
+
+### Por qué el motivo de HP-0c para las NOM dejó de aplicar
+
+HP-0c escribió: «`LawArticle` no modela numerales (“5.3”, “7.1 inciso b”) sin
+forzarlo, y T-1b decidió no forzarlo». Era exacto **cuando `article` medía 32
+caracteres**. T-1e ensanchó esa columna a 200 por una razón distinta —la cita
+en prosa de las Reglas de Operación JCF no cabía y reventaba `--dry-run` en
+producción— y de paso dejó el camino abierto: un numeral cabe en 200
+caracteres igual que «39-B». No hubo que forzar nada ni inventar un modelo de
+«numeral»; hubo que darse cuenta de que la restricción ya no existía.
+
+### Los dos huecos que no se cierran, con la lectura que lo demuestra
+
+`convenio_institucion` y `carta_aceptacion` son los dos que un carril apurado
+habría «resuelto» publicando una regla con un artículo plausible del
+Reglamento de la Ley Reglamentaria del art. 5o. constitucional. **No hay tal
+artículo.** Lectura primaria del texto vigente (LeyesBiblio,
+`regley/Reg_LRArt5C_050418.pdf`, última reforma DOF 05-04-2018), contada sobre
+el documento completo:
+
+* **«carta de aceptación» aparece CERO veces.** Ni esa forma ni «aceptación» a
+  secas.
+* **«convenio» aparece 4 veces, y ninguna es la del hueco**: los convenios del
+  Ejecutivo Federal sobre ejercicio profesional (art. 22 fr. IV), su registro
+  (art. 33 fr. V), el convenio de honorarios entre profesionista y cliente
+  (art. 45) y los convenios de coordinación con los estados (transitorio
+  SEXTO). Ninguno es un convenio entre institución educativa y centro receptor.
+* El brief de este carril apuntaba a los **arts. 52–60** para prácticas y
+  servicio social. Es una atribución equivocada que conviene dejar por
+  escrito: los arts. 52–57 son la **autorización de la práctica profesional
+  del pasante** ante la Dirección General de Profesiones, y los arts. 58–60
+  son las **Comisiones Técnicas Consultivas**. El servicio social vive en el
+  **Capítulo VIII, arts. 85–93**, y el art. 85 lo deja «al cuidado y
+  responsabilidad de las escuelas de enseñanza profesional, conforme a sus
+  planes de estudios» — sin exigir instrumento federal alguno.
+
+**Conclusión, que es la que el HCM necesita:** el motivo del hueco no es «a
+Tezca le falta ingerir un documento». Es que **el documento no existe**: el
+convenio y la carta los rige el convenio mismo y la normativa interna de cada
+institución. HP-0c ya lo había intuido («lo rige el convenio mismo»); esta
+lectura lo confirma con cifras. No hay carril río arriba que abrir, y la
+etiqueta `corpus` es engañosa para estos dos: el estado correcto es el que
+HP-0c usa para el reglamento interior, `sin_ventana` —o mejor, un motivo
+`sin_ordenamiento_federal`—. **Contrato propuesto al carril HP-0c**, no
+cambiado aquí en silencio.
+
+Lo que sí se publica, y el HCM puede citar para el vínculo formativo, es el
+**art. 52**: los seis requisitos para que la Dirección General de Profesiones
+autorice la práctica profesional del pasante. Está en el corpus como
+`GET /api/v1/laws/reg_lrart5c/articles/52/vigente/`.
+
+### La corrección de la NOM-035 que este carril encontró de paso
+
+Verificar el numeral destapó dos errores de transcripción en la fila que T-1b
+publicó, ninguno detectable por una prueba de «existe la fila»:
+
+1. **El campo de aplicación es el numeral 2, no el 4.** En la NOM-035 el
+   numeral 4 son las *Definiciones*. Un consumidor que fuera a citar el
+   fundamento habría citado el numeral equivocado.
+2. **El tramo de hasta 15 personas exigía de más.** El inciso a) del numeral 2
+   dice, palabra por palabra: «deberán cumplir con lo dispuesto por los
+   numerales **5.1, 5.4, 5.5, 5.7, 8.1 y 8.2**». La fila publicada listaba
+   «5.1, 5.2, 5.4-5.8, 7.1 inciso a), 8» — le pedía además el 5.2 y el 7.1, que
+   la norma no le impone. HCM habría exigido evidencia que la norma no requiere
+   **al centro de trabajo más pequeño, que es el que menos margen tiene**.
+
+Se corrigió **append-only**: la fila de 2019 se conserva y se cierra el
+2026-09-05; la corregida rige desde el 2026-09-06. La fecha es la de la
+corrección y no la de la norma a propósito — adelantarla a 2019 reescribiría
+lo que Tezca respondió entre 2019 y hoy. La fila nueva añade además el último
+párrafo del numeral 2, que T-1b no había transcrito: la equivalencia por
+certificado **NMX-R-025-SCFI-2015**, que da por cumplidos cuatro incisos.
+
 ## Huecos declarados: lo que no se publicó, y por qué
 
 Ninguno se rellenó de memoria.
 
 | Hueco | Por qué | Qué haría falta |
 |---|---|---|
-| **`recaracterizacion_indicios`** — la única fila `seed-unverified` | Los tres elementos (trabajo personal, subordinación, salario) **sí** son del art. 20 LFT. Los siete indicios son doctrina y jurisprudencia que este carril no pudo citar con registro verificable de la SCJN | Un dictamen o una tesis con registro. Mientras tanto, HCM puede **mostrarla al humano** que decide y ningún cálculo la usa (HP-9) |
+| **`recaracterizacion_indicios`** — la única fila `seed-unverified` | Los siete indicios son doctrina y jurisprudencia que este carril no pudo citar con registro verificable de la SCJN. **T-1f sacó de esta fila los tres elementos de ley**, que ahora viven en `relacion_trabajo_elementos` como `published` | Una tesis o jurisprudencia con **número de registro** del Semanario Judicial de la Federación. Mientras tanto, HCM puede **mostrarla al humano** que decide y ningún cálculo la usa (HP-9) |
 | **`c_RegimenFiscal` 626 (RESICO)** | El `catCFDI.xls` que el SAT sirve en esa ruta es la **versión 2.0 de 2020** y no trae la clave: RESICO nació en 2022. La regla de retención del 1.25 % sí la cita por su clave, porque la sostiene la LISR 113-J sin necesidad del catálogo | Una lectura primaria del catálogo de CFDI 4.0 vigente. `test_el_hueco_del_626_esta_declarado_y_no_inventado` se pone roja el día que se publique, y obliga a actualizar este documento |
 | **`actualizacion_factor`: la serie del INPC** | Se publica la **fórmula** del CFF 17-A, no un número. La serie mensual del INPC es de INEGI y no se leyó en este carril | Un consumidor que necesite el factor trae los dos INPC. Si HCM va a estimar costos de regularización sin traerlos, hace falta un carril que publique la serie |
 | **`recargos_tasa_mensual` a partir de 2027** | La LIF es **anual**. La fila de 2026 se cierra el 31-12-2026 a propósito: sin LIF 2027 leída, el feed prefiere fallar en claro a arrastrar una tasa vencida | Leer el art. 11 de la LIF 2027 cuando se publique. Es trabajo recurrente cada noviembre, como el feed fiscal |
-| **NOM-035 y NOM-037 como texto** | Se numeran por **numeral** (`5.3`, `7.1 inciso b`), no por artículo; `LawArticle` no lo modela sin forzarlo. Los **umbrales** de la NOM-035 sí se publican como regla, leídos del DOF (`codigo` 5541828) | Un modelo de «numeral» o aceptar `article` como cadena libre. Se decidió no forzarlo en este carril |
+| ~~**NOM-035 y NOM-037 como texto**~~ — **CERRADO por T-1f** | Se cerró solo cuando T-1e ensanchó `article` de 32 a 200 caracteres para poder citar las Reglas de Operación JCF: con esa columna, un numeral (`2`, `7.1 inciso b`) cabe como cualquier artículo. El **numeral 2** (campo de aplicación) de la NOM-035 y de la NOM-037 se publica ya como `LawArticle`, leído íntegro del DOF | Nada para el campo de aplicación. Los numerales 5 y 7 (obligaciones del patrón, identificación de factores) siguen sin transcribirse: mismo camino, más volumen |
 | **Acuerdo REPSE como texto** | Se numera con ordinales en letra («ARTÍCULO DÉCIMO TERCERO»). Su vigencia de tres años y la ventana de renovación **sí** se publican como regla | Lo mismo que arriba |
 | **Umbral de personas para el reglamento interior** | **No existe en la ley.** Ver la lectura 4 | Nada: el plan se corrige, no el feed |
 | **LFT 57** | El brief pide «56–61»; el 57 (modificación judicial de condiciones) no se publicó en T-1a | Una fila más en `articulos_vigentes.json`. No sostiene ninguna regla de T-1b |
@@ -265,6 +378,11 @@ Todas con **lista de exenciones vacía**: ninguna fila del seed las incumple.
 | `TestPublicacion` | Que el comando escriba sin `LOCAL_DB`, que no sea idempotente, que promueva solo un `seed-unverified`, o que escriba a medias con el catálogo ilegible | — |
 | `desbordes_de_longitud` (T-1e) | Un valor del seed más largo que el `max_length` de su columna. Es la clase que reventó `--dry-run` en producción con `value too long for type character varying(32)` **con el CI en verde**: la suite corre sobre SQLite, que ignora el ancho de un `VARCHAR(n)`. La compuerta mide contra el modelo, así que no depende del backend | Sí: **estaba roja sobre `main`**, nombrando `fila 42 (kind=jcf_validacion_periodicidad_dias), campo article: 72 caracteres > max_length 32` |
 | `TestDryRunNoEscribe` (T-1e) | Que `--dry-run` vuelva a implementarse como «escribe y deshaz». Hoy hace 98 consultas y **cero** `INSERT`/`UPDATE`/`DELETE`, y una fila inválida sale con `CommandError` —fila, campo y cifras— sin traceback | Sí: muta el seed en memoria con la fila que reventó en el pod |
+| `TestCorreccionNom035` (T-1f) | Que alguien revierta el campo de aplicación al numeral 4 o vuelva a exigirle al tramo de ≤15 personas numerales que la NOM no le impone | Sí: **verificado en el carril** — devolver la lista vieja pone roja `test_el_tramo_de_hasta_15_pide_lo_que_la_norma_pide` con `At index 1 diff: '5.2' != '5.4'` |
+| `test_los_indicios_ya_no_arrastran_a_la_ley` (T-1f) | Que los tres elementos del art. 20 vuelvan a meterse en la fila `seed-unverified`, dejando otra vez al consumidor fail-closed sin la definición legal | Sí: la clave `elementos_de_ley` dentro del `value` de los indicios la pone roja |
+| `test_es_el_unico_sin_verificar_del_feed` (T-1f) | Promover los indicios doctrinales a `published` «para que HCM los use» | Sí: **verificado en el carril** — cambiar la procedencia pone rojas dos pruebas |
+| `test_los_dos_formativos_no_se_inventaron` (T-1f) | Publicar una regla `convenio_institucion` o `carta_aceptacion` con un artículo plausible del Reglamento del art. 5o, que **no dice eso** | Sí: añadir cualquiera de los dos `kind` al seed la pone roja |
+| `test_el_valor_esta_en_el_texto_del_articulo` (T-1f) | Un dedazo en los topes del art. 39-B. Cruza la cifra contra el **texto** que Tezca sirve, no contra sí misma | — |
 
 ## Pasos de operador
 
@@ -288,6 +406,54 @@ T-1a debe publicarse antes (`publish_law_articles`), porque cada regla de aquí
 apunta al artículo cuyo texto sirve aquel comando. No es una dependencia dura
 —las tablas son independientes— pero un consumidor que siga `official_id` +
 `article` desde una regla hasta su prosa encontraría un 404.
+
+### T-1f: el orden importa más que antes
+
+Con este carril, tres reglas apuntan a artículos que **sólo existen si
+`publish_law_articles` corrió**: el numeral 2 de la NOM-035, el de la NOM-037 y
+los seis artículos del Reglamento del art. 5o. Ejecutar en seco primero, y
+siempre en este orden:
+
+```bash
+# 1. En seco, los dos, y leer las cifras antes de escribir nada
+python manage.py publish_law_articles --dry-run     # 95 artículos (87 + 8 de T-1f)
+python manage.py publish_labor_rules  --dry-run     # 101 filas: 46 reglas + 55 claves SAT
+
+# 2. Escribir, artículos primero
+LOCAL_DB=yes python manage.py publish_law_articles
+LOCAL_DB=yes python manage.py publish_labor_rules
+```
+
+Los 8 artículos nuevos de T-1f son `reg_lrart5c` 51, 52, 85, 86, 87 y 88, más
+el numeral 2 de `nom_NOM-035-STPS-2018` y de `nom_NOM-037-STPS-2023`.
+
+**Lo que el operador debe esperar de la corrección de la NOM-035.** La fila de
+2019 ya está `published` en producción y el comando **no la toca** —es la
+regla append-only, y es la correcta—. Eso significa que su `effective_to`
+nuevo (2026-09-05) **no se aplica solo**: en producción quedarán las dos filas
+vigentes a la vez y `vigencias_traslapadas` lo vería si corriera contra la
+base. La fila corregida gana igual en la consulta (el endpoint ordena por
+`-effective_from`), así que **el consumidor recibe la respuesta correcta desde
+el primer día**; lo que queda pendiente es cerrar la vieja. Es una escritura
+de un solo campo sobre una fila publicada, que este carril deliberadamente no
+automatiza: promover un `UPDATE` sobre filas `published` dentro del comando
+abriría exactamente la puerta que el diseño append-only cierra. Corresponde al
+operador, con la consulta explícita:
+
+```sql
+-- Cerrar la fila superada de nom035_umbral_personas (article='4').
+-- Idempotente: si ya está cerrada, no cambia nada.
+UPDATE api_laborrule
+   SET effective_to = DATE '2026-09-05'
+ WHERE kind = 'nom035_umbral_personas'
+   AND article = '4'
+   AND effective_from = DATE '2019-10-23'
+   AND effective_to IS NULL;
+-- Debe reportar UPDATE 1. Verificar después que quedan dos filas y sólo una
+-- vigente hoy:
+--   SELECT article, effective_from, effective_to FROM api_laborrule
+--    WHERE kind = 'nom035_umbral_personas' ORDER BY effective_from;
+```
 
 ## Mantenimiento recurrente
 

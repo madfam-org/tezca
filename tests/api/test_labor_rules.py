@@ -300,14 +300,28 @@ class TestValoresContraLaLectura:
     def test_los_indicios_de_recaracterizacion_van_sin_verificar(self):
         """Lo que no se pudo citar NO se publica como verdad.
 
-        Los tres elementos son del art. 20; la lista de indicios es doctrina
-        que este carril no pudo citar con registro. Va seed-unverified para
-        que ningún cálculo la use.
+        La lista de indicios es doctrina que este carril no pudo citar con
+        registro. Va seed-unverified para que ningún cálculo la use.
+
+        **T-1f** sacó de esta fila los tres elementos del art. 20: mientras
+        vivían aquí, el consumidor fail-closed los descartaba junto con la
+        doctrina y se quedaba sin la definición legal de relación de trabajo.
+        Ahora son su propio kind, `relacion_trabajo_elementos`, y `published`.
         """
         regla = self._valor("recaracterizacion_indicios")
         assert regla["provenance"] == Provenance.SEED_UNVERIFIED
-        assert len(regla["value"]["elementos_de_ley"]) == 3
+        assert len(regla["value"]["indicios_orientativos"]) == 7
         assert "advertencia" in regla["value"]
+        # Los elementos de ley ya no viajan aquí; la fila dice dónde están.
+        assert "elementos_de_ley" not in regla["value"]
+        assert regla["value"]["elementos_de_ley_en"] == "relacion_trabajo_elementos"
+
+    def test_los_elementos_del_articulo_20_si_se_publican(self):
+        """La contraparte: lo que sí es ley se afirma."""
+        regla = self._valor("relacion_trabajo_elementos")
+        assert regla["provenance"] == Provenance.PUBLISHED
+        assert len(regla["value"]["elementos"]) == 3
+        assert (regla["official_id"], regla["article"]) == ("lft", "20")
 
 
 class TestJornadaEscalonada:

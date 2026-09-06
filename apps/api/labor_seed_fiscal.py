@@ -27,6 +27,7 @@ URL = {
     "lft": "https://www.diputados.gob.mx/LeyesBiblio/doc/LFT.doc",
     "lif2026": "https://www.diputados.gob.mx/LeyesBiblio/doc/LIF_2026.doc",
     "nom035": "https://dof.gob.mx/nota_detalle.php?codigo=5541828&fecha=23/10/2018",
+    "nom037": "https://dof.gob.mx/nota_detalle.php?codigo=5691672&fecha=08/06/2023",
     "repse": "https://dof.gob.mx/nota_detalle.php?codigo=5619148&fecha=24/05/2021",
 }
 
@@ -353,30 +354,206 @@ REGLAS_FISCALES = [
         "official_id": "nom_NOM-035-STPS-2018",
         "article": "4",
         "effective_from": "2019-10-23",
+        # Cerrada por T-1f. La fila se queda —append-only: lo publicado no se
+        # borra, se sucede— pero deja de ser la respuesta vigente el día en que
+        # entra su corrección. Ver la fila siguiente para el porqué.
+        "effective_to": "2026-09-05",
         "source": DOF,
         "source_url": URL["nom035"],
         "dof_date": "2018-10-23",
         "dof_codigo": "5541828",
         "provenance": Provenance.PUBLISHED,
         "notes": (
-            "Numeral 4 (campo de aplicación) de la NOM-035-STPS-2018. Las "
-            "disposiciones del primer bloque entraron en vigor al año de la "
-            "publicación (23-10-2019) y las de identificación, evaluación del "
-            "entorno y exámenes médicos a los dos años (23-10-2020); esta fila "
-            "se fecha en la primera. El texto íntegro de la NOM no está en el "
-            "corpus: se cita por numeral, no por artículo (hueco declarado)."
+            "SUPERADA POR CORRECCIÓN (T-1f). Citaba el campo de aplicación "
+            "como «numeral 4» y listaba para el tramo de hasta 15 personas "
+            "numerales que la NOM no le impone. La lectura primaria del DOF "
+            "5541828 dice numeral 2. Se conserva por append-only y se cierra "
+            "el 2026-09-05; la fila vigente es la que sigue."
         ),
     },
-    # -- Recaracterización: lo único que NO se pudo verificar --------------
     {
-        "kind": K.RECARACTERIZACION_INDICIOS,
+        # Corrección de T-1f contra el texto íntegro del DOF 5541828
+        # (`nota_to_doc.php?codnota=5541828`, convertido con textutil). Dos
+        # errores de transcripción, ninguno detectable por una prueba de
+        # «existe la fila»:
+        #
+        #   1. El campo de aplicación es el **numeral 2**, no el 4. En la
+        #      NOM-035 el 4 son las Definiciones. Un consumidor que fuera a
+        #      citar el fundamento habría citado el numeral equivocado.
+        #   2. El tramo de hasta 15 personas: la NOM le impone «5.1, 5.4, 5.5,
+        #      5.7, 8.1 y 8.2», no «5.1, 5.2, 5.4-5.8, 7.1 inciso a), 8». La
+        #      fila anterior le exigía de más —el 5.2 y el 7.1 no le tocan— y
+        #      HCM habría pedido evidencia que la norma no requiere al centro
+        #      de trabajo más pequeño, que es justo el que menos margen tiene.
+        #
+        # El texto íntegro del numeral 2 se publica además como `LawArticle`
+        # (`nom_NOM-035-STPS-2018` art. 2), así que esta tabla ya es
+        # verificable contra su propia fuente dentro de Tezca.
+        "kind": K.NOM035_UMBRAL_PERSONAS,
         "value": {
-            "elementos_de_ley": [
+            "tramos": [
+                {
+                    "hasta": 15,
+                    "etiqueta": "Centros de trabajo de hasta 15 personas",
+                    "numerales": ["5.1", "5.4", "5.5", "5.7", "8.1", "8.2"],
+                    "identificacion_factores": False,
+                    "evaluacion_entorno": False,
+                },
+                {
+                    "desde": 16,
+                    "hasta": 50,
+                    "etiqueta": "Centros de trabajo de 16 a 50 personas",
+                    "numerales": [
+                        "5.1",
+                        "5.2",
+                        "5.4-5.8",
+                        "7.1 inciso a)",
+                        "7.2",
+                        "7.4-7.9",
+                        "8",
+                    ],
+                    "identificacion_factores": True,
+                    "evaluacion_entorno": False,
+                    "alcance": "todas_las_personas_trabajadoras",
+                },
+                {
+                    "desde": 51,
+                    "etiqueta": "Centros de trabajo de más de 50 personas",
+                    "numerales": [
+                        "5.1",
+                        "5.3-5.8",
+                        "7.1 inciso b)",
+                        "7.2-7.9",
+                        "8",
+                    ],
+                    "identificacion_factores": True,
+                    "evaluacion_entorno": True,
+                    "alcance": "muestra_representativa_guia_III",
+                },
+            ],
+            "equivalencia_nmx_r_025": {
+                "certificado": "NMX-R-025-SCFI-2015 vigente",
+                "da_por_cumplidos": [
+                    "5.1 inciso b)",
+                    "8.1 inciso b)",
+                    "8.2 incisos a) subinciso 2), e) y g)",
+                    "5.7 inciso d)",
+                ],
+            },
+        },
+        "unit": "tabla",
+        "label": "NOM-035: obligaciones por tamaño del centro de trabajo",
+        "official_id": "nom_NOM-035-STPS-2018",
+        "article": "2",
+        "effective_from": "2026-09-06",
+        "source": DOF,
+        "source_url": URL["nom035"],
+        "dof_date": "2018-10-23",
+        "dof_codigo": "5541828",
+        "provenance": Provenance.PUBLISHED,
+        "notes": (
+            "Numeral 2 (campo de aplicación) de la NOM-035-STPS-2018, leído "
+            "íntegro del DOF 5541828. La NOM rige desde 2019-10-23 (primer "
+            "bloque) y 2020-10-23 (identificación y evaluación del entorno); "
+            "esta fila se fecha en 2026-09-06 porque es la fecha de la "
+            "CORRECCIÓN, no de la norma: adelantarla a 2019 reescribiría lo "
+            "que Tezca respondió entre 2019 y hoy, y el feed es append-only. "
+            "El texto del numeral se sirve en "
+            "GET /api/v1/laws/nom_NOM-035-STPS-2018/articles/2/vigente/."
+        ),
+    },
+    {
+        # El hueco `nom037_si_aplica` del HCM (HP-0c) decía que Tezca no
+        # publica los numerales de la NOM-037 «porque `LawArticle` no modela
+        # numerales sin forzarlo». Eso era cierto cuando `article` medía 32
+        # caracteres; T-1e lo llevó a 200 exactamente para poder citar
+        # documentos que no se numeran por artículos. Con esa columna, el
+        # numeral 2 de la NOM-037 entra al corpus como cualquier artículo, y
+        # esta regla dice —en estructura— lo que ese numeral dice en prosa.
+        "kind": K.NOM037_APLICABILIDAD,
+        "value": {
+            "aplica_si": "existe_al_menos_una_persona_en_teletrabajo",
+            "umbral_personas": None,
+            "ambito": "toda_la_republica_mexicana",
+            "umbral_teletrabajo_en": "teletrabajo_umbral_pct",
+            "nota": (
+                "La NOM-037 no tiene umbral por tamaño del centro de trabajo: "
+                "aplica a todo centro que cuente con al menos una persona "
+                "trabajadora bajo la modalidad de teletrabajo. Quién cuenta "
+                "como tal lo fija la LFT 330-A (más del 40 % del tiempo), que "
+                "se sirve en el kind `teletrabajo_umbral_pct`."
+            ),
+        },
+        "unit": "condicion",
+        "label": "NOM-037: cuándo aplica la norma de teletrabajo",
+        "official_id": "nom_NOM-037-STPS-2023",
+        "article": "2",
+        # 180 días naturales tras la publicación (TRANSITORIO PRIMERO):
+        # 08-06-2023 + 180 = 05-12-2023.
+        "effective_from": "2023-12-05",
+        "source": DOF,
+        "source_url": URL["nom037"],
+        "dof_date": "2023-06-08",
+        "dof_codigo": "5691672",
+        "provenance": Provenance.PUBLISHED,
+        "notes": (
+            "Numeral 2 (campo de aplicación) de la NOM-037-STPS-2023, leído "
+            "íntegro del DOF 5691672. Entró en vigor a los 180 días naturales "
+            "de su publicación (TRANSITORIO PRIMERO). El texto del numeral se "
+            "sirve en "
+            "GET /api/v1/laws/nom_NOM-037-STPS-2023/articles/2/vigente/."
+        ),
+    },
+    # -- Recaracterización: la ley por un lado, la doctrina por el otro ----
+    #
+    # T-1f parte en dos lo que T-1b publicó junto. La fila única era honesta
+    # —declaraba en su propio `value` que los indicios no eran de ley— pero
+    # tenía un efecto que la honestidad no arreglaba: al ser toda la fila
+    # `seed-unverified`, el consumidor fail-closed la descartaba **entera**, y
+    # con ella los tres elementos que el art. 20 sí enuncia palabra por
+    # palabra. HCM se quedaba sin poder afirmar la definición legal de
+    # relación de trabajo, que es justo lo que necesita para avisar.
+    {
+        "kind": K.RELACION_TRABAJO_ELEMENTOS,
+        "value": {
+            "elementos": [
                 "Prestación de un trabajo personal.",
                 "Subordinación a otra persona.",
                 "Pago de un salario.",
             ],
-            "fuente_de_los_elementos": "LFT art. 20, primer párrafo",
+            "definicion": (
+                "Se entiende por relación de trabajo, cualquiera que sea el "
+                "acto que le dé origen, la prestación de un trabajo personal "
+                "subordinado a una persona, mediante el pago de un salario."
+            ),
+            "efecto": (
+                "La prestación del trabajo y el contrato celebrado producen "
+                "los mismos efectos (art. 20, tercer párrafo): la relación "
+                "existe por los hechos, con independencia del nombre del acto."
+            ),
+        },
+        "unit": "lista",
+        "label": "Elementos de la relación de trabajo (LFT 20)",
+        "official_id": "lft",
+        "article": "20",
+        "effective_from": "1970-04-01",
+        "source": CAMARA,
+        "source_url": URL["lft"],
+        # `published`: los tres elementos y la frase de los «mismos efectos»
+        # se transcribieron del texto vigente del art. 20 que publica la
+        # Cámara — el mismo que este repo ya sirve en
+        # `GET /api/v1/laws/lft/articles/20/vigente/`.
+        "provenance": Provenance.PUBLISHED,
+        "notes": (
+            "Art. 20 LFT, párrafos primero y tercero. El artículo NO enumera "
+            "indicios: define la relación por tres elementos. Los indicios "
+            "orientativos viven en `recaracterizacion_indicios`, aparte y sin "
+            "verificar, precisamente para que esta fila pueda afirmarse."
+        ),
+    },
+    {
+        "kind": K.RECARACTERIZACION_INDICIOS,
+        "value": {
             "indicios_orientativos": [
                 "Horario fijo impuesto por quien paga.",
                 "Instrucciones sobre cómo y cuándo ejecutar el trabajo.",
@@ -386,34 +563,33 @@ REGLAS_FISCALES = [
                 "Integración a la estructura y a los procesos del centro.",
                 "Supervisión y régimen disciplinario aplicables a la persona.",
             ],
+            "elementos_de_ley_en": "relacion_trabajo_elementos",
             "advertencia": (
-                "Los tres elementos son de ley; la lista de indicios NO está "
-                "en la LFT ni se pudo citar con registro de jurisprudencia en "
-                "este carril. Es orientación para levantar un aviso, nunca "
-                "base para recaracterizar: sólo un dictamen legal firmado "
-                "cambia la lectura de un vínculo."
+                "Esta lista NO está en la LFT y no se pudo citar con registro "
+                "de jurisprudencia. Es orientación para levantar un aviso, "
+                "nunca base para recaracterizar: sólo un dictamen legal "
+                "firmado cambia la lectura de un vínculo. Los elementos que "
+                "sí son de ley se piden con kind "
+                "`relacion_trabajo_elementos`, que es `published`."
             ),
         },
         "unit": "lista",
-        "label": "Indicios de relación laboral (aviso, no dictamen)",
+        "label": "Indicios de relación laboral (orientativos, no de ley)",
         "official_id": "lft",
         "article": "20",
         "effective_from": "1970-04-01",
         "source": CAMARA,
         "source_url": URL["lft"],
-        # Deliberadamente seed-unverified: los tres elementos sí son del art.
-        # 20, pero la lista de indicios es doctrina y jurisprudencia que este
-        # carril no pudo citar con registro. El consumidor la descarta para
-        # calcular, que es exactamente lo correcto: un aviso se levanta con
-        # criterio humano, no con una lista que Tezca no puede defender.
+        # Sigue siendo seed-unverified, y ahora sin arrastrar a la ley con
+        # ella: lo que no se puede citar no se afirma, y lo que sí, sí.
         "provenance": Provenance.SEED_UNVERIFIED,
         "notes": (
-            "HUECO DECLARADO. El art. 20 define la relación de trabajo por "
-            "tres elementos y no enumera indicios; la lista proviene de "
-            "criterios jurisprudenciales que no se localizaron con registro "
-            "verificable de la SCJN en este carril. Se publica como "
-            "seed-unverified para que HCM pueda mostrarla al humano que "
-            "decide, y para que ningún cálculo la use."
+            "HUECO DECLARADO. Criterios jurisprudenciales que no se "
+            "localizaron con registro verificable de la SCJN en este carril. "
+            "Se sirve como seed-unverified para que HCM pueda mostrarlos al "
+            "humano que decide, y para que ningún cálculo los use. Para "
+            "cerrarlo hace falta la tesis o jurisprudencia con número de "
+            "registro del Semanario Judicial de la Federación."
         ),
     },
 ]

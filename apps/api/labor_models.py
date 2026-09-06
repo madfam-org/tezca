@@ -289,9 +289,25 @@ class LaborRule(VigenciaProvenanceBase):
             "nom035_umbral_personas",
             "NOM-035: obligaciones por tamaño del centro de trabajo",
         )
+        NOM037_APLICABILIDAD = (
+            "nom037_aplicabilidad",
+            "NOM-037: cuándo aplica la norma de teletrabajo",
+        )
+        # Dos kinds y no uno, por la razón que separa la ley de la doctrina
+        # (T-1f). El art. 20 LFT enumera **tres elementos** de la relación de
+        # trabajo y nada más; los siete indicios que HCM muestra son criterio
+        # orientativo que este carril no pudo citar con registro. Servirlos en
+        # una sola fila obligaba a que la fila entera fuera `seed-unverified`,
+        # y el consumidor descartaba también los tres elementos que sí son
+        # ley. Separados, HCM lee la ley como `published` y ve los indicios
+        # como lo que son.
+        RELACION_TRABAJO_ELEMENTOS = (
+            "relacion_trabajo_elementos",
+            "Elementos de la relación de trabajo (LFT 20)",
+        )
         RECARACTERIZACION_INDICIOS = (
             "recaracterizacion_indicios",
-            "Indicios de relación laboral (LFT 20)",
+            "Indicios de relación laboral (orientativos, no de ley)",
         )
         SAT_CATALOGO = ("sat_catalogo", "Catálogo del SAT para el CFDI 4.0")
         # -- Los que el catálogo de obligaciones del HCM consulta (T-1c). ----
