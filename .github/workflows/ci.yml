@@ -131,7 +131,7 @@ jobs:
           bash scripts/ci/filtered-install-check.sh --print "$APP"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ steps.node.outputs.spec }}
           # Caches ~/.npm keyed on package-lock.json, as the other Node jobs do.
@@ -302,7 +302,7 @@ jobs:
     - uses: actions/checkout@v7
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -402,7 +402,7 @@ jobs:
     - uses: actions/checkout@v7
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -496,7 +496,7 @@ jobs:
 
     - name: Set up Node.js
       if: steps.changed.outputs.changed == 'true'
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '20'
 
