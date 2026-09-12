@@ -13,6 +13,8 @@ jobs:
     # Skip frontend/E2E on backend-only PRs (RFC 0017 Tier A).
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
+      image-install: ${{ steps.filter.outputs.image-install }}
+      filtered-install-apps: ${{ steps.filtered-install-apps.outputs.apps }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
@@ -26,6 +28,26 @@ jobs:
               - 'package.json'
               - 'package-lock.json'
               - '**/*.{ts,tsx,js,jsx,css,mjs,cjs}'
+            image-install:
+              - 'apps/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.npmrc'
+              - '**/Dockerfile'
+              - 'scripts/ci/filtered-install-check.sh'
+              - '.github/workflows/ci.yml'
+
+      # The matrix for `filtered-install-build` below is DISCOVERED, not listed:
+      # every app whose Dockerfile performs a workspace-filtered `npm ci`. A new
+      # such app is guarded the day it lands, and there is no second copy of the
+      # app list to forget to update.
+      - name: Discover apps whose image installs a filtered workspace set
+        id: filtered-install-apps
+        run: |
+          APPS="$(bash scripts/ci/filtered-install-check.sh --list-json)"
+          echo "apps=${APPS}" >> "$GITHUB_OUTPUT"
+          echo "Guarding: ${APPS}"
 
   networkpolicy-port-lint:
     name: NetworkPolicy port consistency
@@ -64,6 +86,62 @@ jobs:
           python-version: '3.11'
       - name: Run .dockerignore seed lint
         run: python3 scripts/check-dockerignore-seeds.py
+
+  filtered-install-build:
+    name: Image-faithful build (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: github.event_name == 'push' || needs.detect-changes.outputs.image-install == 'true'
+    timeout-minutes: 20
+    # Prevents the #244 class: this job builds each app on the SAME filtered
+    # workspace install its Dockerfile performs, which is the one thing the rest
+    # of CI structurally cannot do.
+    #
+    # Everything else here installs the whole monorepo (`npm ci` at the root), so
+    # npm hoists every workspace's dependencies into the root `node_modules/` and
+    # a workspace can resolve a package that only a SIBLING declares. The images
+    # do not: `apps/admin/Dockerfile` installs
+    # `--workspace=apps/admin --workspace=packages/ui --workspace=packages/lib`
+    # and nothing else. In #244 `@testing-library/dom` was declared only by
+    # `apps/web`; `@testing-library/react@16` re-exports from it, `next build`
+    # type-checks `__tests__/**`, and the admin image failed on TS2305 for four
+    # days behind an all-green CI while production served the previous digest.
+    #
+    # The workspace set, the npm flags, the build command, the build-time env
+    # var names and the node major are all READ OUT OF THE DOCKERFILE at runtime
+    # by scripts/ci/filtered-install-check.sh — nothing is duplicated here, so
+    # editing a Dockerfile moves this check with it.
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.detect-changes.outputs.filtered-install-apps) }}
+    env:
+      # Same secret the root install uses: apps/web pulls @madfam/* from
+      # npm.madfam.io, which does not serve those tarballs anonymously.
+      NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read the node version the app's image builds on
+        id: node
+        env:
+          APP: ${{ matrix.app }}
+        run: |
+          echo "spec=$(bash scripts/ci/filtered-install-check.sh --node-spec "$APP")" >> "$GITHUB_OUTPUT"
+          bash scripts/ci/filtered-install-check.sh --print "$APP"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node.outputs.spec }}
+          # Caches ~/.npm keyed on package-lock.json, as the other Node jobs do.
+          # The filtered install runs in a temp copy, but npm's cache is shared.
+          cache: 'npm'
+
+      - name: Build ${{ matrix.app }} on its image's filtered install
+        env:
+          APP: ${{ matrix.app }}
+        run: bash scripts/ci/filtered-install-check.sh "$APP"
 
   test-publication-postgres:
     name: Publication commands on Postgres
