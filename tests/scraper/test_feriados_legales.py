@@ -8,6 +8,8 @@ keeps an unverified bank date out of a client-facing payment vence.
 from datetime import date
 
 from apps.scraper.federal.feriados_legales import (
+    FERIADOS_CATEGORY,
+    FERIADOS_DOCUMENTS_BY_ANIO,
     PUBLISHED,
     SCHEMA,
     SEED_UNVERIFIED,
@@ -94,15 +96,17 @@ class TestInhabilesBancariosAdicionales:
         assert "2027-03-25" in got
         assert "2027-03-26" in got
 
-    def test_2026_is_pinned_and_published_from_the_dof(self):
-        # 2026 is pinned from DOF codigo 5775684 (2025-12-10), so the bank
-        # additions are published and cite that source.
+    def test_2026_is_read_from_the_ingested_disposicion(self):
+        # 2026 has an ingested CNBV disposición (DOF codigo 5775684), so the bank
+        # additions are published and cite that CORPUS document — the dates are
+        # read from the ingested legal source, not floating constants.
         assert is_bancario_verified(2026) is True
         for f in inhabiles_bancarios_adicionales(2026):
             assert f.provenance == PUBLISHED
             assert f.tipo == "inhabil_bancario"
             assert tuple(f.domains) == ("bancario",)
             assert "5775684" in f.fundamento
+            assert "corpus cnbv-dias-inhabiles-bancarios-2026" in f.fundamento
 
     def test_an_unpinned_year_falls_back_to_seed_unverified(self):
         # A year whose CNBV calendar has not been read from the DOF stays honest.
@@ -151,9 +155,23 @@ class TestArtifact:
         assert art["anio"] == 2026
         assert art["bancario_verificado"] is True
         assert art["source"]["descanso_obligatorio"]["provenance"] == PUBLISHED
-        # Pinned year → bancario source is the DOF citation, published.
-        assert art["source"]["inhabil_bancario"]["provenance"] == PUBLISHED
-        assert art["source"]["inhabil_bancario"]["dof_codigo"] == "5775684"
+        # Verified year → bancario source cites the ingested corpus document.
+        bancario = art["source"]["inhabil_bancario"]
+        assert bancario["provenance"] == PUBLISHED
+        assert bancario["dof_codigo"] == "5775684"
+        assert bancario["corpus_official_id"] == "cnbv-dias-inhabiles-bancarios-2026"
+
+
+class TestFeriadosDocuments:
+    def test_the_2026_disposicion_is_a_registered_source_document(self):
+        doc = FERIADOS_DOCUMENTS_BY_ANIO[2026]
+        assert doc.official_id == "cnbv-dias-inhabiles-bancarios-2026"
+        assert doc.dof_codigo == "5775684"
+        assert doc.publication_date == "2025-12-10"
+        assert doc.category == FERIADOS_CATEGORY == "dias_inhabiles_bancarios"
+        assert doc.domains == ["banking"]
+        # The derived DOF URL uses the DD/MM/YYYY query format.
+        assert doc.dof_url == "https://dof.gob.mx/nota_detalle.php?codigo=5775684&fecha=10/12/2025"
 
     def test_unpinned_year_artifact_is_unverified(self):
         art = extract_feriados(2028)

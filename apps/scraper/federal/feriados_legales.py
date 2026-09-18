@@ -35,9 +35,9 @@ PURE: no Django, no DB, no network — a year in, an artifact out.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 SCHEMA = "tezca.feriados_legales/v1"
 
@@ -139,66 +139,129 @@ def dias_descanso_obligatorio(year: int) -> List[FeriadoFact]:
     return sorted(out, key=lambda x: x.date)
 
 
-# The CNBV annual bank-inhábil calendar, PINNED from its DOF publication and
-# verified against primary text — the same discipline the SEP dates use, and for
-# the same reason: the CNBV list is set year by year (banks close 2 nov, 12 dic
-# and Semana Santa on top of Art. 74, and the Comisión can vary it), so it must
-# be READ from the year's DOF, never assumed from a perpetual rule. Each entry
-# lists the bank-only days BEYOND the Art. 74 set (Art. 74 is computed and
-# already carries the bancario domain). A pinned year is ``published``. A year
-# absent here falls back to the computed default below, ``seed-unverified``,
-# until that year's CNBV calendar is published and read — which is exactly the
-# gate that keeps an unverified bank date out of a client-facing payment vence.
-_CNBV_PINNED: Dict[int, Dict[str, object]] = {
-    2026: {
-        "source": {
-            "instrumento": (
-                "CNBV — Disposiciones que señalan los días del año 2026 en que las "
-                "instituciones de crédito deberán cerrar sus puertas (Artículo 1)"
-            ),
-            "dof_codigo": "5775684",
-            "dof_fecha": "2025-12-10",
-            "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5775684&fecha=10/12/2025",
-            "verified_on": "2026-09-18",
-        },
-        # The bank-only days beyond Art. 74, exactly as the DOF Artículo 1
-        # enumerates them (2 y 3 de abril; 2 de noviembre; 12 de diciembre).
-        "adicionales": [
-            ("2026-04-02", "Jueves Santo"),
-            ("2026-04-03", "Viernes Santo"),
-            ("2026-11-02", "Día de Muertos"),
-            ("2026-12-12", "Día de la Virgen de Guadalupe"),
-        ],
-    },
+# ── The source documents: the ingested legal corpus the bank dates are read from ─
+#
+# The dates below are not invented here — they are READ FROM the legal sources
+# tezca ingests, the same way the SEP dates are read from the acuerdo tezca
+# ingests. The días de descanso obligatorio come from the LFT (Art. 74, already
+# a corpus Law); the bank-only additions come from the CNBV's annual
+# «Disposiciones … días inhábiles bancarios», a DOF publication tezca REGISTERS
+# as a corpus Law (`manage.py ingest_feriados`) and whose Artículo 1 enumerates
+# them. Each year's disposición is a pinned DOF `codigo`, verified against
+# primary text — the registry IS the source of truth, the same posture as
+# `SEP_CALENDAR_DOCUMENTS`. A year with a registered disposición is `published`;
+# a year without one falls back to the computed default, `seed-unverified`.
+
+SIDOF_NOTE_URL = "https://sidof.segob.gob.mx/notas/docFuente/{codigo}"
+DOF_NOTE_URL = "https://dof.gob.mx/nota_detalle.php?codigo={codigo}&fecha={fecha}"
+
+FERIADOS_CATEGORY = "dias_inhabiles_bancarios"
+FERIADOS_DOMAINS = ["banking"]
+
+
+def _dof_fecha(iso_date: str) -> str:
+    """`YYYY-MM-DD` → the DOF's `DD/MM/YYYY` query format."""
+    year, month, day = iso_date.split("-")
+    return f"{day}/{month}/{year}"
+
+
+@dataclass
+class FeriadosDocument:
+    """One CNBV días-inhábiles disposición, pinned by DOF `codigo` with enough
+    metadata to register a Law + LawVersion (the corpus side) and to cite the
+    bank dates read from it (the dates side). Mirrors `SepCalendarDocument`."""
+
+    official_id: str
+    name: str
+    short_name: str
+    dof_codigo: str
+    publication_date: str  # ISO, DOF publication date
+    valid_from: Optional[str]  # ISO, the year the calendar governs from
+    anio: int
+    verified_on: str  # ISO, when the enumerated dates were read against primary text
+    status: str = "vigente"
+    vigencia_note: str = ""
+    category: str = FERIADOS_CATEGORY
+    domains: List[str] = field(default_factory=lambda: list(FERIADOS_DOMAINS))
+
+    @property
+    def dof_url(self) -> str:
+        return DOF_NOTE_URL.format(codigo=self.dof_codigo, fecha=_dof_fecha(self.publication_date))
+
+    @property
+    def sidof_url(self) -> str:
+        return SIDOF_NOTE_URL.format(codigo=self.dof_codigo)
+
+    @property
+    def text_filename(self) -> str:
+        return f"{self.official_id}.xml"
+
+
+# Verified against primary DOF (codigo 5775684) on 2026-09-18: the disposición's
+# Artículo 1 for 2026, cross-checked so LFT ∪ these additions equals its full
+# eleven-day list (the test encodes that list).
+FERIADOS_DOCUMENTS: List[FeriadosDocument] = [
+    FeriadosDocument(
+        official_id="cnbv-dias-inhabiles-bancarios-2026",
+        name=(
+            "Disposiciones que señalan los días del año 2026 en que las instituciones "
+            "de crédito deberán cerrar sus puertas y suspender operaciones"
+        ),
+        short_name="Días inhábiles bancarios CNBV 2026",
+        dof_codigo="5775684",
+        publication_date="2025-12-10",
+        valid_from="2026-01-01",
+        anio=2026,
+        verified_on="2026-09-18",
+        vigencia_note="Calendario anual de días inhábiles bancarios (CNBV), Artículo 1.",
+    ),
+]
+
+FERIADOS_DOCUMENTS_BY_ID: Dict[str, FeriadosDocument] = {
+    d.official_id: d for d in FERIADOS_DOCUMENTS
+}
+FERIADOS_DOCUMENTS_BY_ANIO: Dict[int, FeriadosDocument] = {d.anio: d for d in FERIADOS_DOCUMENTS}
+
+
+# The bank-only days (beyond Art. 74) READ FROM each year's disposición Artículo 1
+# — the dates the ingested legal source enumerates, keyed by año. A year here has
+# a matching FeriadosDocument; the two together make the additions `published`.
+_CNBV_ADICIONALES: Dict[int, List[Tuple[str, str]]] = {
+    2026: [
+        ("2026-04-02", "Jueves Santo"),
+        ("2026-04-03", "Viernes Santo"),
+        ("2026-11-02", "Día de Muertos"),
+        ("2026-12-12", "Día de la Virgen de Guadalupe"),
+    ],
 }
 
 
 def is_bancario_verified(year: int) -> bool:
-    """Whether ``year``'s bank additions are pinned from the DOF (``published``)
-    rather than the computed default. A payment vence that must be exact and
-    client-visible reads this before trusting the year's bancario calendar."""
-    return year in _CNBV_PINNED
+    """Whether ``year``'s bank additions are read from an ingested DOF disposición
+    (``published``) rather than the computed default. A payment vence that must be
+    exact and client-visible reads this before trusting the year's calendar."""
+    return year in FERIADOS_DOCUMENTS_BY_ANIO and year in _CNBV_ADICIONALES
 
 
 def inhabiles_bancarios_adicionales(year: int) -> List[FeriadoFact]:
-    """CNBV bank-closed days that are NOT Art. 74 holidays: Jueves y Viernes
-    Santo, el 2 de noviembre and el 12 de diciembre. For a pinned year these are
-    the DOF-verified list (``published``); otherwise the computed default
-    (Semana Santa via Easter + the two fixed dates), emitted ``seed-unverified``
-    — orienting, but never asserting a closed day for a payment vence until the
-    year's CNBV calendar is read. Ordered by date."""
+    """CNBV bank-closed days that are NOT Art. 74 holidays. For a year whose CNBV
+    disposición tezca has registered, these are the dates READ FROM it
+    (``published``), each citing that corpus document; otherwise the computed
+    default (Semana Santa via Easter + 2 nov + 12 dic), ``seed-unverified`` —
+    orienting, never asserting a closed day for a payment vence until the year's
+    disposición is ingested and read. Ordered by date."""
     banco = ("bancario",)
-    pin = _CNBV_PINNED.get(year)
-    if pin is not None:
-        source = pin["source"]  # type: ignore[index]
+    doc = FERIADOS_DOCUMENTS_BY_ANIO.get(year)
+    adicionales = _CNBV_ADICIONALES.get(year)
+    if doc is not None and adicionales is not None:
         cite = (
-            f"CNBV días inhábiles {year} — DOF {source['dof_codigo']} "  # type: ignore[index]
-            f"({source['dof_fecha']})"  # type: ignore[index]
+            f"CNBV días inhábiles {year} — DOF {doc.dof_codigo} "
+            f"({doc.publication_date}), Art. 1 · corpus {doc.official_id}"
         )
         return sorted(
             (
                 FeriadoFact(d, "inhabil_bancario", banco, title, cite, PUBLISHED)
-                for d, title in pin["adicionales"]  # type: ignore[index]
+                for d, title in adicionales
             ),
             key=lambda x: x.date,
         )
@@ -243,10 +306,15 @@ def extract_feriados(year: int) -> Dict[str, object]:
     (seed-unverified). ``end_date`` never appears: legal feriados are single
     days."""
     events = feriados_bancarios(year)
-    pin = _CNBV_PINNED.get(year)
-    if pin is not None:
+    doc = FERIADOS_DOCUMENTS_BY_ANIO.get(year)
+    if doc is not None and year in _CNBV_ADICIONALES:
         bancario_source = {
-            **pin["source"],  # type: ignore[dict-item]
+            "instrumento": doc.name,
+            "corpus_official_id": doc.official_id,
+            "dof_codigo": doc.dof_codigo,
+            "dof_fecha": doc.publication_date,
+            "dof_url": doc.dof_url,
+            "verified_on": doc.verified_on,
             "provenance": PUBLISHED,
         }
     else:
