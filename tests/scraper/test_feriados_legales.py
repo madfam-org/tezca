@@ -139,7 +139,9 @@ class TestFeriadosBancarios:
         assert set(dates) == expected
         assert len(dates) == 11
         assert dates == sorted(dates)
-        assert len(set(dates)) == len(dates)  # no date is both an Art. 74 and a CNBV add
+        assert len(set(dates)) == len(
+            dates
+        )  # no date is both an Art. 74 and a CNBV add
 
     def test_the_bancario_domain_selects_the_whole_set(self):
         # A payment vence takes every date carrying the "bancario" domain — which
@@ -171,7 +173,10 @@ class TestFeriadosDocuments:
         assert doc.category == FERIADOS_CATEGORY == "dias_inhabiles_bancarios"
         assert doc.domains == ["banking"]
         # The derived DOF URL uses the DD/MM/YYYY query format.
-        assert doc.dof_url == "https://dof.gob.mx/nota_detalle.php?codigo=5775684&fecha=10/12/2025"
+        assert (
+            doc.dof_url
+            == "https://dof.gob.mx/nota_detalle.php?codigo=5775684&fecha=10/12/2025"
+        )
 
     def test_unpinned_year_artifact_is_unverified(self):
         art = extract_feriados(2028)

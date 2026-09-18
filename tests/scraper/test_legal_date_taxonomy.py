@@ -76,7 +76,14 @@ class TestValidation:
 
 class TestFeriadoFactSelfValidates:
     def test_a_valid_fact_constructs(self):
-        FeriadoFact("2026-01-01", "descanso_obligatorio", ("labor", "banking"), "x", "y", "published")
+        FeriadoFact(
+            "2026-01-01",
+            "descanso_obligatorio",
+            ("labor", "banking"),
+            "x",
+            "y",
+            "published",
+        )
 
     def test_an_off_vocabulary_tipo_is_refused_at_construction(self):
         with pytest.raises(ValueError, match="unknown legal-date tipo"):
@@ -84,4 +91,6 @@ class TestFeriadoFactSelfValidates:
 
     def test_an_off_vocabulary_domain_is_refused_at_construction(self):
         with pytest.raises(ValueError, match="unknown legal-date domain"):
-            FeriadoFact("2026-01-01", "inhabil_bancario", ("bancario",), "x", "y", "published")
+            FeriadoFact(
+                "2026-01-01", "inhabil_bancario", ("bancario",), "x", "y", "published"
+            )

@@ -137,16 +137,33 @@ def dias_descanso_obligatorio(year: int) -> List[FeriadoFact]:
 
     def f(d: date, title: str, fr: str) -> FeriadoFact:
         return FeriadoFact(
-            d.isoformat(), DESCANSO_OBLIGATORIO, both, title, f"LFT Art. 74 fr. {fr}", PUBLISHED
+            d.isoformat(),
+            DESCANSO_OBLIGATORIO,
+            both,
+            title,
+            f"LFT Art. 74 fr. {fr}",
+            PUBLISHED,
         )
 
     out = [
         f(date(year, 1, 1), "Año Nuevo", "I"),
-        f(_nth_weekday(year, 2, _MON, 1), "Conmemoración del 5 de febrero (Constitución)", "II"),
-        f(_nth_weekday(year, 3, _MON, 3), "Conmemoración del 21 de marzo (Natalicio de Juárez)", "III"),
+        f(
+            _nth_weekday(year, 2, _MON, 1),
+            "Conmemoración del 5 de febrero (Constitución)",
+            "II",
+        ),
+        f(
+            _nth_weekday(year, 3, _MON, 3),
+            "Conmemoración del 21 de marzo (Natalicio de Juárez)",
+            "III",
+        ),
         f(date(year, 5, 1), "Día del Trabajo", "IV"),
         f(date(year, 9, 16), "Independencia de México", "V"),
-        f(_nth_weekday(year, 11, _MON, 3), "Conmemoración del 20 de noviembre (Revolución)", "VI"),
+        f(
+            _nth_weekday(year, 11, _MON, 3),
+            "Conmemoración del 20 de noviembre (Revolución)",
+            "VI",
+        ),
         f(date(year, 12, 25), "Navidad", "VIII"),
     ]
     if _is_transmision_ejecutivo(year):
@@ -203,7 +220,9 @@ class FeriadosDocument:
 
     @property
     def dof_url(self) -> str:
-        return DOF_NOTE_URL.format(codigo=self.dof_codigo, fecha=_dof_fecha(self.publication_date))
+        return DOF_NOTE_URL.format(
+            codigo=self.dof_codigo, fecha=_dof_fecha(self.publication_date)
+        )
 
     @property
     def sidof_url(self) -> str:
@@ -237,7 +256,9 @@ FERIADOS_DOCUMENTS: List[FeriadosDocument] = [
 FERIADOS_DOCUMENTS_BY_ID: Dict[str, FeriadosDocument] = {
     d.official_id: d for d in FERIADOS_DOCUMENTS
 }
-FERIADOS_DOCUMENTS_BY_ANIO: Dict[int, FeriadosDocument] = {d.anio: d for d in FERIADOS_DOCUMENTS}
+FERIADOS_DOCUMENTS_BY_ANIO: Dict[int, FeriadosDocument] = {
+    d.anio: d for d in FERIADOS_DOCUMENTS
+}
 
 
 # The bank-only days (beyond Art. 74) READ FROM each year's disposición Artículo 1

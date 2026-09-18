@@ -17,9 +17,9 @@ CID = "cnbv-dias-inhabiles-bancarios-2026"
 class TestIngestFeriadosCommand:
     def test_ingests_the_pinned_corpus_without_a_catalog(self):
         call_command("ingest_feriados")
-        assert Law.objects.filter(official_id__startswith="cnbv-dias-inhabiles-").count() == len(
-            FERIADOS_DOCUMENTS
-        )
+        assert Law.objects.filter(
+            official_id__startswith="cnbv-dias-inhabiles-"
+        ).count() == len(FERIADOS_DOCUMENTS)
         for doc in FERIADOS_DOCUMENTS:
             assert Law.objects.filter(official_id=doc.official_id).exists()
 
