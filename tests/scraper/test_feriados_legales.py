@@ -62,7 +62,7 @@ class TestDiasDescansoObligatorio:
         for f in dias_descanso_obligatorio(2026):
             assert f.provenance == PUBLISHED
             assert f.tipo == "descanso_obligatorio"
-            assert set(f.domains) == {"laboral", "bancario"}
+            assert set(f.domains) == {"labor", "banking"}
             assert f.fundamento.startswith("LFT Art. 74 fr.")
 
     def test_sexennial_transmision_only_on_transmision_years(self):
@@ -104,7 +104,7 @@ class TestInhabilesBancariosAdicionales:
         for f in inhabiles_bancarios_adicionales(2026):
             assert f.provenance == PUBLISHED
             assert f.tipo == "inhabil_bancario"
-            assert tuple(f.domains) == ("bancario",)
+            assert tuple(f.domains) == ("banking",)
             assert "5775684" in f.fundamento
             assert "corpus cnbv-dias-inhabiles-bancarios-2026" in f.fundamento
 
@@ -113,7 +113,7 @@ class TestInhabilesBancariosAdicionales:
         assert is_bancario_verified(2028) is False
         for f in inhabiles_bancarios_adicionales(2028):
             assert f.provenance == SEED_UNVERIFIED
-            assert tuple(f.domains) == ("bancario",)
+            assert tuple(f.domains) == ("banking",)
 
 
 class TestFeriadosBancarios:
@@ -144,7 +144,7 @@ class TestFeriadosBancarios:
     def test_the_bancario_domain_selects_the_whole_set(self):
         # A payment vence takes every date carrying the "bancario" domain — which
         # is the whole union (Art. 74 banks-closed + the CNBV additions).
-        banc = {f.date for f in feriados_bancarios(2026) if "bancario" in f.domains}
+        banc = {f.date for f in feriados_bancarios(2026) if "banking" in f.domains}
         assert len(banc) == 11
 
 

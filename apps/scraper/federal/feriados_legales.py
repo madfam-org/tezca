@@ -11,7 +11,7 @@ Two layers, two provenances — the same discipline the fiscal/labor feeds use
     whose text tezca already serves (``lft.json``): fixed dates and the
     "primer/tercer lunes" movable rules leave no ambiguity, so every one is
     ``published`` — it *is* the law. Banks close on all of them, so each also
-    carries the ``bancario`` domain.
+    carries the ``banking`` domain (see :mod:`legal_date_taxonomy`).
 
 ``inhabil_bancario`` — CNBV días inhábiles beyond Art. 74.
     Banks are also closed Jueves and Viernes Santo, el 2 de noviembre and el 12
@@ -39,6 +39,15 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Dict, List, Optional, Tuple
 
+from apps.scraper.federal.legal_date_taxonomy import (
+    BANKING,
+    DESCANSO_OBLIGATORIO,
+    INHABIL_BANCARIO,
+    LABOR,
+    validate_domains,
+    validate_tipo,
+)
+
 SCHEMA = "tezca.feriados_legales/v1"
 
 # Mirrors apps.api.fiscal_models.Provenance without importing Django here (this
@@ -51,11 +60,13 @@ SEED_UNVERIFIED = "seed-unverified"
 class FeriadoFact:
     """One legal non-working date, with its statutory basis and provenance.
 
-    ``tipo`` is the tezca-side kind (``descanso_obligatorio`` | ``inhabil_bancario``);
-    ``domains`` says which sectors observe it (``laboral``, ``bancario``), so a
-    consumer selects the applicable set (a payment vence takes ``bancario``).
-    ``fundamento`` cites the statute or calendar; ``provenance`` is
-    ``published`` (primary-verified) or ``seed-unverified`` (orients only).
+    ``tipo`` is the taxonomy kind (``descanso_obligatorio`` | ``inhabil_bancario``,
+    from :mod:`legal_date_taxonomy`); ``domains`` says which sectors observe it
+    (``labor``, ``banking``), so a consumer selects the applicable set (a payment
+    vence takes ``banking``). ``fundamento`` cites the statute or the ingested
+    disposición; ``provenance`` is ``published`` (primary-verified) or
+    ``seed-unverified`` (orients only). Both tags are validated against the
+    vocabulary on construction — an off-vocabulary tag never reaches an artifact.
     """
 
     date: str
@@ -64,6 +75,12 @@ class FeriadoFact:
     title: str
     fundamento: str
     provenance: str
+
+    def __post_init__(self) -> None:
+        # Refuse an off-vocabulary tag at the source, so no artifact carries a
+        # tipo/domain a consumer cannot select on (the robustness guard).
+        validate_tipo(self.tipo)
+        validate_domains(self.domains)
 
     def to_json(self) -> Dict[str, object]:
         return {
@@ -115,12 +132,12 @@ _MON = 0  # date.weekday() Monday
 def dias_descanso_obligatorio(year: int) -> List[FeriadoFact]:
     """LFT Art. 74 fr. I–VIII for ``year``, computed from the statute. Every one
     is ``published`` (it is the law) and observed by banks, so all carry both
-    ``laboral`` and ``bancario`` domains. Ordered by date."""
-    both = ("laboral", "bancario")
+    the ``labor`` and ``banking`` domains. Ordered by date."""
+    both = (LABOR, BANKING)
 
     def f(d: date, title: str, fr: str) -> FeriadoFact:
         return FeriadoFact(
-            d.isoformat(), "descanso_obligatorio", both, title, f"LFT Art. 74 fr. {fr}", PUBLISHED
+            d.isoformat(), DESCANSO_OBLIGATORIO, both, title, f"LFT Art. 74 fr. {fr}", PUBLISHED
         )
 
     out = [
@@ -250,7 +267,7 @@ def inhabiles_bancarios_adicionales(year: int) -> List[FeriadoFact]:
     default (Semana Santa via Easter + 2 nov + 12 dic), ``seed-unverified`` —
     orienting, never asserting a closed day for a payment vence until the year's
     disposición is ingested and read. Ordered by date."""
-    banco = ("bancario",)
+    banco = (BANKING,)
     doc = FERIADOS_DOCUMENTS_BY_ANIO.get(year)
     adicionales = _CNBV_ADICIONALES.get(year)
     if doc is not None and adicionales is not None:
@@ -260,7 +277,7 @@ def inhabiles_bancarios_adicionales(year: int) -> List[FeriadoFact]:
         )
         return sorted(
             (
-                FeriadoFact(d, "inhabil_bancario", banco, title, cite, PUBLISHED)
+                FeriadoFact(d, INHABIL_BANCARIO, banco, title, cite, PUBLISHED)
                 for d, title in adicionales
             ),
             key=lambda x: x.date,
@@ -271,7 +288,7 @@ def inhabiles_bancarios_adicionales(year: int) -> List[FeriadoFact]:
     def f(d: date, title: str) -> FeriadoFact:
         return FeriadoFact(
             d.isoformat(),
-            "inhabil_bancario",
+            INHABIL_BANCARIO,
             banco,
             title,
             "CNBV — calendario anual de días inhábiles bancarios (sin fijar)",
@@ -337,7 +354,7 @@ def extract_feriados(year: int) -> Dict[str, object]:
                 "metodo": "computed from the statute (fixed dates + primer/tercer lunes rules)",
                 "provenance": PUBLISHED,
             },
-            "inhabil_bancario": bancario_source,
+            INHABIL_BANCARIO: bancario_source,
         },
         "events": [e.to_json() for e in events],
     }
