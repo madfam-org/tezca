@@ -158,7 +158,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 2571 passed / 18 skipped as of 2026-08-25; 64% coverage)
+# Backend (pytest + django, 2945 passed / 18 skipped as of 2026-09-18; run via `poetry run pytest`)
 # NOTE: run tests/integration/test_spot_check.py in a SEPARATE invocation from
 # tests/pipeline/test_index_laws.py — a pre-existing fixture-pollution flake fails
 # them only when batched together; each passes alone. Not a real regression.
@@ -202,6 +202,15 @@ python -m apps.scraper.federal.rmf_scraper --year 2026                # discover
 python -m apps.scraper.federal.rmf_scraper --year 2026 --download      # discover + fetch PDFs
 python manage.py ingest_rmf --catalog data/rmf/catalog.json            # upsert into Law table
 python manage.py ingest_rmf --catalog data/rmf/catalog.json --dry-run  # preview
+
+# Feriados legales — LFT Art. 74 + CNBV días inhábiles bancarios, fed to kalya
+#   Contract & vocabulary: docs/data/FERIADOS_LEGALES.md
+python -c "from apps.scraper.federal.feriados_legales import extract_feriados; import json; print(json.dumps(extract_feriados(2026), default=str))"  # emit tezca.feriados_legales/v1 artifact
+python manage.py ingest_feriados --year 2026 --dry-run                 # preview corpus upsert (CNBV disposición → Law/LawVersion)
+python manage.py ingest_feriados --year 2026                           # upsert (needs LOCAL_LEGAL_DATA_OPS=yes)
+# A new year needs its DOF codigo pinned in FeriadosDocument + Art. 1 dates in
+# _CNBV_ADICIONALES first (feriados_legales.py); an unpinned year stays honestly
+# seed-unverified and out of any client-facing payment vence.
 
 # State scrapers (manual run via Celery dispatch — useful before flipping a Beat schedule)
 python manage.py shell -c "from apps.scraper.scheduling.tasks import run_state_scraper; print(run_state_scraper('hidalgo'))"
