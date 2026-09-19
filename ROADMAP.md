@@ -690,6 +690,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 - **[Strategic Overview](docs/strategy/STRATEGIC_OVERVIEW.md)**: Comprehensive vision and architecture
 - **[Mexican Legal Universe](docs/data/MEXICAN_LEGAL_UNIVERSE.md)**: Complete 7-tier taxonomy (~670K+ instruments)
 - **[Partnership Directory](docs/data/PARTNERSHIP_DIRECTORY.md)**: Institutional contacts, legal obligations, FOIA reference
+- **[Feriados Legales](docs/data/FERIADOS_LEGALES.md)**: Legal-feriados feed contract (LFT Art. 74 + CNBV días inhábiles bancarios; artifact `tezca.feriados_legales/v1`, consumed by kalya)
+- **[SEP Calendario Escolar](docs/data/SEP_CALENDARIO_ESCOLAR.md)**: SEP school-calendar feed contract (dated academic-year corpus)
 - **[Escalation Playbook](docs/dataops/ESCALATION_PLAYBOOK.md)**: 5-tier data acquisition escalation process
 - **[State Laws Report](docs/research/STATE_LAW_SCRAPING_REPORT.md)**: 4-week state processing plan
 - **[Ingestion Fixes](docs/research/INGESTION_FIXES.md)**: Pipeline improvements
