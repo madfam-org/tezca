@@ -263,31 +263,65 @@ class AkomaNtosoGeneratorV2:
         Returns:
             List of transitory article dicts
         """
-        # Find TRANSITORIOS header
-        trans_start = None
-        for pattern in self.transitorios_patterns["header"]:
-            match = pattern.search(text)
-            if match:
-                trans_start = match.end()
-                break
-
-        if trans_start is None:
+        # Every TRANSITORIOS header, from ALL header patterns, in text order.
+        # The earliest one opens the section (taking the first pattern that
+        # matched anywhere skipped an earlier "TRANSITORIOS" whenever a later
+        # "ARTÍCULOS TRANSITORIOS" existed); each later one closes the previous
+        # segment so a decree preamble never bleeds into a transitorio.
+        headers = sorted(
+            {
+                (m.start(), m.end())
+                for pattern in self.transitorios_patterns["header"]
+                for m in pattern.finditer(text)
+            }
+        )
+        # Drop spans overlapping an earlier one (``^\s*`` can reach back over
+        # blank lines, so two patterns may report the same header).
+        merged = []
+        for start, end in headers:
+            if merged and start < merged[-1][1]:
+                continue
+            merged.append((start, end))
+        headers = merged
+        if not headers:
             return []
 
-        trans_text = text[trans_start:]
-
-        # Match EVERY ordinal heading in the transitorios section — single
-        # ("PRIMERO.-") and two-word compound ("DÉCIMO TERCERO.-",
-        # "VIGÉSIMO QUINTO.-") alike. The previous implementation iterated only
-        # the 1–12 ORDINAL_PATTERNS map, so a law's 13th and later transitorios
-        # (CCF ~50, LFT ~33, LIVA ~27) were silently dropped. We now split the
-        # section at each ordinal marker and take the text between markers as
-        # that transitorio's content, so the count is unbounded.
+        # Match EVERY ordinal heading in each segment — single ("PRIMERO.-")
+        # and two-word compound ("DÉCIMO TERCERO.-") alike, so the count is
+        # unbounded (CCF ~50, LFT ~33, LIVA ~27 transitorios).
         ordinal_re = self.transitorios_patterns["ordinal_any"]
-        markers = list(ordinal_re.finditer(trans_text))
-
         transitorios = []
+        block = 0
+        for seg_idx, (_, seg_start) in enumerate(headers):
+            seg_end = (
+                headers[seg_idx + 1][0] if seg_idx + 1 < len(headers) else len(text)
+            )
+            if seg_end <= seg_start:
+                continue
+            block, found = self._parse_transitorio_segment(
+                text[seg_start:seg_end], ordinal_re, block
+            )
+            transitorios.extend(found)
+
+        transitorios.sort(key=lambda x: (x["block"], x["number"]))
+        return transitorios
+
+    def _parse_transitorio_segment(self, segment, ordinal_re, block):
+        """Parse one TRANSITORIOS segment; return ``(last_block, items)``.
+
+        A consolidated law carries one transitorios block per decree: the
+        law's own decree, then one per reform decree, each restarting at
+        "Primero". Block 1 keeps ``id="trans-N"``; block K > 1 gets
+        ``id="trans-rK-N"`` (indexed as ``T-RK-N``). Previously every
+        repeated number was dropped as a "stray heading", silently losing
+        every reform decree's transitorios (LFPDPPP: the DOF 14-11-2025
+        reform). A new block opens at each TRANSITORIOS header and when the
+        numbering restarts at 1 without one.
+        """
+        markers = list(ordinal_re.finditer(segment))
+        items = []
         seen_numbers = set()
+        opened = False
         for idx, match in enumerate(markers):
             ordinal_phrase = match.group(1).strip()
             number = self._transitorio_ordinal_number(ordinal_phrase)
@@ -295,36 +329,33 @@ class AkomaNtosoGeneratorV2:
                 # Ordinal word we matched but could not resolve to a value;
                 # skip rather than emit a degenerate id.
                 continue
-
-            # Content runs from the end of this marker to the start of the next
-            # ordinal marker (or the end of the section).
-            content_start = match.end()
+            if not opened or (number == 1 and seen_numbers):
+                block += 1
+                seen_numbers = set()
+                opened = True
             content_end = (
-                markers[idx + 1].start() if idx + 1 < len(markers) else len(trans_text)
+                markers[idx + 1].start() if idx + 1 < len(markers) else len(segment)
             )
-            content = trans_text[content_start:content_end].strip()
-
-            # Guard against duplicate ordinals (e.g. a stray repeated heading);
-            # keep the first occurrence so ids stay stable.
+            content = segment[match.end() : content_end].strip()
+            # Within one block a repeated number is a stray heading; keep the
+            # first occurrence so ids stay stable.
             if number in seen_numbers:
                 continue
             seen_numbers.add(number)
-
-            transitorios.append(
+            items.append(
                 {
                     "type": "transitorio",
-                    "id": f"trans-{number}",
+                    "id": (
+                        f"trans-{number}" if block == 1 else f"trans-r{block}-{number}"
+                    ),
                     "number": number,
+                    "block": block,
                     "ordinal": ordinal_phrase,
                     "content": content,
                     "confidence": 0.95,  # High confidence for transitorios
                 }
             )
-
-        # Sort by number
-        transitorios.sort(key=lambda x: x["number"])
-
-        return transitorios
+        return block, items
 
     @staticmethod
     def _transitorio_ordinal_number(ordinal_phrase: str):
