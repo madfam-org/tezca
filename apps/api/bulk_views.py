@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from .config import INDEX_NAME, es_client
 from .constants import DOMAIN_MAP
 from .middleware.tier_permissions import RequireFeature
+from .transitorios import article_kind
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +204,7 @@ def bulk_articles(request):
                     "law_type": src.get("law_type"),
                     "state": src.get("state"),
                     "article_id": src.get("article"),
+                    "kind": article_kind(src),
                     "text": src.get("text"),
                     "last_updated": src.get("publication_date"),
                 }
