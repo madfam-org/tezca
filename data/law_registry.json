@@ -2612,7 +2612,8 @@
             "priority": 3,
             "tier": "federal",
             "status": "vigente",
-            "category": "reglamento"
+            "category": "reglamento",
+            "notes": "Vigencia abierta: el Reglamento (DOF 21-12-2011) reglamenta la LFPDPPP de 2010, abrogada por la nueva LFPDPPP (DOF 20-03-2025). El decreto de 2025 no abroga ni preserva expresamente este Reglamento, por lo que su aplicación es una cuestión interpretativa abierta. status=vigente refleja que la Cámara de Diputados lo publica en su catálogo de reglamentos vigentes; Law.Status no tiene un valor para vigencia controvertida (ver madfam-org/tezca#222). Citar con esa salvedad."
         },
         {
             "id": "lfppcpcia",

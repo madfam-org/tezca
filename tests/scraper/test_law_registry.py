@@ -292,3 +292,17 @@ def test_reg_lfpdppp_entry_is_ingest_ready():
     # Points at the official Cámara de Diputados Reglamento PDF.
     assert entry.get("url", "").endswith("Reg_LFPDPPP.pdf")
     assert entry.get("slug")
+
+
+def test_reg_lfpdppp_records_open_vigencia():
+    """The 2011 Reglamento regulates the ABROGATED 2010 law; the 2025 decree
+    neither expressly abrogates nor preserves it (#222). Law.Status has no
+    "contested" value, so the entry keeps the status Cámara de Diputados
+    publishes and must carry the caveat in ``notes`` for anyone citing it."""
+    entry = LawRegistry(registry_path=_real_registry_path()).get_by_id(
+        "reg_reg_lfpdppp"
+    )
+    assert entry["status"] in {"vigente", "abrogada", "derogada", "unknown"}
+    notes = entry.get("notes", "")
+    assert "Vigencia abierta" in notes
+    assert "20-03-2025" in notes
