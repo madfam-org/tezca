@@ -59,6 +59,10 @@ spec:
               # stuck OutOfSync retry-looping since #145).
               image: docker.io/library/postgres:16-alpine
               securityContext:
+                # Explicit: the cluster's Kyverno `disallow-privileged-containers`
+                # validates Pods (no autogen) and requires the field, so without it
+                # every backup pod was refused at admission and the Job never ran.
+                privileged: false
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 capabilities:
@@ -96,6 +100,10 @@ spec:
             - name: upload
               image: docker.io/amazon/aws-cli:2.15.0
               securityContext:
+                # Explicit: the cluster's Kyverno `disallow-privileged-containers`
+                # validates Pods (no autogen) and requires the field, so without it
+                # every backup pod was refused at admission and the Job never ran.
+                privileged: false
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 capabilities:
