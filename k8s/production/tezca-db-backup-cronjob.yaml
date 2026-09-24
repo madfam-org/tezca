@@ -71,6 +71,24 @@ spec:
               args:
                 - |
                   set -euo pipefail
+                  # Wait for the network before the first connection. On this
+                  # cluster (kube-router) a NEW pod's egress is REJECTED for
+                  # its first seconds, until its NetworkPolicy is programmed,
+                  # which surfaces as "Connection refused" although the DB is
+                  # up and every policy admits the pod. That is how all three
+                  # attempts of tezca-db-backup-29837160 (2026-09-24) failed
+                  # after #255 let the pod past admission. Bounded: fail
+                  # closed after ~90s so a real outage still fails the Job.
+                  for i in $(seq 1 45); do
+                    if pg_isready -q -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME"; then
+                      break
+                    fi
+                    if [ "$i" -eq 45 ]; then
+                      echo "database $DB_HOST:$DB_PORT not reachable after 90s" >&2
+                      exit 1
+                    fi
+                    sleep 2
+                  done
                   pg_dump --format=custom --no-owner --no-privileges \
                     -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
                     -f /dump/tezca.dump
