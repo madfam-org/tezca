@@ -1272,3 +1272,82 @@ def ingest_law(law_id, index=True):
         logger.error("ingest_law %s failed: %s", law_id, e)
         _finish_log(log_entry, error=str(e))
         return {"status": "error", "law_id": law_id, "error": str(e)}
+
+
+def _truthy(value):
+    """Job args may arrive as strings ("false" must not read as True)."""
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return bool(value)
+
+
+@shared_task(name="dataops.sync_law_status")
+def sync_law_status(law_id=None, dry_run=False):
+    """Promote ``Law.status`` from ``unknown`` to the registry's status.
+
+    ``db_saver`` resolves a law's status at ingest time (#218), but every law
+    ingested before that fix — LFPDPPP included — still reports
+    ``status: "unknown"`` (#222), and ``index_laws`` only copies whatever the
+    DB holds into Elasticsearch. This applies the SAME resolution
+    (``DatabaseSaver._resolve_status``) to existing rows without a re-ingest:
+
+        enclii jobs run dataops.sync_law_status -- law_id=lfpdppp dry_run=true --service tezca-worker --env production
+
+    Only ``unknown``/blank rows are touched — a curated status (``abrogada``,
+    ``derogada``, an explicit ``vigente``) is never overwritten. Omit
+    ``law_id`` to sweep every registry entry. Re-index afterwards
+    (``dataops.reindex_law``) so the law-level ES document reflects it.
+
+    Returns ``{status, dry_run, updated: [{law_id, to}], skipped, missing}``.
+    """
+    from apps.api.models import Law
+    from apps.ingestion.db_saver import DatabaseSaver
+    from apps.scraper.utils.law_registry import LawRegistry
+
+    dry_run = _truthy(dry_run)
+    registry = LawRegistry()
+    if law_id and str(law_id).strip():
+        entry = registry.get_by_id(str(law_id).strip())
+        if entry is None:
+            return {
+                "status": "error",
+                "law_id": law_id,
+                "error": f"'{law_id}' is not in data/law_registry.json",
+            }
+        entries = [entry]
+    else:
+        entries = registry.all()
+
+    log_entry = _start_log(
+        "sync_law_status", parameters={"law_id": law_id, "dry_run": dry_run}
+    )
+    updated, skipped, missing = [], 0, []
+    try:
+        for entry in entries:
+            law = Law.objects.filter(official_id=entry["id"]).first()
+            if law is None:
+                missing.append(entry["id"])
+                continue
+            if law.status and law.status != Law.Status.UNKNOWN:
+                skipped += 1
+                continue
+            resolved = DatabaseSaver._resolve_status(entry.get("status"))
+            if resolved == Law.Status.UNKNOWN:
+                skipped += 1
+                continue
+            updated.append({"law_id": law.official_id, "to": str(resolved)})
+            if not dry_run:
+                law.status = resolved
+                law.save(update_fields=["status"])
+        _finish_log(log_entry, ingested=0 if dry_run else len(updated))
+        return {
+            "status": "completed",
+            "dry_run": dry_run,
+            "updated": updated,
+            "skipped": skipped,
+            "missing": missing,
+        }
+    except Exception as e:
+        logger.error("sync_law_status failed: %s", e)
+        _finish_log(log_entry, error=str(e))
+        return {"status": "error", "dry_run": dry_run, "error": str(e)}
