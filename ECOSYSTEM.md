@@ -193,6 +193,7 @@ ArgoCD syncs → Switchyard tracks lifecycle events.
 
 **Operational access** (SSH, kubeconfigs, node identity, estate counts, cost
 ledger): private repo `madfam-org/internal-devops`. Not in any public repo.
+Policy: the repo-boundary contract, `internal-devops/docs/repo-boundary-contract.md`.
 
 ---
 
