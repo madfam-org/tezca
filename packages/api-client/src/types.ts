@@ -197,6 +197,8 @@ export interface BulkArticle {
   law_type: string | null;
   state: string | null;
   article_id: string;
+  /** "transitorio" for transitorio provisions (ids "T-N" / "T-RK-N"). */
+  kind?: 'articulo' | 'transitorio';
   text: string;
   last_updated: string | null;
 }

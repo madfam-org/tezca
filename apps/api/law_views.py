@@ -39,6 +39,7 @@ from elasticsearch.exceptions import ConnectionError as ESConnectionError
 from elasticsearch.exceptions import ConnectionTimeout, NotFoundError
 
 from .config import ES_HOST, INDEX_NAME, es_client
+from .transitorios import article_kind
 
 logger = logging.getLogger(__name__)
 
@@ -408,6 +409,7 @@ def law_search(request, law_id):
             results.append(
                 {
                     "article_id": source.get("article"),
+                    "kind": article_kind(source),
                     "snippet": (
                         highlights[0] if highlights else source.get("text", "")[:200]
                     ),
@@ -483,6 +485,7 @@ def law_articles(request, law_id):
             articles.append(
                 {
                     "article_id": aid,
+                    "kind": article_kind(source),
                     "text": source.get("text"),
                 }
             )

@@ -326,6 +326,65 @@ class TestIndexLawsCommand:
         assert captured["path"] == "path/to/newest.xml"
         assert captured["path"] != "path/to/oldest.xml"
 
+    # ── #222: in-place re-index prunes the law's stale article docs ────────
+
+    @staticmethod
+    def _mock_lfpdppp():
+        version = MagicMock()
+        version.xml_file_path = "federal/mx-fed-lfpdppp-v2.xml"
+        version.publication_date.isoformat.return_value = "2025-03-20"
+        law = MagicMock()
+        law.official_id = "lfpdppp"
+        law.name = "LFPDPPP"
+        law.category = "Ley"
+        law.tier = "federal"
+        law.municipality = ""
+        law.state = ""
+        law.status = "vigente"
+        law.domains = []
+        law.law_type = "legislative"
+        law.short_name = None
+        law.versions.first.return_value = version
+        return law
+
+    def _index(self, command, xml, prune_stale):
+        mock_es = MagicMock()
+        mock_es.delete_by_query.return_value = {"deleted": 34}
+        with pytest.MonkeyPatch.context() as m:
+            from apps.api.management.commands import index_laws
+
+            m.setattr(index_laws, "read_data_content", lambda path: xml)
+            m.setattr(index_laws, "helpers", MagicMock())
+            n = command.index_law(
+                self._mock_lfpdppp(), mock_es, dry_run=False, prune_stale=prune_stale
+            )
+        return n, mock_es
+
+    def test_in_place_reindex_prunes_ids_not_rewritten(self, command):
+        """The pre-#218 word ids (lfpdppp-Octavo) and -dupN docs survived the
+        in-place upsert in production; the re-index must delete them, scoped
+        to exactly this law and keeping every id it just wrote."""
+        n, es = self._index(command, TRANSITORIO_COLLISION_XML, prune_stale=True)
+        assert n == 3
+        kwargs = es.delete_by_query.call_args.kwargs
+        query = kwargs["query"]["bool"]
+        assert query["filter"] == [{"term": {"law_id": "lfpdppp"}}]
+        assert query["must_not"] == [
+            {"ids": {"values": ["lfpdppp-8", "lfpdppp-T-1", "lfpdppp-T-8"]}}
+        ]
+
+    def test_no_prune_unless_requested(self, command):
+        _, es = self._index(command, TRANSITORIO_COLLISION_XML, prune_stale=False)
+        es.delete_by_query.assert_not_called()
+
+    def test_no_prune_when_nothing_was_indexed(self, command):
+        """A parse failure yields zero articles; it must never empty the law."""
+        n, es = self._index(
+            command, '<?xml version="1.0"?><akomaNtoso', prune_stale=True
+        )
+        assert n == 0
+        es.delete_by_query.assert_not_called()
+
     def test_handle_indexing_municipality(self, command):
         """Verify municipality field is added to ES document."""
         # Mock Law object

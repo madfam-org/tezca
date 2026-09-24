@@ -47,6 +47,9 @@ class LawListItemSchema(serializers.Serializer):
 
 class ArticleSchema(serializers.Serializer):
     article_id = serializers.CharField()
+    # "articulo" for substantive articles, "transitorio" for transitorio
+    # provisions (ids "T-N" / "T-RK-N" — see apps/api/transitorios.py).
+    kind = serializers.ChoiceField(choices=["articulo", "transitorio"])
     text = serializers.CharField()
 
 
