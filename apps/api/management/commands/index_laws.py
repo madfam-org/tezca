@@ -24,6 +24,11 @@ from apps.api.es_index_manager import (
     swap_alias,
 )
 from apps.api.models import Law
+from apps.api.transitorios import (
+    derive_article_id,
+    document_has_numeric_articles,
+    resolve_article_ids,
+)
 from apps.api.utils.paths import ES_HOST, read_data_content
 
 logger = logging.getLogger(__name__)
@@ -32,26 +37,6 @@ INDEX_LAWS = "laws"
 INDEX_ARTICLES = "articles"
 
 NS = {"akn": "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"}
-
-# Prefix applied to transitorio article ids so they never collide with the
-# id of a substantive article that happens to share the same ordinal number.
-# See extract_articles_from_xml / _derive_article_id for the rationale.
-TRANSITORIO_ID_PREFIX = "T-"
-
-# Spanish ordinal words used to number transitorio provisions ("Primero.-",
-# "Octavo.", "Décimo Segundo", "Único"). A bare <num> that is one of these —
-# with no "Artículo" prefix and no digits — signals a transitorio node whose
-# derived id would otherwise be a plain integer (via the parser's id="trans-N")
-# and collide with the substantive article of the same number.
-_ORDINAL_WORD_RE = re.compile(
-    r"^(?:"
-    r"primer|segund|tercer|cuart|quint|sext|s[ée]ptim|octav|noven|"
-    r"d[ée]cim|und[ée]cim|duod[ée]cim|vig[ée]sim|trig[ée]sim|"
-    r"cuadrag[ée]sim|quincuag[ée]sim|sexag[ée]sim|septuag[ée]sim|"
-    r"octog[ée]sim|nonag[ée]sim|[úu]ltim|[úu]nic"
-    r")[oa]s?\b",
-    re.IGNORECASE,
-)
 
 
 class Command(BaseCommand):
@@ -95,6 +80,14 @@ class Command(BaseCommand):
             "--include-quarantined",
             action="store_true",
             help="Include laws with quarantined quality grades (D/F) in indexing",
+        )
+        parser.add_argument(
+            "--no-prune",
+            action="store_true",
+            help=(
+                "In-place runs only: keep a law's article docs that this run "
+                "did not rewrite (default: delete them as stale)"
+            ),
         )
         parser.add_argument(
             "--with-embeddings",
@@ -315,135 +308,13 @@ class Command(BaseCommand):
 
         return "\n\n".join(paragraphs)
 
-    @staticmethod
-    def _node_id(node):
-        """Return the node's stable id attribute, tolerating eId or id.
-
-        The AKN generators (akn_generator_v2, bluebell) emit an ``id``
-        attribute; some sources emit the AKN-3.0 ``eId``. Read both so the
-        transitorio detector works regardless of which one is present.
-        """
-        return node.get("eId") or node.get("id") or ""
-
-    def _is_transitorio(self, node, num_text, has_numeric_articles=True):
-        """Decide whether an <article> node is a transitorio provision.
-
-        Transitorios are numbered with ordinals ("Primero.-", "Octavo.") and,
-        when parsed by akn_generator_v2, carry ``id="trans-N"``. They live in a
-        DISPOSICIONES/ARTÍCULOS TRANSITORIOS section appended after the main
-        body. Because they are serialised as <article> nodes just like
-        substantive articles, their derived id (a bare number) collides with the
-        substantive article of the same number and ES silently overwrites one.
-
-        Detection is layered, preferring the AKN structure over string matching:
-          1. The node's own id/eId begins with a transitorio marker
-             ("trans", "transitorio", "disp-trans", "dt"). This is the parser's
-             canonical signal (akn_generator_v2 emits id="trans-N").
-          2. An ancestor container (section/hcontainer/chapter/title/part) is
-             headed/numbered "Transitorios" / "Disposiciones Transitorias".
-          3. Fallback heuristic: the <num> is a bare Spanish ordinal word
-             ("Octavo", "Décimo Segundo") with no "Artículo" prefix and no
-             digits. This ONLY applies when the document also contains
-             substantive "Artículo N" articles — i.e. the real collision
-             scenario. Instruments that number every substantive provision with
-             ordinals (JCF Reglas de Operación, Lineamientos, Acuerdos) have NO
-             "Artículo N" articles, so their ordinals are the primary scheme and
-             must be preserved verbatim, never namespaced.
-        """
-        node_id = self._node_id(node).lower()
-        if re.match(r"^(?:trans|transitori|disp[-_]?trans|dt[-_])", node_id):
-            return True
-
-        # Walk ancestor containers looking for a "Transitorios" heading/num.
-        for tag in ("section", "hcontainer", "chapter", "title", "part", "book"):
-            for anc in node.xpath(f"ancestor::akn:{tag}", namespaces=NS):
-                anc_id = (anc.get("eId") or anc.get("id") or "").lower()
-                if re.search(r"transitori", anc_id):
-                    return True
-                for child_tag in ("heading", "num"):
-                    child = anc.find(f"akn:{child_tag}", NS)
-                    if (
-                        child is not None
-                        and child.text
-                        and re.search(r"transitori", child.text, re.IGNORECASE)
-                    ):
-                        return True
-
-        # Fallback: bare ordinal num — only when substantive "Artículo N"
-        # articles coexist (otherwise ordinals ARE the article scheme, e.g.
-        # JCF Reglas: PRIMERA, SEGUNDA, DÉCIMA QUINTA).
-        if has_numeric_articles and num_text:
-            stripped = num_text.strip()
-            has_articulo = re.match(r"^(?:Art[ií]culo|ARTÍCULO)\b", stripped)
-            has_digit = re.search(r"\d", stripped)
-            if not has_articulo and not has_digit and _ORDINAL_WORD_RE.match(stripped):
-                return True
-
-        return False
-
-    @staticmethod
-    def _document_has_numeric_articles(article_nodes):
-        """True if any <article> is numbered "Artículo N" (a substantive,
-        digit-numbered article). Distinguishes real laws — where bare ordinals
-        signal transitorios — from ordinal-only instruments (Reglas,
-        Lineamientos) where ordinals are the substantive numbering scheme."""
-        for node in article_nodes:
-            num = node.find("akn:num", NS)
-            if num is not None and num.text and re.search(r"\d", num.text):
-                return True
-        return False
-
-    def _derive_article_id(self, node, has_numeric_articles=True):
-        """Derive a stable, collision-free article id for an <article> node.
-
-        For substantive articles this is the article number ("8", "27-A").
-        For transitorios it is namespaced with ``TRANSITORIO_ID_PREFIX`` so
-        ``lfpdppp-8`` (substantive) and ``lfpdppp-T-8`` (the "Octavo"
-        transitorio) are distinct ES documents that both survive indexing.
-
-        Returns a tuple ``(article_id, is_transitorio)``.
-        """
-        num = node.find("akn:num", NS)
-        num_text = num.text.strip() if num is not None and num.text else ""
-        raw = num_text or self._node_id(node)
-
-        is_transitorio = self._is_transitorio(node, num_text, has_numeric_articles)
-
-        # Base id: strip the "Artículo" prefix and trailing period.
-        base = re.sub(r"^(?:Art[ií]culo|ARTÍCULO)\s*", "", raw).rstrip(".").strip()
-
-        if is_transitorio:
-            # Prefer the numeric ordinal (from id="trans-N" or an ordinal word)
-            # so distinct transitorios get distinct ids; fall back to the ordinal
-            # text itself when no number is available.
-            trans_num = ""
-            node_id = self._node_id(node)
-            m = re.search(r"(\d+)$", node_id)
-            if m:
-                trans_num = m.group(1)
-            else:
-                from apps.parsers.patterns.articles import ordinal_to_number
-
-                mapped = ordinal_to_number(base) if base else None
-                trans_num = str(mapped) if mapped is not None else base
-            article_id = f"{TRANSITORIO_ID_PREFIX}{trans_num or base}".strip()
-            # Guard against an empty/degenerate id.
-            if article_id == TRANSITORIO_ID_PREFIX:
-                article_id = f"{TRANSITORIO_ID_PREFIX}{node_id or 'x'}"
-            return article_id, True
-
-        return base, False
-
     def extract_articles_from_xml(self, xml_content, law_official_id):
         """Parse AKN XML and extract articles with hierarchy.
 
-        Transitorio provisions are namespaced (see _derive_article_id) so their
-        Elasticsearch ``_id`` never collides with a substantive article of the
-        same ordinal number. A defensive de-duplication pass additionally
-        guarantees that if two nodes still derive the same id (e.g. a reform
-        decree that re-uses substantive article numbers and is not cleanly
-        marked as transitorio in the source XML), later nodes are suffixed
-        rather than silently overwriting earlier ones downstream in ES.
+        Ids come from ``apps.api.transitorios``: substantive articles keep
+        their number, transitorios are namespaced (``T-8``, ``T-R2-1``) and
+        ``resolve_article_ids`` guarantees no two articles share an ES ``_id``
+        (a collision is renamed ``-dupN`` and reported, never overwritten).
         """
         try:
             root = etree.fromstring(xml_content.encode("utf-8"))
@@ -452,51 +323,33 @@ class Command(BaseCommand):
             return []
 
         articles = []
-        seen_ids: dict = {}
         article_nodes = root.xpath("//akn:article", namespaces=NS)
-
-        # Document-level context: only when substantive "Artículo N" articles
-        # exist do bare ordinals signal transitorios (see _is_transitorio).
-        has_numeric_articles = self._document_has_numeric_articles(article_nodes)
+        has_numeric_articles = document_has_numeric_articles(article_nodes)
 
         for node in article_nodes:
-            eid = node.get("eId") or node.get("id")
-            article_id, is_transitorio = self._derive_article_id(
-                node, has_numeric_articles
-            )
-
-            # Extract structured text
+            article_id, is_transitorio = derive_article_id(node, has_numeric_articles)
             text_content = self._extract_article_text(node)
-
             if not text_content:
                 continue
+            articles.append(
+                {
+                    "article_id": article_id,
+                    "eId": node.get("eId") or node.get("id"),
+                    "is_transitorio": is_transitorio,
+                    "text": text_content,
+                    "book": self._get_element_metadata(node, "book"),
+                    "title": self._get_element_metadata(node, "title"),
+                    "chapter": self._get_element_metadata(node, "chapter"),
+                    "part": self._get_element_metadata(node, "part"),
+                    "section": self._get_element_metadata(node, "section"),
+                }
+            )
 
-            # Defensive de-dup: never let two articles resolve to the same id.
-            if article_id in seen_ids:
-                seen_ids[article_id] += 1
-                deduped = f"{article_id}-dup{seen_ids[article_id]}"
-                self.stderr.write(
-                    f"Duplicate article id '{article_id}' in {law_official_id}; "
-                    f"reindexing second occurrence as '{deduped}' to avoid overwrite"
-                )
-                article_id = deduped
-            else:
-                seen_ids[article_id] = 0
-
-            article_data = {
-                "article_id": article_id,
-                "eId": eid,
-                "is_transitorio": is_transitorio,
-                "text": text_content,
-                "book": self._get_element_metadata(node, "book"),
-                "title": self._get_element_metadata(node, "title"),
-                "chapter": self._get_element_metadata(node, "chapter"),
-                "part": self._get_element_metadata(node, "part"),
-                "section": self._get_element_metadata(node, "section"),
-            }
-            articles.append(article_data)
-
-        return articles
+        return resolve_article_ids(
+            articles,
+            has_numeric_articles,
+            warn=lambda msg: self.stderr.write(f"{law_official_id}: {msg}"),
+        )
 
     def _index_law_doc(self, law, version, article_count, es, dry_run=False):
         """Index the law-level document into the laws index."""
@@ -578,8 +431,49 @@ class Command(BaseCommand):
 
         return 1
 
-    def index_law(self, law, es, dry_run=False, embedding_generator=None):
-        """Index a single law with articles or raw text fallback."""
+    def _prune_stale_articles(self, law, keep_ids, es):
+        """Delete this law's article docs that the current run did not write.
+
+        An in-place re-index upserts by ``_id`` and cannot, by itself, remove
+        ids the new output no longer produces — e.g. the pre-#218 word ids
+        (``lfpdppp-Octavo``) and ``-dupN`` docs that kept the LFPDPPP listing
+        at 109 entries after the transitorio fix (#222). Scoped to exactly one
+        ``law_id`` (exact ``term``, never a phrase match) and skipped when the
+        run wrote nothing, so a failed parse can never empty a law.
+        """
+        if not keep_ids:
+            return 0
+        res = es.delete_by_query(
+            index=INDEX_ARTICLES,
+            query={
+                "bool": {
+                    "filter": [{"term": {"law_id": law.official_id}}],
+                    "must_not": [{"ids": {"values": sorted(keep_ids)}}],
+                }
+            },
+            conflicts="proceed",
+            refresh=True,
+        )
+        deleted = res.get("deleted", 0)
+        if deleted:
+            self.stdout.write(
+                f"Pruned {deleted} stale article docs for {law.official_id}"
+            )
+        return deleted
+
+    def index_law(
+        self,
+        law,
+        es,
+        dry_run=False,
+        embedding_generator=None,
+        prune_stale=False,
+    ):
+        """Index a single law with articles or raw text fallback.
+
+        ``prune_stale`` (in-place runs) deletes the law's article docs that this
+        run did not rewrite; see ``_prune_stale_articles``.
+        """
         # LawVersion.Meta.ordering = ["-publication_date"] (descending), so
         # .first() is the NEWEST version. Using .last() here previously indexed
         # the OLDEST version, serving superseded text for amended laws.
@@ -675,6 +569,8 @@ class Command(BaseCommand):
 
         if actions:
             helpers.bulk(es, actions)
+            if prune_stale:
+                self._prune_stale_articles(law, {a["_id"] for a in actions}, es)
 
         # Index law-level document
         self._index_law_doc(law, version, len(actions), es, dry_run)
@@ -845,7 +741,14 @@ class Command(BaseCommand):
 
         for law in laws:
             try:
-                n = self.index_law(law, es, options["dry_run"], embedding_generator)
+                n = self.index_law(
+                    law,
+                    es,
+                    options["dry_run"],
+                    embedding_generator,
+                    prune_stale=not options.get("reindex")
+                    and not options.get("no_prune"),
+                )
                 if n == 0:
                     skipped += 1
                 else:
