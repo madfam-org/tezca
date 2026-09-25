@@ -1,0 +1,28 @@
+# Scrape target for the rules-eval Prometheus (namespace monitoring), which
+# evaluates app PrometheusRules and discovers targets from ServiceMonitors.
+#
+# REPLACES the hand-applied tezca/tezca-api-monitor of 2026-04-14, which
+# scraped nothing: its selector `app: tezca-api` matched no Service (the
+# Service carries app.kubernetes.io/name), its endpoint `port: http` named a
+# port the Service did not name, and its path /health returns JSON, not
+# Prometheus text. Same name, so Argo CD takes the object over on sync.
+#
+# No namespaceSelector: the monitor then selects Services in its own
+# namespace only.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tezca-api-monitor
+  namespace: tezca
+  labels:
+    app.kubernetes.io/name: tezca-api
+    app.kubernetes.io/part-of: tezca
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-api
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

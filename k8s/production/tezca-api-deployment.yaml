@@ -92,6 +92,14 @@ spec:
               drop: ["ALL"]
           ports:
             - containerPort: 8000
+              name: http
+              protocol: TCP
+            # Prometheus metrics listener, served by the gunicorn master
+            # (apps/indigo/gunicorn.conf.py, apps/api/metrics_server.py). Only
+            # the Service's `metrics` port and `allow-monitoring-ingress` reach
+            # it; the Cloudflare tunnel routes api.tezca.mx to 8000 alone.
+            - containerPort: 9464
+              name: metrics
               protocol: TCP
           env:
             - name: DJANGO_SECRET_KEY

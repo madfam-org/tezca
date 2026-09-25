@@ -5,11 +5,26 @@ metadata:
   labels:
     app.kubernetes.io/name: tezca-api
     app.kubernetes.io/part-of: tezca
+  annotations:
+    # The main Prometheus (monitoring/prometheus, job kubernetes-services)
+    # scrapes Services by these annotations. Port 9464 is the private metrics
+    # listener in the gunicorn master; the public port 8000 serves no metrics.
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9464"
+    prometheus.io/path: /metrics
 spec:
   type: ClusterIP
   selector:
     app.kubernetes.io/name: tezca-api
   ports:
-    - port: 8000
+    # Named because a Service with two ports must name both, and because
+    # ServiceMonitor/tezca-api-monitor matches its endpoint to a Service port
+    # by NAME only.
+    - name: http
+      port: 8000
       targetPort: 8000
+      protocol: TCP
+    - name: metrics
+      port: 9464
+      targetPort: 9464
       protocol: TCP

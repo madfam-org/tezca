@@ -119,8 +119,12 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8000/api/v1/admin/health/ || exit 1
 
-# Gunicorn with gthread for async-compatible workers
+# Gunicorn with gthread for async-compatible workers. The config file adds
+# the hooks that serve Prometheus metrics (summed across workers) from the
+# master on the private port 9464; the public port 8000 has no metrics route.
+EXPOSE 9464
 CMD ["gunicorn", "apps.indigo.wsgi:application", \
+     "--config", "apps/indigo/gunicorn.conf.py", \
      "--bind", "0.0.0.0:8000", \
      "--workers", "4", \
      "--threads", "2", \

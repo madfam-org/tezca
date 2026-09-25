@@ -127,6 +127,7 @@ PostgreSQL uses the shared MADFAM cluster (database: `tezca`).
 | `k8s/production/namespace.yaml` | `tezca` namespace |
 | `k8s/production/tezca-*-deployment.yaml` | 7 deployments (API has HPA, beat uses Recreate strategy) |
 | `k8s/production/tezca-*-service.yaml` | 5 ClusterIP services (api, web, admin, redis, es) |
+| `k8s/production/tezca-api-servicemonitor.yaml` | Prometheus scrape of the API's private metrics port 9464 |
 | `k8s/production/tezca-*-pvc.yaml` | 2 PVCs (redis 5Gi, es 50Gi) |
 
 ### CI/CD
@@ -218,6 +219,8 @@ After completing all manual steps (M1-M9), verify:
 | 8 | Admin login flow | Navigate to `admin.tezca.mx` | Redirect to /sign-in → login → dashboard |
 | 9 | Django security | `enclii exec tezca-api -- python manage.py check --deploy` | No critical warnings |
 | 10 | CI/CD pipeline | Push to `main` touching `apps/api/` | Image built → digest committed → ArgoCD syncs |
+| 11 | Metrics not public | `curl -s -o /dev/null -w '%{http_code}' https://api.tezca.mx/metrics` (and `/metrics/`) | `404` |
+| 12 | Metrics listener up | `ENCLII_PROJECT=tezca enclii logs tezca-api --env production --since 30m \| grep "Prometheus metrics"` | One `Prometheus metrics (in-cluster only) on :9464/metrics` line per pod |
 
 ---
 
@@ -233,6 +236,7 @@ After completing all manual steps (M1-M9), verify:
 8. **ENCLII_PORT**: Enclii may set this env var — apps should respect it if present
 9. **R2 storage backend**: `STORAGE_BACKEND=r2` must be set in production K8s env; defaults to `local` for dev. boto3 is an optional dep — only imported when R2 is active
 10. **Sentry optional**: Both `sentry-sdk` (API) and `@sentry/nextjs` (web) are optional. Code gracefully degrades when not installed
+11. **Prometheus metrics are private**: the API serves `http_requests_total` and `http_request_duration_seconds` (by method, route pattern and status) plus `process_*`/`python_info` on port 9464, `GET /metrics` only, from the gunicorn master (`apps/indigo/gunicorn.conf.py`, `apps/api/metrics_server.py`). Workers write to `PROMETHEUS_MULTIPROC_DIR` and the master serves the sum (prometheus_client multiprocess mode). The public port 8000 has no metrics route; never add one to "fix" a scrape. Scraped through the `tezca-api` Service's `prometheus.io/*` annotations and `ServiceMonitor/tezca-api-monitor` (port `metrics`), admitted by NetworkPolicy `allow-monitoring-ingress` (monitoring namespace, TCP 9464 only). A bad `METRICS_PORT`, or 9464 already bound, makes gunicorn exit at boot
 
 ---
 
