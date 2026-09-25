@@ -294,3 +294,37 @@ spec:
       ports:
         - protocol: TCP
           port: 8000
+---
+# Admit the in-cluster Prometheus instances (namespace monitoring: the main
+# `app: prometheus` and `app: rules-eval`) to tezca-api's private metrics
+# listener on 9464, and to nothing else.
+#
+# tezca-api is ingress-isolated by `allow-cloudflared-ingress` above, so
+# without this rule every scrape is refused (k3s rejects a denied SYN).
+#
+# Bare namespaceSelector, deliberately WITHOUT a podSelector in the same
+# from-entry: on this k3s + kube-router cluster that combination has rendered
+# as deny-all (see `allow-symbiosis-hcm-ingress`). The port list keeps the
+# monitoring namespace off the API port 8000.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-ingress
+  namespace: tezca
+  labels:
+    app.kubernetes.io/part-of: tezca
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: tezca-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9464

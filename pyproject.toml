@@ -31,6 +31,9 @@ django-celery-beat = "^2.8.1"
 pdfplumber = "^0.11.9"
 psycopg2-binary = "^2.9.11"
 gunicorn = ">=23,<27"
+# Prometheus metrics: request count/latency middleware + the private :9464
+# listener the gunicorn master serves (apps/api/metrics_server.py).
+prometheus-client = ">=0.24,<1"
 PyJWT = {version = "^2.8", extras = ["crypto"]}
 cryptography = ">=50.0.0,<51"
 # Sentry error tracking

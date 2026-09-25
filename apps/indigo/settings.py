@@ -127,6 +127,10 @@ SPECTACULAR_SETTINGS = {
 }
 
 MIDDLEWARE = [
+    # FIRST: counts and times every request, including the responses other
+    # middleware short-circuit (CORS preflights, DisallowedHost, CSRF). See
+    # apps/api/middleware/request_metrics.py.
+    "apps.api.middleware.request_metrics.RequestMetricsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",

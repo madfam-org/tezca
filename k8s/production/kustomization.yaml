@@ -7,6 +7,7 @@ resources:
 - namespace.yaml
 - tezca-api-deployment.yaml
 - tezca-api-service.yaml
+- tezca-api-servicemonitor.yaml
 - tezca-web-deployment.yaml
 - tezca-web-service.yaml
 - tezca-admin-deployment.yaml
