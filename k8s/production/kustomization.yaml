@@ -32,7 +32,7 @@ images:
   name: docker.io/library/postgres
 - digest: sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
   name: docker.io/library/redis
-- digest: sha256:17673dcf8d6b56605c21210eb6889789fed331bc88013b4812aafb63f8ada900
+- digest: sha256:b1f6a713e6c3b52dee38ead6de3ee4ee7748b03225e73e09a3c415286e0afb54
   name: ghcr.io/madfam-org/tezca/admin
   newName: ghcr.io/madfam-org/tezca-admin
 - digest: sha256:2b9e8f097f7a560280ae079bd92f24c0269a159616b076f2e68dfec48cb000b4
