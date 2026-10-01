@@ -17,6 +17,6 @@ before raw infrastructure tools. Direct `kubectl`, `helm`, SSH, provider CLIs,
 
 ## Security baseline (2026-09-30)
 
-- Security floors: next 16.3.8 (GHSA-vcvr-r3jv-pc5j, `next/og` RCE; `/leyes/[id]/opengraph-image` is dynamic), axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0. `tests/test_dependency_floors.py` enforces them. Details: `SECURITY.md` → "Security baseline".
+- Security floors: next 16.3.8 (GHSA-vcvr-r3jv-pc5j, `next/og` RCE; `/leyes/[id]/opengraph-image` is dynamic), axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0, WeasyPrint 70.0; the MCP server's `uv.lock` has its own (PyJWT 2.15.1, mcp 1.30.0, starlette 1.7.0). `tests/test_dependency_floors.py` enforces them. Details: `SECURITY.md` → "Security baseline".
 - A change to the root `package-lock.json` alone does not redeploy web or admin. Dispatch `deploy-web.yml` and `deploy-admin.yml` (`deploy_ack=production`). `deploy-api.yml` does run on `pyproject.toml` / `poetry.lock`.
 - Related contracts: Janua (identity, `docs/AUTH.md`), Enclii (deploy, `enclii.yaml`), consumers karafiel and symbiosis-hcm (`docs/FISCAL_VALUES_FEED.md`, `docs/labor/`). Links: `README.md` → "Related repositories / contracts".

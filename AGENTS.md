@@ -666,7 +666,7 @@ type Lang = 'es' | 'en' | 'nah';
 - MCP server publishes to PyPI on `mcp-v*` tags via OIDC trusted publisher
 - Deploy workflows push digest commits that can race with subsequent pushes -- use `git pull --rebase` before pushing
 - `deploy-web.yml` / `deploy-admin.yml` do NOT trigger on the root `package-lock.json`. A fix that only changes the root lockfile merges without shipping; dispatch both workflows by hand (`deploy_ack=production`, `reason` >= 12 chars). `deploy-api.yml` does trigger on `pyproject.toml` / `poetry.lock`. Command and rationale: `SECURITY.md` → "Security baseline"
-- Dependency security floors (next 16.3.8, axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0) are pinned by `tests/test_dependency_floors.py`; raise a floor with the bump, never lower it
+- Dependency security floors (next 16.3.8, axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0, WeasyPrint 70.0, plus the MCP server `uv.lock` floors) are pinned by `tests/test_dependency_floors.py`; raise a floor with the bump, never lower it
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers

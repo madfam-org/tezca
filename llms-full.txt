@@ -47,8 +47,10 @@ gap or incident link.
   next 16.3.8 in `apps/web` and `apps/admin` (GHSA-vcvr-r3jv-pc5j, a critical
   RCE in `next/og` ImageResponse; the dynamic `/leyes/[id]/opengraph-image`
   route was the exposed surface), axios 1.20.0, PyJWT 2.15.1 (`^2.15.1` in
-  `pyproject.toml`) and urllib3 2.8.0 (`>=2.8,<3`). Raise a floor with the bump;
-  never lower one.
+  `pyproject.toml`), urllib3 2.8.0 (`>=2.8,<3`) and WeasyPrint 70.0 (`^70.0`);
+  in `packages/mcp-server/uv.lock`, PyJWT 2.15.1, mcp 1.30.0, starlette 1.7.0,
+  python-multipart 0.0.32, cryptography 50.0.2 and anyio 4.15.1. Raise a floor
+  with the bump; never lower one.
 - Deploy trigger gap: `deploy-web.yml` and `deploy-admin.yml` run only on
   `apps/web/**` / `apps/admin/**`, `packages/ui/**` and `packages/lib/**`. A
   root-lockfile-only change merges without shipping; dispatch both workflows

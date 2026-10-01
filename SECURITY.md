@@ -49,7 +49,8 @@ We commit to the following service level objective on dependency vulnerabilities
 
 The minimum versions below are security floors. Raise them, never lower them.
 `tests/test_dependency_floors.py` fails the backend test job if `poetry.lock`,
-`pyproject.toml` or `package-lock.json` drifts below any of them.
+`pyproject.toml`, `packages/mcp-server/uv.lock` or `package-lock.json` drifts
+below any of them.
 
 | Package | Floor | Why |
 |---|---|---|
@@ -57,6 +58,8 @@ The minimum versions below are security floors. Raise them, never lower them.
 | `axios` (root `package-lock.json`) | 1.20.0 | High-severity npm audit findings on 1.19.0. Bumped in #259. |
 | `PyJWT` | 2.15.1 (`^2.15.1` in `pyproject.toml`) | pip-audit findings on 2.13.0. Bumped in #259. |
 | `urllib3` | 2.8.0 (`>=2.8,<3` in `pyproject.toml`) | pip-audit findings on 2.7.0. Bumped in #259. |
+| `weasyprint` (`pdf`/`export`/`production` extras) | 70.0 (`^70.0` in `pyproject.toml`) | GHSA-983w-rhvv-gwmv (SSRF via redirect, fixed in 68.0), GHSA-jf6q-chmf-3h3v (SSRF, fixed in 70.0), GHSA-jhhc-3hcp-qhm5 (CSS injection, last affected 68.1). No 62.x release carries the fixes. |
+| `packages/mcp-server/uv.lock` | PyJWT 2.15.1, mcp 1.30.0, starlette 1.7.0, python-multipart 0.0.32, cryptography 50.0.2, anyio 4.15.1 | Lockfile floors for the MCP server (GHSA-ffc3-869f-jxw9 and the other PyJWT 2.12–2.14 advisories, the mcp 1.27–1.28 transport advisories, starlette, python-multipart, cryptography and anyio advisories). They are transitive through `mcp`, so they live in the lockfile only. |
 
 **A root lockfile change does not redeploy web or admin.** `deploy-web.yml` and
 `deploy-admin.yml` run on pushes under `apps/web/**` / `apps/admin/**`,

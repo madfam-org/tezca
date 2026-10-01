@@ -11,6 +11,11 @@ puts the floors inside the backend test job itself, so a lockfile regeneration
 that drifts any of them back below the patched version fails as an ordinary
 test, independent of the advisory databases.
 
+On 2026-10-01 WeasyPrint 70.0 (GHSA-983w-rhvv-gwmv, GHSA-jf6q-chmf-3h3v,
+GHSA-jhhc-3hcp-qhm5) joined the root floors, and the MCP server's ``uv.lock``
+got its own (PyJWT GHSA-ffc3-869f-jxw9 and others, mcp, starlette,
+python-multipart, cryptography, anyio).
+
 Raise a floor here in the same change that raises it in pyproject.toml or the
 lockfile. Never lower one to make this pass.
 """
@@ -30,6 +35,18 @@ ROOT = Path(__file__).resolve().parent.parent
 PYTHON_FLOORS = {
     "pyjwt": "2.15.1",
     "urllib3": "2.8.0",
+    "weasyprint": "70.0",
+}
+
+# packages/mcp-server/uv.lock. These are transitive (through `mcp`), so the
+# floor lives in the lockfile only.
+MCP_SERVER_FLOORS = {
+    "anyio": "4.15.1",
+    "cryptography": "50.0.2",
+    "mcp": "1.30.0",
+    "pyjwt": "2.15.1",
+    "python-multipart": "0.0.32",
+    "starlette": "1.7.0",
 }
 
 NODE_FLOORS = {
@@ -40,6 +57,11 @@ NODE_FLOORS = {
 
 def _poetry_locked() -> dict[str, str]:
     data = tomllib.loads((ROOT / "poetry.lock").read_text())
+    return {pkg["name"].lower(): pkg["version"] for pkg in data["package"]}
+
+
+def _uv_locked(lockfile: Path) -> dict[str, str]:
+    data = tomllib.loads(lockfile.read_text())
     return {pkg["name"].lower(): pkg["version"] for pkg in data["package"]}
 
 
@@ -77,6 +99,17 @@ def test_pyproject_declares_the_floor(name, floor):
     assert Version(match.group(1)) >= Version(
         floor
     ), f"pyproject.toml lets {name} resolve below {floor} ({spec!r})"
+
+
+@pytest.mark.parametrize("name,floor", sorted(MCP_SERVER_FLOORS.items()))
+def test_mcp_server_uv_lock_meets_security_floor(name, floor):
+    locked = _uv_locked(ROOT / "packages" / "mcp-server" / "uv.lock")
+    assert (
+        name in locked
+    ), f"{name} is no longer in the MCP server uv.lock; update this test"
+    assert Version(locked[name]) >= Version(
+        floor
+    ), f"packages/mcp-server/uv.lock resolves {name} {locked[name]}, below {floor}"
 
 
 @pytest.mark.parametrize("name,floor", sorted(NODE_FLOORS.items()))
