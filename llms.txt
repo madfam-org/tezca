@@ -14,3 +14,9 @@ Compact LLM context index for this repository.
 Routine production operations are Enclii-first. Use Enclii web, API, or CLI
 before raw infrastructure tools. Direct `kubectl`, `helm`, SSH, provider CLIs,
 `docker exec`, or direct container access is bootstrap/break-glass only.
+
+## Security baseline (2026-09-30)
+
+- Security floors: next 16.3.8 (GHSA-vcvr-r3jv-pc5j, `next/og` RCE; `/leyes/[id]/opengraph-image` is dynamic), axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0. `tests/test_dependency_floors.py` enforces them. Details: `SECURITY.md` → "Security baseline".
+- A change to the root `package-lock.json` alone does not redeploy web or admin. Dispatch `deploy-web.yml` and `deploy-admin.yml` (`deploy_ack=production`). `deploy-api.yml` does run on `pyproject.toml` / `poetry.lock`.
+- Related contracts: Janua (identity, `docs/AUTH.md`), Enclii (deploy, `enclii.yaml`), consumers karafiel and symbiosis-hcm (`docs/FISCAL_VALUES_FEED.md`, `docs/labor/`). Links: `README.md` → "Related repositories / contracts".

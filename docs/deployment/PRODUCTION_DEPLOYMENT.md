@@ -133,9 +133,15 @@ PostgreSQL uses the shared MADFAM cluster (database: `tezca`).
 ### CI/CD
 | File | Trigger Paths |
 |------|---------------|
-| `.github/workflows/deploy-api.yml` | `apps/api/**`, `apps/indigo/**`, `apps/parsers/**`, `apps/scraper/**` |
+| `.github/workflows/deploy-api.yml` | `apps/api/**`, `apps/indigo/**`, `apps/parsers/**`, `apps/scraper/**`, `pyproject.toml`, `poetry.lock` (the worker and beat Deployments run the same image) |
 | `.github/workflows/deploy-web.yml` | `apps/web/**`, `packages/ui/**`, `packages/lib/**` |
 | `.github/workflows/deploy-admin.yml` | `apps/admin/**`, `packages/ui/**`, `packages/lib/**` |
+
+**Not a trigger for web or admin:** the root `package-lock.json`. A change that
+touches only the root lockfile (a transitive npm security fix, for example) merges
+without rebuilding either frontend image. Ship it by dispatching `deploy-web.yml`
+and `deploy-admin.yml` with `deploy_ack=production` and a `reason` of at least
+12 characters — the command is in [`SECURITY.md`](../../SECURITY.md#security-baseline-2026-09-30).
 
 ---
 
@@ -187,7 +193,7 @@ enclii secrets set NEXT_PUBLIC_SENTRY_DSN "https://<key>@o<org>.ingest.sentry.io
 Push to main (matching paths)
   │
   ├─ Build Docker image (multi-stage)
-  ├─ Push to ghcr.io/madfam-org/tezca/{service}
+  ├─ Push to ghcr.io/madfam-org/tezca-{service}
   ├─ Update k8s/production/kustomization.yaml with image digest
   ├─ Commit + push digest (retry loop for concurrency)
   └─ Report lifecycle event to enclii API
@@ -237,9 +243,10 @@ After completing all manual steps (M1-M9), verify:
 9. **R2 storage backend**: `STORAGE_BACKEND=r2` must be set in production K8s env; defaults to `local` for dev. boto3 is an optional dep — only imported when R2 is active
 10. **Sentry optional**: Both `sentry-sdk` (API) and `@sentry/nextjs` (web) are optional. Code gracefully degrades when not installed
 11. **Prometheus metrics are private**: the API serves `http_requests_total` and `http_request_duration_seconds` (by method, route pattern and status) plus `process_*`/`python_info` on port 9464, `GET /metrics` only, from the gunicorn master (`apps/indigo/gunicorn.conf.py`, `apps/api/metrics_server.py`). Workers write to `PROMETHEUS_MULTIPROC_DIR` and the master serves the sum (prometheus_client multiprocess mode). The public port 8000 has no metrics route; never add one to "fix" a scrape. Scraped through the `tezca-api` Service's `prometheus.io/*` annotations and `ServiceMonitor/tezca-api-monitor` (port `metrics`), admitted by NetworkPolicy `allow-monitoring-ingress` (monitoring namespace, TCP 9464 only). A bad `METRICS_PORT`, or 9464 already bound, makes gunicorn exit at boot
+12. **Root lockfile changes do not redeploy the frontends**: see the note under [CI/CD](#cicd). Dispatch `deploy-web.yml` / `deploy-admin.yml` by hand after merging one.
 
 ---
 
 **Document Version**: 1.1
 **Created**: 2026-02-06
-**Updated**: 2026-02-07 (R2 storage, Sentry, ES resilience)
+**Updated**: 2026-09-30 (deploy trigger table; root-lockfile gap)

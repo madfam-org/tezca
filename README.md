@@ -163,7 +163,19 @@ _Last Updated: 2026-07-26_
 - [Tech Stack](docs/architecture/TECH_STACK.md) - Approved technologies
 - [Architecture](docs/architecture/ARCHITECTURE.md) - System design
 - [Testing](tests/) - Test suite (backend + frontend)
+- [Security policy and baseline](SECURITY.md#security-baseline-2026-09-30) - Dependency security floors and how to ship a root-lockfile fix
+- [Production deployment](docs/deployment/PRODUCTION_DEPLOYMENT.md) - Deploy workflows, trigger paths, verification
 - [llms.txt](llms.txt) - Agent-consumable project summary ([llms-full.txt](llms-full.txt) for expanded version)
+
+## Related repositories / contracts
+
+| Repository | Contract | Defined in |
+|---|---|---|
+| [janua](https://github.com/madfam-org/janua) | Identity provider. `apps/web` and `apps/admin` are Janua OIDC clients; the API validates Janua RS256 JWTs (see [docs/AUTH.md](docs/AUTH.md)). | [`docs/guides/ECOSYSTEM_INTEGRATION.md`](https://github.com/madfam-org/janua/blob/main/docs/guides/ECOSYSTEM_INTEGRATION.md) |
+| [janua](https://github.com/madfam-org/janua) | Machine-to-machine tokens, for a service that calls Tezca's API with a Janua token instead of an API key. | [`docs/service-tokens.md`](https://github.com/madfam-org/janua/blob/main/docs/service-tokens.md) |
+| [enclii](https://github.com/madfam-org/enclii) | Deploy platform. [`enclii.yaml`](enclii.yaml) follows its service spec; the `deploy-*.yml` workflows build, pin digests in `k8s/production/` and report to Enclii, which ArgoCD then syncs. | [`docs/reference/service-spec.md`](https://github.com/madfam-org/enclii/blob/main/docs/reference/service-spec.md), [`docs/guides/EXTERNAL_REPO_DEPLOY.md`](https://github.com/madfam-org/enclii/blob/main/docs/guides/EXTERNAL_REPO_DEPLOY.md) |
+| karafiel (consumer) | Reads Tezca's law feeds: the fiscal values feed and the labor rules (SAT catalogues) instead of hard-coding them. | This repo: [`docs/FISCAL_VALUES_FEED.md`](docs/FISCAL_VALUES_FEED.md), [`docs/labor/reglas.md`](docs/labor/reglas.md) |
+| symbiosis-hcm (consumer) | Reads the labor feed (contract C1: article text in force on a date) and the fiscal values feed. | This repo: [`docs/labor/README.md`](docs/labor/README.md), [`docs/FISCAL_VALUES_FEED.md`](docs/FISCAL_VALUES_FEED.md) |
 
 ## Performance
 
@@ -246,7 +258,7 @@ _Last Updated: 2026-07-26_
 
 ## Contributing
 
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
