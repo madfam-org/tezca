@@ -71,8 +71,8 @@ Tezca (tezca.mx) is Mexico's open law platform. 30,000+ laws and 3.5M+ Elasticse
 
 | Directory | Stack | Purpose |
 |-----------|-------|---------|
-| `apps/web` | Next.js 16, React 19, Tailwind 4 | Public site (tezca.mx) |
-| `apps/admin` | Next.js, React 19 | Internal admin panel |
+| `apps/web` | Next.js 16 (16.3.8 floor), React 19, Tailwind 4 | Public site (tezca.mx) |
+| `apps/admin` | Next.js 16 (16.3.8 floor), React 19 | Internal admin panel |
 | `apps/api` | Django 5, DRF | REST API |
 | `apps/indigo` | Django settings, WSGI, Celery | Django project root |
 | `apps/parsers` | Python | Law text parsing pipeline |
@@ -665,6 +665,8 @@ type Lang = 'es' | 'en' | 'nah';
 - MCP server tests run in CI via `uv sync && uv run pytest`
 - MCP server publishes to PyPI on `mcp-v*` tags via OIDC trusted publisher
 - Deploy workflows push digest commits that can race with subsequent pushes -- use `git pull --rebase` before pushing
+- `deploy-web.yml` / `deploy-admin.yml` do NOT trigger on the root `package-lock.json`. A fix that only changes the root lockfile merges without shipping; dispatch both workflows by hand (`deploy_ack=production`, `reason` >= 12 chars). `deploy-api.yml` does trigger on `pyproject.toml` / `poetry.lock`. Command and rationale: `SECURITY.md` → "Security baseline"
+- Dependency security floors (next 16.3.8, axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0) are pinned by `tests/test_dependency_floors.py`; raise a floor with the bump, never lower it
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
 - WeasyPrint and other optional deps are similarly skipped in CI
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers

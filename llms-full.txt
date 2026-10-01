@@ -41,6 +41,23 @@ gap or incident link.
 - `infra/`
 - `.github/workflows/`
 
+## Security baseline and deploy triggers (2026-09-30)
+
+- Dependency security floors, enforced by `tests/test_dependency_floors.py`:
+  next 16.3.8 in `apps/web` and `apps/admin` (GHSA-vcvr-r3jv-pc5j, a critical
+  RCE in `next/og` ImageResponse; the dynamic `/leyes/[id]/opengraph-image`
+  route was the exposed surface), axios 1.20.0, PyJWT 2.15.1 (`^2.15.1` in
+  `pyproject.toml`) and urllib3 2.8.0 (`>=2.8,<3`). Raise a floor with the bump;
+  never lower one.
+- Deploy trigger gap: `deploy-web.yml` and `deploy-admin.yml` run only on
+  `apps/web/**` / `apps/admin/**`, `packages/ui/**` and `packages/lib/**`. A
+  root-lockfile-only change merges without shipping; dispatch both workflows
+  with `deploy_ack=production` and a `reason` of at least 12 characters.
+  `deploy-api.yml` (API, worker and beat share its image) runs on
+  `pyproject.toml` and `poetry.lock`.
+- Canonical: `SECURITY.md` ("Security baseline") and
+  `docs/deployment/PRODUCTION_DEPLOYMENT.md` (trigger table).
+
 ## Maintenance
 
 These files are maintained by `internal-devops/scripts/sync-agent-docs.py`.
