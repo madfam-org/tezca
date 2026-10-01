@@ -9,7 +9,7 @@ on:
 jobs:
   detect-changes:
     name: Detect changed paths
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Skip frontend/E2E on backend-only PRs (RFC 0017 Tier A).
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -51,7 +51,7 @@ jobs:
 
   networkpolicy-port-lint:
     name: NetworkPolicy port consistency
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     # Prevents the 2026-05-04 status.enclii.dev outage class:
     # NetworkPolicy `ports:` clauses that don't intersect the selected pods'
@@ -70,7 +70,7 @@ jobs:
 
   dockerignore-seed-lint:
     name: Publication seeds ship in the image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     # Prevents the 2026-09-06 class: a seed that a publication command reads by
     # default, excluded from the image by `.dockerignore`. Invisible in CI and
@@ -89,7 +89,7 @@ jobs:
 
   filtered-install-build:
     name: Image-faithful build (${{ matrix.app }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: detect-changes
     if: github.event_name == 'push' || needs.detect-changes.outputs.image-install == 'true'
     timeout-minutes: 20
@@ -145,7 +145,7 @@ jobs:
 
   test-publication-postgres:
     name: Publication commands on Postgres
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # La suite corre sobre SQLite, que **ignora** el ancho declarado de un
     # VARCHAR(n) y guarda la cadena entera. Postgres lo aplica. Por eso el
@@ -210,7 +210,7 @@ jobs:
 
   test-backend:
     name: Backend Tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -286,7 +286,7 @@ jobs:
 
   test-frontend:
     name: Frontend Tests (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: detect-changes
     if: github.event_name == 'push' || needs.detect-changes.outputs.frontend == 'true'
 
@@ -361,7 +361,7 @@ jobs:
 
   test-mcp:
     name: MCP Server Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v7
@@ -384,7 +384,7 @@ jobs:
 
   test-e2e:
     name: E2E Tests (Playwright, Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [test-frontend, test-backend]
     # E2E Phase 3 (active): docker-compose.e2e.yml with seeded DB + ES, blocking gate.
     # Playwright retries (2 in CI) handle transient flakes.
@@ -474,7 +474,7 @@ jobs:
 
   publish-sdk:
     name: Publish @tezca/api-client
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [test-frontend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:

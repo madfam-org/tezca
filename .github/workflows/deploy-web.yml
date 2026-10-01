@@ -35,7 +35,7 @@ concurrency:
 jobs:
   build-and-push:
     name: Build & Push Web Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       packages: write
