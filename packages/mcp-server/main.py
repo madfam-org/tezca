@@ -38,12 +38,15 @@ register_all(mcp)
 register_resources(mcp)
 register_prompts(mcp)
 
-app = mcp.streamable_http_app()
 
-
-@app.route("/health")
+# Registered on FastMCP, not on the Starlette app: Starlette 1.0 removed the
+# `@app.route` decorator, and FastMCP adds custom routes when it builds the app.
+@mcp.custom_route("/health", methods=["GET"])
 async def health(request: Request) -> JSONResponse:
     return JSONResponse({"status": "ok", "service": "tezca-mcp"})
+
+
+app = mcp.streamable_http_app()
 
 
 def main():
