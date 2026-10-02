@@ -715,11 +715,18 @@ Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 → 60 a
 
 The original 2026-04-23 ecosystem audit lives in the operator's private workspace, not in this repo. The H-numbers below refer to it.
 
-Open:
-- **🟡 H7 (architecture fix landed; capture sweep pending)** — `apps/scraper/http.py` now supports per-host SHA-256 fingerprint pinning via `HOST_FINGERPRINTS` and a `_FingerprintPinnedAdapter`. The 10 hosts still in `INSECURE_HOSTS` need fingerprint capture (`scripts/utils/capture_tls_fingerprint.py <host>`) before the residual MITM window closes. Operator task: schedule a capture sweep on stable network.
-- **🟡 State coverage incomplete** — 16 of 32 states have scrapers (Wave 1A added Aguascalientes, Hidalgo, Morelos, Yucatán). Wave 1B/1C remaining for full parity claim per `FEATURE_PARITY_PLAN_2026-04-27.md` §3.5.
-- **🟡 ES single-node** — Postgres HA prep done (Track 6); ES HA is a separate pending project.
-- **🟡 First-paid-customer blockers** — Selva onboarding (CHAT_BACKEND flip), Stripe live keys + Tezca price IDs in Dhanam (MONETIZATION_ENABLED flip), and Karafiel team's Wave 1 Month 1 deliverables. All operator-side; specs are landed.
+Open (the one pending-work list for this repo, reviewed 2026-10-02; remove a
+row in the PR that finishes it; **Kind** is *engineering* or *owner decision*):
+
+| Item | Why it matters | Priority | Kind | Link |
+|---|---|---|---|---|
+| First-paid-customer blockers: Selva onboarding (`CHAT_BACKEND` flip), Stripe live keys and Tezca price IDs in Dhanam (`MONETIZATION_ENABLED` flip), Karafiel's Wave 1 Month 1 deliverables | Nothing can be sold until they land; the specs are in the repo | P1 | owner decision | [Selva onboarding ticket](docs/strategy/SELVA_ONBOARDING_TICKET_2026-04-27.md), [Karafiel integration audit](docs/strategy/KARAFIEL_INTEGRATION_AUDIT_2026-04-27.md) |
+| Configure the MCP server for its public hostname before deploying it: pass `transport_security` with that host to `FastMCP(...)`, or rewrite `Host` at the proxy | `/mcp` answers **421** to any `Host` other than `127.0.0.1`/`localhost`/`[::1]` (FastMCP DNS-rebinding protection), so a deployment behind a public hostname fails every call. The server is published to PyPI and has no cluster deployment today | P2 | engineering | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
+| Pin `ghcr.io/astral-sh/uv` by version and digest in `packages/mcp-server/Dockerfile` | `uv:latest` is a mutable tag, so two builds of the same commit can use different `uv` binaries | P3 | engineering | — |
+| Scraper TLS: capture fingerprints for the 10 hosts still on `INSECURE_HOSTS` (`scripts/utils/capture_tls_fingerprint.py <host>`) | Moves each host from the unverified fallback to a pinned leaf; the policy is in `SECURITY.md` | P2 | engineering (needs a stable network run) | [`SECURITY.md`](SECURITY.md#tls-verification-on-government-scrapers) |
+| State coverage: 16 of 32 states have scrapers; Wave 1B (8 states) and Wave 1C (8 hostile portals) remain | Needed before any full-parity claim | P2 | engineering | [ROADMAP → Wave 1B](ROADMAP.md#next-sprint-wave-1b--state-coverage-1632--2432) |
+| Elasticsearch is single-node | A node failure is a full search outage (search degrades to empty results) | P2 | engineering | [ROADMAP → Codebase Audit](ROADMAP.md#codebase-audit-2026-03-20) |
+| Re-triage the 22 gaps in the 2026-03-20 codebase audit into this list | Several have landed since (for example backend coverage is gated at 60%, not 44%); the audit table is a dated snapshot | P3 | engineering | [ROADMAP → Codebase Audit](ROADMAP.md#codebase-audit-2026-03-20) |
 
 Resolved:
 - ~~**🟠 H2: CORS echoes `*` when `Origin` header missing on API-key preflight**~~ — Fixed 2026-04-23 (#37, #40): missing Origin now 403s, allowed Origins echo back with `Vary: Origin`.

@@ -83,6 +83,10 @@ gap or incident link.
   `tests/test_dependency_floors.py` refuses yanked releases.
 - Test inventory: the skips, the known flaky tests and how to run each suite
   are in `docs/guides/TESTING_STRATEGY.md` §6.
+- Pending work lives in one list: `AGENTS.md` → «Known Issues» (open table).
+  Before the MCP server is deployed behind a public hostname it needs
+  `transport_security` (or a `Host` rewrite), because `/mcp` answers 421 to
+  non-local hosts; its Dockerfile still uses the mutable `uv:latest`.
 
 ## Maintenance
 
