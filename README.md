@@ -162,7 +162,8 @@ _Last Updated: 2026-07-26_
 - [Setup Guide](docs/guides/SETUP.md) - Installation and configuration
 - [Tech Stack](docs/architecture/TECH_STACK.md) - Approved technologies
 - [Architecture](docs/architecture/ARCHITECTURE.md) - System design
-- [Testing](tests/) - Test suite (backend + frontend)
+- [Testing](tests/) - Test suite (backend + frontend). How to run each suite, the skip inventory, known flaky tests and the manual PDF render check: [docs/guides/TESTING_STRATEGY.md](docs/guides/TESTING_STRATEGY.md#6-current-test-infrastructure)
+- [MCP server](packages/mcp-server/README.md) - `tezca-mcp`: tools, `/health`, host protection, Docker
 - [Security policy and baseline](SECURITY.md#security-baseline-2026-09-30) - Dependency security floors and how to ship a root-lockfile fix
 - [Production deployment](docs/deployment/PRODUCTION_DEPLOYMENT.md) - Deploy workflows, trigger paths, verification
 - [llms.txt](llms.txt) - Agent-consumable project summary ([llms-full.txt](llms-full.txt) for expanded version)

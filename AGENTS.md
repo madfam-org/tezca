@@ -158,7 +158,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 2945 passed / 18 skipped as of 2026-09-18; run via `poetry run pytest`)
+# Backend (pytest + django, 3025 passed / 18 skipped as of 2026-10-01 with PYTHONPATH=apps:.; skips and flakes: docs/guides/TESTING_STRATEGY.md)
 # NOTE: run tests/integration/test_spot_check.py in a SEPARATE invocation from
 # tests/pipeline/test_index_laws.py — a pre-existing fixture-pollution flake fails
 # them only when batched together; each passes alone. Not a real regression.
@@ -175,7 +175,7 @@ cd apps/web && npx vitest run
 # Admin (vitest, 78 tests across 11 files)
 cd apps/admin && npx vitest run
 
-# MCP server (pytest + respx, 23 passed / 8 skipped)
+# MCP server (pytest + respx, 25 passed / 8 skipped; the 8 are live-API tests gated on TEZCA_API_URL)
 cd packages/mcp-server && uv sync --all-extras && uv run pytest tests/ -v
 
 # Data recovery
@@ -622,7 +622,7 @@ type Lang = 'es' | 'en' | 'nah';
 4. **`Map` icon collision:** `Map` from `lucide-react` shadows the global `Map` constructor. Always import as `MapIcon`.
 
 5. **Optional Python deps:** These are not installed by default and will cause `ImportError` if missing:
-   - WeasyPrint: `poetry install -E pdf`
+   - WeasyPrint: `poetry install -E pdf`. It is 70.0 (`^70.0`) and needs Pango ≥ 1.44 on the host. The API image's runtime stage installs it. Keep `weasyprint` and `pydyf` moving together: 62.3 with pydyf 0.12 broke `write_pdf()` (PDF export 500s) until #263. CI never imports WeasyPrint, so after a bump run the manual render check in `docs/guides/TESTING_STRATEGY.md` ("PDF export rendering").
    - pytesseract + pdf2image: `poetry install -E ocr`
    - boto3: `poetry install -E r2`
    - python-docx, ebooklib, jinja2: `poetry install -E export`
@@ -668,7 +668,9 @@ type Lang = 'es' | 'en' | 'nah';
 - `deploy-web.yml` / `deploy-admin.yml` do NOT trigger on the root `package-lock.json`. A fix that only changes the root lockfile merges without shipping; dispatch both workflows by hand (`deploy_ack=production`, `reason` >= 12 chars). `deploy-api.yml` does trigger on `pyproject.toml` / `poetry.lock`. Command and rationale: `SECURITY.md` → "Security baseline"
 - Dependency security floors (next 16.3.8, axios 1.20.0, PyJWT 2.15.1, urllib3 2.8.0, WeasyPrint 70.0, plus the MCP server `uv.lock` floors) are pinned by `tests/test_dependency_floors.py`; raise a floor with the bump, never lower it
 - R2 storage tests use `pytest.mark.skipif(not _has_boto3)` -- they skip in CI where boto3 is not installed
-- WeasyPrint and other optional deps are similarly skipped in CI
+- WeasyPrint and the other optional deps are not installed in CI. The PDF export success path is tested with WeasyPrint replaced (`tests/api/test_export_pdf_render.py`). Real rendering is a manual check (`docs/guides/TESTING_STRATEGY.md`). The full skip inventory and the one known flaky test are in the same doc
+- MCP server `/health` is registered with `@mcp.custom_route("/health", methods=["GET"])` in `packages/mcp-server/main.py`. Starlette 1.0 removed `@app.route`. `tests/test_app.py` imports `main` so an import-time break fails CI. `/mcp` answers 421 to any `Host` other than `127.0.0.1`/`localhost`/`[::1]` (FastMCP DNS-rebinding protection; see `packages/mcp-server/README.md`). The MCP Dockerfile installs from `uv.lock` with `uv sync --locked`
+- `poetry.lock` must not resolve to a yanked release: `tests/test_dependency_floors.py` (`YANKED`) refuses pypdfium2 5.12.0
 - Docker Compose services have resource limits (cpu/memory) to prevent runaway containers
 
 ### Quality gates (PR-blocking)
@@ -711,7 +713,7 @@ Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 → 60 a
 
 ## Known Issues
 
-See `/Users/aldoruizluna/labspace/claudedocs/ECOSYSTEM_AUDIT_2026-04-23.md` for the original ecosystem audit.
+The original 2026-04-23 ecosystem audit lives in the operator's private workspace, not in this repo. The H-numbers below refer to it.
 
 Open:
 - **🟡 H7 (architecture fix landed; capture sweep pending)** — `apps/scraper/http.py` now supports per-host SHA-256 fingerprint pinning via `HOST_FINGERPRINTS` and a `_FingerprintPinnedAdapter`. The 10 hosts still in `INSECURE_HOSTS` need fingerprint capture (`scripts/utils/capture_tls_fingerprint.py <host>`) before the residual MITM window closes. Operator task: schedule a capture sweep on stable network.

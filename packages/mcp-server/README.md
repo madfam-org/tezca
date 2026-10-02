@@ -27,6 +27,14 @@ docker compose up
 # Server at http://localhost:8001
 ```
 
+The image installs exactly what `uv.lock` pins. It runs `uv sync --locked`,
+which fails the build if the lock is stale, and starts with
+`uv run --no-sync`, so it never re-resolves at runtime. Before 2026-10-01 the
+Dockerfile copied only `pyproject.toml` for the dependency layer. That layer
+ignored the lock and failed with `Readme file does not exist: README.md`.
+`.dockerignore` keeps a host `.venv` out of the build context. No workflow
+builds or deploys this image. Releases go to PyPI on `mcp-v*` tags.
+
 ## 16 Tools
 
 ### Search & Discovery
@@ -125,6 +133,33 @@ Or with uv:
 ```bash
 uvx tezca-mcp
 ```
+
+## Health check
+
+`GET /health` returns `{"status": "ok", "service": "tezca-mcp"}`. It is
+registered with FastMCP's `@mcp.custom_route("/health", methods=["GET"])` in
+`main.py`, before `mcp.streamable_http_app()` builds the Starlette app.
+Starlette 1.0 removed the `@app.route` decorator, so don't move the route back
+onto the app object. `tests/test_app.py` imports `main`, calls `/health` and
+checks that `/mcp` is mounted.
+
+`/health` answers on any `Host`. The `/mcp` endpoint does not: FastMCP's
+DNS-rebinding protection is on (`FastMCP(...)` keeps its default
+`host="127.0.0.1"`), and it allows only `127.0.0.1:*`, `localhost:*` and
+`[::1]:*`. Any other `Host` header gets **421 Misdirected Request** (checked
+on 2026-10-01 with mcp 1.30.0; the earlier lock behaved the same). A
+deployment behind a public hostname must either rewrite `Host` at the proxy
+or pass `transport_security` with that hostname to `FastMCP(...)`.
+
+## Dependencies and security floors
+
+`uv.lock` is the source of truth for the server's environment. Its security
+floors are enforced from the repo root by `tests/test_dependency_floors.py`:
+PyJWT 2.15.1, mcp 1.30.0, starlette 1.7.0, python-multipart 0.0.32,
+cryptography 50.0.2 and anyio 4.15.1. The rationale is in
+[`SECURITY.md`](../../SECURITY.md#security-baseline-2026-09-30). The server has
+no JWT code of its own. PyJWT arrives only through the mcp SDK's OAuth helpers,
+which this server does not configure.
 
 ## Environment Variables
 

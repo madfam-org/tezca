@@ -1,0 +1,7 @@
+# Keep host artifacts out of the image; the build creates its own .venv.
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/

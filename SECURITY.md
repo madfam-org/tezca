@@ -61,6 +61,13 @@ below any of them.
 | `weasyprint` (`pdf`/`export`/`production` extras) | 70.0 (`^70.0` in `pyproject.toml`) | GHSA-983w-rhvv-gwmv (SSRF via redirect, fixed in 68.0), GHSA-jf6q-chmf-3h3v (SSRF, fixed in 70.0), GHSA-jhhc-3hcp-qhm5 (CSS injection, last affected 68.1). No 62.x release carries the fixes. |
 | `packages/mcp-server/uv.lock` | PyJWT 2.15.1, mcp 1.30.0, starlette 1.7.0, python-multipart 0.0.32, cryptography 50.0.2, anyio 4.15.1 | Lockfile floors for the MCP server (GHSA-ffc3-869f-jxw9 and the other PyJWT 2.12–2.14 advisories, the mcp 1.27–1.28 transport advisories, starlette, python-multipart, cryptography and anyio advisories). They are transitive through `mcp`, so they live in the lockfile only. |
 
+The same test refuses releases that PyPI has yanked. pypdfium2 (through
+`pdfplumber`) moved from the yanked 5.12.0 to 5.12.1 on 2026-10-01.
+
+WeasyPrint 70.0 also fixed PDF export. 62.3 with the locked pydyf 0.12.1
+raised `AttributeError` inside `write_pdf()`. See Gotcha 13 in
+[`docs/deployment/PRODUCTION_DEPLOYMENT.md`](docs/deployment/PRODUCTION_DEPLOYMENT.md#gotchas).
+
 **A root lockfile change does not redeploy web or admin.** `deploy-web.yml` and
 `deploy-admin.yml` run on pushes under `apps/web/**` / `apps/admin/**`,
 `packages/ui/**` and `packages/lib/**` only. A fix that touches nothing but the

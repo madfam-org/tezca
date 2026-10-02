@@ -239,7 +239,7 @@ http://compilacion.ordenjuridico.gob.mx/obtenerdoc.php?path=[path]&nombreclave=[
 
 ## Screenshot Reference
 
-![OJN Law Metadata](file:///Users/aldoruizluna/.gemini/antigravity/brain/3ec34962-a9c9-40c7-a4b1-3ebf35f1db9c/law_ficha_metadata_1770109558007.png)
+(The original screenshot of an OJN law "ficha" was a local file and was not kept in the repo.)
 
 Shows the structured metadata available for each law.
 
