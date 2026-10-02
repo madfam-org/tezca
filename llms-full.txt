@@ -60,6 +60,30 @@ gap or incident link.
 - Canonical: `SECURITY.md` ("Security baseline") and
   `docs/deployment/PRODUCTION_DEPLOYMENT.md` (trigger table).
 
+## 2026-10-01 changes (#263 and the close-out)
+
+- WeasyPrint 62.3 → 70.0. Besides the three advisories, this fixed PDF export:
+  62.3 with the locked pydyf 0.12.1 raised `AttributeError` inside
+  `write_pdf()`, so `GET /api/v1/laws/<id>/export/pdf/` most likely failed on
+  every image built from the old lock. The API image needs Pango ≥ 1.44, and
+  its runtime stage installs it. CI never imports WeasyPrint.
+  `tests/api/test_export_pdf_render.py` covers the view with WeasyPrint
+  replaced. Real rendering is a manual check in
+  `docs/guides/TESTING_STRATEGY.md`. Production verification is check 13 in
+  `docs/deployment/PRODUCTION_DEPLOYMENT.md`.
+- MCP server: the `uv.lock` floors above. `/health` is registered with
+  `@mcp.custom_route("/health", methods=["GET"])`, because Starlette 1.0
+  removed `@app.route` and `import main` broke. `tests/test_app.py` guards
+  the import, `/health` and the `/mcp` mount. No workflow builds or deploys
+  the MCP image. The package ships to PyPI on `mcp-v*` tags. Its Dockerfile
+  now copies `uv.lock` and runs `uv sync --locked` (and
+  `uv run --no-sync` at start). The old one copied only `pyproject.toml`,
+  and that dependency layer failed (`Readme file does not exist`).
+- `poetry.lock`: pypdfium2 moved from the yanked 5.12.0 to 5.12.1, and
+  `tests/test_dependency_floors.py` refuses yanked releases.
+- Test inventory: the skips, the known flaky tests and how to run each suite
+  are in `docs/guides/TESTING_STRATEGY.md` §6.
+
 ## Maintenance
 
 These files are maintained by `internal-devops/scripts/sync-agent-docs.py`.

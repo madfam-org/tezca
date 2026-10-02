@@ -97,7 +97,8 @@ PostgreSQL uses the shared MADFAM cluster (database: `tezca`).
 |------|---------|
 | `apps/web/Dockerfile` | Next.js portal — 3-stage (deps→build→runtime), standalone, non-root |
 | `apps/admin/Dockerfile` | Admin console — same pattern, port 3001 |
-| `apps/indigo/Dockerfile` | Django API — 2-stage (builder→runtime), venv copy, gunicorn 4w/2t. Runtime includes tesseract-ocr (+ spa lang data) and poppler-utils for OCR pipeline. |
+| `apps/indigo/Dockerfile` | Django API — 2-stage (builder→runtime), venv copy, gunicorn 4w/2t. The builder installs `-E production`, which includes WeasyPrint 70.0 for PDF export. The runtime installs Pango/Cairo/HarfBuzz (`libpango-1.0-0`, `libpangocairo-1.0-0`, `libcairo2`, …), which WeasyPrint needs at import time, plus tesseract-ocr (+ spa lang data) and poppler-utils for the OCR pipeline. |
+| `packages/mcp-server/Dockerfile` | MCP server, for local runs and `docker compose` only. It installs from `uv.lock` (`uv sync --locked`) and starts with `uv run --no-sync`. No workflow builds or deploys this image; the package ships to PyPI on `mcp-v*` tags (`publish-mcp.yml`). |
 | `.dockerignore` | Excludes data/, node_modules/, .git/, engines/, tests/, docs/ |
 
 ### Auth
@@ -227,6 +228,7 @@ After completing all manual steps (M1-M9), verify:
 | 10 | CI/CD pipeline | Push to `main` touching `apps/api/` | Image built → digest committed → ArgoCD syncs |
 | 11 | Metrics not public | `curl -s -o /dev/null -w '%{http_code}' https://api.tezca.mx/metrics` (and `/metrics/`) | `404` |
 | 12 | Metrics listener up | `ENCLII_PROJECT=tezca enclii logs tezca-api --env production --since 30m \| grep "Prometheus metrics"` | One `Prometheus metrics (in-cluster only) on :9464/metrics` line per pod |
+| 13 | PDF export renders | `curl -H "Authorization: Bearer <free-account token>" -o law.pdf -w '%{http_code} %{content_type}' https://api.tezca.mx/api/v1/laws/<law_id>/export/pdf/` | `200 application/pdf`, and `law.pdf` opens. A 501 means WeasyPrint is missing from the image; a 500 is a render failure (see Gotcha 13) |
 
 ---
 
@@ -244,9 +246,10 @@ After completing all manual steps (M1-M9), verify:
 10. **Sentry optional**: Both `sentry-sdk` (API) and `@sentry/nextjs` (web) are optional. Code gracefully degrades when not installed
 11. **Prometheus metrics are private**: the API serves `http_requests_total` and `http_request_duration_seconds` (by method, route pattern and status) plus `process_*`/`python_info` on port 9464, `GET /metrics` only, from the gunicorn master (`apps/indigo/gunicorn.conf.py`, `apps/api/metrics_server.py`). Workers write to `PROMETHEUS_MULTIPROC_DIR` and the master serves the sum (prometheus_client multiprocess mode). The public port 8000 has no metrics route; never add one to "fix" a scrape. Scraped through the `tezca-api` Service's `prometheus.io/*` annotations and `ServiceMonitor/tezca-api-monitor` (port `metrics`), admitted by NetworkPolicy `allow-monitoring-ingress` (monitoring namespace, TCP 9464 only). A bad `METRICS_PORT`, or 9464 already bound, makes gunicorn exit at boot
 12. **Root lockfile changes do not redeploy the frontends**: see the note under [CI/CD](#cicd). Dispatch `deploy-web.yml` / `deploy-admin.yml` by hand after merging one.
+13. **WeasyPrint and pydyf must move together**: WeasyPrint 62.3 with the locked pydyf 0.12.1 raised `AttributeError: 'super' object has no attribute 'transform'` inside `write_pdf()`, so `GET /api/v1/laws/<id>/export/pdf/` was most likely failing with a 500 on every image built from that lock. #263 moved WeasyPrint to 70.0 (`^70.0`), which renders correctly with pydyf 0.12.1 and also clears three advisories (see [`SECURITY.md`](../../SECURITY.md#security-baseline-2026-09-30)). `deploy-api.yml` rebuilt the API image and pinned digest `b46c282a` on 2026-10-01. CI does not install the `pdf`/`export`/`production` extras, so it cannot catch a broken WeasyPrint/pydyf pairing. After any change to either package, run the manual render check in [`docs/guides/TESTING_STRATEGY.md`](../guides/TESTING_STRATEGY.md#pdf-export-rendering-manual-check), then check 13 above once the image is deployed.
 
 ---
 
 **Document Version**: 1.1
 **Created**: 2026-02-06
-**Updated**: 2026-09-30 (deploy trigger table; root-lockfile gap)
+**Updated**: 2026-10-01 (WeasyPrint 70 and the PDF export fix; MCP server image scope). Earlier: 2026-09-30 (deploy trigger table; root-lockfile gap)

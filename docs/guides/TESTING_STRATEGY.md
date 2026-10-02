@@ -106,16 +106,71 @@ Code cannot merge to `main` unless:
 
 ---
 
-## 6. Current Test Infrastructure (Feb 2026)
+## 6. Current Test Infrastructure
 
 ### Backend (Pytest)
 - **Location:** `tests/`
-- **Tests:** ~201 passed, 2 skipped (CalculationApiTests blocked on OpenFisca)
-- **Key test files:** test_admin_views.py (17 tests incl. coverage dashboard + roadmap CRUD), test_law_api.py (18 tests), test_storage.py (20 tests — Local + R2 backends, R2 tests skip without boto3), parser tests (100+ incl. Parser V2), scraper tests (40+)
-- **Run:** `poetry run pytest tests/ -v`
-- **Coverage:** `poetry run pytest tests/ --cov=apps --cov-report=term`
-- **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`
-- **Note:** Always use `poetry run black` (not system black) to match CI version (24.10.0)
+- **Run:** `PYTHONPATH=apps:. poetry run pytest tests/ -v`. CI adds `--cov=apps --cov-fail-under=60` (actual 69.36% on 2026-10-01).
+- **Result on 2026-10-01** (Python 3.11, no extras, SQLite): `3025 passed, 18 skipped`.
+- **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`. Always use `poetry run black` (26.x, from `poetry.lock`), not a system black.
+- **Other gates in the same job:** `makemigrations --check`, `scripts/utils/audit_file_sizes.py` (>800 LOC fails), `scripts/utils/audit_silent_excepts.py`, `pip-audit`.
+- **Dependency floors:** `tests/test_dependency_floors.py` fails if `poetry.lock`, `pyproject.toml`, `packages/mcp-server/uv.lock` or `package-lock.json` drops below a security floor (see `SECURITY.md`). It also fails if `poetry.lock` resolves to a release PyPI has yanked (pypdfium2 5.12.0).
+
+#### Skipped tests, and why
+CI does not install the optional extras (`pdf`, `export`, `ocr`, `r2`, `production`), and it has no Elasticsearch or PostgreSQL in `test-backend`. Every skip below is environmental. None hides a known bug.
+
+| Where | Skips when | Why it is acceptable |
+|---|---|---|
+| `tests/api/test_api.py::CalculationApiTests` | always (`@pytest.mark.skip`) | The OpenFisca calculation engine is not installed. The suite stays as the contract for when it is. |
+| `tests/api/test_storage.py` (R2 backend) | `boto3` missing (`-E r2`) | The local backend is tested unconditionally. |
+| `tests/scraper/test_scjn_playwright.py`, `tests/scraper/test_scheduling_tasks.py::TestPlaywrightTasks` | real `playwright` missing (`-E production`) | These need the browser driver. |
+| `tests/integration/test_db_es_consistency.py` | Elasticsearch unreachable or index empty | Integration checks against a live stack. `xfail`s only report laws with parse failures. |
+| `tests/api/test_ingest_jcf.py` (domain-filter branch) | database is not PostgreSQL | The JSONField branch is PostgreSQL-only. The engine-independent `test_domains_field_is_the_routing_key_for_labor_consumers` covers the routing key. `test-publication-postgres` does not include this file, so the PostgreSQL branch runs only locally. |
+
+#### Known flaky
+- `tests/api/test_prometheus_metrics.py::TestUnderGunicorn::test_master_serves_the_sum_of_all_workers`: it counts requests across gunicorn workers and has once read 21 instead of 20. It passes on a rerun. Rerun before you investigate.
+- `tests/integration/test_spot_check.py` together with `tests/pipeline/test_index_laws.py`: a fixture-pollution flake that fails them only when they run in the same invocation. Each passes alone. The full 2026-10-01 run passed with both included.
+
+#### PDF export (`GET /api/v1/laws/<id>/export/pdf/`)
+- `tests/api/test_export_views.py` covers access (anonymous 403, tier limits) and the 501 answer without WeasyPrint.
+- `tests/api/test_export_pdf_render.py` covers the success path:
+  - it renders the real `export/law_pdf.html`;
+  - it checks the exact `HTML(string=...).write_pdf()` call, the `application/pdf` response and its filename, that article text is escaped, and the `ExportLog` row.
+  - WeasyPrint itself is replaced there, because CI has no Pango.
+
+##### PDF export rendering (manual check)
+CI cannot catch a broken WeasyPrint/pydyf pairing. WeasyPrint 62.3 with pydyf 0.12.1 raised `AttributeError` in `write_pdf()` until #263 moved WeasyPrint to 70.0. After you bump `weasyprint` or `pydyf`, render the real template once on a machine with Pango ≥ 1.44 (`brew install pango`, or `apt-get install libpango-1.0-0 libpangocairo-1.0-0`). The API image already has Pango and WeasyPrint.
+
+```bash
+poetry install -E pdf
+poetry run python - <<'EOF'
+import django
+from django.conf import settings
+settings.configure(TEMPLATES=[{
+    "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": ["apps/api/templates"],
+}])
+django.setup()
+from django.template.loader import render_to_string
+from weasyprint import HTML
+
+articles = [{"article": str(i), "text": f"Texto del artículo {i}. " * 40} for i in range(1, 120)]
+html = render_to_string("export/law_pdf.html", {
+    "law_name": "Ley de prueba", "official_id": "prueba", "tier_label": "Federal",
+    "category": "ley", "state": None, "status": "vigente", "publication_date": None,
+    "article_count": len(articles), "articles": articles, "generation_date": "2026-10-01 12:00",
+})
+open("/tmp/law.pdf", "wb").write(HTML(string=html).write_pdf())
+print("ok")
+EOF
+```
+
+Open `/tmp/law.pdf`. Check that it has several pages, the `@top-center` header and the `Pág. N de M` footer. After the deploy, run check 13 in `docs/deployment/PRODUCTION_DEPLOYMENT.md`.
+
+### MCP server (`packages/mcp-server`, pytest + respx)
+- **Run:** `cd packages/mcp-server && uv sync --all-extras && uv run pytest tests/ -v`. CI runs it in `test-mcp`.
+- **Result on 2026-10-01:** `25 passed, 8 skipped`. The 8 are the live-API tests in `tests/test_integration.py`, which skip unless `TEZCA_API_URL` points at a real API.
+- `tests/test_app.py` imports `main`, calls `GET /health` and checks that `/mcp` is mounted. Before it existed, Starlette 1.0's removal of `@app.route` broke `import main` while the suite stayed green.
 
 ### Web Frontend (Vitest)
 - **Location:** `apps/web/__tests__/`
@@ -148,4 +203,4 @@ Code cannot merge to `main` unless:
 
 > **Note:** The computational law testing layers (Catala proofs, Oracle validation, Legislative Trace) described above are aspirational design targets. The current test suite covers API endpoints, parser functionality, scraper logic, and React components.
 
-*Last verified: 2026-02-07*
+*Last verified: 2026-10-01 (backend and MCP server sections); frontend counts last verified 2026-02-07*

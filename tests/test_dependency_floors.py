@@ -16,6 +16,10 @@ GHSA-jhhc-3hcp-qhm5) joined the root floors, and the MCP server's ``uv.lock``
 got its own (PyJWT GHSA-ffc3-869f-jxw9 and others, mcp, starlette,
 python-multipart, cryptography, anyio).
 
+The close-out of that wave moved pypdfium2 (through pdfplumber) off 5.12.0,
+a release PyPI has yanked, to 5.12.1. ``YANKED`` keeps a relock from landing
+on it again.
+
 Raise a floor here in the same change that raises it in pyproject.toml or the
 lockfile. Never lower one to make this pass.
 """
@@ -47,6 +51,11 @@ MCP_SERVER_FLOORS = {
     "pyjwt": "2.15.1",
     "python-multipart": "0.0.32",
     "starlette": "1.7.0",
+}
+
+# Releases PyPI has yanked. A lock must never resolve to one.
+YANKED = {
+    "pypdfium2": {"5.12.0"},
 }
 
 NODE_FLOORS = {
@@ -118,3 +127,12 @@ def test_package_lock_meets_security_floor(name, floor):
     assert copies, f"{name} is no longer in package-lock.json; update this test"
     below = [(path, ver) for path, ver in copies if Version(ver) < Version(floor)]
     assert not below, f"package-lock.json resolves {name} below {floor}: {below}"
+
+
+@pytest.mark.parametrize("name,versions", sorted(YANKED.items()))
+def test_poetry_lock_avoids_yanked_releases(name, versions):
+    locked = _poetry_locked()
+    assert name in locked, f"{name} is no longer in poetry.lock; update this test"
+    assert (
+        locked[name] not in versions
+    ), f"poetry.lock resolves {name} {locked[name]}, a release PyPI has yanked"
