@@ -340,10 +340,14 @@ Each state follows the existing `apps/scraper/state/baja_california.py` template
 - ~~Comparison tool UI~~ (completed Feb 2026)
 - ~~Auto-update system~~ (DOF daily wired to Celery Beat, 7 AM)
 - Address codebase audit gaps (see [Codebase Audit](#codebase-audit-2026-03-20) below)
+- Engineering and operator pending work, prioritized: [AGENTS.md → Known Issues](AGENTS.md#known-issues)
 
 ---
 
 ## Codebase Audit (2026-03-20)
+
+> **Dated snapshot.** Some gaps below have landed since. The current pending-work
+> list, with priorities, is [AGENTS.md → Known Issues](AGENTS.md#known-issues).
 
 **Scope**: Full codebase exploration — 371 Python files (~40.9K LOC), ~272 TSX files, 17 K8s manifests, 7 CI workflows.
 

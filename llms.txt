@@ -5,6 +5,7 @@ Compact LLM context index for this repository.
 ## Read first
 
 - `AGENTS.md` — canonical agent operating instructions.
+- `AGENTS.md` → «Known Issues» — the one pending-work list (priority, owner decision vs engineering), including the MCP `transport_security` step before any public deployment.
 - `README.md` — human/product overview when present.
 - `ECOSYSTEM.md` — MADFAM ecosystem and Enclii deployment context when present.
 - `llms-full.txt` — full context map and durable operating contract.
