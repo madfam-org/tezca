@@ -32,13 +32,23 @@ equivocados. Una fila seed-unverified nunca fue una aserción de cumplimiento
 ``published`` es promover la fila, que es exactamente el flujo de operador
 que documenta ``docs/FISCAL_VALUES_FEED.md`` («create the row **or edit the
 seed-unverified one**, … set provenance to published»). Lo que este comando
-nunca hace es tocar una fila que ya está ``published``.
+ordinario nunca hace es tocar una fila que ya está ``published``.
+
+Excepción preparada 2026-10-07: ``--correct-subsidio-2026 --reason ...``
+corrige únicamente las dos filas conocidas que atribuían a 2026 el decreto
+de 2024. Conserva el contenido anterior completo en ``notes`` dentro de la
+misma transacción. ``--dry-run`` permite revisarla sin escribir. Las filas
+publicadas que no coinciden con la errata conocida se rechazan.
 """
 
+import json
 import os
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
+from django.forms.models import model_to_dict
+from django.utils import timezone
 
 from apps.api.fiscal_dof_2026 import (
     ISR_2026_DOF,
@@ -46,6 +56,8 @@ from apps.api.fiscal_dof_2026 import (
     MINIMUM_WAGE_2026,
     SUBSIDIO_2026_DOF,
     SUBSIDIO_2026_PERIODS,
+    SUBSIDIO_ENERO_RATE_OF_UMA,
+    SUBSIDIO_RATE_OF_UMA,
     UMA_2026,
     subsidio_rule_rows,
 )
@@ -61,20 +73,31 @@ class Command(BaseCommand):
             action="store_true",
             help="Reporta lo que escribiría sin tocar la base de datos",
         )
+        parser.add_argument(
+            "--correct-subsidio-2026",
+            action="store_true",
+            help="Corrige únicamente las dos filas 2026 del decreto 2024; archiva su contenido en notes",
+        )
+        parser.add_argument(
+            "--reason", default="", help="Motivo de la corrección fiscal autorizada"
+        )
 
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
+        self.correct_subsidio = options["correct_subsidio_2026"]
+        self.correction_reason = options["reason"].strip()
+        if self.correct_subsidio and len(self.correction_reason) < 12:
+            raise CommandError(
+                "La corrección requiere --reason (mínimo 12 caracteres)."
+            )
 
         if not dry_run and os.environ.get("LOCAL_DB") != "yes":
-            self.stderr.write(
-                self.style.ERROR(
-                    "Refusing to write: this command mutates the database. "
-                    "Re-run with --dry-run, or set LOCAL_DB=yes to confirm."
-                )
+            raise CommandError(
+                "Refusing to write: this command mutates the database. "
+                "Re-run with --dry-run, or set LOCAL_DB=yes to confirm."
             )
-            return
 
-        self.counts = {"created": 0, "promoted": 0, "kept": 0}
+        self.counts = {"created": 0, "promoted": 0, "kept": 0, "corrected": 0}
 
         with transaction.atomic():
             self._publish_uma(dry_run)
@@ -91,6 +114,7 @@ class Command(BaseCommand):
                 f"{verb}: {self.counts['created']} filas nuevas, "
                 f"{self.counts['promoted']} promovidas desde seed-unverified. "
                 f"Intactas (ya published): {self.counts['kept']}."
+                f" Corregidas con historial: {self.counts['corrected']}."
             )
         )
         self.stdout.write(
@@ -252,22 +276,28 @@ class Command(BaseCommand):
 
     def _publish_subsidio(self, dry_run):
         for v_from, v_to, uma_monthly, amount, note in SUBSIDIO_2026_PERIODS:
-            existing = FiscalTable.objects.filter(
-                kind=FiscalTable.Kind.SUBSIDIO_RULE, year=2026, vigencia_from=v_from
-            ).first()
+            existing = (
+                FiscalTable.objects.select_for_update()
+                .filter(
+                    kind=FiscalTable.Kind.SUBSIDIO_RULE, year=2026, vigencia_from=v_from
+                )
+                .first()
+            )
             label = f"Subsidio al empleo 2026 desde {v_from}: {amount}/mes"
-            if self._skip_if_published(existing, label):
-                continue
-            self._record(existing, label)
-            if dry_run:
-                continue
-
             fields = {
                 "kind": FiscalTable.Kind.SUBSIDIO_RULE,
                 "year": 2026,
                 "period": "monthly",
-                "rows": subsidio_rule_rows(uma_monthly, amount),
-                "legal_basis": "Decreto del subsidio para el empleo (DOF 01-05-2024)",
+                "rows": subsidio_rule_rows(
+                    uma_monthly,
+                    amount,
+                    (
+                        SUBSIDIO_ENERO_RATE_OF_UMA
+                        if v_from == "2026-01-01"
+                        else SUBSIDIO_RATE_OF_UMA
+                    ),
+                ),
+                "legal_basis": "Decreto del subsidio para el empleo (DOF 31-12-2025, Artículo Segundo y Transitorio Segundo)",
                 "vigencia_from": v_from,
                 "vigencia_to": v_to,
                 "dof_date": SUBSIDIO_2026_DOF["dof_date"],
@@ -277,6 +307,61 @@ class Command(BaseCommand):
                 "provenance": Provenance.PUBLISHED,
                 "notes": f"{SUBSIDIO_2026_DOF['notes']} {note}",
             }
+            if existing is not None and existing.provenance == Provenance.PUBLISHED:
+                if (
+                    existing.rows == fields["rows"]
+                    and existing.period == fields["period"]
+                    and existing.dof_codigo == fields["dof_codigo"]
+                    and str(existing.dof_date) == fields["dof_date"]
+                    and existing.source_url == fields["source_url"]
+                    and (str(existing.vigencia_to) if existing.vigencia_to else None)
+                    == v_to
+                ):
+                    self._skip_if_published(existing, label)
+                    continue
+                old_amount = "474.65" if v_from == "2026-01-01" else "492.14"
+                old_rows = subsidio_rule_rows(
+                    uma_monthly, old_amount, "0.138", income_cap="10171.00"
+                )
+                if (
+                    existing.rows != old_rows
+                    or existing.dof_codigo != "5746529"
+                    or str(existing.dof_date) != "2024-12-31"
+                    or existing.source_url
+                    != "https://dof.gob.mx/nota_detalle.php?codigo=5746529&fecha=31/12/2024"
+                    or existing.legal_basis
+                    != "Decreto del subsidio para el empleo (DOF 01-05-2024)"
+                    or existing.period != "monthly"
+                    or (str(existing.vigencia_to) if existing.vigencia_to else None)
+                    != v_to
+                ):
+                    raise CommandError(
+                        f"{label}: published difiere del DOF; revisión manual, no se sobrescribe."
+                    )
+                if not self.correct_subsidio:
+                    raise CommandError(
+                        f"{label}: regla 2024 obsoleta. Revisar --correct-subsidio-2026 --dry-run --reason."
+                    )
+                # Explicit exception to publication immutability: preserve the
+                # full old row in the same transaction as its correction. The
+                # unique effective-period key precludes parallel versions.
+                snapshot = model_to_dict(existing)
+                snapshot["created_at"] = existing.created_at
+                fields["notes"] += "\nCORRECTION_AUDIT=" + json.dumps(
+                    {
+                        "at": timezone.now(),
+                        "reason": self.correction_reason,
+                        "previous": snapshot,
+                    },
+                    cls=DjangoJSONEncoder,
+                    sort_keys=True,
+                )
+                self.counts["corrected"] += 1
+                self.stdout.write(f"  ! {label}: corrección con historial preservado")
+            else:
+                self._record(existing, label)
+            if dry_run:
+                continue
             if existing is None:
                 FiscalTable.objects.create(**fields)
             else:

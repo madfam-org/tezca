@@ -1,5 +1,15 @@
 # Fiscal Values Feed
 
+> **Correction prepared 2026-10-07 — production repair not yet verified.** The
+> September publication below incorrectly reused the 2025 employment-subsidy
+> rule for 2026. [DOF 31-12-2025, decree 5777649](https://dof.gob.mx/nota_detalle.php?codigo=5777649&fecha=31/12/2025)
+> sets an income ceiling of 11,492.66 and a monthly-UMA factor of 15.59% for
+> January 2026, then 15.02%. Derived monthly amounts: 536.21 and 535.65.
+> The corrected publisher preserves 2025 values. It refuses obsolete published
+> 2026 rows until an operator explicitly selects the correction, preserving
+> the entire prior row in its audit notes. See the dated correction appended
+> to [the publication record](fiscal/2026-publicacion-dof.md).
+
 Tezca is the MADFAM ecosystem's Mexican-law oracle. Until now it served law
 *text*; this feed makes it serve law-derived *values* — so consumers
 (`symbiosis-hcm` first, `karafiel` second) never re-implement fiscal-value

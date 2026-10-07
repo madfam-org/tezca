@@ -210,7 +210,9 @@ class Command(BaseCommand):
                     "kind": FiscalTable.Kind.SUBSIDIO_RULE,
                     "year": 2025,
                     "period": "monthly",
-                    "rows": subsidio_rule_rows(uma_monthly, amount, rate),
+                    "rows": subsidio_rule_rows(
+                        uma_monthly, amount, rate, income_cap="10171.00"
+                    ),
                     "legal_basis": (
                         "Decreto del subsidio para el empleo (DOF 01-05-2024, "
                         "modificado 31-12-2024)"

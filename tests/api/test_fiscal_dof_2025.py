@@ -212,15 +212,18 @@ class TestConstantesContraElDOF:
         La forma de la fila tiene que ser idéntica a la de 2026 para que un
         consumidor no distinga de qué año viene.
         """
-        de_2025 = subsidio_rule_rows("3300.53", "474.95", "0.1439")[0]
-        de_2026 = subsidio_rule_rows("3566.22", "492.14")[0]
+        de_2025 = subsidio_rule_rows(
+            "3300.53", "474.95", "0.1439", income_cap="10171.00"
+        )[0]
+        de_2026 = subsidio_rule_rows("3566.22", "535.65")[0]
 
         assert set(de_2025) == set(de_2026)
-        assert de_2025["income_cap"] == de_2026["income_cap"] == "10171.00"
+        assert de_2025["income_cap"] == "10171.00"
+        assert de_2026["income_cap"] == "11492.66"
         assert de_2025["days_divisor"] == de_2026["days_divisor"] == "30.4"
         assert de_2025["rate_of_uma"] == "0.1439"
         assert "14.39 %" in de_2025["formula"], "la fórmula lleva el % efectivo"
-        assert "13.8 %" in de_2026["formula"]
+        assert "15.02 %" in de_2026["formula"]
 
     def test_la_tabla_de_tramos_derogada_ya_no_se_siembra(self):
         """No se conserva «por compatibilidad»: se retiró con razón.

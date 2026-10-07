@@ -1,6 +1,11 @@
 # Publicación fiscal 2026 — verificada contra el DOF
 
 **Fecha de verificación:** 2026-09-05
+
+> **Corrección 2026-10-07:** el subsidio descrito abajo es histórico y era
+> incorrecto. La corrección de código está preparada; no se afirma aplicada
+> a producción. Véase «Corrección del subsidio 2026» al final.
+
 **Estado:** publicado en producción el 2026-09-05 ~17:45 CDMX — 6 filas nuevas,
 0 promovidas, 0 intactas. Ver [«Despliegue (operador)»](#despliegue-operador).
 **Fuente:** lectura directa del texto del DOF (`nota_detalle`), sin fuentes
@@ -323,3 +328,39 @@ Los índices `index_111`/`113` del DOF son poco fiables (a menudo devuelven la
 misma edición); la verificación de 2026 se logró leyendo `nota_detalle`
 secuenciales, y los endpoints sólo sirven meses recientes. Conviene leer el DOF
 en la ventana de publicación, no meses después.
+
+
+## Corrección del subsidio 2026
+
+Last Updated: 2026-10-07
+
+El [decreto DOF 31-12-2025, 5777649](https://dof.gob.mx/nota_detalle.php?codigo=5777649&fecha=31/12/2025)
+reforma el Artículo Segundo y entra en vigor el 1 de enero de 2026.
+La afirmación anterior «no hubo decreto nuevo» queda corregida. El límite
+mensual es 11,492.66. Enero usa 15.59% de 3,439.46 = 536.21; desde febrero,
+15.02% de 3,566.22 = 535.65, redondeados a centavos. La estimación de 536.22
+del considerando no sustituye la fórmula operativa. Texto HTML oficial
+verificado; cotejo con facsímil pendiente.
+
+El publisher ordinario ahora rechaza las filas publicadas obsoletas, en vez
+de declararlas correctas por tener `provenance=published`. La excepción
+explícita de corrección exige el contenido histórico conocido, motivo,
+`LOCAL_DB=yes`, bloqueo de filas y transacción atómica. Archiva todos los
+campos anteriores y fecha/motivo en `notes` (`CORRECTION_AUDIT`). Una fila
+publicada con valores desconocidos se rechaza; 2025 conserva su propio tope
+y porcentajes. No se ejecutó la corrección en producción en esta sesión.
+
+Vista previa del comando de aplicación (ejecutar mediante la operación
+aprobada de Enclii; si falta el adaptador, registrar el bloqueo):
+
+```text
+python manage.py publish_fiscal_values_2026 --correct-subsidio-2026 --dry-run --reason "Revisión del decreto DOF 5777649"
+```
+
+Después de revisar y autorizar esa salida, el operador puede aplicar el
+mismo comando sin `--dry-run`, con el guard `LOCAL_DB=yes`. Verificar los
+endpoints por fecha (enero y febrero), el historial conservado y la
+idempotencia. Después, cada consumidor debe refrescar su base fiscal y
+revisar cálculos históricos afectados antes de ejecutar nómina o timbrado.
+No basta con desplegar el cambio: las filas ya publicadas no se corrigen
+hasta ejecutar la operación explícita.
