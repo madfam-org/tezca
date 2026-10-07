@@ -2,8 +2,8 @@
 
 A diferencia de :mod:`apps.api.fiscal_seed_data` — cuyas filas se declaran
 ``seed-unverified`` porque nadie en este repo leyó el documento primario —
-cada fila de este módulo se transcribió del texto del DOF el **2026-09-05**,
-y por eso se publica con ``provenance='published'``.
+las cifras se leyeron el **2026-09-05**, con corrección del subsidio el
+**2026-10-07** contra el decreto 5777649. Cada dataset conserva su propia cita.
 
 Cada constante lleva el ``codigo`` de ``nota_detalle`` del DOF, que es el
 identificador estable de la publicación exacta:
@@ -20,10 +20,11 @@ Reglas que gobiernan este módulo
 1. **Nada aquí es inferencia.** Si el texto del DOF no lo dice, no se
    escribe. Donde hubo que inferir (el fin de vigencia de la UMA), la fila
    deja el campo en ``None`` y lo declara en ``notes``.
-2. **Append-only.** Publicar no edita una fila existente: la corrección es
-   una fila nueva con ``vigencia_from`` posterior, o —cuando corrige el
-   mismo periodo de vigencia— una fila nueva que supersede a la anterior
-   cerrando su ``vigencia_to``. Ver ``publish_fiscal_values_2026``.
+2. **Publicación protegida.** El comando ordinario conserva las filas
+   publicadas. La errata del subsidio 2026 requiere una opción explícita,
+   motivo y archivo íntegro de la fila anterior dentro de la misma
+   transacción; una fila desconocida se rechaza. Ver
+   ``publish_fiscal_values_2026 --correct-subsidio-2026``.
 3. **UMA ≠ salario mínimo** (LFVUMA Art. 4). Son modelos distintos a
    propósito; este módulo no los mezcla.
 
@@ -229,66 +230,49 @@ ISR_ANNUAL_2026_PENDING = {
 }
 
 # ---------------------------------------------------------------------------
-# Subsidio al empleo 2026 — regla derivada, no tabla
-#
-# Instrumento: «Decreto que otorga el subsidio para el empleo», DOF
-# 01/05/2024, modificado por el DOF 31/12/2024 (codigo 5746529). NO hubo
-# decreto nuevo para 2026 (se recorrieron los índices del DOF entre el
-# 15/12/2025 y el 28/02/2026).
-#
-# Desde ese decreto el subsidio dejó de ser una tabla de rangos: es un monto
-# mensual fijo igual al 13.8 % de la UMA mensual, para quien percibe un
-# ingreso base que no exceda $10,171.00. Para periodos menores a un mes:
-#     (UMA mensual x 13.8 %) / 30.4 x días
-#
-# Como el monto se deriva de la UMA mensual y la UMA cambia el 1 de febrero,
-# 2026 tiene DOS vigencias — y el modelo append-only las representa como dos
-# filas, no como una fila editada:
-#     enero 2026        UMA 2025 (3,439.46) x 13.8 % = 474.65
-#     desde 01-02-2026  UMA 2026 (3,566.22) x 13.8 % = 492.14
-#
-# Los importes derivados se publican junto con la fórmula para que un
-# consumidor pueda recalcularlos y comprobar la aritmética en lugar de
-# confiar en un número opaco.
+# Subsidio al empleo 2026 — DOF 31-12-2025, codigo 5777649.
+# Artículo Segundo: 15.02 % de UMA mensual, ingreso base <= 11,492.66.
+# Transitorio Segundo: únicamente enero usa 15.59 % sobre la UMA 2025.
+# Corrección verificada 2026-10-07: la publicación de septiembre aplicaba
+# indebidamente el decreto de 2024 a 2026. No cambia el ejercicio 2025.
 # ---------------------------------------------------------------------------
-SUBSIDIO_RATE_OF_UMA = "0.138"
-SUBSIDIO_INCOME_CAP = "10171.00"
+SUBSIDIO_RATE_OF_UMA = "0.1502"
+SUBSIDIO_ENERO_RATE_OF_UMA = "0.1559"
+SUBSIDIO_INCOME_CAP = "11492.66"
 SUBSIDIO_DAYS_DIVISOR = "30.4"
 
 SUBSIDIO_2026_DOF = {
-    "dof_date": "2024-12-31",
-    "dof_codigo": "5746529",
-    "source_url": "https://dof.gob.mx/nota_detalle.php?codigo=5746529&fecha=31/12/2024",
+    "dof_date": "2025-12-31",
+    "dof_codigo": "5777649",
+    "source_url": "https://dof.gob.mx/nota_detalle.php?codigo=5777649&fecha=31/12/2025",
     "source_citation": (
-        "«DECRETO por el que se otorga el subsidio para el empleo», DOF "
-        "01-05-2024, modificado por DOF 31-12-2024 (codigo 5746529). Sin "
-        "decreto nuevo para 2026."
+        "DOF 31-12-2025, Decreto por el que se modifica el diverso que otorga "
+        "el subsidio para el empleo; Artículo Segundo y Transitorios Primero y Segundo."
     ),
     "notes": (
-        VERIFIED_NOTE + " No hubo decreto nuevo para 2026: se recorrieron los "
-        "índices del DOF entre el 15-12-2025 y el 28-02-2026 sin encontrarlo, "
-        "así que sigue vigente el de 2024. La sustitución del 14.39 % aplicó "
-        "sólo a enero de 2025 y NO se arrastra a 2026."
+        "Texto oficial verificado 2026-10-07. Sustituye la atribución errónea "
+        "del decreto 5746529 a 2026. Enero: 15.59 % de UMA 2025; desde febrero: "
+        "15.02 % de UMA 2026. Importes derivados con redondeo a centavos; el "
+        "considerando estima 536.22, pero la regla operativa es el porcentaje "
+        "de UMA publicada. Cotejo con el facsímil pendiente."
     ),
 }
 
-# (vigencia_from, vigencia_to, UMA mensual base, monto mensual derivado, nota)
+# (vigencia_from, vigencia_to, UMA mensual, monto mensual, nota)
 SUBSIDIO_2026_PERIODS = [
     (
         "2026-01-01",
         "2026-01-31",
         "3439.46",
-        "474.65",
-        "Enero de 2026 se calcula todavía con la UMA 2025 (3,439.46), "
-        "vigente hasta el 31-01-2026.",
+        "536.21",
+        "Enero: 15.59 % de la UMA mensual 2025 (Transitorio Segundo).",
     ),
     (
         "2026-02-01",
         None,
         "3566.22",
-        "492.14",
-        "Desde el 01-02-2026 el subsidio se calcula con la UMA 2026 "
-        "(3,566.22), publicada en el DOF 09-01-2026 (codigo 5778072).",
+        "535.65",
+        "Desde febrero: 15.02 % de la UMA mensual 2026 (Artículo Segundo).",
     ),
 ]
 
@@ -297,33 +281,27 @@ def subsidio_rule_rows(
     uma_monthly: str,
     monthly_amount: str,
     rate_of_uma: str = SUBSIDIO_RATE_OF_UMA,
+    *,
+    income_cap: str = SUBSIDIO_INCOME_CAP,
 ) -> list[dict]:
-    """La regla del subsidio como la consume un motor de nómina.
+    """Regla auto-verificable; cada ejercicio declara porcentaje y tope.
 
-    Se devuelve una lista de un solo objeto (y no una tabla de rangos) para
-    que la forma del campo ``rows`` siga siendo una lista, igual que en los
-    demás ``FiscalTable``, sin fingir que existen tramos que el decreto ya
-    no tiene.
-
-    ``rate_of_uma`` es parámetro porque el TRANSITORIO SEGUNDO del decreto
-    (DOF 31-12-2024) sustituyó el 13.8 % por **14.39 % durante enero de 2025**
-    — un mes, un porcentaje distinto, la misma regla. Por omisión es el 13.8 %
-    del Artículo Segundo, que es el que rige todos los demás periodos, así que
-    ningún llamador de 2026 cambia. La fórmula se redacta con el porcentaje
-    efectivo para que la fila publicada sea auto-verificable: quien lea el
-    renglón puede rehacer la multiplicación.
+    Los consumidores históricos de 2025 deben pasar su tope explícitamente.
     """
-    percent = f"{float(rate_of_uma) * 100:g} %"
+    from decimal import Decimal
+
+    percent = f"{Decimal(rate_of_uma) * 100:f}".rstrip("0").rstrip(".") + " %"
+    cap_display = f"{Decimal(income_cap):,.2f}"
     return [
         {
             "rate_of_uma": rate_of_uma,
             "uma_monthly": uma_monthly,
             "monthly_amount": monthly_amount,
-            "income_cap": SUBSIDIO_INCOME_CAP,
+            "income_cap": income_cap,
             "days_divisor": SUBSIDIO_DAYS_DIVISOR,
             "formula": (
                 f"monto mensual = UMA mensual x {percent}, aplicable cuando el "
-                "ingreso base no excede 10,171.00; para periodos menores a un "
+                f"ingreso base no excede {cap_display}; para periodos menores a un "
                 f"mes: (UMA mensual x {percent}) / 30.4 x dias"
             ),
         }

@@ -12,12 +12,14 @@ Dos capas:
   para una fecha dada.
 """
 
+import json
 from datetime import date
 from io import StringIO
 from unittest.mock import patch
 
 import pytest
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from rest_framework.test import APIClient
 
 from apps.api.fiscal_dof_2026 import (
@@ -26,6 +28,7 @@ from apps.api.fiscal_dof_2026 import (
     MINIMUM_WAGE_2026,
     SUBSIDIO_2026_DOF,
     SUBSIDIO_2026_PERIODS,
+    SUBSIDIO_ENERO_RATE_OF_UMA,
     SUBSIDIO_INCOME_CAP,
     SUBSIDIO_RATE_OF_UMA,
     UMA_2026,
@@ -153,9 +156,9 @@ class TestConstantesContraElDOF:
         assert set(ISR_MONTHLY_2026[0]) == set(ISR_MONTHLY_2025[0])
 
     def test_subsidio_2026_es_regla_derivada(self):
-        assert SUBSIDIO_RATE_OF_UMA == "0.138"
-        assert SUBSIDIO_INCOME_CAP == "10171.00"
-        assert SUBSIDIO_2026_DOF["dof_codigo"] == "5746529"
+        assert SUBSIDIO_RATE_OF_UMA == "0.1502"
+        assert SUBSIDIO_INCOME_CAP == "11492.66"
+        assert SUBSIDIO_2026_DOF["dof_codigo"] == "5777649"
 
     def test_subsidio_2026_tiene_dos_vigencias(self):
         """La UMA cambia el 1 de febrero, así que el subsidio también."""
@@ -163,16 +166,25 @@ class TestConstantesContraElDOF:
         enero, desde_febrero = SUBSIDIO_2026_PERIODS
         assert enero[0] == "2026-01-01"
         assert enero[1] == "2026-01-31"
-        assert enero[3] == "474.65"
+        assert enero[3] == "536.21"
         assert desde_febrero[0] == "2026-02-01"
         assert desde_febrero[1] is None
-        assert desde_febrero[3] == "492.14"
+        assert desde_febrero[3] == "535.65"
 
     def test_subsidio_importes_cuadran_con_la_formula(self):
-        """13.8 % de la UMA mensual, redondeado a centavos."""
-        for _v_from, _v_to, uma_monthly, amount, _note in SUBSIDIO_2026_PERIODS:
-            esperado = round(float(uma_monthly) * 0.138, 2)
-            assert abs(esperado - float(amount)) < 0.01, uma_monthly
+        """Porcentaje del decreto aplicable a cada periodo, con Decimal."""
+        from decimal import ROUND_HALF_UP, Decimal
+
+        for v_from, _v_to, uma_monthly, amount, _note in SUBSIDIO_2026_PERIODS:
+            rate = (
+                SUBSIDIO_ENERO_RATE_OF_UMA
+                if v_from == "2026-01-01"
+                else SUBSIDIO_RATE_OF_UMA
+            )
+            esperado = (Decimal(uma_monthly) * Decimal(rate)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            assert esperado == Decimal(amount), uma_monthly
 
     def test_subsidio_enero_usa_la_uma_2025(self):
         """Enero de 2026 todavía se calcula con la UMA vigente en enero."""
@@ -182,11 +194,11 @@ class TestConstantesContraElDOF:
         assert febrero[2] == UMA_2026["monthly"]
 
     def test_subsidio_rule_rows_lleva_la_formula(self):
-        rows = subsidio_rule_rows("3566.22", "492.14")
+        rows = subsidio_rule_rows("3566.22", "535.65")
         assert len(rows) == 1
         row = rows[0]
-        assert row["rate_of_uma"] == "0.138"
-        assert row["income_cap"] == "10171.00"
+        assert row["rate_of_uma"] == "0.1502"
+        assert row["income_cap"] == "11492.66"
         assert row["days_divisor"] == "30.4"
         assert "30.4" in row["formula"]
 
@@ -201,6 +213,204 @@ class TestConstantesContraElDOF:
 class TestComandoDePublicacion:
     """python manage.py publish_fiscal_values_2026."""
 
+    def obsolete_subsidio(self):
+        return FiscalTable.objects.create(
+            kind=FiscalTable.Kind.SUBSIDIO_RULE,
+            year=2026,
+            period="monthly",
+            vigencia_from="2026-01-01",
+            vigencia_to="2026-01-31",
+            rows=subsidio_rule_rows(
+                "3439.46", "474.65", "0.138", income_cap="10171.00"
+            ),
+            dof_codigo="5746529",
+            dof_date="2024-12-31",
+            source_url="https://dof.gob.mx/nota_detalle.php?codigo=5746529&fecha=31/12/2024",
+            legal_basis="Decreto del subsidio para el empleo (DOF 01-05-2024)",
+            provenance=Provenance.PUBLISHED,
+            notes="Original publication evidence",
+        )
+
+    def test_obsolete_published_rule_fails_without_explicit_correction(
+        self, monkeypatch
+    ):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        row = self.obsolete_subsidio()
+        with pytest.raises(CommandError, match="regla 2024 obsoleta"):
+            call_command("publish_fiscal_values_2026", stdout=StringIO())
+        row.refresh_from_db()
+        assert row.rows[0]["monthly_amount"] == "474.65"
+        assert UMAValue.objects.count() == 0  # entire publication rolled back
+
+    def test_correction_preview_does_not_write(self):
+        row = self.obsolete_subsidio()
+        call_command(
+            "publish_fiscal_values_2026",
+            "--dry-run",
+            "--correct-subsidio-2026",
+            reason="Review decree 5777649",
+            stdout=StringIO(),
+        )
+        row.refresh_from_db()
+        assert row.rows[0]["monthly_amount"] == "474.65"
+        assert row.notes == "Original publication evidence"
+        assert FiscalTable.objects.count() == 1
+
+    def test_correction_preserves_previous_row_and_is_idempotent(self, monkeypatch):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        row = self.obsolete_subsidio()
+        call_command(
+            "publish_fiscal_values_2026",
+            "--correct-subsidio-2026",
+            reason="Apply decree 5777649",
+            stdout=StringIO(),
+        )
+        row.refresh_from_db()
+        assert row.rows[0]["monthly_amount"] == "536.21"
+        assert row.rows[0]["rate_of_uma"] == "0.1559"
+        assert row.rows[0]["income_cap"] == "11492.66"
+        assert row.dof_codigo == "5777649"
+        audit = json.loads(row.notes.split("CORRECTION_AUDIT=", 1)[1])
+        assert audit["previous"]["rows"][0]["monthly_amount"] == "474.65"
+        assert audit["previous"]["notes"] == "Original publication evidence"
+        assert audit["reason"] == "Apply decree 5777649"
+        notes = row.notes
+        call_command("publish_fiscal_values_2026", stdout=StringIO())
+        row.refresh_from_db()
+        assert row.notes == notes
+
+    def test_correction_refuses_unknown_published_values(self, monkeypatch):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        row = self.obsolete_subsidio()
+        row.rows[0]["monthly_amount"] = "999.99"
+        row.save()
+        with pytest.raises(CommandError, match="revisión manual"):
+            call_command(
+                "publish_fiscal_values_2026",
+                "--correct-subsidio-2026",
+                reason="Apply decree 5777649",
+                stdout=StringIO(),
+            )
+        row.refresh_from_db()
+        assert row.rows[0]["monthly_amount"] == "999.99"
+
+    @pytest.mark.parametrize("field", ["source_url", "legal_basis"])
+    def test_correction_refuses_unknown_source(self, monkeypatch, field):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        row = self.obsolete_subsidio()
+        setattr(row, field, "https://example.invalid/unverified")
+        row.save()
+        with pytest.raises(CommandError, match="revisión manual"):
+            call_command(
+                "publish_fiscal_values_2026",
+                "--correct-subsidio-2026",
+                reason="Apply decree 5777649",
+                stdout=StringIO(),
+            )
+        row.refresh_from_db()
+        assert getattr(row, field) == "https://example.invalid/unverified"
+        assert UMAValue.objects.count() == 0
+
+    def test_unknown_second_period_rolls_back_first_correction(self, monkeypatch):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        january = self.obsolete_subsidio()
+        FiscalTable.objects.create(
+            kind=FiscalTable.Kind.SUBSIDIO_RULE,
+            year=2026,
+            period="monthly",
+            vigencia_from="2026-02-01",
+            rows=[{"monthly_amount": "999.99"}],
+            provenance=Provenance.PUBLISHED,
+        )
+        before = list(FiscalTable.objects.order_by("id").values())
+        with pytest.raises(CommandError, match="revisión manual"):
+            call_command(
+                "publish_fiscal_values_2026",
+                "--correct-subsidio-2026",
+                reason="Apply decree 5777649",
+                stdout=StringIO(),
+            )
+        january.refresh_from_db()
+        assert list(FiscalTable.objects.order_by("id").values()) == before
+        assert UMAValue.objects.count() == 0
+        assert MinimumWage.objects.count() == 0
+
+    def test_both_known_periods_correct_with_complete_snapshots(self, monkeypatch):
+        from django.core.serializers.json import DjangoJSONEncoder
+        from django.forms.models import model_to_dict
+
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        january = self.obsolete_subsidio()
+        february = FiscalTable.objects.get(pk=january.pk)
+        february.pk = None
+        february.vigencia_from = "2026-02-01"
+        february.vigencia_to = None
+        february.rows = subsidio_rule_rows(
+            "3566.22", "492.14", "0.138", income_cap="10171.00"
+        )
+        february.save()
+        before = {}
+        for row in (january, february):
+            row.refresh_from_db()
+            snapshot = model_to_dict(row)
+            snapshot["created_at"] = row.created_at
+            before[row.pk] = json.loads(json.dumps(snapshot, cls=DjangoJSONEncoder))
+        call_command(
+            "publish_fiscal_values_2026",
+            "--correct-subsidio-2026",
+            reason="Apply decree 5777649",
+            stdout=StringIO(),
+        )
+        notes = {}
+        for row, amount in ((january, "536.21"), (february, "535.65")):
+            row.refresh_from_db()
+            audit = json.loads(row.notes.split("CORRECTION_AUDIT=", 1)[1])
+            assert audit["previous"] == before[row.pk]
+            assert row.rows[0]["monthly_amount"] == amount
+            notes[row.pk] = row.notes
+        call_command("publish_fiscal_values_2026", stdout=StringIO())
+        for row in (january, february):
+            row.refresh_from_db()
+            assert row.notes == notes[row.pk]
+
+    def test_correction_requires_reason_and_db_guard(self, monkeypatch):
+        monkeypatch.delenv("LOCAL_DB", raising=False)
+        row = self.obsolete_subsidio()
+        with pytest.raises(CommandError, match="reason"):
+            call_command(
+                "publish_fiscal_values_2026",
+                "--correct-subsidio-2026",
+                stdout=StringIO(),
+            )
+        with pytest.raises(CommandError, match="LOCAL_DB=yes"):
+            call_command(
+                "publish_fiscal_values_2026",
+                "--correct-subsidio-2026",
+                reason="Apply decree 5777649",
+                stdout=StringIO(),
+                stderr=StringIO(),
+            )
+        row.refresh_from_db()
+        assert row.rows[0]["monthly_amount"] == "474.65"
+        assert FiscalTable.objects.count() == 1
+        assert UMAValue.objects.count() == 0
+        assert MinimumWage.objects.count() == 0
+
+    def test_correct_amount_with_wrong_period_requires_review(self, monkeypatch):
+        monkeypatch.setenv("LOCAL_DB", "yes")
+        call_command("publish_fiscal_values_2026", stdout=StringIO())
+        row = FiscalTable.objects.get(
+            kind=FiscalTable.Kind.SUBSIDIO_RULE,
+            year=2026,
+            vigencia_from="2026-01-01",
+        )
+        row.period = "annual"
+        row.save()
+        with pytest.raises(CommandError, match="revisión manual"):
+            call_command("publish_fiscal_values_2026", stdout=StringIO())
+        row.refresh_from_db()
+        assert row.period == "annual"
+
     def test_dry_run_no_escribe(self):
         out = StringIO()
         call_command("publish_fiscal_values_2026", "--dry-run", stdout=out)
@@ -213,11 +423,12 @@ class TestComandoDePublicacion:
     def test_exige_el_guard_local_db(self, monkeypatch):
         """AGENTS.md: un comando que muta la base pide LOCAL_DB=yes."""
         monkeypatch.delenv("LOCAL_DB", raising=False)
-        err = StringIO()
-        call_command("publish_fiscal_values_2026", stdout=StringIO(), stderr=err)
+        with pytest.raises(CommandError, match="LOCAL_DB=yes"):
+            call_command("publish_fiscal_values_2026", stdout=StringIO())
 
         assert UMAValue.objects.count() == 0
-        assert "LOCAL_DB=yes" in err.getvalue()
+        assert MinimumWage.objects.count() == 0
+        assert FiscalTable.objects.count() == 0
 
     def test_publica_todas_las_filas(self, monkeypatch):
         monkeypatch.setenv("LOCAL_DB", "yes")
@@ -452,8 +663,8 @@ class TestEndpointsConLosValores2026:
         assert resp.status_code == 200
         assert resp.json()["count"] == 1
         row = resp.json()["results"][0]["rows"][0]
-        assert row["monthly_amount"] == "492.14"
-        assert row["income_cap"] == "10171.00"
+        assert row["monthly_amount"] == "535.65"
+        assert row["income_cap"] == "11492.66"
 
     def test_subsidio_rule_en_enero_usa_la_uma_anterior(self, client):
         resp = client.get(
@@ -461,7 +672,7 @@ class TestEndpointsConLosValores2026:
         )
 
         row = resp.json()["results"][0]["rows"][0]
-        assert row["monthly_amount"] == "474.65"
+        assert row["monthly_amount"] == "536.21"
         assert row["uma_monthly"] == "3439.46"
 
     def test_tables_2026_no_esta_todo_publicado(self, client):
