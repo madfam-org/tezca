@@ -110,8 +110,8 @@ Code cannot merge to `main` unless:
 
 ### Backend (Pytest)
 - **Location:** `tests/`
-- **Run:** `PYTHONPATH=apps:. poetry run pytest tests/ -v`. CI adds `--cov=apps --cov-fail-under=60` (actual 69.36% on 2026-10-01).
-- **Result on 2026-10-01** (Python 3.11, no extras, SQLite): `3025 passed, 18 skipped`.
+- **Run:** `PYTHONPATH=apps:. poetry run pytest tests/ -v`. CI adds `--cov=apps --cov-fail-under=60` (actual 69.62% on 2026-10-11).
+- **Result on 2026-10-11** (Python 3.12, no extras, SQLite): `3036 passed, 18 skipped`.
 - **Lint:** `poetry run black --check apps/ tests/ scripts/` + `poetry run isort --check-only apps/ tests/ scripts/`. Always use `poetry run black` (26.x, from `poetry.lock`), not a system black.
 - **Other gates in the same job:** `makemigrations --check`, `scripts/utils/audit_file_sizes.py` (>800 LOC fails), `scripts/utils/audit_silent_excepts.py`, `pip-audit`.
 - **Dependency floors:** `tests/test_dependency_floors.py` fails if `poetry.lock`, `pyproject.toml`, `packages/mcp-server/uv.lock` or `package-lock.json` drops below a security floor (see `SECURITY.md`). It also fails if `poetry.lock` resolves to a release PyPI has yanked (pypdfium2 5.12.0).
@@ -128,8 +128,9 @@ CI does not install the optional extras (`pdf`, `export`, `ocr`, `r2`, `producti
 | `tests/api/test_ingest_jcf.py` (domain-filter branch) | database is not PostgreSQL | The JSONField branch is PostgreSQL-only. The engine-independent `test_domains_field_is_the_routing_key_for_labor_consumers` covers the routing key. `test-publication-postgres` does not include this file, so the PostgreSQL branch runs only locally. |
 
 #### Known flaky
-- `tests/api/test_prometheus_metrics.py::TestUnderGunicorn::test_master_serves_the_sum_of_all_workers`: it counts requests across gunicorn workers and has once read 21 instead of 20. It passes on a rerun. Rerun before you investigate.
 - `tests/integration/test_spot_check.py` together with `tests/pipeline/test_index_laws.py`: a fixture-pollution flake that fails them only when they run in the same invocation. Each passes alone. The full 2026-10-01 run passed with both included.
+
+`tests/api/test_prometheus_metrics.py::TestUnderGunicorn` was on this list until 2026-10-11. It sometimes read 21 or more instead of 20: its HTTP readiness probe timed out after 1 s on a cold worker and retried, and the abandoned request was still served and counted after the test read its baseline. The fixture now waits with a TCP connect, which sends no request, and then sends one `/health` that it never abandons. Any end-to-end test that counts requests needs the same rule: never retry an HTTP request the server may already have accepted.
 
 #### PDF export (`GET /api/v1/laws/<id>/export/pdf/`)
 - `tests/api/test_export_views.py` covers access (anonymous 403, tier limits) and the 501 answer without WeasyPrint.

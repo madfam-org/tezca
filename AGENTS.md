@@ -158,7 +158,7 @@ npm run dev:all                     # both concurrently
 ### Testing
 
 ```bash
-# Backend (pytest + django, 3025 passed / 18 skipped as of 2026-10-01 with PYTHONPATH=apps:.; skips and flakes: docs/guides/TESTING_STRATEGY.md)
+# Backend (pytest + django, 3036 passed / 18 skipped as of 2026-10-11 with PYTHONPATH=apps:.; skips and flakes: docs/guides/TESTING_STRATEGY.md)
 # NOTE: run tests/integration/test_spot_check.py in a SEPARATE invocation from
 # tests/pipeline/test_index_laws.py — a pre-existing fixture-pollution flake fails
 # them only when batched together; each passes alone. Not a real regression.
