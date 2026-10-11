@@ -1,0 +1,21 @@
+# Tezca
+
+> Tezca (tezca.mx) is an open Mexican law platform: federal, state and municipal legislation in digital form, taken from official sources (Diario Oficial de la Federación, Orden Jurídico Nacional and the state official gazettes), with full-text search, cross-references between laws and side-by-side comparison. The site is in Spanish, with English and Náhuatl interface options. Reading and searching the law is free; paid plans add larger result pages, more export formats, API keys and webhooks.
+
+## Explore the law
+
+- [Laws](https://tezca.mx/leyes): browse the catalogue of laws
+- [Search](https://tezca.mx/busqueda): full-text search across articles
+- [States](https://tezca.mx/estados): state legislation for the 32 Mexican states
+- [Categories](https://tezca.mx/categorias): laws grouped by area of law
+- [Compare](https://tezca.mx/comparar): compare laws side by side
+
+## Plans and developers
+
+- [Pricing](https://tezca.mx/precios): free account and paid plans (current prices are on this page)
+- [Developers](https://tezca.mx/desarrolladores): REST API documentation (base URL https://api.tezca.mx/api/v1)
+
+## About and contact
+
+- [About Tezca](https://tezca.mx/acerca-de): mission, data sources and methodology; contact admin@madfam.io
+- [Terms](https://tezca.mx/terminos) · [Privacy](https://tezca.mx/privacidad) · [Legal notice](https://tezca.mx/aviso-legal)

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { INTERNAL_API_URL } from '@/lib/config';
+import { STATE_SLUGS } from '@/lib/states';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
@@ -12,17 +13,6 @@ const CATEGORIES = [
   'Leyes Reglamentarias',
   'Reglamentos',
   'Otras',
-];
-
-// 32 Mexican states (slug form for URLs)
-const STATES = [
-  'aguascalientes', 'baja_california', 'baja_california_sur', 'campeche',
-  'chiapas', 'chihuahua', 'ciudad_de_mexico', 'coahuila', 'colima',
-  'durango', 'estado_de_mexico', 'guanajuato', 'guerrero', 'hidalgo',
-  'jalisco', 'michoacan', 'morelos', 'nayarit', 'nuevo_leon', 'oaxaca',
-  'puebla', 'queretaro', 'quintana_roo', 'san_luis_potosi', 'sinaloa',
-  'sonora', 'tabasco', 'tamaulipas', 'tlaxcala', 'veracruz', 'yucatan',
-  'zacatecas',
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -48,6 +38,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${BASE_URL}/comparar`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/precios`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/desarrolladores`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
@@ -88,7 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
-    ...STATES.map((state) => ({
+    ...STATE_SLUGS.map((state) => ({
       url: `${BASE_URL}/estados/${encodeURIComponent(state)}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
