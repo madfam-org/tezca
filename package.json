@@ -31,7 +31,7 @@
   "overrides": {
     "@janua/nextjs": "^0.1.6",
     "@janua/typescript-sdk": "0.1.2",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "postcss": "^8.5.19"
   },
   "optionalDependencies": {
