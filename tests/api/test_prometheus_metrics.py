@@ -20,6 +20,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+from typing import NamedTuple
 
 import pytest
 from django.test import Client, RequestFactory
@@ -60,12 +61,12 @@ def client(settings):
     return Client()
 
 
-def _get(url, host=None, method="GET"):
+def _get(url, host=None, method="GET", timeout=5):
     request = urllib.request.Request(url, method=method)
     if host:
         request.add_header("Host", host)
     try:
-        with urllib.request.urlopen(request, timeout=5) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             return response.status, dict(response.headers), response.read().decode()
     except urllib.error.HTTPError as error:
         return error.code, dict(error.headers), error.read().decode()
@@ -203,16 +204,49 @@ def test_reset_multiproc_dir_removes_only_db_files(tmp_path):
 # ── End to end under gunicorn ───────────────────────────────────────────
 
 
-def _wait_for(url, deadline):
+# A worker's first request imports the URLconf and every view module, which
+# takes seconds on a busy CI runner. A request the client gives up on is still
+# served and counted by the worker, so the end-to-end requests below wait as
+# long as it takes rather than time out and retry.
+_SERVED_REQUEST_TIMEOUT = 60
+
+
+class GunicornAPI(NamedTuple):
+    api: str
+    metrics: str
+    # /health requests the fixture sent, each answered before it returned.
+    health_requests: int
+
+
+def _log_tail(log_path, lines=40):
+    try:
+        return "\n".join(log_path.read_text(errors="replace").splitlines()[-lines:])
+    except OSError as error:
+        return f"(no gunicorn log: {error})"
+
+
+def _wait_for_listener(port, deadline, process, log_path):
+    """Block until something accepts TCP connections on ``port``.
+
+    Connect-only on purpose. Gunicorn's master binds the API socket before it
+    forks the workers, so an HTTP readiness probe would queue a real request
+    there; a probe that timed out and retried used to leave that request in
+    flight, the worker counted it after the test read its baseline, and the
+    delta came out one or more too high. Opening and closing a connection
+    sends no request, so no worker counts anything.
+    """
     while time.monotonic() < deadline:
+        if process.poll() is not None:
+            raise AssertionError(
+                f"gunicorn exited with {process.returncode} before :{port} "
+                f"accepted connections:\n{_log_tail(log_path)}"
+            )
         try:
-            with urllib.request.urlopen(url, timeout=1):
+            with socket.create_connection(("127.0.0.1", port), timeout=1):
                 return
-        except urllib.error.HTTPError:
-            return
         except OSError:
-            time.sleep(0.2)
-    raise AssertionError(f"{url} did not come up")
+            time.sleep(0.1)
+    raise AssertionError(f":{port} did not come up:\n{_log_tail(log_path)}")
 
 
 def _samples(body, name):
@@ -225,41 +259,56 @@ def _samples(body, name):
 @pytest.fixture(scope="module")
 def gunicorn_api(tmp_path_factory):
     api_port, metrics_port = _free_port(), _free_port()
+    workdir = tmp_path_factory.mktemp("gunicorn")
+    # A fresh directory for this gunicorn only, so no other test's or run's
+    # sample files can be summed in.
+    multiproc_dir = workdir / "multiproc"
+    log_path = workdir / "gunicorn.log"
     env = {
         **os.environ,
         "METRICS_PORT": str(metrics_port),
-        "PROMETHEUS_MULTIPROC_DIR": str(tmp_path_factory.mktemp("multiproc")),
+        "PROMETHEUS_MULTIPROC_DIR": str(multiproc_dir),
         "DEBUG": "True",
         "ALLOWED_HOSTS": "*",
         "DB_ENGINE": "django.db.backends.sqlite3",
     }
-    process = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "gunicorn",
-            "apps.indigo.wsgi:application",
-            "--config",
-            "apps/indigo/gunicorn.conf.py",
-            "--bind",
-            f"127.0.0.1:{api_port}",
-            "--workers",
-            "2",
-            "--worker-class",
-            "gthread",
-            "--threads",
-            "2",
-        ],
-        cwd=REPO_ROOT,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
+    # A file, not a pipe: nothing reads a pipe while the tests run, and a full
+    # one would block gunicorn's logging. The tail goes into failure messages.
+    with open(log_path, "wb") as log:
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "gunicorn",
+                "apps.indigo.wsgi:application",
+                "--config",
+                "apps/indigo/gunicorn.conf.py",
+                "--bind",
+                f"127.0.0.1:{api_port}",
+                "--workers",
+                "2",
+                "--worker-class",
+                "gthread",
+                "--threads",
+                "2",
+            ],
+            cwd=REPO_ROOT,
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+        )
     try:
         deadline = time.monotonic() + 60
-        _wait_for(f"http://127.0.0.1:{api_port}/health", deadline)
-        _wait_for(f"http://127.0.0.1:{metrics_port}/metrics", deadline)
-        yield f"http://127.0.0.1:{api_port}", f"http://127.0.0.1:{metrics_port}"
+        _wait_for_listener(api_port, deadline, process, log_path)
+        _wait_for_listener(metrics_port, deadline, process, log_path)
+        api = f"http://127.0.0.1:{api_port}"
+        # Exactly one warm-up request, answered before the fixture returns.
+        status, _, _ = _get(
+            api + "/health", host="api.tezca.mx", timeout=_SERVED_REQUEST_TIMEOUT
+        )
+        assert status == 200, _log_tail(log_path)
+        yield GunicornAPI(api, f"http://127.0.0.1:{metrics_port}", health_requests=1)
     finally:
         process.send_signal(signal.SIGTERM)
         try:
@@ -282,27 +331,33 @@ class TestUnderGunicorn:
         return served, body
 
     def test_master_serves_the_sum_of_all_workers(self, gunicorn_api):
-        api, metrics = gunicorn_api
-        # The readiness wait already sent at least one /health request.
-        before, _ = self._health_series(metrics)
+        # Every /health request so far was answered before the fixture
+        # returned, and a worker counts a request before gunicorn sends the
+        # response, so the baseline is exact: no request uncounted, none
+        # counted twice, nothing left over from another process.
+        before, _ = self._health_series(gunicorn_api.metrics)
         assert len(before) == 1
+        assert before[0].value == gunicorn_api.health_requests
 
         requests = 20
         for _ in range(requests):
-            status, _, _ = _get(api + "/health", host="api.tezca.mx")
+            status, _, _ = _get(
+                gunicorn_api.api + "/health",
+                host="api.tezca.mx",
+                timeout=_SERVED_REQUEST_TIMEOUT,
+            )
             assert status == 200
 
-        after, body = self._health_series(metrics)
+        after, body = self._health_series(gunicorn_api.metrics)
         # One aggregated series, not one per worker, and it counts every
         # request whichever worker served it.
         assert len(after) == 1
-        assert after[0].value - before[0].value == requests
+        assert after[0].value == gunicorn_api.health_requests + requests
         assert any(_samples(body, "http_request_duration_seconds_bucket"))
         assert any(_samples(body, "python_info"))
 
     def test_api_port_still_serves_no_metrics(self, gunicorn_api):
-        api, _ = gunicorn_api
         for path in ("/metrics", "/metrics/"):
-            status, _, body = _get(api + path, host="api.tezca.mx")
+            status, _, body = _get(gunicorn_api.api + path, host="api.tezca.mx")
             assert status == 404
             assert "# TYPE" not in body
