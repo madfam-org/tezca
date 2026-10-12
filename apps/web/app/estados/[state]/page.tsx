@@ -7,49 +7,9 @@ import { Card, CardContent, Badge } from '@tezca/ui';
 import { api } from '@/lib/api';
 import { useLang, type Lang } from '@/components/providers/LanguageContext';
 import type { LawListItem } from '@tezca/lib';
+import { getStateDisplayName } from '@/lib/states';
 
 const PAGE_SIZE = 50;
-
-/** Display names with proper accents for all 32 states (keys match API slugs) */
-const STATE_DISPLAY_NAMES: Record<string, string> = {
-    aguascalientes: 'Aguascalientes',
-    baja_california_sur: 'Baja California Sur',
-    baja_california: 'Baja California',
-    campeche: 'Campeche',
-    chiapas: 'Chiapas',
-    chihuahua: 'Chihuahua',
-    ciudad_de_mexico: 'Ciudad de México',
-    coahuila: 'Coahuila',
-    colima: 'Colima',
-    durango: 'Durango',
-    estado_de_mexico: 'Estado de México',
-    guanajuato: 'Guanajuato',
-    guerrero: 'Guerrero',
-    hidalgo: 'Hidalgo',
-    jalisco: 'Jalisco',
-    michoacan: 'Michoacán',
-    morelos: 'Morelos',
-    nayarit: 'Nayarit',
-    nuevo_leon: 'Nuevo León',
-    oaxaca: 'Oaxaca',
-    puebla: 'Puebla',
-    queretaro: 'Querétaro',
-    quintana_roo: 'Quintana Roo',
-    san_luis_potosi: 'San Luis Potosí',
-    sinaloa: 'Sinaloa',
-    sonora: 'Sonora',
-    tabasco: 'Tabasco',
-    tamaulipas: 'Tamaulipas',
-    tlaxcala: 'Tlaxcala',
-    veracruz: 'Veracruz',
-    yucatan: 'Yucatán',
-    zacatecas: 'Zacatecas',
-};
-
-function getStateDisplayName(slug: string): string {
-    return STATE_DISPLAY_NAMES[slug]
-        ?? slug.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
 
 const content: Record<Lang, {
     backToStates: string;
