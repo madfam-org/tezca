@@ -126,7 +126,8 @@ export function Hero() {
                             href="/precios"
                             className="text-xs sm:text-sm text-primary-100/90 hover:text-white transition-colors underline underline-offset-2"
                         >
-                            {lang === 'en' ? 'From MXN$31/mo \u2192' : lang === 'nah' ? 'MXN$31/metztli \u2192' : 'Desde MXN$31/mes \u2192'}
+                            {/* No typed figure: /precios shows Dhanam's catalog price and its IVA label. */}
+                            {lang === 'en' ? 'See plans and pricing \u2192' : lang === 'nah' ? 'Tlaxtlahuilli ihuan patiyotl \u2192' : 'Ver planes y precios \u2192'}
                         </Link>
                     </div>
                 )}

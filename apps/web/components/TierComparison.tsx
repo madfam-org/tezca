@@ -7,7 +7,7 @@ import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
 import { MONETIZATION_ENABLED } from '@/lib/config';
-import { formatMxnCentavos, useTezcaPrices } from '@/lib/dhanam-catalog';
+import { formatMxnCentavos, priceUnitLabel, useTezcaPrices } from '@/lib/dhanam-catalog';
 
 const comingSoonLabel = {
     es: 'Próximamente',
@@ -159,7 +159,10 @@ export function TierComparison({ className = '', compact = false, showPricing = 
         if (planTier === 'free_member') return t.free;
         const monthly = prices?.[planTier];
         // Dhanam's catalog price, the amount checkout charges; never a typed figure.
-        return typeof monthly === 'number' ? `${formatMxnCentavos(monthly)} MXN${t.perMonth}` : '—';
+        // IVA included when the catalog sends the gross, else the net marked "+ IVA".
+        return monthly
+            ? `${formatMxnCentavos(monthly.amount)} ${priceUnitLabel(`MXN${t.perMonth}`, monthly, lang)}`
+            : '—';
     };
 
     if (compact) {

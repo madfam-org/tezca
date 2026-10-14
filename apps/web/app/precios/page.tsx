@@ -7,7 +7,7 @@ import { Card, CardContent, Badge, Button } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { TierComparison } from '@/components/TierComparison';
-import { formatMxnCentavos, useTezcaPrices } from '@/lib/dhanam-catalog';
+import { formatMxnCentavos, priceUnitLabel, useTezcaPrices, type DisplayPrice } from '@/lib/dhanam-catalog';
 import { getCheckoutUrl } from '@/lib/billing';
 import { MONETIZATION_ENABLED } from '@/lib/config';
 import { InterestGate } from '@/components/InterestGate';
@@ -50,11 +50,16 @@ const content = {
                 q: '\u00bfQue metodos de pago aceptan?',
                 a: 'Aceptamos tarjetas de credito y debito (Visa, Mastercard, American Express) a traves de nuestra pasarela de pagos segura.',
             },
-            {
-                q: '\u00bfLos precios incluyen IVA?',
-                a: 'Los precios mostrados no incluyen IVA. El impuesto se calcula al momento del pago segun tu ubicacion.',
-            },
         ],
+        // The answer follows what the cards show (see ivaState below).
+        ivaFaq: {
+            q: '\u00bfLos precios incluyen IVA?',
+            a: {
+                included: 'Si. Los precios mostrados incluyen IVA (16%): es el total que pagas.',
+                plus: 'Los precios marcados \u00ab+ IVA\u00bb no lo incluyen: al pagar se suma el IVA (16%) y el checkout muestra el total.',
+                unknown: 'El checkout cobra el total con IVA (16%) incluido.',
+            },
+        },
         features: {
             free_member: ['Busqueda basica (25 resultados)', 'Descarga TXT y PDF', 'Acceso API'],
             essentials: ['50 resultados por pagina', 'Descarga TXT, PDF y JSON', 'Acceso API', 'Claves API'],
@@ -95,11 +100,16 @@ const content = {
                 q: 'What payment methods do you accept?',
                 a: 'We accept credit and debit cards (Visa, Mastercard, American Express) through our secure payment gateway.',
             },
-            {
-                q: 'Do prices include tax?',
-                a: 'Prices shown do not include tax. Tax is calculated at checkout based on your location.',
-            },
         ],
+        // The answer follows what the cards show (see ivaState below).
+        ivaFaq: {
+            q: 'Do prices include tax?',
+            a: {
+                included: 'Yes. Prices shown include VAT (IVA, 16%): that is the total you pay.',
+                plus: 'Prices marked "+ VAT" do not include it: VAT (IVA, 16%) is added at checkout, which shows the total.',
+                unknown: 'Checkout charges the total with VAT (IVA, 16%) included.',
+            },
+        },
         features: {
             free_member: ['Basic search (25 results)', 'TXT and PDF download', 'API access'],
             essentials: ['50 results per page', 'TXT, PDF, and JSON download', 'API access', 'API keys'],
@@ -166,6 +176,14 @@ const comingSoonLabel = {
 
 type TierKey = 'free_member' | 'essentials' | 'academic' | 'institutional';
 
+/** Whether the prices on the cards include IVA: all gross, any net, or none shown. */
+type IvaState = 'included' | 'plus' | 'unknown';
+
+/** The FAQ for a language, with the IVA answer that matches the cards. */
+function faqFor(c: (typeof content)[keyof typeof content], ivaState: IvaState) {
+    return 'ivaFaq' in c ? [...c.faq, { q: c.ivaFaq.q, a: c.ivaFaq.a[ivaState] }] : c.faq;
+}
+
 function FaqSection({ faq, title }: { faq: { q: string; a: string }[]; title: string }) {
     return (
         <section className="mt-16 max-w-3xl mx-auto">
@@ -205,11 +223,19 @@ export default function PreciosPage() {
         { key: 'institutional' },
     ];
 
-    /** Monthly MXN centavos from Dhanam's catalog; undefined while loading. */
-    const getPrice = (tierKey: TierKey): number | null | undefined => {
+    /** Monthly MXN price from Dhanam's catalog; undefined while loading. */
+    const getPrice = (tierKey: TierKey): DisplayPrice | null | undefined => {
         if (tierKey === 'free_member') return null;
         return prices ? (prices[tierKey] ?? null) : undefined;
     };
+
+    // Gross ("IVA incluido") once Dhanam's catalog sends it, net ("+ IVA")
+    // until then. The FAQ answer says the same thing as the cards.
+    const shownPrices = MONETIZATION_ENABLED
+        ? tiers.map(({ key }) => getPrice(key)).filter((p): p is DisplayPrice => p != null)
+        : [];
+    const ivaState: IvaState =
+        shownPrices.length === 0 ? 'unknown' : shownPrices.every((p) => p.ivaIncluded) ? 'included' : 'plus';
 
     const getCtaHref = (tierKey: TierKey) => {
         if (tierKey === 'free_member') {
@@ -249,7 +275,7 @@ export default function PreciosPage() {
             <JsonLd data={{
                 '@context': 'https://schema.org',
                 '@type': 'FAQPage',
-                mainEntity: content.es.faq.map(item => ({
+                mainEntity: faqFor(content.es, ivaState).map(item => ({
                     '@type': 'Question',
                     name: item.q,
                     acceptedAnswer: { '@type': 'Answer', text: item.a },
@@ -302,13 +328,13 @@ export default function PreciosPage() {
                                     {MONETIZATION_ENABLED && (
                                         <div className="mt-4 mb-4">
                                             {key !== 'free_member' ? (
-                                                typeof price === 'number' ? (
-                                                    <div className="flex items-baseline gap-1">
+                                                price ? (
+                                                    <div className="flex flex-wrap items-baseline gap-1">
                                                         <span className="text-3xl font-bold">
-                                                            {formatMxnCentavos(price)}
+                                                            {formatMxnCentavos(price.amount)}
                                                         </span>
                                                         <span className="text-sm text-muted-foreground">
-                                                            MXN{t.perMonth}
+                                                            {priceUnitLabel(`MXN${t.perMonth}`, price, lang)}
                                                         </span>
                                                     </div>
                                                 ) : (
@@ -381,7 +407,7 @@ export default function PreciosPage() {
 
             {/* FAQ */}
             <div className="container mx-auto px-4 sm:px-6 pb-16">
-                <FaqSection faq={t.faq} title={t.faqTitle} />
+                <FaqSection faq={faqFor(t, ivaState)} title={t.faqTitle} />
             </div>
         </div>
     );
