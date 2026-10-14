@@ -7,7 +7,7 @@ import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { getCheckoutUrl } from '@/lib/billing';
 import { MONETIZATION_ENABLED } from '@/lib/config';
-import { PRICING } from '@/lib/pricing';
+import { formatMxnCentavos, useTezcaPrices } from '@/lib/dhanam-catalog';
 
 const comingSoonLabel = {
     es: 'Próximamente',
@@ -29,7 +29,6 @@ const content = {
         ctaFree: 'Empieza gratis',
         ctaUpgrade: 'Mejora tu plan',
         perMonth: '/mes',
-        promoNote: 'Primeros 3 meses',
         features: {
             search_results: 'Resultados por pagina',
             export_txt: 'Descargar TXT',
@@ -56,7 +55,6 @@ const content = {
         ctaFree: 'Start free',
         ctaUpgrade: 'Upgrade',
         perMonth: '/mo',
-        promoNote: 'First 3 months',
         features: {
             search_results: 'Results per page',
             export_txt: 'Download TXT',
@@ -83,7 +81,6 @@ const content = {
         ctaFree: 'Xipehua',
         ctaUpgrade: 'Xicmelahua',
         perMonth: '/metztli',
-        promoNote: '3 metztli',
         features: {
             search_results: 'Tlanextiliztli',
             export_txt: 'Xictemohui TXT',
@@ -131,6 +128,7 @@ interface TierComparisonProps {
 export function TierComparison({ className = '', compact = false, showPricing = false }: TierComparisonProps) {
     const { lang } = useLang();
     const { tier, userId, isAuthenticated } = useAuth();
+    const { prices } = useTezcaPrices();
     const t = content[lang];
 
     const tiers = ['free_member', 'essentials', 'academic', 'institutional'] as const;
@@ -159,8 +157,9 @@ export function TierComparison({ className = '', compact = false, showPricing = 
 
     const getPriceLabel = (planTier: typeof tiers[number]): string | null => {
         if (planTier === 'free_member') return t.free;
-        const priceData = PRICING[planTier];
-        return `$${priceData.promo}${t.perMonth}*`;
+        const monthly = prices?.[planTier];
+        // Dhanam's catalog price, the amount checkout charges; never a typed figure.
+        return typeof monthly === 'number' ? `${formatMxnCentavos(monthly)} MXN${t.perMonth}` : '—';
     };
 
     if (compact) {
@@ -235,15 +234,6 @@ export function TierComparison({ className = '', compact = false, showPricing = 
                             </tr>
                         ))}
                     </tbody>
-                    {showPricing && (
-                        <tfoot>
-                            <tr>
-                                <td className="pt-2 text-xs text-muted-foreground" colSpan={5}>
-                                    * {t.promoNote}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    )}
                     <tfoot>
                         <tr className="border-t">
                             <td className="pt-4" />
@@ -341,9 +331,6 @@ export function TierComparison({ className = '', compact = false, showPricing = 
                         </Card>
                     );
                 })}
-                {showPricing && (
-                    <p className="text-xs text-muted-foreground text-center">* {t.promoNote}</p>
-                )}
             </div>
         </div>
     );

@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Check, ArrowRight, Sparkles } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, Badge, Button } from '@tezca/ui';
 import { useLang } from '@/components/providers/LanguageContext';
 import { useAuth } from '@/components/providers/AuthContext';
 import { TierComparison } from '@/components/TierComparison';
-import { PRICING, PROMO } from '@/lib/pricing';
-import { getTrialCheckoutUrl } from '@/lib/billing';
+import { formatMxnCentavos, useTezcaPrices } from '@/lib/dhanam-catalog';
+import { getCheckoutUrl } from '@/lib/billing';
 import { MONETIZATION_ENABLED } from '@/lib/config';
 import { InterestGate } from '@/components/InterestGate';
 import { JsonLd } from '@/components/JsonLd';
@@ -20,7 +20,6 @@ const content = {
     es: {
         title: 'Planes y precios',
         subtitle: 'Accede a la legislacion mexicana con el plan ideal para ti.',
-        promoBanner: `${PROMO.trialDaysNoCc}+${PROMO.trialDaysWithCc}: ${PROMO.trialDaysNoCc} dias gratis \u00b7 ${PROMO.trialDaysWithCc} dias con tarjeta \u00b7 ${PROMO.promoMonths} meses al mejor precio`,
         freeMember: 'Free Member',
         freeMemberPrice: 'Gratis',
         freeMemberDesc: 'Para explorar la plataforma sin compromiso.',
@@ -32,20 +31,20 @@ const content = {
         institutional: 'Institutional',
         institutionalDesc: 'Gobierno, empresas y organizaciones grandes.',
         popular: 'Popular',
-        trialCta: `Prueba gratis ${PROMO.trialDaysNoCc} dias`,
+        subscribeCta: 'Suscribirme',
+        priceAtCheckout: 'Precio al pagar',
+        loadingPrice: 'Cargando precio…',
         perMonth: '/mes',
-        promoFootnote: (price: number) =>
-            `Primeros ${PROMO.promoMonths} meses. Despues MXN$${price}/mes`,
         compareTitle: 'Comparacion detallada',
         faqTitle: 'Preguntas frecuentes',
         faq: [
             {
                 q: '\u00bfPuedo probar gratis antes de pagar?',
-                a: `Si. Todos los planes de pago incluyen ${PROMO.trialDaysNoCc} dias gratis sin tarjeta de credito y ${PROMO.trialDaysWithCc} dias adicionales con tarjeta.`,
+                a: 'Por ahora no hay prueba gratuita. El plan Free Member es gratis y te deja explorar la plataforma sin pagar.',
             },
             {
                 q: '\u00bfPuedo cambiar de plan en cualquier momento?',
-                a: 'Si. Puedes actualizar o cancelar tu plan en cualquier momento desde tu cuenta.',
+                a: 'Si. Puedes mejorar tu plan en cualquier momento desde tu cuenta. Si cancelas, tu plan sigue activo hasta el final del periodo que ya pagaste.',
             },
             {
                 q: '\u00bfQue metodos de pago aceptan?',
@@ -66,7 +65,6 @@ const content = {
     en: {
         title: 'Plans and pricing',
         subtitle: 'Access Mexican legislation with the ideal plan for you.',
-        promoBanner: `${PROMO.trialDaysNoCc}+${PROMO.trialDaysWithCc}: ${PROMO.trialDaysNoCc} days free \u00b7 ${PROMO.trialDaysWithCc} days with card \u00b7 ${PROMO.promoMonths} months at the best price`,
         freeMember: 'Free Member',
         freeMemberPrice: 'Free',
         freeMemberDesc: 'Explore the platform with no commitment.',
@@ -78,20 +76,20 @@ const content = {
         institutional: 'Institutional',
         institutionalDesc: 'Government, enterprises, and large organizations.',
         popular: 'Popular',
-        trialCta: `Try free for ${PROMO.trialDaysNoCc} days`,
+        subscribeCta: 'Subscribe',
+        priceAtCheckout: 'Price shown at checkout',
+        loadingPrice: 'Loading price…',
         perMonth: '/mo',
-        promoFootnote: (price: number) =>
-            `First ${PROMO.promoMonths} months. Then MXN$${price}/mo`,
         compareTitle: 'Detailed comparison',
         faqTitle: 'Frequently asked questions',
         faq: [
             {
                 q: 'Can I try for free before paying?',
-                a: `Yes. All paid plans include ${PROMO.trialDaysNoCc} free days without a credit card and ${PROMO.trialDaysWithCc} additional days with a card.`,
+                a: 'Not at the moment. The Free Member plan is free and lets you explore the platform without paying.',
             },
             {
                 q: 'Can I change plans at any time?',
-                a: 'Yes. You can upgrade or cancel your plan at any time from your account.',
+                a: 'Yes. You can upgrade at any time from your account. If you cancel, your plan stays active until the end of the period you already paid for.',
             },
             {
                 q: 'What payment methods do you accept?',
@@ -112,7 +110,6 @@ const content = {
     nah: {
         title: 'Tlaxtlahuilli ihuan patiyotl',
         subtitle: 'Xicahci in mexihcatl tenahuatilli ica motlaxtlahuil.',
-        promoBanner: `${PROMO.trialDaysNoCc}+${PROMO.trialDaysWithCc}: ${PROMO.trialDaysNoCc} tonalli \u00b7 ${PROMO.trialDaysWithCc} tonalli \u00b7 ${PROMO.promoMonths} metztli`,
         freeMember: 'Free Member',
         freeMemberPrice: 'Tlanahuatilli',
         freeMemberDesc: 'Xicyeyeco in tlahcuilolpan.',
@@ -124,20 +121,20 @@ const content = {
         institutional: 'Institutional',
         institutionalDesc: 'Tlatocayotl ihuan hueyi calli.',
         popular: 'Popular',
-        trialCta: `Xicyeyeco ${PROMO.trialDaysNoCc} tonalli`,
+        subscribeCta: 'Suscribirme',
+        priceAtCheckout: 'Precio al pagar',
+        loadingPrice: 'Cargando precio…',
         perMonth: '/metztli',
-        promoFootnote: (price: number) =>
-            `${PROMO.promoMonths} metztli. Zatepan MXN$${price}/metztli`,
         compareTitle: 'Tlananamicoliztli',
         faqTitle: 'Tlatlaniliztli',
         faq: [
             {
-                q: 'Huel nicyeyecoz?',
-                a: `Quemah. Mochi tlaxtlahuilli quipia ${PROMO.trialDaysNoCc} tonalli ihuan ${PROMO.trialDaysWithCc} tonalli.`,
+                q: '\u00bfPuedo probar gratis antes de pagar?',
+                a: 'Por ahora no hay prueba gratuita. El plan Free Member es gratis y te deja explorar la plataforma sin pagar.',
             },
             {
                 q: 'Huel nicpatla notlaxtlahuil?',
-                a: 'Quemah. Huel ticpatla noso ticcahua quemanian.',
+                a: 'Si. Puedes mejorar tu plan en cualquier momento desde tu cuenta. Si cancelas, tu plan sigue activo hasta el final del periodo que ya pagaste.',
             },
         ],
         features: {
@@ -192,8 +189,9 @@ function FaqSection({ faq, title }: { faq: { q: string; a: string }[]; title: st
 
 export default function PreciosPage() {
     const { lang } = useLang();
-    const { userId, isAuthenticated, tier } = useAuth();
+    const { isAuthenticated, tier } = useAuth();
     const t = content[lang];
+    const { prices, failed: pricesUnavailable } = useTezcaPrices();
 
     useEffect(() => {
         trackEvent('pricing.page_viewed', { is_authenticated: isAuthenticated, tier, monetization_enabled: MONETIZATION_ENABLED });
@@ -207,25 +205,26 @@ export default function PreciosPage() {
         { key: 'institutional' },
     ];
 
-    const getPrice = (tierKey: TierKey) => {
+    /** Monthly MXN centavos from Dhanam's catalog; undefined while loading. */
+    const getPrice = (tierKey: TierKey): number | null | undefined => {
         if (tierKey === 'free_member') return null;
-        return PRICING[tierKey];
+        return prices ? (prices[tierKey] ?? null) : undefined;
     };
 
     const getCtaHref = (tierKey: TierKey) => {
         if (tierKey === 'free_member') {
             return isAuthenticated ? '/cuenta' : '/login';
         }
-        return getTrialCheckoutUrl(
+        return getCheckoutUrl(
             tierKey,
-            userId ?? undefined,
+            undefined,
             typeof window !== 'undefined' ? window.location.href : undefined,
         );
     };
 
     const getCtaLabel = (tierKey: TierKey) => {
         if (tierKey === 'free_member') return t.freeMemberCta;
-        return t.trialCta;
+        return t.subscribeCta;
     };
 
     const getTierName = (tierKey: TierKey) => {
@@ -263,13 +262,6 @@ export default function PreciosPage() {
                     {MONETIZATION_ENABLED ? t.subtitle : preMonetizationSubtitle[lang]}
                 </p>
 
-                {/* Promo banner — only when monetization is enabled */}
-                {MONETIZATION_ENABLED && (
-                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                        <Sparkles className="h-4 w-4" />
-                        {t.promoBanner}
-                    </div>
-                )}
             </div>
 
             {/* Pricing cards */}
@@ -309,22 +301,23 @@ export default function PreciosPage() {
                                     {/* Price — only when monetization is enabled */}
                                     {MONETIZATION_ENABLED && (
                                         <div className="mt-4 mb-4">
-                                            {price ? (
-                                                <>
+                                            {key !== 'free_member' ? (
+                                                typeof price === 'number' ? (
                                                     <div className="flex items-baseline gap-1">
                                                         <span className="text-3xl font-bold">
-                                                            ${price.promo}
+                                                            {formatMxnCentavos(price)}
                                                         </span>
                                                         <span className="text-sm text-muted-foreground">
-                                                            {price.currency}
-                                                            {t.perMonth}
+                                                            MXN{t.perMonth}
                                                         </span>
-                                                        <span className="text-xs text-muted-foreground">*</span>
                                                     </div>
-                                                    <p className="mt-1 text-xs text-muted-foreground">
-                                                        {t.promoFootnote(price.monthly)}
+                                                ) : (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {pricesUnavailable || price === null
+                                                            ? t.priceAtCheckout
+                                                            : t.loadingPrice}
                                                     </p>
-                                                </>
+                                                )
                                             ) : (
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-3xl font-bold">

@@ -14,11 +14,23 @@ vi.mock('@/components/providers/AuthContext', () => ({
 }));
 
 vi.mock('@/lib/billing', () => ({
-    getTrialCheckoutUrl: vi.fn(
-        (plan: string, userId?: string, _returnUrl?: string) =>
-            `https://app.dhan.am/checkout?plan=tezca_${plan}&mode=trial_cc`
+    getCheckoutUrl: vi.fn(
+        (plan: string, _userId?: string, _returnUrl?: string) =>
+            `https://app.dhan.am/checkout?plan=tezca_${plan}&product=tezca`
     ),
     hasPaidAccess: vi.fn(() => false),
+}));
+
+// Dhanam's catalog prices (owner ruling 2026-10-14): MXN 199 / 599 / 1,999.
+const mockUseTezcaPrices = vi.hoisted(() =>
+    vi.fn(() => ({
+        prices: { free: null, essentials: 19900, academic: 59900, institutional: 199900 } as Record<string, number | null> | null,
+        failed: false,
+    })),
+);
+vi.mock('@/lib/dhanam-catalog', () => ({
+    useTezcaPrices: () => mockUseTezcaPrices(),
+    formatMxnCentavos: (c: number) => `$${Math.round(c / 100).toLocaleString('en-US')}`,
 }));
 
 vi.mock('next/link', () => ({
@@ -96,12 +108,21 @@ describe('PreciosPage', () => {
         expect(screen.getByText('Gratis')).toBeDefined();
     });
 
-    it('paid cards show promo prices from PRICING constants', () => {
+    it('paid cards show the prices Dhanam charges, from its catalog', () => {
         render(<PreciosPage />);
-        // PRICING: essentials promo=31, academic=32, institutional=33
-        expect(screen.getByText('$31')).toBeDefined();
-        expect(screen.getByText('$32')).toBeDefined();
-        expect(screen.getByText('$33')).toBeDefined();
+        expect(screen.getByText('$199')).toBeDefined();
+        expect(screen.getByText('$599')).toBeDefined();
+        expect(screen.getByText('$1,999')).toBeDefined();
+        // The 3-month promo is gone: Dhanam's checkout cannot charge it.
+        expect(screen.queryByText('$31')).toBeNull();
+        expect(screen.queryByText(/Primeros 3 meses/)).toBeNull();
+    });
+
+    it('never shows a typed price when the catalog is unreachable', () => {
+        mockUseTezcaPrices.mockReturnValueOnce({ prices: null, failed: true });
+        render(<PreciosPage />);
+        expect(screen.getAllByText('Precio al pagar').length).toBe(3);
+        expect(screen.queryByText('$199')).toBeNull();
     });
 
     it('CTA for free tier links to login when unauthenticated', () => {
@@ -111,10 +132,14 @@ describe('PreciosPage', () => {
         expect(ctaLink?.getAttribute('href')).toBe('/login');
     });
 
-    it('paid tier CTAs generate trial checkout URLs', () => {
+    it('paid tier CTAs go to the hosted checkout, with no trial', () => {
         render(<PreciosPage />);
-        const trialButtons = screen.getAllByText('Prueba gratis 3 dias');
-        expect(trialButtons.length).toBe(3); // essentials, academic, institutional
+        const buttons = screen.getAllByText('Suscribirme');
+        expect(buttons.length).toBe(3); // essentials, academic, institutional
+        const href = buttons[0].closest('a')?.getAttribute('href') ?? '';
+        expect(href).toContain('plan=tezca_essentials');
+        expect(href).not.toContain('trial');
+        expect(screen.queryByText(/Prueba gratis/)).toBeNull();
     });
 
     it('FAQ section renders 4 items', () => {
