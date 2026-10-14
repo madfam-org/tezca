@@ -14,11 +14,38 @@ vi.mock('@/components/providers/AuthContext', () => ({
 }));
 
 vi.mock('@/lib/billing', () => ({
-    getTrialCheckoutUrl: vi.fn(
-        (plan: string, userId?: string, _returnUrl?: string) =>
-            `https://app.dhan.am/checkout?plan=tezca_${plan}&mode=trial_cc`
+    getCheckoutUrl: vi.fn(
+        (plan: string, _userId?: string, _returnUrl?: string) =>
+            `https://app.dhan.am/checkout?plan=tezca_${plan}&product=tezca`
     ),
     hasPaidAccess: vi.fn(() => false),
+}));
+
+// Dhanam's catalog prices (owner ruling 2026-10-14): MXN 199 / 599 / 1,999
+// before IVA, as the catalog lists them until it sends `grossPrices`.
+type Price = { amount: number; ivaIncluded: boolean } | null;
+const NET_PRICES: Record<string, Price> = {
+    free: null,
+    essentials: { amount: 19900, ivaIncluded: false },
+    academic: { amount: 59900, ivaIncluded: false },
+    institutional: { amount: 199900, ivaIncluded: false },
+};
+// The IVA-inclusive amounts Dhanam's checkout charges, from `grossPrices`.
+const GROSS_PRICES: Record<string, Price> = {
+    free: null,
+    essentials: { amount: 23100, ivaIncluded: true },
+    academic: { amount: 69500, ivaIncluded: true },
+    institutional: { amount: 231900, ivaIncluded: true },
+};
+const mockUseTezcaPrices = vi.hoisted(() =>
+    vi.fn(() => ({
+        prices: null as Record<string, { amount: number; ivaIncluded: boolean } | null> | null,
+        failed: false,
+    })),
+);
+vi.mock('@/lib/dhanam-catalog', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/dhanam-catalog')>()),
+    useTezcaPrices: () => mockUseTezcaPrices(),
 }));
 
 vi.mock('next/link', () => ({
@@ -76,6 +103,7 @@ describe('PreciosPage', () => {
         vi.clearAllMocks();
         mockUseLang.mockReturnValue(langState('es'));
         mockUseAuth.mockReturnValue(mockAuth({ tier: 'anon' }));
+        mockUseTezcaPrices.mockReturnValue({ prices: NET_PRICES, failed: false });
     });
 
     it('renders 4 pricing tier cards', () => {
@@ -96,12 +124,49 @@ describe('PreciosPage', () => {
         expect(screen.getByText('Gratis')).toBeDefined();
     });
 
-    it('paid cards show promo prices from PRICING constants', () => {
+    it('paid cards show the prices Dhanam charges, from its catalog', () => {
         render(<PreciosPage />);
-        // PRICING: essentials promo=31, academic=32, institutional=33
-        expect(screen.getByText('$31')).toBeDefined();
-        expect(screen.getByText('$32')).toBeDefined();
-        expect(screen.getByText('$33')).toBeDefined();
+        expect(screen.getByText('$199')).toBeDefined();
+        expect(screen.getByText('$599')).toBeDefined();
+        expect(screen.getByText('$1,999')).toBeDefined();
+        // The 3-month promo is gone: Dhanam's checkout cannot charge it.
+        expect(screen.queryByText('$31')).toBeNull();
+        expect(screen.queryByText(/Primeros 3 meses/)).toBeNull();
+    });
+
+    it('labels a net catalog price "+ IVA", never a bare figure, and the FAQ says so', () => {
+        render(<PreciosPage />);
+        expect(screen.getAllByText('MXN/mes + IVA').length).toBe(3);
+        expect(screen.getByText(/marcados «\+ IVA» no lo incluyen/)).toBeDefined();
+        expect(screen.queryByText(/no incluyen IVA\. El impuesto se calcula/)).toBeNull();
+    });
+
+    it('shows the IVA-inclusive amount from grossPrices, labelled "IVA incluido"', () => {
+        mockUseTezcaPrices.mockReturnValue({ prices: GROSS_PRICES, failed: false });
+        render(<PreciosPage />);
+        expect(screen.getByText('$231')).toBeDefined();
+        expect(screen.getByText('$695')).toBeDefined();
+        expect(screen.getByText('$2,319')).toBeDefined();
+        expect(screen.queryByText('$199')).toBeNull();
+        expect(screen.getAllByText('MXN/mes, IVA incluido').length).toBe(3);
+        expect(screen.getByText(/Los precios mostrados incluyen IVA \(16%\)/)).toBeDefined();
+        expect(screen.queryByText(/\+ IVA/)).toBeNull();
+    });
+
+    it('labels prices "VAT" in English', () => {
+        mockUseLang.mockReturnValue(langState('en'));
+        mockUseTezcaPrices.mockReturnValue({ prices: GROSS_PRICES, failed: false });
+        render(<PreciosPage />);
+        expect(screen.getAllByText('MXN/mo, VAT included').length).toBe(3);
+        expect(screen.getByText(/Prices shown include VAT/)).toBeDefined();
+    });
+
+    it('never shows a typed price when the catalog is unreachable', () => {
+        mockUseTezcaPrices.mockReturnValue({ prices: null, failed: true });
+        render(<PreciosPage />);
+        expect(screen.getAllByText('Precio al pagar').length).toBe(3);
+        expect(screen.queryByText('$199')).toBeNull();
+        expect(screen.getByText('El checkout cobra el total con IVA (16%) incluido.')).toBeDefined();
     });
 
     it('CTA for free tier links to login when unauthenticated', () => {
@@ -111,10 +176,14 @@ describe('PreciosPage', () => {
         expect(ctaLink?.getAttribute('href')).toBe('/login');
     });
 
-    it('paid tier CTAs generate trial checkout URLs', () => {
+    it('paid tier CTAs go to the hosted checkout, with no trial', () => {
         render(<PreciosPage />);
-        const trialButtons = screen.getAllByText('Prueba gratis 3 dias');
-        expect(trialButtons.length).toBe(3); // essentials, academic, institutional
+        const buttons = screen.getAllByText('Suscribirme');
+        expect(buttons.length).toBe(3); // essentials, academic, institutional
+        const href = buttons[0].closest('a')?.getAttribute('href') ?? '';
+        expect(href).toContain('plan=tezca_essentials');
+        expect(href).not.toContain('trial');
+        expect(screen.queryByText(/Prueba gratis/)).toBeNull();
     });
 
     it('FAQ section renders 4 items', () => {

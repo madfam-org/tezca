@@ -28,6 +28,15 @@ vi.mock('@/lib/config', () => ({
     MONETIZATION_ENABLED: true,
 }));
 
+type Price = { amount: number; ivaIncluded: boolean } | null;
+const mockUseTezcaPrices = vi.hoisted(() =>
+    vi.fn(() => ({ prices: null as Record<string, Price> | null, failed: false })),
+);
+vi.mock('@/lib/dhanam-catalog', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/dhanam-catalog')>()),
+    useTezcaPrices: () => mockUseTezcaPrices(),
+}));
+
 vi.mock('next/link', () => ({
     default: ({ children, href, ...props }: any) => (
         <a href={href} {...props}>
@@ -68,6 +77,35 @@ describe('TierComparison', () => {
             userId: 'user-123',
             isAuthenticated: true,
         }));
+        mockUseTezcaPrices.mockReturnValue({ prices: null, failed: false });
+    });
+
+    it('price row labels a net catalog price "+ IVA"', () => {
+        mockUseTezcaPrices.mockReturnValue({
+            prices: {
+                essentials: { amount: 19900, ivaIncluded: false },
+                academic: { amount: 59900, ivaIncluded: false },
+                institutional: { amount: 199900, ivaIncluded: false },
+            },
+            failed: false,
+        });
+        render(<TierComparison showPricing />);
+        // Desktop table row + mobile card = 2
+        expect(screen.getAllByText('$199 MXN/mes + IVA').length).toBe(2);
+        expect(screen.queryByText('$199 MXN/mes')).toBeNull();
+    });
+
+    it('price row shows the gross from grossPrices, "IVA incluido"', () => {
+        mockUseTezcaPrices.mockReturnValue({
+            prices: {
+                essentials: { amount: 23100, ivaIncluded: true },
+                academic: { amount: 69500, ivaIncluded: true },
+                institutional: { amount: 231900, ivaIncluded: true },
+            },
+            failed: false,
+        });
+        render(<TierComparison showPricing />);
+        expect(screen.getAllByText('$231 MXN/mes, IVA incluido').length).toBe(2);
     });
 
     it('renders compact mode with 4 tier columns', () => {
