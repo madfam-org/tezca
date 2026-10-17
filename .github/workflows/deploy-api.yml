@@ -33,8 +33,20 @@ env:
   IMAGE_NAME: madfam-org/tezca-api
   LEGACY_IMAGE_NAME: madfam-org/tezca/api
 
+# Per-component group (infra-stability W0-A9, mirroring karafiel#278).
+# deploy-api, deploy-web and deploy-admin used to share ONE group,
+# tezca-production-kustomization.
+# GitHub keeps at most one running and one *pending* run per group, so when a
+# merge triggered several components the third arrival cancelled the pending
+# one outright, with no job and no error, and that component kept serving its
+# previous build (karafiel lost an API deploy this way on 2026-10-07). The
+# shared kustomization.yaml does not need a shared group: "Commit image
+# digest" is a fetch-reset-edit-push retry loop, and each component edits only
+# its own image entry. The group now serialises only this component's runs;
+# a newer pending run superseding an older one is correct, since it builds a
+# later main. Sibling workflows: deploy-web, deploy-admin.
 concurrency:
-  group: tezca-production-kustomization
+  group: tezca-production-deploy-api
   cancel-in-progress: false
 
 jobs:
@@ -133,7 +145,9 @@ jobs:
           DIGEST="${{ steps.build.outputs.digest }}"
           git config user.name "madfam-bot"
           git config user.email "bot@madfam.dev"
-          for ATTEMPT in 1 2 3; do
+          # Five attempts with jitter: the per-component groups let the
+          # 3 production pins race on main within the same minute.
+          for ATTEMPT in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
             cd k8s/production
@@ -144,9 +158,9 @@ jobs:
             git commit -m "deploy(api): update digest to ${GITHUB_SHA::8}"
             git push origin main && exit 0
             echo "Retry $ATTEMPT..."
-            sleep $((ATTEMPT * 2))
+            sleep $((ATTEMPT * 10 + RANDOM % 10))
           done
-          echo "Failed after 3 attempts"
+          echo "::error::Failed to push the digest pin after 5 attempts"
           exit 1
 
       - name: Report lifecycle event
