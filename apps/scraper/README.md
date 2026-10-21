@@ -65,6 +65,13 @@ poetry run python apps/scraper/federal/nom_scraper.py --priority-only
 
 # International treaties
 poetry run python apps/scraper/federal/treaty_scraper.py
+
+# Legal feriados — LFT Art. 74 días de descanso obligatorio + CNBV días inhábiles bancarios → tezca.feriados_legales/v1
+# Contract: docs/data/FERIADOS_LEGALES.md; ingested via `python manage.py ingest_feriados --year 2026`
+python -c "from apps.scraper.federal.feriados_legales import extract_feriados; import json; print(json.dumps(extract_feriados(2026), default=str))"
+
+# SEP school calendar (Contract: docs/data/SEP_CALENDARIO_ESCOLAR.md)
+poetry run python apps/scraper/federal/sep_calendario_scraper.py
 ```
 
 ### State
