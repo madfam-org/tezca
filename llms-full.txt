@@ -44,7 +44,8 @@ gap or incident link.
 ## Security baseline and deploy triggers (2026-09-30)
 
 - Dependency security floors, enforced by `tests/test_dependency_floors.py`:
-  next 16.3.8 in `apps/web` and `apps/admin` (GHSA-vcvr-r3jv-pc5j, a critical
+  next 16.4.1 in `apps/web` and `apps/admin` (GHSA-2464-fhr4-w9xw and
+  GHSA-673q-mjm6-r5xr, 2026-10-22; raised from 16.3.8 for GHSA-vcvr-r3jv-pc5j, a critical
   RCE in `next/og` ImageResponse; the dynamic `/leyes/[id]/opengraph-image`
   route was the exposed surface), axios 1.20.0, PyJWT 2.15.1 (`^2.15.1` in
   `pyproject.toml`), urllib3 2.8.0 (`>=2.8,<3`) and WeasyPrint 70.0 (`^70.0`);
