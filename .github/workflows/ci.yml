@@ -283,6 +283,7 @@ jobs:
       with:
         name: backend-coverage-py${{ matrix.python-version }}
         path: coverage.xml
+        retention-days: 7
 
   test-frontend:
     name: Frontend Tests (Node ${{ matrix.node-version }})
@@ -358,6 +359,9 @@ jobs:
       with:
         name: frontend-coverage-node${{ matrix.node-version }}
         path: apps/web/coverage/
+        # Nothing downloads it. At the 90-day default it was ~0.2 GiB of the
+        # org's artifact storage on 2026-10-26.
+        retention-days: 7
 
   test-mcp:
     name: MCP Server Tests
@@ -464,6 +468,7 @@ jobs:
       with:
         name: playwright-report-node${{ matrix.node-version }}
         path: apps/web/playwright-report/
+        retention-days: 7
 
     - name: Stop E2E infrastructure
       if: always()
