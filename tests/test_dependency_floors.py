@@ -59,7 +59,9 @@ YANKED = {
 }
 
 NODE_FLOORS = {
-    "next": "16.3.8",
+    # 16.4.1: GHSA-2464-fhr4-w9xw (image optimizer RCE) and GHSA-673q-mjm6-r5xr
+    # (`use cache` RCE), 2026-10-22. 16.3.8 was the GHSA-vcvr-r3jv-pc5j floor.
+    "next": "16.4.1",
     "axios": "1.20.0",
 }
 
