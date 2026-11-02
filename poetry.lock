@@ -268,19 +268,19 @@ numpy = {version = ">=1.19.0,<3.0.0", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "boto3"
-version = "1.43.118"
+version = "1.43.122"
 description = "The AWS SDK for Python (Boto3)"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"production\" or extra == \"r2\""
 files = [
-    {file = "boto3-1.43.118-py3-none-any.whl", hash = "sha256:ab8f3d2c622ef039338b4f228d97ea55f1abd573d84bb9b9a5ee8cb6780c0ccd"},
-    {file = "boto3-1.43.118.tar.gz", hash = "sha256:c0620f799e0f0c222ba42c337b65cdbcd3da38a3121187f634d8926cbbb28a9c"},
+    {file = "boto3-1.43.122-py3-none-any.whl", hash = "sha256:cca51b3650080594a1df344b8a2e76007eab6d5fa50504a0b622dfdc14cdeaa1"},
+    {file = "boto3-1.43.122.tar.gz", hash = "sha256:c923650d09e4c445564ca14d5ce89466c3083884b6f6c189f0f445fc17f02eb5"},
 ]
 
 [package.dependencies]
-botocore = ">=1.43.118,<1.44.0"
+botocore = ">=1.43.122,<1.44.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.19.0,<0.20.0"
 
@@ -289,15 +289,15 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.43.118"
+version = "1.43.123"
 description = "Low-level, data-driven core of boto 3."
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"production\" or extra == \"r2\""
 files = [
-    {file = "botocore-1.43.118-py3-none-any.whl", hash = "sha256:a45d7ae570674161e4a3542d8c68633bf7503f92d1de781ef7361b79488eda6f"},
-    {file = "botocore-1.43.118.tar.gz", hash = "sha256:7f3f9d88cc9e847587690f82a42e3c3c292c3026c92c1e60d68a9310018e003f"},
+    {file = "botocore-1.43.123-py3-none-any.whl", hash = "sha256:e30580f9c1282c321529238ff8ff75066096a2adbd0a293c8ae592c21d1733a3"},
+    {file = "botocore-1.43.123.tar.gz", hash = "sha256:80948cb9b1cdf1a1a25809089a42e3a1bc4af0258d198222db6e97dcc660dd0c"},
 ]
 
 [package.dependencies]
@@ -306,7 +306,7 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = ">=1.25.4,!=2.2.0,<3"
 
 [package.extras]
-crt = ["awscrt (==0.36.0)"]
+crt = ["awscrt (==0.38.0)"]
 
 [[package]]
 name = "brotli"
@@ -2282,15 +2282,15 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "posthog"
-version = "7.75.8"
+version = "7.81.0"
 description = "Integrate PostHog into any python application."
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"analytics\" or extra == \"production\""
 files = [
-    {file = "posthog-7.75.8-py3-none-any.whl", hash = "sha256:1afb8180ec41b527c278dfe88a04a0123953ab10136386f6839607d8337aca10"},
-    {file = "posthog-7.75.8.tar.gz", hash = "sha256:869b46972f2037b851e21cd2438651484469bcd44e66bb5dc87980aa7067a283"},
+    {file = "posthog-7.81.0-py3-none-any.whl", hash = "sha256:6c48a66bd51343c2014a14941c6568f34d0338ada7b08f29c91e905f34462e90"},
+    {file = "posthog-7.81.0.tar.gz", hash = "sha256:4b9db6d3085fe05337272de8793b5ea46b4cf005427a21a585edaf5c3cd230d2"},
 ]
 
 [package.dependencies]
@@ -2303,8 +2303,9 @@ typing-extensions = ">=4.2.0"
 async = ["httpx (>=0.27.0,<1.0)"]
 dev = ["django-stubs", "griffe", "lxml", "mypy", "mypy-baseline", "packaging", "pre-commit", "pydantic (>=2.12.0)", "ruff", "setuptools", "tomli", "tomli_w", "twine", "types-requests", "types-setuptools", "wheel"]
 langchain = ["langchain (>=1.3.9)"]
+metrics = ["opentelemetry-exporter-otlp-proto-http (>=1.39.0)", "opentelemetry-instrumentation (>=0.60b0)", "opentelemetry-instrumentation-system-metrics (>=0.60b0)", "opentelemetry-sdk (>=1.39.0)"]
 otel = ["opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-sdk (>=1.20.0)"]
-test = ["anthropic (>=0.72)", "celery (>=5.3,<6)", "claude-agent-sdk", "coverage", "django (>=5.2.15,<6.0)", "djangorestframework (>=3.15,<4)", "fastapi (>=0.115,<1)", "fastmcp (>=2.0)", "flask (>=2.2)", "freezegun (==1.5.1)", "gevent (>=25.4.1) ; implementation_name == \"cpython\"", "google-genai", "jsonschema (>=4.0)", "langchain (>=1.3.9)", "langchain-anthropic (>=1.0)", "langchain-community (>=0.4)", "langchain-core (>=1.0)", "langchain-openai (>=1.1.14)", "langgraph (>=1.0)", "langgraph-checkpoint (>=4.1.1)", "mcp (>=1.28.1,<2)", "openai-agents (>=0.18)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-instrumentation-celery (>=0.41b0)", "opentelemetry-sdk (>=1.20.0)", "parameterized (>=0.8.1)", "pydantic (>=2.12.0)", "pytest", "pytest-asyncio", "pytest-bdd (>=8.1.0)", "pytest-timeout", "python-dateutil (>=2.9.0.post0)", "tiktoken (>=0.12.0)", "tzdata", "zstandard (>=0.23.0)"]
+test = ["anthropic (>=0.72)", "celery (>=5.3,<6)", "claude-agent-sdk", "coverage", "django (>=5.2.15,<6.0)", "djangorestframework (>=3.15,<4)", "fastapi (>=0.115,<1)", "fastmcp (>=2.0)", "flask (>=2.2)", "freezegun (==1.5.1)", "gevent (>=25.4.1) ; implementation_name == \"cpython\"", "google-genai", "jsonschema (>=4.0)", "langchain (>=1.3.9)", "langchain-anthropic (>=1.0)", "langchain-community (>=0.4)", "langchain-core (>=1.0)", "langchain-openai (>=1.1.14)", "langgraph (>=1.0)", "langgraph-checkpoint (>=4.1.1)", "mcp (>=1.28.1,<2)", "openai-agents (>=0.18)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-instrumentation (>=0.60b0)", "opentelemetry-instrumentation-aiohttp-client (>=0.60b0)", "opentelemetry-instrumentation-celery (>=0.41b0)", "opentelemetry-instrumentation-django (>=0.60b0)", "opentelemetry-instrumentation-flask (>=0.60b0)", "opentelemetry-instrumentation-httpx (>=0.60b0)", "opentelemetry-instrumentation-requests (>=0.60b0)", "opentelemetry-instrumentation-sqlite3 (>=0.60b0)", "opentelemetry-instrumentation-system-metrics (>=0.60b0)", "opentelemetry-instrumentation-wsgi (>=0.60b0)", "opentelemetry-sdk (>=1.20.0)", "parameterized (>=0.8.1)", "pydantic (>=2.12.0)", "pytest", "pytest-asyncio", "pytest-bdd (>=8.1.0)", "pytest-timeout", "python-dateutil (>=2.9.0.post0)", "tiktoken (>=0.12.0)", "tzdata", "zstandard (>=0.23.0)"]
 zstd = ["zstandard (>=0.23.0)"]
 
 [[package]]
@@ -2750,25 +2751,25 @@ Pillow = ">=8.0.0"
 
 [[package]]
 name = "pytest"
-version = "9.1.1"
+version = "9.2.0"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest-9.1.1-py3-none-any.whl", hash = "sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c"},
-    {file = "pytest-9.1.1.tar.gz", hash = "sha256:1088fbde8f2b49d95a549a195707afa7a76a3ce9bcadc26b6d71f0ffda5fe313"},
+    {file = "pytest-9.2.0-py3-none-any.whl", hash = "sha256:07acdcf88ec174f907dc01af70bf52d49b014bbab03faeeade31c96b18c2e588"},
+    {file = "pytest-9.2.0.tar.gz", hash = "sha256:97c4f3b1f3c7414aa36465e09b8220f1d03627993bd51b1282e193753c80557b"},
 ]
 
 [package.dependencies]
 colorama = {version = ">=0.4", markers = "sys_platform == \"win32\""}
-iniconfig = ">=1.0.1"
-packaging = ">=22"
-pluggy = ">=1.5,<2"
-pygments = ">=2.7.2"
+iniconfig = ">=2"
+packaging = ">=24"
+pluggy = ">=1.6,<2"
+pygments = ">=2.15"
 
 [package.extras]
-dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests", "setuptools", "xmlschema"]
+dev = ["argcomplete", "asynctest ; python_version < \"3.11\"", "attrs (>=23.1)", "coverage (>=7.5)", "hypothesis (>=6.75)", "mock", "numpy (>=1.26)", "pexpect (>=4.9)", "pytest-xdist (>=3.5)", "pyyaml", "requests", "setuptools", "xmlschema"]
 
 [[package]]
 name = "pytest-cov"
