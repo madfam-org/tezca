@@ -76,11 +76,13 @@ for both years accordingly.
 | `subsidio_monthly` | — | **retirada**: derogada por el decreto DOF 01-05-2024 |
 | `subsidio_rule` | **2025**, two vigencias (474.95 / 474.65) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 | `subsidio_rule` | **2026**, two vigencias (474.65 / 492.14) | **`published`**, DOF 31-12-2024 codigo 5746529 |
+| `imss_rates` | **2026** (9 conceptos + tope; employer CEV by SBC band, 3.150 % … 7.513 %) | **`published`** when `publish_fiscal_values_2026` runs; CEV from DOF 16-12-2020 codigo 5607729, Trans. 2° (`fiscal_cuotas_2026.py`) |
+| ISN (`/fiscal/isn/`) | MOR 2.5 % (2025), MOR 3.0 % (from 2026-01-01), CMX 4 % (from 2025-01-01) | **`published`** by the same command; citation = the state gazette, not the DOF |
 
 Still absent for 2026, because no primary source was read for them: the annual
 Art. 152 tarifa (the verification captured only its two extreme rows, not the
-intermediate ones), the 61 salarios mínimos profesionales, `imss_rates` and
-`isn_rates`. For 2025: `imss_rates` and `isn_rates`, plus the 7/10/15-day and
+intermediate ones) and the 61 salarios mínimos profesionales. For 2025:
+`imss_rates`, plus the 7/10/15-day and
 Art. 106 tarifas. They return `null` — absent, never substituted — so
 `all_published` is `false` for both years even though what is there is verified.
 The 2025 and 2026 UMA/salario-mínimo scalars listed as `seed-unverified` above
@@ -197,8 +199,8 @@ Structured tables that do not reduce to a scalar.
 | `isr_annual` | Annual tarifa, same bracket shape | LISR Art. 152 |
 | `subsidio_monthly` | `lower`, `upper`, `subsidio` — the pre-2025 bracket table | Decreto de subsidio al empleo |
 | `subsidio_rule` | `rate_of_uma`, `uma_monthly`, `monthly_amount`, `income_cap`, `days_divisor`, `formula` | Decreto DOF 01-05-2024 (mod. 31-12-2024) |
-| `imss_rates` | Cuotas obrero-patronales | LSS 25, 106, 107, 147, 168 |
-| `isn_rates` | Impuesto sobre nóminas by entidad | Ley de Hacienda de cada entidad |
+| `imss_rates` | Cuotas obrero-patronales, one row per `concepto`: `patron`, `trabajador` (decimal fractions of `base`), `base` (`uma_diaria` / `sbc` / `sbc_excedente` with `umbral`), its own `articulo`/`fuente`/`provenance`. `cesantia_vejez` carries `bandas_patron`: `{texto, desde, hasta: {veces, unidad: uma\|salario_minimo}, tasa_patron}`, `hasta: null` = open-ended. How to treat an SBC between two printed limits is the consumer's declared rule. Riesgo de trabajo is per employer and is not published | LSS 25, 28, 106, 107, 147, 168, 211, 212; LINFONAVIT 29 II |
+| `isn_rates` | Always `null`: ISN lives in `GET /fiscal/isn/` | — |
 
 A bracket's `upper` is `null` in the top (open-ended) row. Filter with
 `?kind=`, `?year=` or `?on=`.
@@ -211,6 +213,23 @@ A bracket's `upper` is `null` in the top (open-ended) row. Filter with
 > fails closed, which is correct: it must not apply repealed brackets. Because
 > the amount derives from the UMA, and the UMA changes on 1 February, a year
 > holds **more than one `subsidio_rule` vigencia** — use `?on=` to pin a day.
+
+### `GET /fiscal/isn/`
+
+State payroll tax (impuesto sobre nóminas), one row per (entidad, vigencia)
+(`ImpuestoNominaEstatal`). `value` is the rate in percent, as the law writes it;
+`tasa` is the same figure as a decimal fraction. Each row cites its state
+gazette in `source_citation` / `publicacion_fecha` (`dof_*` stay empty).
+
+| Param | Effect |
+|---|---|
+| `entidad=MOR` | ISO 3166-2:MX key (= SAT `c_Estado`); invalid → 400 |
+| `on=YYYY-MM-DD` | The rate in force that day; with `entidad`, flat keys `value`/`tasa`/`effective_date`/`provenance` too |
+| `year=YYYY` | Every rate in force on some day of that year |
+
+An entidad with no row in force is `count: 0`: not published, never
+substituted by another entidad or year. Only the states whose law was read are
+published (MOR, CMX).
 
 ### `GET /fiscal/tables/<year>/`
 
