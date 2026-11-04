@@ -247,6 +247,113 @@ class TipoDeCambio(FiscalValueBase):
         )
 
 
+class ImpuestoNominaEstatal(FiscalValueBase):
+    """Tasa del impuesto sobre nóminas (ISN) de una entidad federativa.
+
+    POR QUÉ UN MODELO Y NO FILAS DE ``FiscalTable(kind=isn_rates)``
+    ===============================================================
+    ``FiscalTable`` es una tabla FEDERAL por ejercicio con UNA procedencia y UNA
+    vigencia para todos sus renglones. El ISN es lo contrario: treinta y dos
+    legislaturas que reforman su tasa cada una en su fecha (Morelos subió de
+    2.5 % a 3.0 % el 01-01-2026; la Ciudad de México lleva 4 % desde el
+    01-01-2025), cada una en su propia gaceta. Meterlo en una tabla obligaba a
+    una de dos mentiras: sellar ``published`` una tabla con entidades que nadie
+    leyó, o sellar ``seed-unverified`` las que sí se leyeron. Y la clave natural
+    de ``FiscalTable`` (kind, year, vigencia_from) no admite dos entidades con la
+    misma fecha de inicio.
+
+    Una tasa estatal es un ESCALAR con su propia vigencia y su propia cita:
+    exactamente ``FiscalValueBase``, con la entidad como dimensión, igual que
+    ``MinimumWage`` lleva la zona. ``value`` es la tasa EN PORCENTAJE
+    (``unit="percent"``) porque la ley la escribe así y porque 2.625 % (una
+    tasa estatal real) no cabe en cuatro decimales como fracción.
+
+    LA GACETA NO ES EL DOF
+    ======================
+    ``dof_date`` / ``dof_codigo`` quedan vacíos: la ley que fija la tasa se
+    publica en el periódico oficial de la entidad. Su fecha va en
+    ``publicacion_fecha`` y su cita completa en ``source_citation``.
+    ``published`` significa aquí lo mismo que en el feed laboral: lectura
+    primaria del decreto en la gaceta oficial o del texto vigente que publica
+    la autoridad jurídica de la entidad (no una nota de prensa ni un despacho).
+    """
+
+    class Entidad(models.TextChoices):
+        """Claves ISO 3166-2:MX, idénticas al ``c_Estado`` del CFDI del SAT."""
+
+        AGU = "AGU", "Aguascalientes"
+        BCN = "BCN", "Baja California"
+        BCS = "BCS", "Baja California Sur"
+        CAM = "CAM", "Campeche"
+        CHP = "CHP", "Chiapas"
+        CHH = "CHH", "Chihuahua"
+        CMX = "CMX", "Ciudad de México"
+        COA = "COA", "Coahuila de Zaragoza"
+        COL = "COL", "Colima"
+        DUR = "DUR", "Durango"
+        GUA = "GUA", "Guanajuato"
+        GRO = "GRO", "Guerrero"
+        HID = "HID", "Hidalgo"
+        JAL = "JAL", "Jalisco"
+        MEX = "MEX", "Estado de México"
+        MIC = "MIC", "Michoacán de Ocampo"
+        MOR = "MOR", "Morelos"
+        NAY = "NAY", "Nayarit"
+        NLE = "NLE", "Nuevo León"
+        OAX = "OAX", "Oaxaca"
+        PUE = "PUE", "Puebla"
+        QUE = "QUE", "Querétaro"
+        ROO = "ROO", "Quintana Roo"
+        SLP = "SLP", "San Luis Potosí"
+        SIN = "SIN", "Sinaloa"
+        SON = "SON", "Sonora"
+        TAB = "TAB", "Tabasco"
+        TAM = "TAM", "Tamaulipas"
+        TLA = "TLA", "Tlaxcala"
+        VER = "VER", "Veracruz de Ignacio de la Llave"
+        YUC = "YUC", "Yucatán"
+        ZAC = "ZAC", "Zacatecas"
+
+    entidad = models.CharField(
+        max_length=3,
+        choices=Entidad.choices,
+        db_index=True,
+        help_text="Entidad federativa (ISO 3166-2:MX, = c_Estado del SAT)",
+    )
+    legal_basis = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Artículo que fija la tasa, p. ej. 'LGHEM Art. 58 BIS-4'",
+    )
+    publicacion_fecha = models.DateField(
+        null=True,
+        blank=True,
+        help_text=(
+            "Fecha de publicación, en la gaceta oficial de la entidad, del "
+            "decreto que fija esta tasa"
+        ),
+    )
+
+    class Meta:
+        verbose_name = "impuesto sobre nóminas (tasa estatal)"
+        verbose_name_plural = "impuesto sobre nóminas (tasas estatales)"
+        ordering = ["entidad", "-vigencia_from"]
+        indexes = [
+            models.Index(fields=["entidad", "vigencia_from"]),
+            models.Index(fields=["vigencia_from", "vigencia_to"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entidad", "vigencia_from"],
+                name="uniq_isn_entidad_vigencia",
+            )
+        ]
+
+    def __str__(self):
+        return f"ISN {self.entidad} {self.value} % desde {self.vigencia_from} [{self.provenance}]"
+
+
 class FiscalTable(models.Model):
     """A structured, versioned fiscal table keyed by fiscal year.
 
@@ -273,7 +380,14 @@ class FiscalTable(models.Model):
         # ``subsidio_monthly`` sees no row and fails closed, which is correct:
         # it must not apply pre-2025 brackets to a post-decreto year.
         SUBSIDIO_RULE = "subsidio_rule", "Subsidio al empleo (regla derivada)"
+        # Una fila por ejercicio: la tabla de la cesantía y vejez patronal del
+        # transitorio SEGUNDO (DOF 16-12-2020) cambia cada 1 de enero hasta
+        # 2030. Forma de cada renglón: docs/FISCAL_VALUES_FEED.md.
         IMSS_RATES = "imss_rates", "Cuotas obrero-patronales IMSS"
+        # SIN FILAS A PROPÓSITO. El ISN vive en ``ImpuestoNominaEstatal`` (una
+        # tasa por entidad, con su vigencia y su procedencia) y se sirve en
+        # /fiscal/isn/. El kind se conserva para no reescribir la migración
+        # 0032 ni el contrato de /fiscal/tables/<year>/, que lo devuelve null.
         ISN_RATES = "isn_rates", "Impuesto sobre nóminas por entidad"
 
     kind = models.CharField(max_length=32, choices=Kind.choices, db_index=True)

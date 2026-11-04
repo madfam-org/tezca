@@ -47,6 +47,7 @@ from .export_views import (
     export_txt,
 )
 from .fiscal_views import (
+    isn_list,
     minimos_list,
     tables_by_year,
     tables_list,
@@ -230,6 +231,7 @@ urlpatterns = [
     path("fiscal/uma/", uma_list, name="fiscal-uma-list"),
     path("fiscal/uma/current/", uma_current, name="fiscal-uma-current"),
     path("fiscal/minimos/", minimos_list, name="fiscal-minimos-list"),
+    path("fiscal/isn/", isn_list, name="fiscal-isn-list"),
     path("fiscal/tipo-cambio/", tipo_cambio_list, name="fiscal-tipo-cambio-list"),
     path(
         "fiscal/tipo-cambio/current/",

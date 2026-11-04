@@ -5,7 +5,8 @@
     GET /api/v1/fiscal/minimos/              salario mínimo general + ZLFN
     GET /api/v1/fiscal/tipo-cambio/          DOF exchange rates (?from=/?to=/?on=)
     GET /api/v1/fiscal/tipo-cambio/current/  the DOF rate in force today
-    GET /api/v1/fiscal/tables/               ISR / subsidio / IMSS / ISN tables
+    GET /api/v1/fiscal/isn/                  impuesto sobre nóminas por entidad
+    GET /api/v1/fiscal/tables/               ISR / subsidio / IMSS tables
     GET /api/v1/fiscal/tables/<year>/        all tables for one fiscal year
 
 Requires an API key (or Janua JWT) carrying the 'read' scope — the same key
@@ -30,9 +31,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .fiscal_models import FiscalTable, MinimumWage, Provenance, TipoDeCambio, UMAValue
+from .fiscal_models import (
+    FiscalTable,
+    ImpuestoNominaEstatal,
+    MinimumWage,
+    Provenance,
+    TipoDeCambio,
+    UMAValue,
+)
 from .fiscal_serializers import (
     serialize_fiscal_table,
+    serialize_isn,
     serialize_minimum_wage,
     serialize_tipo_cambio,
     serialize_uma,
@@ -418,11 +427,105 @@ def minimos_list(request):
 
 @extend_schema(
     tags=["Fiscal"],
+    summary="Impuesto sobre nóminas por entidad",
+    description=(
+        "Tasa del impuesto sobre nóminas (ISN) de cada entidad federativa, con "
+        "su vigencia y la cita de la gaceta oficial que la fija. ``value`` es "
+        "la tasa en porcentaje; ``tasa`` la misma cifra en fracción decimal. "
+        "Filtra con ?entidad= (clave ISO 3166-2:MX, igual al c_Estado del SAT), "
+        "?on=YYYY-MM-DD (la tasa en vigor ese día) o ?year=YYYY (las que "
+        "rigieron en algún día de ese año). Una entidad sin fila en vigor es "
+        "count=0: no publicada, nunca sustituida por otra entidad u otro año. "
+        "Requires an API key with 'read' scope."
+    ),
+    parameters=[
+        ON_PARAM,
+        OpenApiParameter(
+            name="year",
+            description="Tasas que rigieron en algún día de ese año calendario.",
+            required=False,
+            type=int,
+        ),
+        OpenApiParameter(
+            name="entidad",
+            description="Clave ISO 3166-2:MX de la entidad, p. ej. MOR, CMX.",
+            required=False,
+            type=str,
+        ),
+    ],
+)
+@api_view(["GET"])
+def isn_list(request):
+    """List state payroll-tax rates, optionally by entidad, date or year."""
+    import datetime as dt
+
+    from django.db.models import Q
+
+    denied = _check_scope(request)
+    if denied is not None:
+        return denied
+
+    on_date, err = _parse_on(request)
+    if err is not None:
+        return err
+    year, err = _parse_year(request)
+    if err is not None:
+        return err
+
+    entidad = (request.query_params.get("entidad") or "").strip().upper()
+    valid = {choice.value for choice in ImpuestoNominaEstatal.Entidad}
+    if entidad and entidad not in valid:
+        return Response(
+            {"error": f"Invalid 'entidad'. Valid: {sorted(valid)}"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    qs = ImpuestoNominaEstatal.objects.all()
+    if entidad:
+        qs = qs.filter(entidad=entidad)
+    if on_date is not None:
+        qs = _in_force_on(qs, on_date)
+    if year is not None:
+        # Rigió en algún día del año: empezó antes de que acabara y no terminó
+        # antes de que empezara.
+        qs = qs.filter(vigencia_from__lte=dt.date(year, 12, 31)).filter(
+            Q(vigencia_to__isnull=True) | Q(vigencia_to__gte=dt.date(year, 1, 1))
+        )
+
+    rows = [serialize_isn(row) for row in qs.order_by("entidad", "-vigencia_from")]
+    payload = {
+        "count": len(rows),
+        "results": rows,
+        "disclaimer": DISCLAIMER,
+    }
+    if on_date is not None:
+        payload["on"] = on_date.isoformat()
+        if entidad and rows:
+            # La pregunta que hace una nómina: ¿qué tasa rige en esta entidad
+            # el día en que se paga? Llaves planas, como /fiscal/uma/?on=.
+            payload.update(
+                {
+                    "entidad": rows[0]["entidad"],
+                    "value": rows[0]["value"],
+                    "tasa": rows[0]["tasa"],
+                    "effective_date": rows[0]["vigencia_from"],
+                    "provenance": rows[0]["provenance"],
+                }
+            )
+    if year is not None:
+        payload["year"] = year
+    return Response(payload)
+
+
+@extend_schema(
+    tags=["Fiscal"],
     summary="Fiscal tables",
     description=(
         "Structured fiscal tables keyed by fiscal year: ISR retention "
-        "brackets (LISR Art. 96), subsidio al empleo, IMSS cuotas, and ISN "
-        "rates by state. Filter with ?kind= and ?year= or ?on=. "
+        "brackets (LISR Art. 96), subsidio al empleo and IMSS cuotas "
+        "obrero-patronales (with the employer cesantía y vejez band table). "
+        "ISN rates by state live in /fiscal/isn/, not here. Filter with "
+        "?kind= and ?year= or ?on=. "
         "Requires an API key with 'read' scope."
     ),
     parameters=[
@@ -562,7 +665,12 @@ def tables_by_year(request, year: int):
             # rather than applying repealed brackets.
             "subsidio_rule": _rows_for(FiscalTable.Kind.SUBSIDIO_RULE),
             "imss_rates": _rows_for(FiscalTable.Kind.IMSS_RATES),
+            # Siempre null: el ISN es una tasa por entidad con su propia
+            # vigencia y su propia procedencia, y se sirve en /fiscal/isn/
+            # (``ImpuestoNominaEstatal``). La llave se conserva para no romper
+            # a quien ya la lee.
             "isn_rates": _rows_for(FiscalTable.Kind.ISN_RATES),
+            "isn_endpoint": "/api/v1/fiscal/isn/",
             # Full rows with per-table provenance, so a caller can check
             # whether the numbers it just took are DOF-verified.
             "tables": by_kind,
