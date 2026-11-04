@@ -443,7 +443,8 @@ class TestComandoDePublicacion:
         assert uma.is_verified
 
         assert MinimumWage.objects.filter(year=2026).count() == 2
-        assert FiscalTable.objects.filter(year=2026).count() == 3
+        # ISR mensual, las dos vigencias del subsidio y las cuotas IMSS (F1).
+        assert FiscalTable.objects.filter(year=2026).count() == 4
 
     def test_toda_fila_publicada_trae_codigo_y_url(self, monkeypatch):
         monkeypatch.setenv("LOCAL_DB", "yes")
@@ -676,11 +677,11 @@ class TestEndpointsConLosValores2026:
         assert row["uma_monthly"] == "3439.46"
 
     def test_tables_2026_no_esta_todo_publicado(self, client):
-        """all_published sigue siendo False: falta la tarifa anual e IMSS/ISN."""
+        """Falta la tarifa anual; el ISN no vive en las tablas sino en /fiscal/isn/."""
         resp = client.get("/api/v1/fiscal/tables/2026/")
 
         assert resp.json()["isr_annual"] is None
-        assert resp.json()["imss_rates"] is None
+        assert resp.json()["imss_rates"] is not None, "publicadas el 2026-11-03 (F1)"
         assert resp.json()["isn_rates"] is None
 
     def test_2025_sigue_intacto(self, client):

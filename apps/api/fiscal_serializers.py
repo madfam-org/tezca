@@ -8,6 +8,8 @@ Decimals are emitted as strings so a consumer can build an exact
 point in a payroll figure is a real defect, not a cosmetic one.
 """
 
+from decimal import Decimal
+
 
 def _provenance_block(row):
     """The provenance fields every fiscal row carries."""
@@ -87,6 +89,34 @@ def serialize_fiscal_table(row):
         "legal_basis": row.legal_basis,
         "rows": row.rows,
         "row_count": len(row.rows) if isinstance(row.rows, list) else 0,
+    }
+    data.update(_vigencia_block(row))
+    data.update(_provenance_block(row))
+    return data
+
+
+def serialize_isn(row):
+    """Serialize an :class:`ImpuestoNominaEstatal` (tasa estatal del ISN).
+
+    ``value`` es la tasa en PORCENTAJE, como la escribe la ley; ``tasa`` es la
+    misma cifra en fracción decimal, para el consumidor que multiplica. Las dos
+    salen del mismo ``Decimal``: no hay redondeo entre ellas.
+    """
+    data = {
+        "entidad": row.entidad,
+        "entidad_label": row.get_entidad_display(),
+        "value": str(row.value),
+        # Seis decimales siempre: ``value`` trae cuatro (en porcentaje), así que
+        # la fracción cabe exacta en seis y la cadena no cambia de forma entre
+        # bases de datos.
+        "tasa": format(
+            (Decimal(row.value) / Decimal("100")).quantize(Decimal("0.000001")), "f"
+        ),
+        "unit": row.unit,
+        "legal_basis": row.legal_basis,
+        "publicacion_fecha": (
+            row.publicacion_fecha.isoformat() if row.publicacion_fecha else None
+        ),
     }
     data.update(_vigencia_block(row))
     data.update(_provenance_block(row))

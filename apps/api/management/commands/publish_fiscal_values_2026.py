@@ -34,6 +34,17 @@ que documenta ``docs/FISCAL_VALUES_FEED.md`` («create the row **or edit the
 seed-unverified one**, … set provenance to published»). Lo que este comando
 ordinario nunca hace es tocar una fila que ya está ``published``.
 
+Cuotas IMSS e ISN (ratificación 2026-11-03, F1 y F2)
+----------------------------------------------------
+
+El mismo comando publica la tabla ``imss_rates`` 2026 y las tasas estatales
+del impuesto sobre nóminas (``ImpuestoNominaEstatal``) que
+:mod:`apps.api.fiscal_cuotas_2026` leyó de fuente primaria. Antes de escribir
+pasa la compuerta de :mod:`apps.api.cuotas_coherence`: una tabla incoherente
+no se publica. Mismas reglas: una fila ``published`` nunca se toca, una
+``seed-unverified`` de la misma vigencia se promueve, y la fila abierta anterior
+de la misma entidad se cierra el día previo a la nueva.
+
 Excepción preparada 2026-10-07: ``--correct-subsidio-2026 --reason ...``
 corrige únicamente las dos filas conocidas que atribuían a 2026 el decreto
 de 2024. Conserva el contenido anterior completo en ``notes`` dentro de la
@@ -41,6 +52,7 @@ misma transacción. ``--dry-run`` permite revisarla sin escribir. Las filas
 publicadas que no coinciden con la errata conocida se rechazan.
 """
 
+import datetime as dt
 import json
 import os
 
@@ -50,6 +62,12 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
+from apps.api.cuotas_coherence import describe, incoherencias_imss, incoherencias_isn
+from apps.api.fiscal_cuotas_2026 import (
+    IMSS_RATES_2026,
+    IMSS_RATES_2026_TABLE,
+    ISN_TASAS,
+)
 from apps.api.fiscal_dof_2026 import (
     ISR_2026_DOF,
     ISR_MONTHLY_2026,
@@ -61,7 +79,14 @@ from apps.api.fiscal_dof_2026 import (
     UMA_2026,
     subsidio_rule_rows,
 )
-from apps.api.fiscal_models import FiscalTable, MinimumWage, Provenance, UMAValue
+from apps.api.fiscal_models import (
+    FiscalTable,
+    ImpuestoNominaEstatal,
+    MinimumWage,
+    Provenance,
+    UMAValue,
+)
+from apps.api.labor_models import LaborRule
 
 
 class Command(BaseCommand):
@@ -104,6 +129,8 @@ class Command(BaseCommand):
             self._publish_minimos(dry_run)
             self._publish_isr(dry_run)
             self._publish_subsidio(dry_run)
+            self._publish_imss(dry_run)
+            self._publish_isn(dry_run)
 
             if dry_run:
                 transaction.set_rollback(True)
@@ -119,8 +146,10 @@ class Command(BaseCommand):
         )
         self.stdout.write(
             "Todas las filas escritas llevan provenance='published' con su "
-            "codigo del DOF. La tarifa anual del Art. 152 NO se publicó: el "
-            "documento de verificación sólo trae sus extremos."
+            "codigo del DOF (las tasas estatales del ISN, la cita de su gaceta). "
+            "La tarifa anual del Art. 152 NO se publicó: el documento de "
+            "verificación sólo trae sus extremos. La prima de riesgo de trabajo "
+            "tampoco: es de cada patrón (LSS 71-74)."
         )
 
     # -- helpers ------------------------------------------------------------
@@ -368,3 +397,121 @@ class Command(BaseCommand):
                 for key, value in fields.items():
                     setattr(existing, key, value)
                 existing.save()
+
+    def _publish_imss(self, dry_run):
+        """La tabla imss_rates 2026, sólo si pasa la compuerta de coherencia."""
+        spec = IMSS_RATES_2026_TABLE
+        tope = (
+            LaborRule.objects.filter(
+                kind=LaborRule.Kind.SBC_TOPE_VECES_UMA,
+                provenance=Provenance.PUBLISHED,
+                effective_from__lte=spec["vigencia_from"],
+            )
+            .order_by("-effective_from")
+            .first()
+        )
+        problemas = incoherencias_imss(
+            IMSS_RATES_2026, tope_regla_laboral=tope.value if tope else None
+        )
+        if problemas:
+            raise CommandError(
+                f"Cuotas IMSS 2026 incoherentes, no se publican: {describe(problemas)}"
+            )
+
+        existing = (
+            FiscalTable.objects.select_for_update()
+            .filter(
+                kind=FiscalTable.Kind.IMSS_RATES,
+                year=spec["year"],
+                vigencia_from=spec["vigencia_from"],
+            )
+            .first()
+        )
+        label = f"Cuotas IMSS {spec['year']} ({len(IMSS_RATES_2026)} conceptos)"
+        if self._skip_if_published(existing, label):
+            return
+        self._record(existing, label)
+        if dry_run:
+            return
+
+        fields = {
+            "kind": FiscalTable.Kind.IMSS_RATES,
+            "year": spec["year"],
+            "period": spec["period"],
+            "rows": IMSS_RATES_2026,
+            "legal_basis": spec["legal_basis"],
+            "vigencia_from": spec["vigencia_from"],
+            "vigencia_to": spec["vigencia_to"],
+            "dof_date": spec["dof_date"],
+            "dof_codigo": spec["dof_codigo"],
+            "source_url": spec["source_url"],
+            "source_citation": spec["source_citation"],
+            "provenance": Provenance.PUBLISHED,
+            "notes": spec["notes"],
+        }
+        if existing is None:
+            FiscalTable.objects.create(**fields)
+        else:
+            for key, value in fields.items():
+                setattr(existing, key, value)
+            existing.save()
+
+    def _publish_isn(self, dry_run):
+        """Tasas estatales del ISN, con su gaceta y su vigencia por entidad."""
+        problemas = incoherencias_isn(ISN_TASAS)
+        if problemas:
+            raise CommandError(
+                f"Tasas de ISN incoherentes, no se publican: {describe(problemas)}"
+            )
+
+        for spec in ISN_TASAS:
+            existing = (
+                ImpuestoNominaEstatal.objects.select_for_update()
+                .filter(entidad=spec["entidad"], vigencia_from=spec["vigencia_from"])
+                .first()
+            )
+            label = (
+                f"ISN {spec['entidad']} {spec['value']} % desde {spec['vigencia_from']}"
+            )
+            if self._skip_if_published(existing, label):
+                continue
+            self._record(existing, label)
+            if dry_run:
+                continue
+
+            fields = {
+                "entidad": spec["entidad"],
+                "value": spec["value"],
+                "unit": "percent",
+                "vigencia_from": spec["vigencia_from"],
+                "vigencia_to": spec["vigencia_to"],
+                "legal_basis": spec["legal_basis"],
+                "publicacion_fecha": spec["publicacion_fecha"],
+                "source_url": spec["source_url"],
+                "source_citation": spec["source_citation"],
+                "dof_date": None,
+                "dof_codigo": "",
+                "provenance": Provenance.PUBLISHED,
+                "notes": spec["notes"],
+            }
+            if existing is None:
+                ImpuestoNominaEstatal.objects.create(**fields)
+            else:
+                for key, value in fields.items():
+                    setattr(existing, key, value)
+                existing.save()
+
+            # La tasa anterior de la misma entidad deja de regir el día previo,
+            # igual que la UMA y el salario mínimo del año anterior arriba.
+            inicio = dt.date.fromisoformat(spec["vigencia_from"])
+            for previa in ImpuestoNominaEstatal.objects.filter(
+                entidad=spec["entidad"],
+                vigencia_from__lt=inicio,
+                vigencia_to__isnull=True,
+            ):
+                previa.vigencia_to = inicio - dt.timedelta(days=1)
+                previa.save(update_fields=["vigencia_to"])
+                self.stdout.write(
+                    f"    · ISN {previa.entidad} desde {previa.vigencia_from} "
+                    f"cerrado al {previa.vigencia_to}"
+                )
