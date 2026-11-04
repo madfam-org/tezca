@@ -214,7 +214,7 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              cpu: 50m
+              cpu: 25m
               memory: 768Mi
             limits:
               cpu: 1000m
@@ -240,7 +240,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 140
     - type: Resource
       resource:
         name: memory
