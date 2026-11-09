@@ -23,6 +23,9 @@ resources:
 - tezca-pdbs.yaml
 - tezca-db-backup-cronjob.yaml
 - network-policies.yaml
+# tezca's per-caller crawler key, read cross-path from the crawler's own Vault
+# path (see the file header).
+- external-secret-crawler-credentials.yaml
 images:
 - digest: sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2
   name: docker.elastic.co/elasticsearch/elasticsearch
