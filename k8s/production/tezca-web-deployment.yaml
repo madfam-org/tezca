@@ -49,6 +49,16 @@ spec:
                 secretKeyRef:
                   name: tezca-secrets
                   key: JANUA_SECRET_KEY
+            # Explicit V8 old-space cap: 320 MB = 62.5% of the 512Mi limit,
+            # leaving ~190Mi for native memory (code, new space, buffers,
+            # sockets). Without it V8 sizes the heap from the cgroup limit by
+            # a heuristic that moves with the node major (the image follows
+            # node:25-alpine). Defence in depth, NOT the fix: the 2026-11 OOM
+            # restarts (every 20-46 h) were a per-request leak from the Janua
+            # SDK's refresh interval, fixed in apps/web/lib/janua-config.ts.
+            # Guarded by tests/test_web_runtime_manifests.py.
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=320"
           livenessProbe:
             httpGet:
               path: /api/health

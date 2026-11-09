@@ -23,6 +23,9 @@ resources:
 env:
   - name: NEXT_PUBLIC_API_URL
     value: "https://api.tezca.mx/api/v1"
+  # Mirrors k8s/production: V8 heap cap at 62.5% of limits.memory.
+  - name: NODE_OPTIONS
+    value: "--max-old-space-size=160"
   - name: NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY
     secretRef: tezca-secrets/janua-publishable-key
   - name: JANUA_SECRET_KEY

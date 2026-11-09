@@ -51,6 +51,11 @@ spec:
                   key: JANUA_SECRET_KEY
             - name: JANUA_INTERNAL_URL
               value: "http://janua-api.janua.svc.cluster.local:80"
+            # Explicit V8 old-space cap: 160 MB = 62.5% of the 256Mi limit,
+            # the same ratio as tezca-web (see tezca-web-deployment.yaml).
+            # Guarded by tests/test_web_runtime_manifests.py.
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=160"
           livenessProbe:
             httpGet:
               path: /api/health

@@ -169,10 +169,10 @@ poetry run pytest tests/parsers/test_parser_v2.py    # parser tests (100 tests)
 poetry run pytest -m spotcheck -v
 python manage.py spot_check --golden-set             # management command
 
-# Web (vitest, 930 tests across 102 files; 63% coverage with all:true)
+# Web (vitest, 976 tests across 108 files as of 2026-11-09; 63% coverage with all:true)
 cd apps/web && npx vitest run
 
-# Admin (vitest, 78 tests across 11 files)
+# Admin (vitest, 92 tests across 15 files as of 2026-11-09)
 cd apps/admin && npx vitest run
 
 # MCP server (pytest + respx, 25 passed / 8 skipped; the 8 are live-API tests gated on TEZCA_API_URL)
@@ -644,6 +644,8 @@ type Lang = 'es' | 'en' | 'nah';
 13. **`@types/react` lockfile dedup:** The monorepo can end up with multiple `@types/react` versions (e.g. 19.2.10 in workspaces, 19.2.14 at root), causing Radix component type errors (`Key` type mismatch). Fix by removing nested `node_modules/@types/react` entries from `package-lock.json` and running `npm install`.
 
 14. **`Protect` component:** `@janua/nextjs` `Protect` uses `redirectTo` prop, not `redirectUrl`.
+
+14a. **Never render `@janua/nextjs`'s `JanuaProvider` directly.** Use the app wrapper (`apps/web/lib/janua.tsx`, `apps/admin/lib/auth.tsx`). It builds the server-side client with `autoRefreshTokens: false`, because `@janua/typescript-sdk` 0.1.x leaks a never-cleared 60 s interval per `JanuaClient` and the provider builds one per server render (tezca-web OOM-restarted every 20–46 h until 2026-11). The decision must stay in the `'use client'` module: the root layout is a server component, where `typeof window` is always `undefined`. Remove the guard after bumping to `@janua/typescript-sdk` 0.1.5 (the characterisation test in `__tests__/lib/janua-config.test.ts` fails then). Details: `docs/deployment/PRODUCTION_DEPLOYMENT.md` Gotcha 14.
 
 15. **`_protected()` sets class attrs directly:** DRF's `authentication_classes`/`permission_classes` decorators from `rest_framework.decorators` set attributes on the function, not on the `WrappedAPIView` class, so they have no effect when applied after `@api_view`. `_protected()` in `urls.py` works around this by setting `view_func.cls.authentication_classes` and `view_func.cls.permission_classes` directly.
 

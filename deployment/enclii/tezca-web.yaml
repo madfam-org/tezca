@@ -27,5 +27,8 @@ resources:
 env:
   - name: NEXT_PUBLIC_API_URL
     value: "https://api.tezca.mx/api/v1"
+  # Mirrors k8s/production: V8 heap cap at 62.5% of limits.memory.
+  - name: NODE_OPTIONS
+    value: "--max-old-space-size=320"
 buildArgs:
   - NEXT_PUBLIC_API_URL=https://api.tezca.mx/api/v1
