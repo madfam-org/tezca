@@ -177,6 +177,13 @@ const januaConfig = {
 };
 ```
 
+`autoRefreshTokens: true` applies in the browser only. Both apps render the
+provider through a wrapper (`apps/admin/lib/auth.tsx`, `apps/web/lib/janua.tsx`)
+that builds the server-side client with `autoRefreshTokens: false`: the Janua
+SDK 0.1.x starts a never-cleared refresh interval per client, and the provider
+builds a client on every server render, which leaked memory until the pod was
+OOM-killed. See `docs/deployment/PRODUCTION_DEPLOYMENT.md` Gotcha 14.
+
 ### SSO Domain Enforcement
 
 The admin sign-in page detects email domains that require SSO and prevents the email/password form from submitting for those domains. This avoids a 502 error that occurs when the server-side login proxy hits Cloudflare's HTML challenge page instead of Janua's JSON API.

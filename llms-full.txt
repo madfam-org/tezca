@@ -61,6 +61,20 @@ gap or incident link.
 - Canonical: `SECURITY.md` ("Security baseline") and
   `docs/deployment/PRODUCTION_DEPLOYMENT.md` (trigger table).
 
+## 2026-11 frontend OOM fix (Janua SDK interval leak)
+
+- `@janua/typescript-sdk` 0.1.x starts a never-cleared 60 s interval per
+  `JanuaClient`; `<JanuaProvider>` builds one per server render, so tezca-web
+  leaked every server-rendered request and OOM-restarted every 20-46 h.
+- The app wrappers (`apps/web/lib/janua.tsx`, `apps/admin/lib/auth.tsx`) build
+  the server-side client with `autoRefreshTokens: false`
+  (`lib/janua-config.ts`); the browser config is unchanged. Remove after the
+  SDK 0.1.5 bump.
+- Heap caps: `NODE_OPTIONS=--max-old-space-size` 320 (web, 512Mi) and 160
+  (admin, 256Mi), pinned with probe timeouts and the Enclii mirrors by
+  `tests/test_web_runtime_manifests.py`.
+- Canonical: `docs/deployment/PRODUCTION_DEPLOYMENT.md` Gotcha 14.
+
 ## 2026-10-01 changes (#263 and the close-out)
 
 - WeasyPrint 62.3 → 70.0. Besides the three advisories, this fixed PDF export:

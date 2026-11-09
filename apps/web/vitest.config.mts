@@ -16,6 +16,16 @@ export default defineConfig({
         globals: true,
         setupFiles: ['./vitest.setup.ts'],
         exclude: ['e2e/**', 'node_modules/**'],
+        server: {
+            deps: {
+                // `@janua/nextjs` itself is aliased to a stub above, but the
+                // provider SSR regression test loads the REAL package by file
+                // path (`__tests__/lib/janua-provider-ssr.test.tsx`). Its ESM
+                // dist imports `next/headers` without an extension, which
+                // Node's ESM loader rejects; inlining lets Vite resolve it.
+                inline: [/@janua\/nextjs\/dist\//],
+            },
+        },
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],

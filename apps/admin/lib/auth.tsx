@@ -1,13 +1,30 @@
 "use client";
 
-import { useEffect, useLayoutEffect } from "react";
+import { type ComponentProps, useEffect, useLayoutEffect, useMemo } from "react";
 import { setTokenSource } from "./api";
+import { serverSafeJanuaConfig } from "./janua-config";
 
 // Re-export Janua components for use across the app
-export { JanuaProvider, UserButton, SignInForm, useJanua, useAuth } from "@janua/nextjs";
+export { UserButton, SignInForm, useJanua, useAuth } from "@janua/nextjs";
 
 // Import for internal use
-import { useJanua } from "@janua/nextjs";
+import { JanuaProvider as BaseJanuaProvider, useJanua } from "@janua/nextjs";
+
+/**
+ * App-wide `<JanuaProvider>`. The root layout is a server component, so the
+ * server/browser decision happens here, at render time in this client module:
+ * on the server the client is built with `autoRefreshTokens: false` (see
+ * `lib/janua-config.ts` — the SDK leaks one interval per server render), in
+ * the browser the layout's config (`autoRefreshTokens: true`) passes through
+ * unchanged.
+ */
+export function JanuaProvider({
+    config,
+    ...rest
+}: ComponentProps<typeof BaseJanuaProvider>) {
+    const effectiveConfig = useMemo(() => serverSafeJanuaConfig(config), [config]);
+    return <BaseJanuaProvider {...rest} config={effectiveConfig} />;
+}
 
 /**
  * AdminAuthBridge — transparent wrapper that wires the Janua SDK's
