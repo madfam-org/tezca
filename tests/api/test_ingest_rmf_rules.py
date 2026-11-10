@@ -196,6 +196,41 @@ class TestIngestRmfRules:
             is None
         )
 
+    def test_uploads_akn_to_r2_under_the_key_the_reader_uses(
+        self, tmp_path, two_versions, fixture_lines, monkeypatch
+    ):
+        """Pods have no volume under data/: the AKN must reach R2 under the key
+        read_data_content derives from xml_file_path ("data/" stripped)."""
+        from unittest.mock import MagicMock
+
+        monkeypatch.setenv("LOCAL_LEGAL_DATA_OPS", "yes")
+        monkeypatch.setenv("STORAGE_BACKEND", "r2")
+        storage = MagicMock()
+        monkeypatch.setattr("apps.api.storage.get_storage_backend", lambda: storage)
+        monkeypatch.chdir(tmp_path)
+        call_command(
+            "ingest_rmf_rules",
+            "--manifest",
+            str(two_versions),
+            "--source-dir",
+            str(tmp_path / "sources"),
+            "--output-dir",
+            "data/rmf",
+        )
+        keys = [c.args[0] for c in storage.put_file.call_args_list]
+        assert keys == ["rmf/rmf_2026-dof.xml", "rmf/rmf_2026-compilada.xml"]
+        newest = Law.objects.get(official_id=OFFICIAL_ID).versions.first()
+        assert newest.xml_file_path == "data/rmf/rmf_2026-compilada.xml"
+
+    def test_r2_needs_a_relative_output_dir_and_writes_no_rows(
+        self, tmp_path, two_versions, fixture_lines, monkeypatch
+    ):
+        monkeypatch.setenv("LOCAL_LEGAL_DATA_OPS", "yes")
+        monkeypatch.setenv("STORAGE_BACKEND", "r2")
+        with pytest.raises(CommandError, match="relative"):
+            _run(tmp_path, two_versions)
+        assert not Law.objects.filter(official_id=OFFICIAL_ID).exists()
+
 
 def test_shipped_manifest_pins_every_document():
     """The committed manifest names a URL, a DOF date and a SHA-256 for every

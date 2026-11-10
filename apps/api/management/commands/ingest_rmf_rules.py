@@ -13,7 +13,9 @@ command fills that gap from **pinned official documents only**:
 2. refuses any PDF whose SHA-256 differs from the manifest (SAT re-uploads
    files in place; an unreviewed document never reaches the corpus);
 3. segments it by rule (``apps.parsers.rmf``), validates the result, and
-   writes Akoma Ntoso to ``--output-dir`` (one file per version);
+   writes Akoma Ntoso to ``--output-dir`` (one file per version) and, when
+   ``STORAGE_BACKEND=r2``, uploads it under the key ``read_data_content``
+   reads (production pods keep nothing under ``data/`` across restarts);
 4. upserts the Law and one LawVersion per manifest entry, keyed by
    publication date, with ``valid_from``/``valid_to`` and the AKN path.
 
@@ -179,12 +181,22 @@ class Command(BaseCommand):
             )
             return
 
+        # Files first (and to R2 when that is the backend), rows second: a
+        # LawVersion must never point at an AKN file that is not stored.
         output_dir.mkdir(parents=True, exist_ok=True)
+        written = []
+        for version, xml, _stats in parsed:
+            path = output_dir / f"{manifest['official_id']}-{version['key']}.xml"
+            path.write_text(xml, encoding="utf-8")
+            key = self._sync_to_storage(path)
+            written.append((version, path))
+            self.stdout.write(
+                f"Wrote {version['key']} → {path}" + (f" (R2 key {key})" if key else "")
+            )
+
         with transaction.atomic():
             law = self._upsert_law(manifest)
-            for version, xml, _stats in parsed:
-                path = output_dir / f"{manifest['official_id']}-{version['key']}.xml"
-                path.write_text(xml, encoding="utf-8")
+            for version, path in written:
                 self._upsert_version(law, version, path)
                 self.stdout.write(f"Linked {version['key']} → {path}")
 
@@ -223,6 +235,34 @@ class Command(BaseCommand):
                 f"update the manifest before ingesting."
             )
         return path
+
+    @staticmethod
+    def storage_key(path: Path) -> str:
+        """R2 key for a data path, normalised exactly as ``read_data_content``
+        does on its R2 fallback (keys mirror ``data/``)."""
+        key = str(path).lstrip("/")
+        return key[5:] if key.startswith("data/") else key
+
+    def _sync_to_storage(self, path: Path):
+        """Upload the AKN to R2 when that is the storage backend.
+
+        Production pods have no volume under ``data/``: a file written by
+        ``enclii exec`` lives until the pod restarts, after which
+        ``read_data_content`` falls back to R2. Locally the file already sits
+        where the reader looks, so nothing is copied.
+        """
+        if os.environ.get("STORAGE_BACKEND") != "r2":
+            return None
+        if path.is_absolute():
+            raise CommandError(
+                f"--output-dir must be relative under data/ when STORAGE_BACKEND=r2 "
+                f"(got {path}); the R2 key is derived from it."
+            )
+        from apps.api.storage import get_storage_backend
+
+        key = self.storage_key(path)
+        get_storage_backend().put_file(key, path)
+        return key
 
     def _download(self, url: str, path: Path) -> None:
         import requests
