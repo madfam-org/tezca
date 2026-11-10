@@ -113,7 +113,7 @@ describe('AuthContext', () => {
                 sub: 'user-123',
                 email: 'user@tezca.mx',
                 name: 'Test User',
-                tier: 'academic',
+                tezca_tier: 'academic',
             },
             isLoading: false,
         });
@@ -132,12 +132,12 @@ describe('AuthContext', () => {
     });
 
     // ---------------------------------------------------------------
-    // 4. Tier normalization: 'free' -> 'essentials'
+    // 4. Catalog 'free' is the signed-in free tier
     // ---------------------------------------------------------------
-    it('normalizes "free" tier to "essentials"', () => {
+    it('maps tezca_tier "free" to "free_member"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u1', tier: 'free' },
+            user: { sub: 'u1', tezca_tier: 'free' },
             isLoading: false,
         });
 
@@ -147,7 +147,7 @@ describe('AuthContext', () => {
             </AuthProvider>,
         );
 
-        expect(screen.getByTestId('tier').textContent).toBe('essentials');
+        expect(screen.getByTestId('tier').textContent).toBe('free_member');
     });
 
     // ---------------------------------------------------------------
@@ -156,7 +156,7 @@ describe('AuthContext', () => {
     it('normalizes "premium" tier to "academic"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u2', tier: 'premium' },
+            user: { sub: 'u2', tezca_tier: 'premium' },
             isLoading: false,
         });
 
@@ -175,7 +175,7 @@ describe('AuthContext', () => {
     it('normalizes "enterprise" tier to "academic"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u3', tier: 'enterprise' },
+            user: { sub: 'u3', tezca_tier: 'enterprise' },
             isLoading: false,
         });
 
@@ -194,7 +194,7 @@ describe('AuthContext', () => {
     it('normalizes "internal" tier to "madfam"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u4', tier: 'internal' },
+            user: { sub: 'u4', tezca_tier: 'internal' },
             isLoading: false,
         });
 
@@ -213,7 +213,7 @@ describe('AuthContext', () => {
     it('defaults unknown tier to "free_member"', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u5', tier: 'garbage_value' },
+            user: { sub: 'u5', tezca_tier: 'garbage_value' },
             isLoading: false,
         });
 
@@ -234,7 +234,7 @@ describe('AuthContext', () => {
             sub: 'cookie-user',
             email: 'cookie@tezca.mx',
             name: 'Cookie User',
-            tier: 'community',
+            tezca_tier: 'community',
         });
         document.cookie = `janua_token=${encodeURIComponent(token)}`;
 
@@ -256,7 +256,7 @@ describe('AuthContext', () => {
         const token = makeJwt({
             sub: 'ls-user',
             email: 'ls@tezca.mx',
-            tier: 'academic',
+            tezca_tier: 'academic',
         });
         localStorage.setItem('janua_token', token);
 
@@ -292,7 +292,7 @@ describe('AuthContext', () => {
     it('reads user_id claim when sub is not present', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { user_id: 'alt-id', tier: 'essentials' },
+            user: { user_id: 'alt-id', tezca_tier: 'essentials' },
             isLoading: false,
         });
 
@@ -311,7 +311,7 @@ describe('AuthContext', () => {
     it('reads full_name claim when name is not present', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
-            user: { sub: 'u6', full_name: 'Full Name User', tier: 'academic' },
+            user: { sub: 'u6', full_name: 'Full Name User', tezca_tier: 'academic' },
             isLoading: false,
         });
 
@@ -336,9 +336,9 @@ describe('AuthContext', () => {
     });
 
     // ---------------------------------------------------------------
-    // 15. Reads plan claim when tier is absent
+    // 15. Ignores the generic plan claim
     // ---------------------------------------------------------------
-    it('reads plan claim when tier is not present', () => {
+    it('ignores the generic plan claim', () => {
         mockJanuaAuth.mockReturnValue({
             isAuthenticated: true,
             user: { sub: 'u7', plan: 'community' },
@@ -351,6 +351,61 @@ describe('AuthContext', () => {
             </AuthProvider>,
         );
 
-        expect(screen.getByTestId('tier').textContent).toBe('community');
+        expect(screen.getByTestId('tier').textContent).toBe('free_member');
+    });
+
+    // ---------------------------------------------------------------
+    // 16. Another product's paid tier never reads as a Tezca tier
+    // ---------------------------------------------------------------
+    it('reads another product\'s paid generic tier as free', () => {
+        mockJanuaAuth.mockReturnValue({
+            isAuthenticated: true,
+            user: { sub: 'u8', tier: 'pro', karafiel_tier: 'pro' },
+            isLoading: false,
+        });
+
+        render(
+            <AuthProvider>
+                <AuthDisplay />
+            </AuthProvider>,
+        );
+
+        expect(screen.getByTestId('tier').textContent).toBe('free_member');
+    });
+
+    // ---------------------------------------------------------------
+    // 17. The JWT cookie fallback ignores the generic tier too
+    // ---------------------------------------------------------------
+    it('ignores the generic tier in the JWT cookie fallback', () => {
+        const token = makeJwt({ sub: 'cookie-user', tier: 'premium' });
+        document.cookie = `janua_token=${encodeURIComponent(token)}`;
+
+        render(
+            <AuthProvider>
+                <AuthDisplay />
+            </AuthProvider>,
+        );
+
+        expect(screen.getByTestId('authenticated').textContent).toBe('true');
+        expect(screen.getByTestId('tier').textContent).toBe('free_member');
+    });
+
+    // ---------------------------------------------------------------
+    // 18. MADFAM operators keep the madfam tier
+    // ---------------------------------------------------------------
+    it('keeps tezca_tier "madfam" at the madfam tier', () => {
+        mockJanuaAuth.mockReturnValue({
+            isAuthenticated: true,
+            user: { sub: 'svc', tezca_tier: 'madfam', tier: 'community' },
+            isLoading: false,
+        });
+
+        render(
+            <AuthProvider>
+                <AuthDisplay />
+            </AuthProvider>,
+        );
+
+        expect(screen.getByTestId('tier').textContent).toBe('madfam');
     });
 });

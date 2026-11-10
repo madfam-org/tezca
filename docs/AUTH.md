@@ -92,12 +92,25 @@ Legacy tier names are normalized automatically: `free` → `essentials`, `pro`/`
 
 ### JWT Claim Extraction
 
-`CombinedAuthentication` reads the tier from JWT claims in this order:
+`CombinedAuthentication` (API) and `AuthContext` (web, via `apps/web/lib/tezca-tier.ts`) read a Janua user's tier ONLY from Tezca's own entitlement, in this order:
 
-1. `tezca_tier` -- product-specific claim set by Dhanam via Janua webhook. Preferred.
-2. `tier` -- generic cross-product claim.
-3. `plan` -- legacy claim name.
-4. Falls back to `"essentials"` if none are present.
+1. `tezca_tier` -- the `{product}_tier` claim Janua mints from a Tezca catalog purchase (org `product_tiers` or a per-user grant), and `madfam` for MADFAM operator clients.
+2. A `tezca:<tier>` entry in `madfam_entitled_products`, when `tezca_tier` is absent.
+3. Otherwise `free_member` (the catalog's `free` tier for a signed-in user).
+
+The generic `tier` and `plan` claims are **never** read. They summarize whatever product the user's organization pays for, so reading them would give a buyer of another MADFAM product paid Tezca features. Janua's own default `tier` is `community`, which is also the name of a Tezca tier; it is not a Tezca entitlement.
+
+Claim values map as follows; anything else (another product's tier name, a typo, a non-string) fails closed to `free_member`, and a present but unusable `tezca_tier` is never overridden by the fallback:
+
+| Claim value | Tezca tier |
+|-------------|------------|
+| `free`, `free_member` | `free_member` |
+| `community` | `community` |
+| `essentials` | `essentials` |
+| `academic` | `academic` |
+| `institutional` | `institutional` |
+| `pro`, `pro_plus`, `premium`, `enterprise` (legacy/unsellable) | `academic` |
+| `madfam`, `internal` | `madfam` |
 
 The product-specific `tezca_tier` claim allows a user to have different tiers across MADFAM products (e.g., `academic` on Tezca but `essentials` on Yantra4D).
 

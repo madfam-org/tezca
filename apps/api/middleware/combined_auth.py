@@ -11,7 +11,7 @@ from rest_framework.authentication import BaseAuthentication
 
 from .apikey_auth import APIKeyAuthentication
 from .janua_auth import JanuaJWTAuthentication
-from .tier_permissions import get_effective_tier
+from .tier_permissions import get_effective_tier, resolve_janua_tier
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +70,10 @@ class CombinedAuthentication(BaseAuthentication):
             if result is not None:
                 user, token = result
                 # Enrich JanuaUser with tier/scopes for uniform access
-                # Prefer product-specific tezca_tier claim, fall back to generic tier/plan
+                # Gate only on Tezca's own entitlement (tezca_tier, else a
+                # tezca:<tier> entitlement), never the generic tier/plan.
                 if not hasattr(user, "tier"):
-                    user.tier = user.claims.get(
-                        "tezca_tier",
-                        user.claims.get("tier", user.claims.get("plan", "essentials")),
-                    )
+                    user.tier = resolve_janua_tier(user.claims)
                 if not hasattr(user, "scopes"):
                     user.scopes = user.claims.get("scopes", ["read", "search"])
                 if not hasattr(user, "allowed_domains"):
