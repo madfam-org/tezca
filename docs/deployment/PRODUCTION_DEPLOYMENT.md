@@ -240,7 +240,7 @@ After completing all manual steps (M1-M9), verify:
 4. **ES memory_lock**: Requires init container setting `vm.max_map_count=262144` on the node (privileged)
 5. **Health check unauthenticated**: `/api/v1/admin/health/` stays open — K8s liveness probes need direct access
 6. **JanuaProvider placement**: Must wrap inside `<html><body>` but before all other providers
-7. **Internal DNS pattern**: `{service}.tezca.svc.cluster.local:{port}` — used in env vars for inter-service communication
+7. **Internal DNS pattern**: `{service}.tezca.svc.cluster.local:{port}` — used in env vars for inter-service communication. In-cluster callers speak plain HTTP with no `X-Forwarded-Proto`, so `SECURE_SSL_REDIRECT` would answer them 301 → `https://…`; `/health` and every `/api/` path are therefore exempt (`PRODUCTION_SECURE_REDIRECT_EXEMPT` in `apps/indigo/settings.py`, pinned by `tests/test_production_ssl_redirect.py`). Public plain-HTTP visitors never reach the origin: Cloudflare redirects them at the edge. Every other path (e.g. `/admin/`) still redirects
 8. **ENCLII_PORT**: Enclii may set this env var — apps should respect it if present
 9. **R2 storage backend**: `STORAGE_BACKEND=r2` must be set in production K8s env; defaults to `local` for dev. boto3 is an optional dep — only imported when R2 is active
 10. **Sentry optional**: Both `sentry-sdk` (API) and `@sentry/nextjs` (web) are optional. Code gracefully degrades when not installed
