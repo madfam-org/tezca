@@ -6,6 +6,12 @@ Handles standard articles, lettered articles (27-A), ordinal articles, and other
 import re
 from typing import List, Optional, Pattern, Tuple
 
+# Latin ordinal suffixes of inserted articles ("82-Bis", "5 Ter", "82-Quáter").
+# Case-insensitive so "BIS" in all-caps statutes also matches.
+LATIN_SUFFIX_PATTERN = (
+    r"(?i:Bis|Ter|Qu[áa]ter|Quinquies|Sexies|Septies|Octies|Nonies|Decies)"
+)
+
 
 def compile_article_patterns() -> List[Pattern]:
     """
@@ -17,15 +23,23 @@ def compile_article_patterns() -> List[Pattern]:
     Returns:
         List of compiled regex objects
     """
+    latin = LATIN_SUFFIX_PATTERN
     patterns = [
-        # Bis with optional number: Artículo 5 Bis, Artículo 5o. Bis 1
-        r"^Art[íi]culo\s+(\d+[o]?\.?)\s+(Bis\s*\d*)",
-        # Lettered with dash: Artículo 27-A, Artículo 45-A.
-        r"^Art[íi]culo\s+(\d+)-([A-Z])\.?",
+        # Latin suffix after a dash: Artículo 82-Bis, 82-Ter, 82-Quáter.
+        # Must precede the lettered pattern, which would otherwise read
+        # "82-Bis" as article "82-B" (LISR 82-Bis/Ter/Quáter → 82-B/T/Q).
+        rf"^Art[íi]culo\s+(\d+)o?\.?\s*-\s*({latin}(?:\s+\d+)?)(?!\w)",
+        # Latin suffix after a space: Artículo 5 Bis, Artículo 5o. Bis 1
+        rf"^Art[íi]culo\s+(\d+o?\.?)\s+({latin}(?:\s+\d+)?)(?!\w)",
+        # Lettered with dash: Artículo 27-A, Artículo 113-E. The letter must
+        # stand alone so "27-Bis" never reads as "27-B".
+        r"^Art[íi]culo\s+(\d+)-([A-Z])(?!\w)\.?",
         # Standard: Artículo 5, Artículo 5., Artículo 1o.-, Artículo 5o
         r"^Art[íi]culo\s+(\d+[o]?\.?)",
-        # Uppercase Bis: ARTICULO 5 Bis
-        r"^ART[ÍI]CULO\s+(\d+[o]?\.?)\s+(Bis\s*\d*)",
+        # Uppercase variants of the three suffixed forms above.
+        rf"^ART[ÍI]CULO\s+(\d+)o?\.?\s*-\s*({latin}(?:\s+\d+)?)(?!\w)",
+        rf"^ART[ÍI]CULO\s+(\d+[o]?\.?)\s+({latin}(?:\s+\d+)?)(?!\w)",
+        r"^ART[ÍI]CULO\s+(\d+)-([A-Z])(?!\w)\.?",
         # Uppercase: ARTICULO 5
         r"^ART[ÍI]CULO\s+(\d+[o]?\.?)",
         # Abbreviated: Art. 5

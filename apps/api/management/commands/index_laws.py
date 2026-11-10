@@ -38,6 +38,22 @@ INDEX_ARTICLES = "articles"
 
 NS = {"akn": "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"}
 
+# The "Artículo N." heading that opens an article's first paragraph, including
+# lettered ("113-E.") and Latin-suffixed ("82-Bis.", "5o. Bis 1.-") numbers.
+# Matches the heading only: it never reaches past the delimiter into the
+# article's first sentence (the old ``\d+[\w\s]*\.`` pattern could swallow a
+# whole sentence such as "Artículo 5 Bis Se deroga." and left "113-E." in
+# place because "-" stopped it).
+ARTICLE_HEADING_RE = re.compile(
+    r"^(?:Art[ií]culo|ART[ÍI]CULO)\s+\d+(?:o|º|°)?"
+    r"(?:-[A-Z](?!\w))?"
+    r"\.?"
+    r"(?:(?:\s*-\s*|\s+)"
+    r"(?i:bis|ter|qu[áa]ter|quinquies|sexies|septies|octies|nonies|decies)"
+    r"(?:\s+\d+)?(?!\w))?"
+    r"\s*\.?\s*[-–]?\s*"
+)
+
 
 class Command(BaseCommand):
     help = "Index laws in Elasticsearch with V2 hierarchy structure"
@@ -286,7 +302,7 @@ class Command(BaseCommand):
             if not raw:
                 continue
             # Remove repeated article number from paragraph start
-            cleaned = re.sub(r"^(?:Art[ií]culo|ARTÍCULO)\s+\d+[\w\s]*\.\s*", "", raw)
+            cleaned = ARTICLE_HEADING_RE.sub("", raw, count=1)
             # Rejoin mid-sentence hard line breaks (column wraps from PDF)
             cleaned = re.sub(
                 r"(?<=[a-záéíóúñü,;])\n(?=[a-záéíóúñü])",
