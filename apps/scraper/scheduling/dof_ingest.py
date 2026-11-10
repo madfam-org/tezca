@@ -89,7 +89,11 @@ def check_dof_daily():
 
     existing_laws = list(Law.objects.values_list("name", flat=True))
 
-    scraper = DofScraper(date=datetime.date.today())
+    # The 07:00 run predates today's evening edition, so it also reads
+    # yesterday's VES/EXT editions (entries de-duplicated by URL).
+    scraper = DofScraper(
+        date=datetime.date.today(), include_previous_late_editions=True
+    )
     results = scraper.run(existing_laws=existing_laws)
 
     entries = results.get("entries", [])

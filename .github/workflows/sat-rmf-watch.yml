@@ -1,0 +1,55 @@
+name: SAT RMF watch
+
+# Weekly check of SAT's RMF page against apps/parsers/rmf/manifests/.
+#
+# Runs on a GitHub-hosted runner on purpose: www.sat.gob.mx is behind
+# CloudFront, and from the production cluster's egress every request ends in a
+# CloudFront 504, so the in-cluster dataops.run_rmf_scraper never reaches SAT.
+# When SAT lists an RMF document the manifest does not know (a new compiled
+# edition, a resolución de modificaciones, a new year's RMF), this opens an
+# issue, or comments on the open one, so an operator pins it and runs
+# ingest_rmf_rules (docs/runbooks/rmf-rule-ingestion.md). DOF publications are
+# caught separately and daily by dataops.check_dof_daily's RMF corpus watch.
+
+on:
+  schedule:
+    - cron: "17 14 * * 1" # Mondays 08:17 America/Mexico_City
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: sat-rmf-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Compare SAT RMF page with the manifest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check SAT
+        id: check
+        run: python3 scripts/check_sat_rmf_compilations.py --report sat-rmf-report.md
+
+      - name: Report in the step summary
+        if: always() && hashFiles('sat-rmf-report.md') != ''
+        run: cat sat-rmf-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the tracking issue
+        if: steps.check.outputs.new_count != '' && steps.check.outputs.new_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "SAT RMF: publications not yet in the manifest"
+        run: |
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body-file sat-rmf-report.md
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file sat-rmf-report.md
+          fi

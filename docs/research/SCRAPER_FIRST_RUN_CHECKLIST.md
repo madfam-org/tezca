@@ -59,7 +59,7 @@ Each row below is a single first-run target. Tick it (`[x]`) once the operator c
 | Scraper | Operation key | Expected catalog | First-run command | Acceptance |
 |---|---|---|---|---|
 | RMF (SAT) | `rmf_scrape` | 5–35 documents (annual + ≤4 modifications + ≤31 annexes) | `enclii jobs run dataops.run_rmf_scraper -- year=2026` | [ ] catalog has annual RMF + at least Anexo 1; `domains: ["fiscal"]` set on Law rows |
-| RMF quarterly modifications | `rmf_scrape` (year=2026) | each new modification adds 1 doc | quarterly Beat tick (8th of Jan/Apr/Jul/Oct) | [ ] 1st quarterly mod ingested when SAT publishes (typically Feb–Mar) |
+| RMF quarterly modifications | `rmf_scrape` (year=2026) | each new modification adds 1 doc | quarterly Beat tick (8th of Jan/Apr/Jul/Oct) | [ ] 1st quarterly mod ingested when SAT publishes (typically Feb–Mar) — **2026-11-10: blocked in-cluster.** SAT's CloudFront answers 504 to the production egress, so runs record 0 documents (now an error). RMF publications are tracked by the DOF corpus watch and the weekly `sat-rmf-watch` workflow instead; see `docs/runbooks/rmf-rule-ingestion.md` |
 | NOM scraper (priority) | `nom_priority_scrape` | ~500–800 NOMs | (already running per `nom-weekly-discovery` Beat) | [x] currently green |
 | NOM agency scrapers (full) | `nom_full_scrape` | ~3000-4000 NOMs | (already running per `nom-monthly-full` Beat 15th) | [x] currently green |
 | Treaty scraper | `treaty_scrape` | ~1500 treaties | (already running per `treaty-weekly-check` Beat) | [x] currently green |

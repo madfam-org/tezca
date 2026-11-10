@@ -202,6 +202,10 @@ python -m apps.scraper.federal.rmf_scraper --year 2026                # discover
 python -m apps.scraper.federal.rmf_scraper --year 2026 --download      # discover + fetch PDFs
 python manage.py ingest_rmf --catalog data/rmf/catalog.json            # upsert into Law table
 python manage.py ingest_rmf --catalog data/rmf/catalog.json --dry-run  # preview
+# RMF rule by rule (articles 3.13.7, T-1, T-R2-1) from pinned, hashed PDFs
+python manage.py ingest_rmf_rules --dry-run --source-dir <dir>          # parse + validate only
+LOCAL_LEGAL_DATA_OPS=yes python manage.py ingest_rmf_rules --only <key>  # then index_laws --law-id rmf_<year>
+python3 scripts/check_sat_rmf_compilations.py                          # SAT page vs manifest (run off-cluster)
 
 # Feriados legales — LFT Art. 74 + CNBV días inhábiles bancarios, fed to kalya
 #   Contract & vocabulary: docs/data/FERIADOS_LEGALES.md
@@ -374,6 +378,9 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Celery task: `dataops.run_rmf_scraper` — scheduled `rmf-quarterly-scrape` (8th of Jan/Apr/Jul/Oct, 03:00). Offset from `dof-historical-quarterly` (1st of same months).
 - Ingest: `python manage.py ingest_rmf --catalog data/rmf/catalog.json` upserts Law + LawVersion with `category="resolución_miscelánea_fiscal"` and `domains=["fiscal"]`.
 - Karafiel's webhook subscription `domain_filter: ["fiscal"]` will receive `law.created` / `law.updated` events for these via the standard `apps/api/webhooks.py` dispatch — no Karafiel-specific code in tezca.
+- **Rule-level text (2026-11-10, #293/#294):** `apps/parsers/rmf/` + `manage.py ingest_rmf_rules` parse the RMF by rule number from the pinned manifest `apps/parsers/rmf/manifests/rmf_<year>.json` (URL, DOF date, SHA-256, half-open validity) into dated LawVersions of `rmf_<year>`. `index_laws` serves rules as articles `3.13.7`, transitorios as `T-N`/`T-RK-N`. Operating guide and production constraints: `docs/runbooks/rmf-rule-ingestion.md`.
+- **SAT is unreachable from the cluster:** `www.sat.gob.mx` (CloudFront) answers 504 to the production egress, so `dataops.run_rmf_scraper` finds 0 documents (now recorded as an error) and `ingest_rmf_rules --download` fails in-cluster; stage PDFs instead.
+- **Tracking:** `check_dof_daily` reads all DOF editions (MAT/VES/EXT + yesterday's late ones), and the `rmf_resolucion_miscelanea_fiscal` corpus watch flags every RMF publication. The weekly `.github/workflows/sat-rmf-watch.yml` (GitHub-hosted) opens an issue when SAT lists a document the manifest lacks. `check_scraper_health` alerts on a stale or failed last run of the quarterly RMF jobs. Operator alerts no-op until `OPERATOR_ALERT_WEBHOOK_URL`/`SECRET` are set.
 
 ### Billing UI (`/cuenta/billing`)
 
@@ -407,6 +414,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Always use `es_client` from config, never instantiate a new client
 - **Alias strategy**: `articles` is an alias pointing to a versioned concrete index (`articles_v{timestamp}`). Zero-downtime reindex via `index_laws --reindex` creates a new versioned index, indexes into it, then atomically swaps the alias. One-time migration from concrete to alias via `manage_es_alias --migrate` or `index_laws --migrate-alias`
 - **Alias management**: `python manage.py manage_es_alias --status|--migrate|--rollback INDEX|--cleanup`
+- **Production state (2026-11-10):** `articles` → `articles_v20261110` (migrated from a concrete index by server-side `_reindex` + one atomic `update_aliases`). Dynamic mapping had made `status`, `law_type` and `domains` `text`, which broke every `/search/` aggregation. Rollback copy: `articles_backup_20261110`. `index_laws --reindex` copies the **current** index's mappings, not `_create_indices`, so a drifted mapping survives it; check `get_field_mapping` after in-place indexing that adds fields.
 - **Graceful degradation**: When ES is unavailable, `law_articles` and `law_stats` return HTTP 200 with `degraded: true` and empty/partial data instead of 500. Frontend shows an "articles unavailable" banner via `articlesDegraded` state in `LawDetail.tsx`.
 - **Search relevance**: `function_score` with Gaussian decay on `publication_date` (5-year half-life, 1-year offset) applied on relevance sort only. `match_phrase` should clauses boost exact phrase matches in `text` (3.0) and `law_name` (5.0). Zero-result rescue retries with `fuzziness: "2"` and `minimum_should_match: "50%"` when first query returns 0 hits.
 - **Synonyms**: 52 synonym pairs in `spanish_legal_synonyms` filter covering legal terminology, procedural, constitutional, commercial, tax, and administrative domains. Changes require `--reindex`.
@@ -577,6 +585,9 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/scraper/state/yucatan.py` | Yucatán state congress scraper (Wave 1A — `congresoyucatan.gob.mx`) |
 | `apps/scraper/federal/rmf_scraper.py` | SAT Resolución Miscelánea Fiscal scraper (annual + quarterly mods + annexes; tags `domains=["fiscal"]` for Karafiel webhook fanout) |
 | `apps/api/management/commands/ingest_rmf.py` | Upserts RMF catalog into `Law` + `LawVersion` (sister to `ingest_non_legislative_laws`) |
+| `apps/parsers/rmf/` | RMF rule-by-rule parser: styled PDF lines (`lines.py`), pure segmenter (`segmenter.py`), AKN writer (`akn.py`), pinned source manifests (`manifests/`) |
+| `apps/api/management/commands/ingest_rmf_rules.py` | Hash-verified RMF ingest → dated LawVersions + AKN (R2-synced); see `docs/runbooks/rmf-rule-ingestion.md` |
+| `scripts/check_sat_rmf_compilations.py` | SAT RMF page vs manifest; run weekly off-cluster by `.github/workflows/sat-rmf-watch.yml` |
 | `apps/api/chat/__init__.py` | First-party AI assistant package — exports `SelvaClient`, `MockSelvaClient`, `get_selva_client()` |
 | `apps/api/chat/selva_client.py` | OpenAI-compatible HTTP client + mock; selected via `CHAT_BACKEND` env. Tezca holds zero LLM API keys |
 | `apps/api/chat/retriever.py` | RAG retrieval over articles ES index; builds system prompt with `[law_id#article_id]` citation format |

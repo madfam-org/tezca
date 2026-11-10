@@ -25,9 +25,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _SECTION_PATTERN = re.compile(
-    r"(PRIMERA|SEGUNDA|TERCERA|CUARTA|QUINTA)\s+SECCI[OÓ]N",
+    r"(PRIMERA|SEGUNDA|TERCERA|CUARTA|QUINTA|SEXTA|S[EÉ]PTIMA|OCTAVA|[UÚ]NICA)"
+    r"\s+SECCI[OÓ]N",
     re.IGNORECASE,
 )
+
+# The DOF index renders each issuing authority as
+# <td class="subtitle_azul">SECRETARIA DE HACIENDA Y CREDITO PUBLICO …</td>.
+# Reading category only from h3/h4/strong/b left it empty on every entry, so
+# corpus watches with an issuer filter (SEP calendario, JCF, RMF) never fired.
+_CATEGORY_CLASSES = frozenset({"subtitle_azul"})
 
 _CHANGE_KEYWORDS: Dict[str, List[str]] = {
     "reform": ["REFORMA", "ADICIONA", "MODIFICA"],
@@ -66,8 +73,24 @@ class DofScraper:
 
     BASE_URL = "https://dof.gob.mx"
 
-    def __init__(self, date: Optional[datetime.date] = None) -> None:
+    # The DOF publishes up to three editions a day: matutina (MAT),
+    # vespertina (VES, evening) and extraordinaria (EXT). Without an explicit
+    # ``edicion`` the index serves the day's LATEST edition — at the 07:00 run
+    # that is MAT, and the evening edition is never read: the 2a and 3a
+    # RMRMF 2026 (DOF 2026-10-01/02, vespertina) were invisible.
+    EDITIONS = ("MAT", "VES", "EXT")
+    LATE_EDITIONS = ("VES", "EXT")
+
+    def __init__(
+        self,
+        date: Optional[datetime.date] = None,
+        include_previous_late_editions: bool = False,
+    ) -> None:
+        """``include_previous_late_editions`` also reads the previous day's
+        VES/EXT editions — for a morning run, which happens before that
+        day's evening edition exists."""
         self.date = date or datetime.date.today()
+        self.include_previous_late_editions = include_previous_late_editions
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": _USER_AGENT})
 
@@ -77,7 +100,8 @@ class DofScraper:
 
     def fetch_daily_edition(self) -> List[Dict[str, str]]:
         """
-        Fetch and parse the DOF daily index page for *self.date*.
+        Fetch and parse every DOF edition (MAT, VES, EXT) for *self.date*,
+        plus the previous day's VES/EXT when ``include_previous_late_editions``.
 
         Returns a list of dicts, each with keys:
             - title:    Full title of the entry (decree / regulation text).
@@ -85,15 +109,38 @@ class DofScraper:
             - category: Issuing authority (e.g. "SECRETARIA DE GOBERNACION").
             - url:      Absolute URL to the detail page.
             - date:     ISO-formatted date string.
+            - edition:  "MAT", "VES" or "EXT".
 
-        Returns an empty list when no edition exists for the given date
-        (weekends, holidays, or network errors).
+        Entries are de-duplicated by URL. Returns an empty list when no
+        edition exists (weekends, holidays, or network errors).
         """
+        targets = [(self.date, edition) for edition in self.EDITIONS]
+        if self.include_previous_late_editions:
+            previous = self.date - datetime.timedelta(days=1)
+            targets = [(previous, e) for e in self.LATE_EDITIONS] + targets
+
+        entries: List[Dict[str, str]] = []
+        seen_urls = set()
+        for date, edition in targets:
+            for entry in self._fetch_edition(date, edition):
+                if entry["url"] in seen_urls:
+                    continue
+                seen_urls.add(entry["url"])
+                entries.append(entry)
+
+        if not entries:
+            logger.info("No DOF entries found for %s (weekend/holiday?)", self.date)
+        else:
+            logger.info("Found %d entries in DOF for %s", len(entries), self.date)
+        return entries
+
+    def _fetch_edition(self, date: datetime.date, edition: str) -> List[Dict[str, str]]:
         index_url = (
             f"{self.BASE_URL}/index.php"
-            f"?year={self.date.year}"
-            f"&month={self.date.month:02d}"
-            f"&day={self.date.day:02d}"
+            f"?year={date.year}"
+            f"&month={date.month:02d}"
+            f"&day={date.day:02d}"
+            f"&edicion={edition}"
         )
         logger.info("Fetching DOF daily index: %s", index_url)
 
@@ -117,12 +164,9 @@ class DofScraper:
 
         tree = html.fromstring(response.content)
         entries = self._parse_index_page(tree)
-
-        if not entries:
-            logger.info("No DOF entries found for %s (weekend/holiday?)", self.date)
-        else:
-            logger.info("Found %d entries in DOF for %s", len(entries), self.date)
-
+        for entry in entries:
+            entry["date"] = date.isoformat()
+            entry["edition"] = edition
         return entries
 
     @staticmethod
@@ -262,7 +306,13 @@ class DofScraper:
                 current_section = _normalise_section(section_match.group(0))
                 continue
 
-            # Detect category headings (usually bold / h3 / strong).
+            # Detect category headings: the DOF's own authority cells, or
+            # bold / h3 / strong in other layouts.
+            if _CATEGORY_CLASSES & set((element.get("class") or "").split()):
+                candidate = _clean_text(element.text_content())
+                if candidate:
+                    current_category = candidate
+                    continue
             if tag in ("h3", "h4", "strong", "b") and text and not section_match:
                 candidate = text.strip()
                 if len(candidate) > 5 and candidate.isupper():
