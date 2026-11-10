@@ -11,6 +11,7 @@ Improvements over v1:
 
 import re
 import sys
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -187,9 +188,13 @@ class AkomaNtosoGeneratorV2:
                     base = raw_num.rstrip(".o")
                     suffix = match.group(2).strip().rstrip(".")
                     art_num = f"{base}-{suffix}"
-                    # Normalise for dedup: "27-A" → "art-27a", "5-Bis 1" → "art-5bis1"
+                    # Normalise for dedup: "27-A" → "art-27a", "5-Bis 1" →
+                    # "art-5bis1", "82-Quáter" → "art-82quater" (ASCII ids).
                     norm = (
-                        art_num.lower()
+                        unicodedata.normalize("NFKD", art_num)
+                        .encode("ascii", "ignore")
+                        .decode("ascii")
+                        .lower()
                         .replace(".", "")
                         .replace(" ", "")
                         .replace("-", "")
