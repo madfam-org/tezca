@@ -93,6 +93,12 @@ SEMILLAS_REQUERIDAS: list[tuple[str, str]] = [
         "data/discovered_reglamentos.json",
         "apps/scraper/dataops/coverage_dashboard.py",
     ),
+    # Fuentes fijadas (URL, fecha DOF, SHA-256) de la RMF 2026; vive en apps/
+    # justamente para viajar en la imagen junto al comando que la lee.
+    (
+        "apps/parsers/rmf/manifests/rmf_2026.json",
+        "manage.py ingest_rmf_rules (reglas de la RMF por número)",
+    ),
 ]
 
 
