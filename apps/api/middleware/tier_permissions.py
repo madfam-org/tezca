@@ -43,6 +43,71 @@ TIER_NORMALIZE = {
 }
 
 
+# Tezca's own per-product claim. Janua mints `{product}_tier` from the
+# product's catalog purchase (org `product_tiers` or a per-user grant) and
+# `madfam` for MADFAM operator clients.
+TEZCA_TIER_CLAIM = "tezca_tier"
+TEZCA_ENTITLEMENT_PREFIX = "tezca:"
+
+# A signed-in Janua user with no Tezca entitlement.
+JANUA_FREE_TIER = "free_member"
+
+# Values a Tezca entitlement claim may carry, mapped to the tier Tezca gates
+# on. Anything else (another product's tier name, a typo, a non-string) is
+# read as the free tier: the claim fails closed.
+#
+# - free/essentials/academic/institutional: the Tezca catalog ladder. The
+#   catalog's `free` is the $0 signed-in tier, i.e. `free_member` here.
+# - community: Tezca's own community plan (tezca_community).
+# - pro/pro_plus/enterprise: unsellable or legacy catalog tiers, kept at the
+#   `academic` level they already resolved to.
+# - madfam/internal: MADFAM operators and service accounts.
+JANUA_CLAIM_TIERS = {
+    "free": JANUA_FREE_TIER,
+    "free_member": JANUA_FREE_TIER,
+    "community": "community",
+    "essentials": "essentials",
+    "academic": "academic",
+    "institutional": "institutional",
+    "pro": "academic",
+    "pro_plus": "academic",
+    "premium": "academic",
+    "enterprise": "academic",
+    "madfam": "madfam",
+    "internal": "madfam",
+}
+
+
+def _map_claim_tier(value) -> str:
+    if not isinstance(value, str):
+        return JANUA_FREE_TIER
+    return JANUA_CLAIM_TIERS.get(value.strip().lower(), JANUA_FREE_TIER)
+
+
+def resolve_janua_tier(claims) -> str:
+    """Resolve a Janua user's Tezca tier from Tezca's OWN entitlement claims.
+
+    Order: the `tezca_tier` claim; else a `tezca:<tier>` entry in
+    `madfam_entitled_products`; else the free tier. The generic `tier`/`plan`
+    claims are never read: they summarize whatever product the org pays for,
+    so reading them would hand Tezca access to buyers of other products.
+    """
+    if not isinstance(claims, dict):
+        return JANUA_FREE_TIER
+
+    own = claims.get(TEZCA_TIER_CLAIM)
+    if own is not None:
+        return _map_claim_tier(own)
+
+    entitled = claims.get("madfam_entitled_products")
+    if isinstance(entitled, list):
+        for entry in entitled:
+            if isinstance(entry, str) and entry.startswith(TEZCA_ENTITLEMENT_PREFIX):
+                return _map_claim_tier(entry[len(TEZCA_ENTITLEMENT_PREFIX) :])
+
+    return JANUA_FREE_TIER
+
+
 @lru_cache(maxsize=1)
 def load_tiers() -> dict:
     """Load tier definitions from tiers.json (cached)."""

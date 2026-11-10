@@ -4,18 +4,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useAuth as useJanuaAuth, useJanua } from '@janua/nextjs';
 import { identifyUser, resetUser, trackEvent } from '@/lib/analytics/posthog';
 
-export type UserTier = 'anon' | 'free_member' | 'community' | 'essentials' | 'academic' | 'institutional' | 'madfam';
+import { resolveTezcaTier, type UserTier } from '@/lib/tezca-tier';
 
-/** Normalize legacy/alias tier names from JWT claims to canonical form. */
-const TIER_NORMALIZE: Record<string, UserTier> = {
-    free: 'essentials',
-    premium: 'academic',
-    enterprise: 'academic',
-    pro: 'academic',
-    internal: 'madfam',
-};
-
-const VALID_TIERS: UserTier[] = ['anon', 'free_member', 'community', 'essentials', 'academic', 'institutional', 'madfam'];
+export type { UserTier };
 
 interface AuthState {
     isAuthenticated: boolean;
@@ -99,20 +90,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [januaAuth?.isAuthenticated, API_BASE]);
 
     const state = useMemo<AuthState>(() => {
-        function normalizeTier(raw: unknown): UserTier {
-            const str = String(raw || 'free_member');
-            const normalized = TIER_NORMALIZE[str] ?? str;
-            return VALID_TIERS.includes(normalized as UserTier)
-                ? (normalized as UserTier)
-                : 'free_member';
-        }
-
         const isTrialActive = trialState.trialTier !== null && trialState.trialEndsAt !== null && trialState.trialEndsAt > new Date();
 
         // If Janua has an authenticated user, use that
         if (januaAuth?.isAuthenticated && januaAuth.user) {
             const claims = (januaAuth.user as unknown as Record<string, unknown>) ?? {};
-            const baseTier = normalizeTier(claims.tier || claims.plan);
+            const baseTier = resolveTezcaTier(claims);
             return {
                 isAuthenticated: true,
                 tier: baseTier,
@@ -136,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const jwtClaims = decodeJwtPayload(token);
         if (!jwtClaims) return { ...defaultState, signOut: handleSignOut };
 
-        const baseTier = normalizeTier(jwtClaims.tier || jwtClaims.plan);
+        const baseTier = resolveTezcaTier(jwtClaims);
         return {
             isAuthenticated: true,
             tier: baseTier,

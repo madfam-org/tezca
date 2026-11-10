@@ -257,7 +257,9 @@ class TestCombinedAuthTierExtraction:
     """Tests for tier claim extraction in CombinedAuthentication.
 
     CombinedAuthentication enriches JanuaUser with a .tier attribute using
-    the following precedence: tezca_tier > tier > plan > "free" (default).
+    Tezca's own entitlement only: tezca_tier > a tezca:<tier> entry in
+    madfam_entitled_products > free_member. The generic tier/plan claims are
+    never read (they summarize other products' purchases).
     """
 
     def setup_method(self):
@@ -287,45 +289,61 @@ class TestCombinedAuthTierExtraction:
         result = self._authenticate_with_claims(
             mock_settings,
             mock_get_jwks,
-            {"tezca_tier": "pro", "tier": "free"},
+            {"tezca_tier": "academic", "tier": "free"},
         )
         user, _ = result
-        assert user.tier == "pro"
+        assert user.tier == "academic"
 
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
-    def test_tier_used_when_tezca_tier_absent(self, mock_settings, mock_get_jwks):
-        """When tezca_tier is absent, fall back to tier claim."""
+    def test_generic_tier_ignored_when_tezca_tier_absent(
+        self, mock_settings, mock_get_jwks
+    ):
+        """Another product's paid generic tier never reads as a Tezca tier."""
         result = self._authenticate_with_claims(
             mock_settings,
             mock_get_jwks,
             {"tier": "pro"},
         )
         user, _ = result
-        assert user.tier == "pro"
+        assert user.tier == "free_member"
 
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
-    def test_plan_used_when_tier_claims_absent(self, mock_settings, mock_get_jwks):
-        """When both tezca_tier and tier are absent, fall back to plan claim."""
+    def test_tezca_entitlement_used_when_tezca_tier_absent(
+        self, mock_settings, mock_get_jwks
+    ):
+        """A tezca:<tier> entry in madfam_entitled_products is Tezca's own."""
+        result = self._authenticate_with_claims(
+            mock_settings,
+            mock_get_jwks,
+            {"tier": "community", "madfam_entitled_products": ["tezca:essentials"]},
+        )
+        user, _ = result
+        assert user.tier == "essentials"
+
+    @patch("apps.api.middleware.janua_auth._get_jwks")
+    @patch("apps.api.middleware.janua_auth.settings")
+    def test_plan_ignored_when_tier_claims_absent(self, mock_settings, mock_get_jwks):
+        """The generic plan claim is never read either."""
         result = self._authenticate_with_claims(
             mock_settings,
             mock_get_jwks,
             {"plan": "pro"},
         )
         user, _ = result
-        assert user.tier == "pro"
+        assert user.tier == "free_member"
 
     @patch("apps.api.middleware.janua_auth._get_jwks")
     @patch("apps.api.middleware.janua_auth.settings")
-    def test_defaults_to_essentials_when_no_tier_claims(
+    def test_defaults_to_free_member_when_no_tier_claims(
         self, mock_settings, mock_get_jwks
     ):
-        """When no tier-related claims exist, default to 'essentials'."""
+        """When no Tezca entitlement exists, the user is on the free tier."""
         result = self._authenticate_with_claims(
             mock_settings,
             mock_get_jwks,
             {},
         )
         user, _ = result
-        assert user.tier == "essentials"
+        assert user.tier == "free_member"
