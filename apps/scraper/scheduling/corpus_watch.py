@@ -3,7 +3,8 @@ Corpus watch — flags a *known yearly instrument* when it reappears in the DOF.
 
 Some documents in Tezca's corpus are re-issued on a fixed yearly cadence by
 the same authority: the SEP calendario escolar (an acuerdo, ~May–July each
-year), the JCF Reglas de Operación (~December), the RMF, and so on. These are
+year), the JCF Reglas de Operación (~December), the RMF and its several
+modifications a year, and so on. These are
 exactly the documents whose corpus entry is *pinned by codigo* — so when next
 year's edition is published, a human has to add the new pinned entry. The
 generic DOF-daily change detector
@@ -125,9 +126,41 @@ JCF_REGLAS_WATCH = CorpusWatch(
     expected_months=[12],
 )
 
+# The Resolución Miscelánea Fiscal: SAT/SHCP publish the annual RMF (late
+# December) and several "Resoluciones de Modificaciones" a year, plus annex
+# publications, all titled "... Resolución Miscelánea Fiscal para <year>".
+# None of them is a DECRETO/LEY/REGLAMENTO, so the generic change detector
+# never saw one: the 4a RMRMF 2026 (DOF 2026-10-30, codigo 5802597) passed
+# check_dof_daily unflagged. Rule text is ingested per rule from pinned,
+# hashed documents (apps/parsers/rmf/manifests/), so a hit means "pin it".
+RMF_WATCH = CorpusWatch(
+    key="rmf_resolucion_miscelanea_fiscal",
+    corpus="rmf",
+    description=(
+        "Resolución Miscelánea Fiscal — annual RMF (December), its "
+        "Resoluciones de Modificaciones (several a year) and annex publications"
+    ),
+    title_patterns=[r"resoluci[oó]n miscel[aá]nea fiscal"],
+    issuer_contains="HACIENDA",
+    action=(
+        "New RMF publication in the DOF. Record it in "
+        "apps/parsers/rmf/manifests/rmf_<year>.json: a modification goes "
+        "under 'instruments' and, until SAT publishes the compiled edition "
+        "that includes it, under 'pending' with the rules it amends. When the "
+        "SAT 'Compilado_<N>_Modificacion…' PDF appears (the weekly "
+        "sat-rmf-watch workflow opens an issue), add it as a version with "
+        "its SHA-256 and run `manage.py ingest_rmf_rules --only <key>` then "
+        "`manage.py index_laws --law-id rmf_<year>` "
+        "(docs/runbooks/rmf-rule-ingestion.md). A new annual RMF needs a new "
+        "manifest. Anexos are not ingested."
+    ),
+    expected_months=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+)
+
 CORPUS_WATCHES: List[CorpusWatch] = [
     SEP_CALENDARIO_WATCH,
     JCF_REGLAS_WATCH,
+    RMF_WATCH,
 ]
 
 CORPUS_WATCHES_BY_KEY: Dict[str, CorpusWatch] = {w.key: w for w in CORPUS_WATCHES}

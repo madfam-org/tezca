@@ -176,7 +176,8 @@ class RmfScraper:
                 resp.raise_for_status()
                 return resp
             except requests.HTTPError as exc:
-                status = exc.response.status_code if exc.response else None
+                # Response.__bool__ is False for 4xx/5xx, so test identity.
+                status = exc.response.status_code if exc.response is not None else None
                 if status in (403, 404):
                     # Permanent — no point retrying.
                     logger.warning("HTTP %s for %s", status, url)

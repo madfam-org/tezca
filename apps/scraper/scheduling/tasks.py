@@ -430,11 +430,26 @@ def run_rmf_scraper(year=None, include_annexes=True, download_documents=True):
             result.get("by_type", {}),
         )
 
+        # Zero documents is a failure, not an empty quarter: SAT publishes the
+        # annual RMF in December, so the year's index is never empty. The
+        # cluster's egress gets CloudFront 504s from www.sat.gob.mx (the
+        # 2026-10-08 run "succeeded" with 0 documents), and only an
+        # error_summary makes check_scraper_health see it.
+        error = ""
+        if not result.get("total", 0):
+            error = (
+                f"RMF scraper discovered 0 documents for {target_year}: the "
+                f"SAT index was unreachable or changed shape. From the cluster "
+                f"egress www.sat.gob.mx answers CloudFront 504; the weekly "
+                f"sat-rmf-watch GitHub workflow checks SAT from outside."
+            )
+            logger.error(error)
         _finish_log(
             log_entry,
             found=result.get("total", 0),
             downloaded=result.get("downloaded", 0),
             failed=result.get("errors", 0),
+            error=error,
         )
         return result
 
@@ -1009,7 +1024,42 @@ _EXPECTED_INTERVALS = {
     "scjn_jurisprudencia_scrape": 7 * 24,
     "scjn_playwright_jurisprudencia": 7 * 24,
     "treaty_scrape": 7 * 24,  # treaty-weekly-check, Wednesday 02:00
+    "rmf_scrape": 92 * 24,  # rmf-quarterly-scrape, 8 Jan/Apr/Jul/Oct
+    "rmf_catalog_ingest": 92 * 24,  # rmf-catalog-ingest-quarterly, the 9th
 }
+
+# Low-frequency operations whose LAST run failing is itself the alarm: a
+# quarterly job can never reach "3 failures in 7 days". Only operations whose
+# error_summary means failure belong here (dof_daily_check, for one, writes its
+# change summary into error_summary on healthy runs).
+_ALERT_ON_LAST_RUN_ERROR = frozenset({"rmf_scrape", "rmf_catalog_ingest"})
+
+
+def _alert_scraper_health(results, row_growth_warnings):
+    """Push one consolidated operator alert when the health check finds a
+    problem. Before this, findings were only WARNING log lines that nobody
+    read. Best-effort, at most one alert per daily run, and a no-op until
+    OPERATOR_ALERT_WEBHOOK_URL/SECRET are configured."""
+    problems = {
+        op: info
+        for op, info in results.items()
+        if not op.startswith("_")
+        and (info.get("is_stale") or info.get("last_run_failed"))
+    }
+    if not problems and not row_growth_warnings:
+        return
+    try:
+        from apps.api.tasks import deliver_operator_alert
+
+        deliver_operator_alert.delay(
+            "scraper_health.problems",
+            {
+                "problems": problems,
+                "row_growth_warnings": row_growth_warnings,
+            },
+        )
+    except Exception:
+        logger.exception("Scraper health problems found but the alert failed")
 
 
 @shared_task(name="dataops.check_scraper_health")
@@ -1076,15 +1126,29 @@ def check_scraper_health():
                 recent_failures,
             )
 
+        last_run_failed = bool(
+            op in _ALERT_ON_LAST_RUN_ERROR
+            and last_run
+            and (last_run.error_summary or "").strip()
+        )
+        if last_run_failed:
+            logger.warning(
+                "Scraper LAST RUN FAILED: %s — %s",
+                op,
+                last_run.error_summary[:300],
+            )
+
         results[op] = {
             "last_run": last_run.started_at.isoformat() if last_run else None,
             "is_stale": is_stale,
             "recent_failures": recent_failures,
+            "last_run_failed": last_run_failed,
         }
 
     operations_checked = len(results)
     row_growth_warnings = check_row_growth(now)
     results["_row_growth_warnings"] = row_growth_warnings
+    _alert_scraper_health(results, row_growth_warnings)
 
     logger.info(
         "Scraper health check complete: %d operations, %d row-growth warnings",
