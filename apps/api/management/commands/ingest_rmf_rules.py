@@ -68,6 +68,13 @@ def sha256_of(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _lower_priority() -> None:
+    try:
+        os.nice(19 - os.nice(0))
+    except (AttributeError, OSError):  # not POSIX, or already lowest
+        pass
+
+
 def load_manifest(path: Path) -> dict:
     with path.open(encoding="utf-8") as fh:
         manifest = json.load(fh)
@@ -136,6 +143,12 @@ class Command(BaseCommand):
                 f"for an explicit operator-requested run (or use --dry-run "
                 f"over local files)."
             )
+
+        # Parsing an 860-page PDF is minutes of CPU. In production this runs
+        # inside the shared worker container next to Celery, whose liveness
+        # probe (a 5 s ping) failed and restarted the container when the parse
+        # ran at normal priority (2026-11-10). Yield the CPU to everything else.
+        _lower_priority()
 
         manifest = load_manifest(Path(options["manifest"]))
         versions = manifest["versions"]
