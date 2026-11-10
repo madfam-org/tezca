@@ -210,7 +210,18 @@ class _Paragraphs:
         if not self.items or force_new or _starts_paragraph(self.items[-1], text):
             self.items.append(text)
         else:
-            self.items[-1] = f"{self.items[-1]} {text}"
+            self.items[-1] = _join_wrapped(self.items[-1], text)
+
+
+# "… artículo 113-" + "E de la Ley" is "113-E", not "113- E". Only a hyphen
+# glued to a letter or digit; a spaced dash ("texto -") is punctuation.
+_WRAPPED_HYPHEN_RE = re.compile(r"[\wÁÉÍÓÚÑáéíóúñ]-$")
+
+
+def _join_wrapped(previous: str, line: str) -> str:
+    if _WRAPPED_HYPHEN_RE.search(previous):
+        return f"{previous}{line}"
+    return f"{previous} {line}"
 
 
 def _starts_paragraph(previous: str, line: str) -> bool:

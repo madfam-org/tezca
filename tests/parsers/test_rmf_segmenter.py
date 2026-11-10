@@ -29,7 +29,14 @@ from pathlib import Path
 
 import pytest
 
-from apps.parsers.rmf.lines import load_jsonl
+from apps.parsers.rmf.lines import (
+    ALIGN_HANGING,
+    ALIGN_INSET,
+    STYLE_BOLD,
+    STYLE_ITALIC,
+    SourceLine,
+    load_jsonl,
+)
 from apps.parsers.rmf.segmenter import segment, validate
 
 FIXTURE = (
@@ -196,3 +203,46 @@ def test_glossary_opening(doc):
     assert doc.glossary[0].startswith(
         "Para una mejor comprensión de lo establecido en la presente Resolución"
     )
+
+
+def test_line_wrapped_lettered_article_is_rejoined():
+    """DOF edition (p. 427–428): rule 3.13.7 wraps "artículo 113-" / "E de la
+    Ley del ISR". The citation must read "113-E", not "113- E"; a spaced dash
+    stays punctuation."""
+    lines = [
+        SourceLine(
+            "Para una mejor comprensión de lo establecido en la presente "
+            "Resolución y sus Anexos, se compila el siguiente glosario de "
+            "acrónimos y definiciones:"
+        ),
+        SourceLine("Título 3. Impuesto sobre la renta", STYLE_BOLD, ALIGN_INSET),
+        SourceLine(
+            "Capítulo 3.13. Del Régimen Simplificado de Confianza",
+            STYLE_BOLD,
+            ALIGN_INSET,
+        ),
+        SourceLine(
+            "Pagos mensuales del Régimen Simplificado de Confianza de personas físicas",
+            STYLE_BOLD,
+        ),
+        SourceLine(
+            "3.13.7. Para los efectos del artículo 113-E, quinto párrafo de la Ley "
+            "del ISR, las personas físicas que",
+            align=ALIGN_HANGING,
+        ),
+        SourceLine(
+            "ingresos que perciban por las actividades a que se refiere el primer "
+            "párrafo del artículo 113-"
+        ),
+        SourceLine(
+            "E de la Ley del ISR en el ejercicio y que estén amparados por los CFDI "
+            "efectivamente"
+        ),
+        SourceLine("cobrados, en la parte proporcional -"),
+        SourceLine("que de los mismos les correspondan"),
+        SourceLine("LISR 113-E, 113-J, CFF 31", STYLE_ITALIC),
+    ]
+    rule = segment(lines).rule("3.13.7")
+    assert "del artículo 113-E de la Ley del ISR en el ejercicio" in rule.text
+    assert "proporcional - que de los mismos" in rule.text
+    assert rule.references == "LISR 113-E, 113-J, CFF 31"
