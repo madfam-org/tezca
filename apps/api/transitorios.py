@@ -58,6 +58,8 @@ _TEXT_HEADING_RE = re.compile(TRANSITORIO_ORDINAL_PATTERN, re.IGNORECASE)
 _NODE_ID_TRANS_RE = re.compile(r"^(?:trans|transitori|disp[-_]?trans|dt[-_])")
 _NODE_ID_BLOCK_RE = re.compile(r"[-_]r(\d+)[-_](\d+)$", re.IGNORECASE)
 _TRANSITORIO_ARTICLE_ID_RE = re.compile(r"^T-")
+# "3.13.7." / "2.7.7.1.1" — administrative-rule numbering (RMF, RGCE).
+_DOTTED_RULE_NUMBER_RE = re.compile(r"^\d{1,2}(?:\.\d{1,3}){1,4}\.?$")
 
 # Leading characters compared when deciding whether two transitorio texts are
 # the same provision parsed twice (legacy XMLs carry some transitorios both as
@@ -107,6 +109,10 @@ def is_transitorio_node(node, num_text, has_numeric_articles=True):
     """Decide whether an <article> node is a transitorio provision.
 
     Layered, preferring AKN structure over string matching:
+      0. a dotted rule number (``3.23.1.``, RMF/RGCE style) is never a
+         transitorio — transitorios are numbered with ordinals. Without this,
+         every rule of RMF Capítulo 3.23 "De las disposiciones transitorias de
+         la Ley del ISR" matched step 2 through its chapter heading;
       1. the node id starts with a transitorio marker (the parser emits
          ``id="trans-N"`` / ``id="trans-rK-N"``);
       2. an ancestor container is headed/numbered "Transitorios";
@@ -114,6 +120,9 @@ def is_transitorio_node(node, num_text, has_numeric_articles=True):
          document also has digit-numbered articles (see
          ``document_has_numeric_articles``).
     """
+    if num_text and _DOTTED_RULE_NUMBER_RE.match(num_text.strip()):
+        return False
+
     if _NODE_ID_TRANS_RE.match(node_id(node).lower()):
         return True
 

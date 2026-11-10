@@ -1,0 +1,120 @@
+{
+  "official_id": "rmf_2026",
+  "name": "Resolución Miscelánea Fiscal para 2026",
+  "short_name": "RMF 2026",
+  "work_date": "2025-12-28",
+  "vigencia": {
+    "from": "2026-01-01",
+    "to": "2026-12-31",
+    "basis": "Transitorio Primero: 'La presente Resolución entrará en vigor el 1o. de enero de 2026 y estará vigente hasta el 31 de diciembre de 2026.'"
+  },
+  "validity_convention": "Half-open [valid_from, valid_to), as apps/ingestion/db_saver.py: valid_to is the first day of the next version.",
+  "versions": [
+    {
+      "key": "dof-2025-12-28",
+      "kind": "dof",
+      "label": "RMF 2026 as published in the DOF",
+      "publication_date": "2025-12-28",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-07-10",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/RMF_2026-DOF-28122025.pdf",
+      "filename": "RMF_2026-DOF-28122025.pdf",
+      "sha256": "6f71ce0cccf430171fe858c5d244b1c321fa68306f962d44ec4977858a52919a",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5777217&fecha=28/12/2025",
+      "change_summary": "Texto original publicado en el DOF el 28 de diciembre de 2025 (código 5777217). En vigor del 1 de enero de 2026 hasta la Primera RMRMF."
+    },
+    {
+      "key": "compilada-1a-rm",
+      "kind": "sat_compilada",
+      "label": "SAT compiled RMF 2026 through the Primera RMRMF",
+      "publication_date": "2026-07-09",
+      "valid_from": "2026-07-10",
+      "valid_to": "2026-10-01",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/compiladas/Compilado_Primera_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "filename": "Compilado_Primera_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "sha256": "edd1ae82fe16ba96e79a591d26a29cc3b91e104713d63e2395a7212546da9718",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5793101&fecha=09/07/2026",
+      "change_summary": "Compilación del SAT que incorpora la Primera RMRMF para 2026 (DOF 9 de julio de 2026, código 5793101; en vigor al día siguiente de su publicación). La compilación no sustituye al DOF: el SAT advierte que para sustentar actos o resoluciones se debe usar la publicación del DOF."
+    },
+    {
+      "key": "compilada-2a-rm",
+      "kind": "sat_compilada",
+      "label": "SAT compiled RMF 2026 through the Segunda RMRMF",
+      "publication_date": "2026-10-01",
+      "valid_from": "2026-10-01",
+      "valid_to": "2026-10-02",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/compiladas/Compilado_Segunda_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "filename": "Compilado_Segunda_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "sha256": "09cb54b88febef0d22cd5bb45a9ff9917c415bfec8fb762976d965efd267c1df",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5800157&fecha=01/10/2026",
+      "change_summary": "Compilación del SAT que incorpora la Segunda RMRMF para 2026 (DOF 1 de octubre de 2026, edición vespertina, código 5800157; en vigor el día de su publicación): reglas 9.4.4. y 11.7.3. La compilación no sustituye al DOF."
+    },
+    {
+      "key": "compilada-3a-rm",
+      "kind": "sat_compilada",
+      "label": "SAT compiled RMF 2026 through the Tercera RMRMF",
+      "publication_date": "2026-10-02",
+      "valid_from": "2026-10-02",
+      "valid_to": "2026-10-30",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/compiladas/Compilado_Tercera_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "filename": "Compilado_Tercera_Modificacion_a_la-Resolucion_Miscelanea_Fiscal_para_2026.pdf",
+      "sha256": "0cbabc7a9a31d04a7dee50b129db7237f2e66649f9aca5685e40bf38ff28dde0",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5800260&fecha=02/10/2026",
+      "change_summary": "Última compilación publicada por el SAT: incorpora la Tercera RMRMF para 2026 (DOF 2 de octubre de 2026, edición vespertina, código 5800260), que sólo da a conocer la Primera Modificación al Anexo 7 (en vigor el 31 de diciembre de 2026) y no modifica reglas. NO incorpora la Cuarta RMRMF (DOF 30 de octubre de 2026, código 5802597, en vigor ese día), que modifica el Glosario y las reglas listadas en 'pending' del manifiesto; por eso esta versión cierra el 30 de octubre de 2026. La compilación no sustituye al DOF."
+    }
+  ],
+  "pending": [
+    {
+      "instrument": "Cuarta Resolución de Modificaciones a la Resolución Miscelánea Fiscal para 2026",
+      "dof_date": "2026-10-30",
+      "in_force": "2026-10-30",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5802597&fecha=30/10/2026",
+      "document_url": "https://dof.gob.mx/nota_to_doc.php?codnota=5802597",
+      "sha256": "14c05133009decfe7fe29fb71c33dae9b118c20f242e2304318f9063e25195af",
+      "reason": "SAT has not published a compiled edition that includes it (minisite checked 2026-11-09). Tezca does not apply amendments itself.",
+      "affects": "Glosario; Título 11; Capítulo 11.4. (reglas 11.4.1. a 11.4.10.); reglas 2.1.6., 2.2.5., 2.5.20., 2.8.1.6., 2.14.5., 2.14.11., 5.2.23., 8.5., 8.6., 8.7., 11.7.3. (reformadas o adicionadas); nuevas 2.1.52., 2.5.25., 2.7.1.49., 2.7.1.50., 2.7.1.51., 3.10.1.26.; derogada 2.7.1.27.; transitorio Vigésimo Tercero reformado y Trigésimo a Trigésimo Tercero adicionados. No toca el Capítulo 3.13."
+    }
+  ],
+  "instruments": [
+    {
+      "instrument": "Resolución Miscelánea Fiscal para 2026",
+      "dof_date": "2025-12-28",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5777217&fecha=28/12/2025",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/RMF_2026-DOF-28122025.pdf",
+      "sha256": "6f71ce0cccf430171fe858c5d244b1c321fa68306f962d44ec4977858a52919a"
+    },
+    {
+      "instrument": "Primera Resolución de Modificaciones a la RMF para 2026",
+      "dof_date": "2026-07-09",
+      "in_force": "2026-07-10",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5793101&fecha=09/07/2026",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/1aRM_RMF2026.pdf",
+      "sha256": "ff4b0ed8957f4ff5cbb678f8fdd2e4da84b3a4a96d259027ed0d817c255e6e37"
+    },
+    {
+      "instrument": "Segunda Resolución de Modificaciones a la RMF para 2026 y Anexo 2",
+      "dof_date": "2026-10-01",
+      "in_force": "2026-10-01",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5800157&fecha=01/10/2026",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/2aRM_RMF2026_01102026.pdf",
+      "sha256": "e46db09fcbc46d87259b28a8683fe5a611bde9854a16d271bf35a5217cd9ed5b"
+    },
+    {
+      "instrument": "Tercera Resolución de Modificaciones a la RMF para 2026 y Anexo 7",
+      "dof_date": "2026-10-02",
+      "in_force": "2026-12-31",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5800260&fecha=02/10/2026",
+      "document_url": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/rmf/3aRM_RMF2026_DOF_02102026.pdf",
+      "sha256": "ad76e833fa529562767539bcf682a4d88d0f22d193ec11100b87826d130ff77b"
+    },
+    {
+      "instrument": "Cuarta Resolución de Modificaciones a la RMF para 2026",
+      "dof_date": "2026-10-30",
+      "in_force": "2026-10-30",
+      "dof_url": "https://dof.gob.mx/nota_detalle.php?codigo=5802597&fecha=30/10/2026",
+      "document_url": "https://dof.gob.mx/nota_to_doc.php?codnota=5802597",
+      "sha256": "14c05133009decfe7fe29fb71c33dae9b118c20f242e2304318f9063e25195af"
+    }
+  ],
+  "out_of_scope": "Anexos 1 a 30 de la RMF 2026 y sus modificaciones (publicados por separado en el DOF y el SAT). Sólo se ingieren el Glosario, las reglas y los transitorios."
+}
