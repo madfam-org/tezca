@@ -229,27 +229,37 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ── Production Security ───────────────────────────────────────────────
+# Paths SecurityMiddleware never redirects HTTP→HTTPS in production (matched
+# against the path WITHOUT its leading slash, per Django's
+# SECURE_REDIRECT_EXEMPT contract). Module-level so the suite can assert the
+# production list itself rather than a copy of it.
+#
+# Public traffic is unaffected by either entry: Cloudflare terminates TLS,
+# answers plain-HTTP visitors with its own 301 at the edge (Always Use HTTPS —
+# `curl -I http://api.tezca.mx/health` returns `Server: cloudflare` even though
+# /health is exempt here), and cloudflared forwards X-Forwarded-Proto: https,
+# which SECURE_PROXY_SSL_HEADER below honours. The redirect only ever fires for
+# callers INSIDE the cluster, which speak plain HTTP to
+# tezca-api.tezca.svc.cluster.local:8000 and set no such header:
+#
+# - ``^health$`` — the root health route (apps/indigo/urls.py
+#   `path("health", ...)`). The cloudflared uptime probe requires status 200;
+#   the kubelet probes never surfaced the redirect because kubelet scores any
+#   2xx OR 3xx as success. Verified 2026-08-06 inside a tezca-api pod.
+# - ``^api/`` — the API (`api/v1/`, `api/schema/`, `api/docs/`,
+#   `api/redoc/`). In-cluster consumers call `/api/v1/*` over plain HTTP; a
+#   301 → https://api.tezca.mx/... either sends them out of the cluster and
+#   back through Cloudflare (when they follow redirects) or fails the call
+#   outright (when they refuse redirects, as a client sending an API key
+#   should). API clients authenticate with the X-API-Key header or a Bearer
+#   token, never a cookie, and the cookie/HSTS settings below are unchanged.
+#
+# `admin/` and every other path still redirect.
+PRODUCTION_SECURE_REDIRECT_EXEMPT = (r"^health$", r"^api/")
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
-    # Exempt the health endpoint from the HTTP→HTTPS redirect.
-    #
-    # Public traffic is unaffected: Cloudflare terminates TLS and cloudflared
-    # forwards X-Forwarded-Proto: https, which SECURE_PROXY_SSL_HEADER below
-    # already honours, so https://api.tezca.mx/health keeps working exactly as
-    # it does now. But in-cluster callers speak plain HTTP to
-    # tezca-api.tezca.svc.cluster.local:8000 and set no such header, so
-    # SecurityMiddleware answers 301 → https://api.tezca.mx/health before the
-    # view ever runs. Verified 2026-08-06 inside a tezca-api pod.
-    #
-    # The kubelet probes never surfaced this because kubelet treats any 2xx OR
-    # 3xx as success — the pods report Ready on a redirect that proves only
-    # that SecurityMiddleware is loaded. The cloudflared uptime probe requires
-    # status 200, so the redirect is a hard failure for it.
-    #
-    # Anchored to the single root health route (apps/indigo/urls.py
-    # `path("health", ...)`, matched without the leading slash per Django's
-    # SECURE_REDIRECT_EXEMPT contract). Every other path still redirects.
-    SECURE_REDIRECT_EXEMPT = [r"^health$"]
+    SECURE_REDIRECT_EXEMPT = list(PRODUCTION_SECURE_REDIRECT_EXEMPT)
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
