@@ -1,7 +1,10 @@
 """RMF publication tracking: DOF corpus watch, all DOF editions, loud SAT
 scraper failures, health-check alerting, and the off-cluster SAT check.
 
-Fixtures are verbatim pages fetched 2026-11-10:
+Fixtures are pages fetched 2026-11-10, verbatim except that the DOF pages
+have their <script> blocks, inline event handlers and javascript: links
+removed (CodeQL scans
+the vendor JavaScript; the index parser never reads it):
 
 * ``tests/fixtures/dof/dof_index_2026-10-01_VES.html`` — DOF vespertina of
   2026-10-01 (Segunda RMRMF 2026, codigo 5800157);
