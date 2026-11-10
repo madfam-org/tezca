@@ -121,19 +121,29 @@ def drop_page_furniture(lines: Sequence[SourceLine]) -> List[SourceLine]:
 # --------------------------------------------------------------------------
 
 
-def extract_lines(pdf_path: Path | str) -> List[SourceLine]:
-    """Read every page of an RMF PDF into ``SourceLine`` records.
+# Pages read per open of the PDF. pdfminer keeps every object it has parsed
+# for as long as the document is open, so one open over a whole 860-page RMF
+# grew past 1.4 GB and got the production worker container OOM-killed
+# (2026-11-10). Re-opening per chunk bounds memory to one chunk's objects.
+DEFAULT_CHUNK_PAGES = 40
 
-    The body indent is measured once per document (the most common left edge
-    of regular-weight lines): the RMF keeps one indent throughout, while a
-    per-page measure is skewed on pages made mostly of fracciones.
-    """
+
+def page_count(pdf_path: Path | str) -> int:
+    import pdfplumber
+
+    with pdfplumber.open(str(pdf_path)) as pdf:
+        return len(pdf.pages)
+
+
+def extract_raw(pdf_path: Path | str, first: int, last: int) -> List[tuple]:
+    """``(page_no, text, style, x0)`` for pages ``first``..``last`` (1-based,
+    inclusive), from a fresh open of the PDF."""
     import pdfplumber  # heavy import, only needed when reading a PDF
 
-    raw: List[tuple] = []  # (page_no, text, style, x0)
-    left_edges: Counter = Counter()
+    raw: List[tuple] = []
     with pdfplumber.open(str(pdf_path)) as pdf:
-        for page_no, page in enumerate(pdf.pages, start=1):
+        for page_no in range(first, min(last, len(pdf.pages)) + 1):
+            page = pdf.pages[page_no - 1]
             for line in page.extract_text_lines(return_chars=True):
                 text = re.sub(r"\s+", " ", line["text"]).strip()
                 if not text:
@@ -141,12 +151,35 @@ def extract_lines(pdf_path: Path | str) -> List[SourceLine]:
                 style = style_from_fonts(
                     c.get("fontname", "") for c in line["chars"] if c["text"].strip()
                 )
-                x0 = float(line["x0"])
-                raw.append((page_no, text, style, x0))
-                if style == STYLE_REGULAR:
-                    left_edges[round(x0)] += 1
+                raw.append((page_no, text, style, float(line["x0"])))
             page.flush_cache()
+    return raw
 
+
+def extract_lines(
+    pdf_path: Path | str, chunk_pages: int = DEFAULT_CHUNK_PAGES
+) -> List[SourceLine]:
+    """Read every page of an RMF PDF into ``SourceLine`` records.
+
+    The PDF is read ``chunk_pages`` pages per open (see
+    ``DEFAULT_CHUNK_PAGES``). The body indent is measured once per document
+    (the most common left edge of regular-weight lines): the RMF keeps one
+    indent throughout, while a per-page measure is skewed on pages made mostly
+    of fracciones.
+    """
+    total = page_count(pdf_path)
+    raw: List[tuple] = []
+    for first in range(1, total + 1, chunk_pages):
+        raw.extend(extract_raw(pdf_path, first, first + chunk_pages - 1))
+    return lines_from_raw(raw)
+
+
+def lines_from_raw(raw: Sequence[tuple]) -> List[SourceLine]:
+    """Classify alignment against the document's body indent and drop page
+    furniture. ``raw`` is ``(page_no, text, style, x0)`` in page order."""
+    left_edges: Counter = Counter(
+        round(x0) for _page, _text, style, x0 in raw if style == STYLE_REGULAR
+    )
     if not raw:
         return []
     body_x = float(left_edges.most_common(1)[0][0]) if left_edges else raw[0][3]

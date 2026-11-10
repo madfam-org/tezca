@@ -12,6 +12,8 @@ from apps.parsers.rmf.lines import (
     classify_align,
     drop_page_furniture,
     dump_jsonl,
+    extract_lines,
+    lines_from_raw,
     load_jsonl,
     style_from_fonts,
 )
@@ -68,3 +70,44 @@ def test_jsonl_round_trip(tmp_path):
     path = tmp_path / "lines.jsonl"
     dump_jsonl(lines, path)
     assert load_jsonl(path) == lines
+
+
+def test_lines_from_raw_uses_one_document_wide_body_indent():
+    raw = [
+        (1, "Opción de pago", STYLE_BOLD, 128.0),
+        (1, "3.13.7. Para los efectos del artículo 113-E", STYLE_REGULAR, 70.0),
+        (1, "las personas físicas que tributen", STYLE_REGULAR, 128.0),
+        (1, "en el Régimen Simplificado de Confianza", STYLE_REGULAR, 128.0),
+        (1, "Página 1 de 2", STYLE_REGULAR, 267.0),
+        (2, "I. Fracción", STYLE_REGULAR, 170.0),
+        (2, "II. Fracción", STYLE_REGULAR, 170.0),
+        (2, "cierre del párrafo", STYLE_REGULAR, 128.0),
+    ]
+    lines = lines_from_raw(raw)
+    assert [(line.text, line.align) for line in lines] == [
+        ("Opción de pago", ALIGN_BODY),
+        ("3.13.7. Para los efectos del artículo 113-E", ALIGN_HANGING),
+        ("las personas físicas que tributen", ALIGN_BODY),
+        ("en el Régimen Simplificado de Confianza", ALIGN_BODY),
+        ("I. Fracción", ALIGN_INSET),
+        ("II. Fracción", ALIGN_INSET),
+        ("cierre del párrafo", ALIGN_BODY),
+    ]
+    assert lines_from_raw([]) == []
+
+
+def test_extract_lines_reopens_the_pdf_per_chunk(monkeypatch):
+    """Memory stays bounded: each chunk is read from a fresh open."""
+    import apps.parsers.rmf.lines as module
+
+    calls = []
+    monkeypatch.setattr(module, "page_count", lambda _path: 95)
+
+    def fake_raw(_path, first, last):
+        calls.append((first, last))
+        return [(first, f"página {first}", STYLE_REGULAR, 128.0)]
+
+    monkeypatch.setattr(module, "extract_raw", fake_raw)
+    lines = extract_lines("rmf.pdf", chunk_pages=40)
+    assert calls == [(1, 40), (41, 80), (81, 120)]
+    assert [line.page for line in lines] == [1, 41, 81]
