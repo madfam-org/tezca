@@ -5,6 +5,8 @@ from pathlib import Path
 
 import django
 
+from apps.scraper.utils.law_name import normalize_law_name, normalize_short_name
+
 logger = logging.getLogger(__name__)
 
 
@@ -65,6 +67,22 @@ class DatabaseSaver:
         }
         return alias.get(normalized, Law.Status.VIGENTE)
 
+    @staticmethod
+    def _parse_last_reform(value):
+        """``date`` from the pipeline's ``last_reform_date`` (ISO str or date)."""
+        from datetime import date, datetime
+
+        if not value:
+            return None
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
+        try:
+            return date.fromisoformat(str(value))
+        except ValueError:
+            return None
+
     def save_law_version(self, law_metadata, xml_path, pdf_path, quality_metrics=None):
         """
         Save law version to database.
@@ -87,6 +105,14 @@ class DatabaseSaver:
         # status="unknown" for every freshly ingested law.
         status = self._resolve_status(law_metadata.get("status"))
 
+        # The Diputados catalog cell carries the DOF date and a status marker
+        # after the title ("… \t DOF 20/03/2025 \t Nueva reforma"); keep them
+        # out of Law.name whatever the caller passed. Idempotent.
+        name = normalize_law_name(law_metadata["name"])
+        short_name = normalize_short_name(
+            law_metadata.get("short_name"), law_metadata["name"]
+        )
+
         # 1. Get or Create Law
         # Note: tier is hardcoded to "federal" because law_registry.json uses
         # "tier" for thematic categories (fiscal, constitutional, etc.), not
@@ -94,8 +120,8 @@ class DatabaseSaver:
         law, created = Law.objects.get_or_create(
             official_id=law_metadata["id"],
             defaults={
-                "name": law_metadata["name"],
-                "short_name": law_metadata.get("short_name", law_metadata["name"]),
+                "name": name,
+                "short_name": short_name,
                 "category": law_metadata.get("category"),
                 "tier": "federal",
                 "status": status,
@@ -104,8 +130,9 @@ class DatabaseSaver:
 
         if not created:
             # Update metadata if needed
-            law.name = law_metadata["name"]
-            law.short_name = law_metadata.get("short_name", law.short_name)
+            law.name = name
+            if law_metadata.get("short_name") or not law.short_name:
+                law.short_name = short_name
             # Promote an unknown/blank status to the resolved one. Never
             # downgrade an explicitly-curated status back to "unknown".
             if status != Law.Status.UNKNOWN or not law.status:
@@ -124,6 +151,21 @@ class DatabaseSaver:
             )
             return None
 
+        # The registry's publication_date is the law's ORIGINAL DOF date. The
+        # text the pipeline just parsed is the consolidated one, whose PDF
+        # header states the reform it is current to ("Última Reforma DOF
+        # 14-11-2025"). When the pipeline captured that date, the version it
+        # saves is dated by it; the original-publication version, if one
+        # exists, stays as it is and has its validity closed below.
+        last_reform = self._parse_last_reform(law_metadata.get("last_reform_date"))
+        change_summary = None
+        if last_reform and pub_date and last_reform > pub_date:
+            change_summary = (
+                "Texto consolidado. Última reforma DOF "
+                f"{last_reform.strftime('%d-%m-%Y')}."
+            )
+            pub_date = last_reform
+
         # 3. Create Version
         # Check if version exists to avoid duplicates
         version, v_created = LawVersion.objects.get_or_create(
@@ -133,6 +175,7 @@ class DatabaseSaver:
                 "dof_url": law_metadata.get("url"),
                 "xml_file_path": str(xml_path),
                 "valid_from": pub_date,  # Default to publication date
+                "change_summary": change_summary,
             },
         )
 
