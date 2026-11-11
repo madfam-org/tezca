@@ -2,14 +2,14 @@
 
 [[package]]
 name = "amqp"
-version = "5.3.1"
+version = "5.4.2"
 description = "Low-level AMQP client for Python (fork of amqplib)."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "amqp-5.3.1-py3-none-any.whl", hash = "sha256:43b3319e1b4e7d1251833a93d672b4af1e40f3d632d479b98661a95f117880a2"},
-    {file = "amqp-5.3.1.tar.gz", hash = "sha256:cddc00c725449522023bad949f70fff7b48f0b1ade74d170a6f10ab044739432"},
+    {file = "amqp-5.4.2-py3-none-any.whl", hash = "sha256:e6e756b15c89c86818b48a4947a424706238afbf67d457428d3269bc4590db9e"},
+    {file = "amqp-5.4.2.tar.gz", hash = "sha256:9362660c4a31150cf18e78cae2ce8aa1e929fc6c6739e69f6dd5dbea9c3edc82"},
 ]
 
 [package.dependencies]
@@ -105,14 +105,14 @@ lxml = ["lxml"]
 
 [[package]]
 name = "billiard"
-version = "4.2.4"
+version = "4.3.2"
 description = "Python multiprocessing fork with improvements and bugfixes"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "billiard-4.2.4-py3-none-any.whl", hash = "sha256:525b42bdec68d2b983347ac312f892db930858495db601b5836ac24e6477cde5"},
-    {file = "billiard-4.2.4.tar.gz", hash = "sha256:55f542c371209e03cd5862299b74e52e4fbcba8250ba611ad94276b369b6a85f"},
+    {file = "billiard-4.3.2-py3-none-any.whl", hash = "sha256:37735a7b4117aafa73532b3b493db4c02fb85c0e69d5f3447f113fd30ff27872"},
+    {file = "billiard-4.3.2.tar.gz", hash = "sha256:9eb83c99b1cf7acb1fed86c1dfd477157000a1a2c0108005c1e5837b55d2acba"},
 ]
 
 [[package]]
@@ -268,19 +268,19 @@ numpy = {version = ">=1.19.0,<3.0.0", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "boto3"
-version = "1.43.118"
+version = "1.43.125"
 description = "The AWS SDK for Python (Boto3)"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"production\" or extra == \"r2\""
 files = [
-    {file = "boto3-1.43.118-py3-none-any.whl", hash = "sha256:ab8f3d2c622ef039338b4f228d97ea55f1abd573d84bb9b9a5ee8cb6780c0ccd"},
-    {file = "boto3-1.43.118.tar.gz", hash = "sha256:c0620f799e0f0c222ba42c337b65cdbcd3da38a3121187f634d8926cbbb28a9c"},
+    {file = "boto3-1.43.125-py3-none-any.whl", hash = "sha256:101fe3ee99664e671efb9af65c8e98ec0bceddf6de922ea89685da4adc8c6907"},
+    {file = "boto3-1.43.125.tar.gz", hash = "sha256:5a635a0fbbd51f319e465b809cf043668705defbb9dddaf26ae66747f70b2a49"},
 ]
 
 [package.dependencies]
-botocore = ">=1.43.118,<1.44.0"
+botocore = ">=1.43.125,<1.44.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.19.0,<0.20.0"
 
@@ -289,15 +289,15 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.43.118"
+version = "1.43.126"
 description = "Low-level, data-driven core of boto 3."
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"production\" or extra == \"r2\""
 files = [
-    {file = "botocore-1.43.118-py3-none-any.whl", hash = "sha256:a45d7ae570674161e4a3542d8c68633bf7503f92d1de781ef7361b79488eda6f"},
-    {file = "botocore-1.43.118.tar.gz", hash = "sha256:7f3f9d88cc9e847587690f82a42e3c3c292c3026c92c1e60d68a9310018e003f"},
+    {file = "botocore-1.43.126-py3-none-any.whl", hash = "sha256:2f2239a47025a2fa173cd145ab8803ac02b76114864bf5b66475ff1cb88e6b0a"},
+    {file = "botocore-1.43.126.tar.gz", hash = "sha256:96996af07d8b703c3cdf44863f69c0b4b8b2d1cb6976c641986ced3e38c072f3"},
 ]
 
 [package.dependencies]
@@ -306,7 +306,7 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = ">=1.25.4,!=2.2.0,<3"
 
 [package.extras]
-crt = ["awscrt (==0.36.0)"]
+crt = ["awscrt (==0.38.0)"]
 
 [[package]]
 name = "brotli"
@@ -465,55 +465,56 @@ files = [
 
 [[package]]
 name = "celery"
-version = "5.6.3"
+version = "5.7.0"
 description = "Distributed Task Queue."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "celery-5.6.3-py3-none-any.whl", hash = "sha256:0808f42f80909c4d5833202360ffafb2a4f83f4d8e23e1285d926610e9a7afa6"},
-    {file = "celery-5.6.3.tar.gz", hash = "sha256:177006bd2054b882e9f01be59abd8529e88879ef50d7918a7050c5a9f4e12912"},
+    {file = "celery-5.7.0-py3-none-any.whl", hash = "sha256:18310a9c919f9029e4735367484d93e6a25cdfd30afdc474622cc263d9b35f6e"},
+    {file = "celery-5.7.0.tar.gz", hash = "sha256:6a5dfcf6662287204f009a02002b9e66c83d4105e47ebabdc7079108772fc6f0"},
 ]
 
 [package.dependencies]
-billiard = ">=4.2.1,<5.0"
-click = ">=8.1.2,<9.0"
-click-didyoumean = ">=0.3.0"
-click-plugins = ">=1.1.1"
-click-repl = ">=0.2.0"
-kombu = ">=5.6.0"
-python-dateutil = ">=2.8.2"
+billiard = ">=4.3.2"
+click = ">=8.3.1,<9.0"
+click-didyoumean = ">=0.3.1"
+click-plugins = ">=1.1.1.2"
+click-repl = ">=0.4.1"
+kombu = ">=5.7.0"
+python-dateutil = "2.9.0.post0"
 tzlocal = "*"
 vine = ">=5.1.0,<6.0"
 
 [package.extras]
-arangodb = ["pyArango (>=2.0.2)"]
-auth = ["cryptography (==46.0.5)"]
-azureblockblob = ["azure-identity (>=1.19.0)", "azure-storage-blob (>=12.15.0)"]
-brotli = ["brotli (>=1.0.0) ; platform_python_implementation == \"CPython\"", "brotlipy (>=0.7.0) ; platform_python_implementation == \"PyPy\""]
-cassandra = ["cassandra-driver (>=3.25.0,<4)"]
+arangodb = ["pyArango (>=2.1.1)"]
+auth = ["cryptography (==50.0.2)"]
+azureblockblob = ["azure-identity (==1.27.0)", "azure-storage-blob (==12.31.1)"]
+brotli = ["brotli (>=1.2.1) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=1.2.1.0) ; platform_python_implementation == \"PyPy\""]
+cassandra = ["cassandra-driver (==3.30.1)"]
 consul = ["python-consul2 (==0.1.5)"]
 cosmosdbsql = ["pydocumentdb (==2.3.5)"]
 couchbase = ["couchbase (>=3.0.0) ; platform_python_implementation != \"PyPy\" and (platform_system != \"Windows\" or python_version < \"3.10\")"]
-couchdb = ["pycouchdb (==1.16.0)"]
-django = ["Django (>=2.2.28)"]
+couchdb = ["pycouchdb (==1.17.1)"]
+django = ["Django (>=3.2.1)"]
 dynamodb = ["boto3 (>=1.26.143)"]
-elasticsearch = ["elastic-transport (<=9.2.1)", "elasticsearch (<=9.3.0)"]
+elasticsearch = ["elastic-transport (<=9.4.2)", "elasticsearch (<=9.5.1)"]
 eventlet = ["eventlet (>=0.32.0) ; python_version < \"3.10\""]
-gcs = ["google-cloud-firestore (==2.23.0)", "google-cloud-storage (>=2.10.0)", "grpcio (==1.76.0)"]
-gevent = ["gevent (>=1.5.0)"]
+gcpubsub = ["kombu[gcpubsub] (>=5.5.0)"]
+gcs = ["google-cloud-firestore (==2.32.0)", "google-cloud-storage (==3.17.1)", "grpcio (==1.85.1)"]
+gevent = ["gevent (==26.9.0)"]
 librabbitmq = ["librabbitmq (>=2.0.0) ; python_version < \"3.11\""]
-memcache = ["pylibmc (==1.6.3) ; platform_system != \"Windows\""]
+memcache = ["pymemcache (>=4.0.0)"]
 mongodb = ["kombu[mongodb]"]
 msgpack = ["kombu[msgpack]"]
-pydantic = ["pydantic (>=2.12.0a1) ; python_version >= \"3.14\"", "pydantic (>=2.4) ; python_version < \"3.14\""]
-pymemcache = ["python-memcached (>=1.61)"]
+pydantic = ["pydantic (==2.14.1)"]
+pymemcache = ["pymemcache (>=4.0.0)"]
 pyro = ["pyro4 (==4.82) ; python_version < \"3.11\""]
 pytest = ["pytest-celery[all] (>=1.3.0)"]
 redis = ["kombu[redis]"]
 s3 = ["boto3 (>=1.26.143)"]
 slmq = ["softlayer_messaging (>=1.0.3)"]
-solar = ["ephem (==4.2) ; platform_python_implementation != \"PyPy\""]
+solar = ["ephem (==4.2.1) ; platform_python_implementation != \"PyPy\""]
 sqlalchemy = ["kombu[sqlalchemy]"]
 sqs = ["boto3 (>=1.26.143)", "kombu[sqs] (>=5.5.0)", "pycurl (>=7.43.0.5,<7.45.4) ; sys_platform != \"win32\" and platform_python_implementation == \"CPython\" and python_version < \"3.9\"", "pycurl (>=7.45.4) ; sys_platform != \"win32\" and platform_python_implementation == \"CPython\" and python_version >= \"3.9\"", "urllib3 (>=1.26.16)"]
 tblib = ["tblib (==3.2.2)"]
@@ -804,22 +805,23 @@ dev = ["coveralls", "pytest (>=3.6)", "pytest-cov", "wheel"]
 
 [[package]]
 name = "click-repl"
-version = "0.3.0"
+version = "0.4.1"
 description = "REPL plugin for Click"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "click-repl-0.3.0.tar.gz", hash = "sha256:17849c23dba3d667247dc4defe1757fff98694e90fe37474f3feebb69ced26a9"},
-    {file = "click_repl-0.3.0-py3-none-any.whl", hash = "sha256:fb7e06deb8da8de86180a33a9da97ac316751c094c6899382da7feeeeb51b812"},
+    {file = "click_repl-0.4.1-py3-none-any.whl", hash = "sha256:5cb10881d4c5ebaa8695eceb69911af3062ee78342812b713564b17aad333eb5"},
+    {file = "click_repl-0.4.1.tar.gz", hash = "sha256:c32a1cf6f95e5bd6e92076f81ce24eafd33f2f0ffb0135887e335b8e446d1c0b"},
 ]
 
 [package.dependencies]
-click = ">=7.0"
-prompt-toolkit = ">=3.0.36"
+click = ">=7.0,<9.0"
+prompt_toolkit = ">=3.0.36"
+typing-extensions = ">=4.7.0"
 
 [package.extras]
-testing = ["pytest (>=7.2.1)", "pytest-cov (>=4.0.0)", "tox (>=4.4.3)"]
+testing = ["flake8 (>=6.0.0)", "mypy (>=1.9.0)", "pytest (>=7.2.1)", "pytest-cov (>=4.0.0)", "tox (>=4.4.3)"]
 
 [[package]]
 name = "cloudpathlib"
@@ -1256,23 +1258,22 @@ sidecar = ["drf-spectacular-sidecar"]
 
 [[package]]
 name = "ebooklib"
-version = "0.20"
+version = "0.21"
 description = "Ebook library which can handle EPUB2/EPUB3 format"
 optional = true
-python-versions = ">=2.7"
+python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"export\" or extra == \"production\""
 files = [
-    {file = "ebooklib-0.20-py3-none-any.whl", hash = "sha256:fff5322517a37e31c972d27be7d982cc3928c16b3dcc5fd7e8f7c0f5d7bcf42b"},
-    {file = "ebooklib-0.20.tar.gz", hash = "sha256:35e2f9d7d39907be8d39ae2deb261b19848945903ae3dbb6577b187ead69e985"},
+    {file = "ebooklib-0.21-py3-none-any.whl", hash = "sha256:8cb417bed66567210661e6ef203f6310f394ad4a282f385a07320cbc09906c30"},
+    {file = "ebooklib-0.21.tar.gz", hash = "sha256:fa815d544f722321c9fd31d8957473b2617027d3091431aa690d6dd93f785222"},
 ]
 
 [package.dependencies]
 lxml = "*"
-six = "*"
 
 [package.extras]
-dev = ["pytest", "pytest-cov", "sphinx"]
+dev = ["lxml-stubs", "pytest", "pytest-cov", "ruff", "sphinx", "ty", "types-Pygments"]
 docs = ["sphinx"]
 test = ["pytest", "pytest-cov"]
 
@@ -1557,39 +1558,39 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "kombu"
-version = "5.6.2"
+version = "5.7.0"
 description = "Messaging library for Python."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "kombu-5.6.2-py3-none-any.whl", hash = "sha256:efcfc559da324d41d61ca311b0c64965ea35b4c55cc04ee36e55386145dace93"},
-    {file = "kombu-5.6.2.tar.gz", hash = "sha256:8060497058066c6f5aed7c26d7cd0d3b574990b09de842a8c5aaed0b92cc5a55"},
+    {file = "kombu-5.7.0-py3-none-any.whl", hash = "sha256:dede73bff4c89175be382c4203d2f167cf7017c384396ec75c36a1b5678f1587"},
+    {file = "kombu-5.7.0.tar.gz", hash = "sha256:31e62fdfd2381caa3422f8e02b84a491d9a2180ddda74507b57f4cb1e1c2c2c9"},
 ]
 
 [package.dependencies]
-amqp = ">=5.1.1,<6.0.0"
-packaging = "*"
-tzdata = ">=2025.2"
+amqp = ">=5.4.2"
+tzdata = {version = ">=2026.2", markers = "sys_platform == \"win32\""}
 vine = "5.1.0"
 
 [package.extras]
-azureservicebus = ["azure-servicebus (>=7.10.0)"]
-azurestoragequeues = ["azure-identity (>=1.12.0)", "azure-storage-queue (>=12.6.0)"]
-confluentkafka = ["confluent-kafka (>=2.2.0)"]
+azureservicebus = ["azure-servicebus (==7.15.0)"]
+azurestoragequeues = ["azure-identity (==1.27.0)", "azure-storage-queue (==12.18.0)"]
+confluentkafka = ["confluent-kafka (==2.15.1)"]
 consul = ["python-consul2 (==0.1.5)"]
-gcpubsub = ["google-cloud-monitoring (>=2.16.0)", "google-cloud-pubsub (>=2.18.4)", "grpcio (==1.75.1)", "protobuf (==6.32.1)"]
+gcpubsub = ["google-cloud-monitoring (==2.32.0)", "google-cloud-pubsub (==2.43.0)", "grpcio (==1.85.1)", "protobuf (==7.36.2)"]
 librabbitmq = ["librabbitmq (>=2.0.0) ; python_version < \"3.11\""]
-mongodb = ["pymongo (==4.15.3)"]
-msgpack = ["msgpack (==1.1.2)"]
+mongodb = ["pymongo (==4.18.3)"]
+msgpack = ["msgpack (==1.2.3)"]
+pgmq = ["pgmq (==1.1.4)"]
 pyro = ["pyro4 (==4.82)"]
 qpid = ["qpid-python (==1.36.0.post1)", "qpid-tools (==1.36.0.post1)"]
-redis = ["redis (>=4.5.2,!=4.5.5,!=5.0.2,<6.5)"]
+redis = ["packaging (==26.3)", "redis (>=6.4.0,<9.0.0)"]
 slmq = ["softlayer_messaging (>=1.0.3)"]
-sqlalchemy = ["sqlalchemy (>=1.4.48,<2.1)"]
+sqlalchemy = ["sqlalchemy (>=1.4.54,<2.2)"]
 sqs = ["boto3 (>=1.26.143)", "pycurl (>=7.43.0.5) ; sys_platform != \"win32\" and platform_python_implementation == \"CPython\"", "urllib3 (>=1.26.16)"]
-yaml = ["PyYAML (>=3.10)"]
-zookeeper = ["kazoo (>=2.8.0)"]
+yaml = ["PyYAML (==6.0.3)"]
+zookeeper = ["kazoo (==2.11.0)"]
 
 [[package]]
 name = "langcodes"
@@ -2282,15 +2283,15 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "posthog"
-version = "7.75.8"
+version = "7.84.2"
 description = "Integrate PostHog into any python application."
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"analytics\" or extra == \"production\""
 files = [
-    {file = "posthog-7.75.8-py3-none-any.whl", hash = "sha256:1afb8180ec41b527c278dfe88a04a0123953ab10136386f6839607d8337aca10"},
-    {file = "posthog-7.75.8.tar.gz", hash = "sha256:869b46972f2037b851e21cd2438651484469bcd44e66bb5dc87980aa7067a283"},
+    {file = "posthog-7.84.2-py3-none-any.whl", hash = "sha256:a3765d4f3078bb3e1eba755885bb7b284353c8d02599cf906f4072c22a5759cc"},
+    {file = "posthog-7.84.2.tar.gz", hash = "sha256:48080116094c12423c50b2d916d15a000b584b0bd2595649d7caacdfbe41db51"},
 ]
 
 [package.dependencies]
@@ -2303,8 +2304,9 @@ typing-extensions = ">=4.2.0"
 async = ["httpx (>=0.27.0,<1.0)"]
 dev = ["django-stubs", "griffe", "lxml", "mypy", "mypy-baseline", "packaging", "pre-commit", "pydantic (>=2.12.0)", "ruff", "setuptools", "tomli", "tomli_w", "twine", "types-requests", "types-setuptools", "wheel"]
 langchain = ["langchain (>=1.3.9)"]
+metrics = ["opentelemetry-exporter-otlp-proto-http (>=1.39.0)", "opentelemetry-instrumentation (>=0.60b0)", "opentelemetry-instrumentation-system-metrics (>=0.60b0)", "opentelemetry-sdk (>=1.39.0)"]
 otel = ["opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-sdk (>=1.20.0)"]
-test = ["anthropic (>=0.72)", "celery (>=5.3,<6)", "claude-agent-sdk", "coverage", "django (>=5.2.15,<6.0)", "djangorestframework (>=3.15,<4)", "fastapi (>=0.115,<1)", "fastmcp (>=2.0)", "flask (>=2.2)", "freezegun (==1.5.1)", "gevent (>=25.4.1) ; implementation_name == \"cpython\"", "google-genai", "jsonschema (>=4.0)", "langchain (>=1.3.9)", "langchain-anthropic (>=1.0)", "langchain-community (>=0.4)", "langchain-core (>=1.0)", "langchain-openai (>=1.1.14)", "langgraph (>=1.0)", "langgraph-checkpoint (>=4.1.1)", "mcp (>=1.28.1,<2)", "openai-agents (>=0.18)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-instrumentation-celery (>=0.41b0)", "opentelemetry-sdk (>=1.20.0)", "parameterized (>=0.8.1)", "pydantic (>=2.12.0)", "pytest", "pytest-asyncio", "pytest-bdd (>=8.1.0)", "pytest-timeout", "python-dateutil (>=2.9.0.post0)", "tiktoken (>=0.12.0)", "tzdata", "zstandard (>=0.23.0)"]
+test = ["anthropic (>=0.72)", "celery (>=5.3,<6)", "claude-agent-sdk", "coverage", "django (>=5.2.15,<6.0)", "djangorestframework (>=3.15,<4)", "fastapi (>=0.115,<1)", "fastmcp (>=2.0)", "flask (>=2.2)", "freezegun (==1.5.1)", "gevent (>=25.4.1) ; implementation_name == \"cpython\"", "google-genai", "jsonschema (>=4.0)", "langchain (>=1.3.9)", "langchain-anthropic (>=1.0)", "langchain-community (>=0.4)", "langchain-core (>=1.0)", "langchain-openai (>=1.1.14)", "langgraph (>=1.0)", "langgraph-checkpoint (>=4.1.1)", "mcp (>=1.28.1,<2)", "openai-agents (>=0.18)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0)", "opentelemetry-instrumentation (>=0.60b0)", "opentelemetry-instrumentation-aiohttp-client (>=0.60b0)", "opentelemetry-instrumentation-celery (>=0.41b0)", "opentelemetry-instrumentation-django (>=0.60b0)", "opentelemetry-instrumentation-flask (>=0.60b0)", "opentelemetry-instrumentation-httpx (>=0.60b0)", "opentelemetry-instrumentation-requests (>=0.60b0)", "opentelemetry-instrumentation-sqlite3 (>=0.60b0)", "opentelemetry-instrumentation-system-metrics (>=0.60b0)", "opentelemetry-instrumentation-wsgi (>=0.60b0)", "opentelemetry-sdk (>=1.20.0)", "parameterized (>=0.8.1)", "pydantic (>=2.12.0)", "pytest", "pytest-asyncio", "pytest-bdd (>=8.1.0)", "pytest-timeout", "python-dateutil (>=2.9.0.post0)", "tiktoken (>=0.12.0)", "tzdata", "zstandard (>=0.23.0)"]
 zstd = ["zstandard (>=0.23.0)"]
 
 [[package]]
@@ -2750,25 +2752,25 @@ Pillow = ">=8.0.0"
 
 [[package]]
 name = "pytest"
-version = "9.1.1"
+version = "9.2.0"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest-9.1.1-py3-none-any.whl", hash = "sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c"},
-    {file = "pytest-9.1.1.tar.gz", hash = "sha256:1088fbde8f2b49d95a549a195707afa7a76a3ce9bcadc26b6d71f0ffda5fe313"},
+    {file = "pytest-9.2.0-py3-none-any.whl", hash = "sha256:07acdcf88ec174f907dc01af70bf52d49b014bbab03faeeade31c96b18c2e588"},
+    {file = "pytest-9.2.0.tar.gz", hash = "sha256:97c4f3b1f3c7414aa36465e09b8220f1d03627993bd51b1282e193753c80557b"},
 ]
 
 [package.dependencies]
 colorama = {version = ">=0.4", markers = "sys_platform == \"win32\""}
-iniconfig = ">=1.0.1"
-packaging = ">=22"
-pluggy = ">=1.5,<2"
-pygments = ">=2.7.2"
+iniconfig = ">=2"
+packaging = ">=24"
+pluggy = ">=1.6,<2"
+pygments = ">=2.15"
 
 [package.extras]
-dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests", "setuptools", "xmlschema"]
+dev = ["argcomplete", "asynctest ; python_version < \"3.11\"", "attrs (>=23.1)", "coverage (>=7.5)", "hypothesis (>=6.75)", "mock", "numpy (>=1.26)", "pexpect (>=4.9)", "pytest-xdist (>=3.5)", "pyyaml", "requests", "setuptools", "xmlschema"]
 
 [[package]]
 name = "pytest-cov"
@@ -3221,15 +3223,15 @@ crt = ["botocore[crt] (>=1.37.4,<2.0a0)"]
 
 [[package]]
 name = "sentry-sdk"
-version = "2.73.0"
+version = "2.74.0"
 description = "Python client for Sentry (https://sentry.io)"
 optional = true
 python-versions = ">=3.6"
 groups = ["main"]
 markers = "extra == \"production\" or extra == \"sentry\""
 files = [
-    {file = "sentry_sdk-2.73.0-py3-none-any.whl", hash = "sha256:0bcfa6928ea5adbb89591858b514d27adac27c7a3cccc31b20ed10e0b09eda9e"},
-    {file = "sentry_sdk-2.73.0.tar.gz", hash = "sha256:4a2ab97b16e4693c325ab361c7bbbb346dbc7d0bc0150922d795a25bac8d5280"},
+    {file = "sentry_sdk-2.74.0-py3-none-any.whl", hash = "sha256:40b205af015649df3ec9986e057ce24ce85956bee3fb75efa72c93aa7036bdff"},
+    {file = "sentry_sdk-2.74.0.tar.gz", hash = "sha256:dd91d75aacaef636006b579ac3ddb2fdbc9dce35f00f4b353b6b1b110c6b256a"},
 ]
 
 [package.dependencies]
@@ -3826,14 +3828,14 @@ typing-extensions = ">=4.12.0"
 
 [[package]]
 name = "tzdata"
-version = "2025.3"
+version = "2026.6"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
 groups = ["main"]
 files = [
-    {file = "tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1"},
-    {file = "tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"},
+    {file = "tzdata-2026.6-py2.py3-none-any.whl", hash = "sha256:0a10eec6e13ef16b627fabed9a5f2ba61a62b1c67f327305f4e7e412a70b4aec"},
+    {file = "tzdata-2026.6.tar.gz", hash = "sha256:85d2cd9c09f81f0bb29db27759fc83af4f1e620efb814f8c5bf8b4cc4feece6d"},
 ]
 
 [[package]]
@@ -4112,4 +4114,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "93d5316de02c511210b726e5400118094dabe56f8f502a416833460cf07836fa"
+content-hash = "57b1210a43b5f05395d5f4634eb3b707a23c9867b06409ee9552b6baf40dc99e"
