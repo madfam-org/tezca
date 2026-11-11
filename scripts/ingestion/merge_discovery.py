@@ -1,5 +1,13 @@
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
+from apps.scraper.utils.law_name import (  # noqa: E402
+    build_short_name,
+    parse_catalog_title,
+)
 
 
 def merge_registries():
@@ -48,11 +56,15 @@ def merge_registries():
             new_law["status"] = "discovered"
             new_law["tier"] = "general"
             new_law["category"] = "uncategorized"
-            new_law["short_name"] = (
-                new_law["name"][:50] + "..."
-                if len(new_law["name"]) > 50
-                else new_law["name"]
-            )
+            # discovered_laws.json written before the catalog spider cleaned
+            # its titles still carries "<title> \t DOF dd/mm/yyyy \t Nueva
+            # reforma" names; normalise here too so they never reach the
+            # registry.
+            parsed = parse_catalog_title(new_law["name"])
+            new_law["name"] = parsed.name
+            if parsed.publication_date and not new_law.get("publication_date"):
+                new_law["publication_date"] = parsed.publication_date
+            new_law["short_name"] = build_short_name(parsed.name)
 
             registry["federal_laws"].append(new_law)
             added_count += 1

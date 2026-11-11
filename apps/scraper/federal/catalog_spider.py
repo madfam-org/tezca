@@ -5,6 +5,8 @@ from pathlib import Path
 import requests
 from lxml import html
 
+from apps.scraper.utils.law_name import parse_catalog_title
+
 URL = "https://www.diputados.gob.mx/LeyesBiblio/index.htm"
 BASE_URL = "https://www.diputados.gob.mx/LeyesBiblio/"
 
@@ -81,14 +83,22 @@ def fetch_catalog(local_file=None):
         filename = Path(href).name
         slug = filename.lower().replace(".pdf", "")
 
-        laws.append(
-            {
-                "id": slug,
-                "name": title.replace("\r", " ").replace("\n", " ").strip(),
-                "url": clean_url,
-                "remote_path": href,
-            }
-        )
+        # The index cell prints the title, its DOF publication date and a
+        # status marker ("Nueva reforma") separated by tabs and line breaks.
+        # Keep only the title as the name; the date and the markers are
+        # recorded in their own fields instead of inside the name.
+        parsed = parse_catalog_title(title)
+        entry = {
+            "id": slug,
+            "name": parsed.name,
+            "url": clean_url,
+            "remote_path": href,
+        }
+        if parsed.publication_date:
+            entry["publication_date"] = parsed.publication_date
+        if parsed.notes:
+            entry["catalog_notes"] = parsed.notes
+        laws.append(entry)
 
     return laws
 

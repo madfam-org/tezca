@@ -30,6 +30,12 @@ from apps.api.transitorios import (
     resolve_article_ids,
 )
 from apps.api.utils.paths import ES_HOST, read_data_content
+from apps.parsers.diputados_pdf import (
+    find_page_totals,
+    strip_furniture,
+    strip_trailing_decree_stubs,
+    trim_decree_tail,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -361,11 +367,38 @@ class Command(BaseCommand):
                 }
             )
 
-        return resolve_article_ids(
+        resolved = resolve_article_ids(
             articles,
             has_numeric_articles,
             warn=lambda msg: self.stderr.write(f"{law_official_id}: {msg}"),
         )
+        return self._clean_article_texts(resolved)
+
+    @staticmethod
+    def _clean_article_texts(articles):
+        """Remove source furniture that older XMLs carry inside article text.
+
+        XMLs generated before the pipeline stripped it keep the Cámara de
+        Diputados page header/footer in the middle of articles, the decree
+        closing (signatures, promulgation, the next reform decree's preamble)
+        on the last transitorio of each block, and ``Artículo Cuarto.- ……..``
+        stubs on the last body article. Cleaning here means a re-index of an
+        existing XML is enough — no re-download. Runs AFTER id resolution,
+        which reads the ordinal headings and merges wrapped fragments. An
+        article whose text is nothing but furniture is dropped.
+        """
+        page_totals = find_page_totals(art["text"] for art in articles)
+        cleaned = []
+        for art in articles:
+            text = strip_furniture(art["text"], page_totals)
+            if art.get("is_transitorio"):
+                text = trim_decree_tail(text)
+            else:
+                text = strip_trailing_decree_stubs(text)
+            if not text:
+                continue
+            cleaned.append({**art, "text": text})
+        return cleaned
 
     def _index_law_doc(self, law, version, article_count, es, dry_run=False):
         """Index the law-level document into the laws index."""

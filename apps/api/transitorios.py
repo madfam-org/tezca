@@ -283,7 +283,11 @@ def resolve_article_ids(articles, has_numeric_articles, warn=None):
                     f"article '{aid}' is a fragment of transitorio "
                     f"'{previous['article_id']}'; merging its text"
                 )
-                previous["text"] = f"{previous['text']}\n\n{art['text']}"
+                # The split fell inside a sentence ("…Octavo y" / "Décimo
+                # Tercero del presente Decreto…"): join it back with a space.
+                # A paragraph break is only kept after a finished sentence.
+                glue = "\n\n" if re.search(r"[.:;]\s*$", previous["text"]) else " "
+                previous["text"] = f"{previous['text'].rstrip()}{glue}{art['text']}"
                 continue
 
         if aid in by_id:

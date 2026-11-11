@@ -13,6 +13,119 @@ Both mutate production data (Elasticsearch documents / the Postgres `tezca` DB)
 and are gated behind the guarded legal-data-ops workflow. Run them from an
 operator context, Enclii-first, never as an unattended side effect of a merge.
 
+## Ingestion clean-up (2026-11-11) — names, page furniture, version date
+
+**Observed (read-only `GET`s against `api.tezca.mx`, 2026-11-11).** `lfpdppp`
+still lists 109 entries: the 2026-09-23 steps below were never run. Three
+further defects, none specific to this law:
+
+- **Name.** `Law.name` is the Diputados index cell, not the title:
+  `"LEY Federal de … Particulares \t\t\t\t \t\t\t\tDOF 20/03/2025 \t\t\t\t \t\t\t\tNueva reforma"`.
+  `catalog_spider` took the cell's whole text; `merge_discovery` copied it into
+  `data/law_registry.json` (287 of 341 entries) with `category: uncategorized`
+  and `status: discovered`. `GET /laws/?tier=federal&category=uncategorized&status=unknown`
+  → **287**, the same set. The date in the cell is the law's ORIGINAL DOF
+  publication date (already in the registry's `publication_date`), not its
+  latest reform.
+- **Page furniture.** `IngestionPipeline._extract_pdf_text` joined the PDF
+  pages as extracted, so `N de M` plus the «CÁMARA DE DIPUTADOS … Secretaría de
+  Servicios Parlamentarios» header sit inside the article that straddles each
+  page break (28 of the 109 `lfpdppp` entries). Every Diputados PDF has that
+  header, so expect every law ingested from LeyesBiblio to carry it; the exact
+  count needs step 1 (the public search API has no exact-phrase query).
+- **Version date.** The only `LawVersion` is `2025-03-20` (the registry's
+  publication date) although the text is current to «Última Reforma DOF
+  14-11-2025». Nothing read the header.
+
+**What changed in code.** `apps/scraper/utils/law_name.py` splits the catalog
+cell (used by the spider, `merge_discovery`, `LawRegistry` on load and
+`DatabaseSaver`); `apps/parsers/diputados_pdf.py` strips the furniture per page
+at extraction and from already-stored text at index time, reads «Última
+Reforma DOF», and cuts the decree closing off the last transitorio of each
+block; `DatabaseSaver` dates the version it saves by the last reform (the
+original-publication version is kept and its `valid_to` closed); new command
+`clean_ingestion_debris` (dry run by default).
+
+**Run, in order (operator; production writes), after the image with this
+change is live.** Same invocation form as below — see
+[How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
+
+```bash
+# 1. Read-only report: laws with name debris (DB), with -dupN article ids and
+#    with page furniture (Elasticsearch). Writes nothing.
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --law-id lfpdppp'
+#    expect: "Would rename lfpdppp: 'LEY Federal de Protección de Datos Personales en Posesión de los Particulares'"
+#    and "Dry run: nothing written". Keep the three counts: they size steps 5–6.
+
+# 2. Name (DB) for lfpdppp.
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --law-id lfpdppp --apply --skip-es'
+
+# 3. Status (DB): the sync_law_status pair from the 2026-09-23 section, step 1.
+
+# 4. Re-ingest lfpdppp: downloads the PDF, extracts without furniture, saves the
+#    2025-11-14 version, then re-indexes in place (prunes the stale docs).
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"lfpdppp\", index=False))"'
+#    expect: 'status': 'completed' and 'quarantined': False. Otherwise STOP.
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\", dry_run=True))"'
+#    expect: 'Dry run: Would index 88 articles for lfpdppp' (1–64, T-1…T-20,
+#    T-R2-1…T-R2-4). A different count: STOP and read the parse before indexing.
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\"))"'
+#    expect: 'Connected to Elasticsearch at …' and 'Pruned … stale article docs for lfpdppp'.
+```
+
+If the download is what fails, skip the re-ingest: step 4's two `reindex_law`
+calls alone already serve clean text and `T-…` ids from the existing XML (the
+indexer strips the furniture); only the version date stays `2025-03-20`.
+
+Corpus-wide, once `lfpdppp` passes acceptance:
+
+```bash
+# 5. Names (DB), every law the report counted as repairable: preview, then apply.
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --skip-es'
+ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --apply --skip-es'
+# 6. Elasticsearch: law names and article text live in the article docs, so the
+#    renamed / furniture-carrying laws must be re-indexed — `reindex_law` per
+#    law for a short list, or the full rebuild of §1B
+#    (`index_laws --all --reindex`, new index + alias swap; never with --law-id).
+# 7. Re-run step 1: all three counts should be 0 (names "left for review" aside).
+```
+
+**Acceptance** (in addition to the block further down):
+
+```bash
+curl -s https://api.tezca.mx/api/v1/laws/lfpdppp/ | python3 -c "
+import sys, json; d = json.load(sys.stdin)
+print(repr(d['name'])); print('status', d['status']); print([v['publication_date'] for v in d['versions']])"
+curl -s 'https://api.tezca.mx/api/v1/laws/lfpdppp/articles/?page_size=500' | python3 -c "
+import sys, json; a = json.load(sys.stdin)['articles']
+print('total', len(a), '| furniture in', sum('Servicios Parlamentarios' in x['text'] for x in a))
+print('T-20 ends:', [x['text'][-60:] for x in a if x['article_id'] == 'T-20'])"
+```
+
+Pass = name without tabs/date/marker; status `vigente`; versions
+`['2025-11-14', '2025-03-20']`; total 88; furniture in 0; `T-20` ends at
+«…tribunales Colegiados de Circuito.» (no signatures).
+
+**Not changed, on purpose.**
+
+- `category: uncategorized` for the 287 catalog laws. Nothing assigns a
+  category to them after `merge_discovery`; choosing the taxonomy is an owner
+  decision.
+- Both `LawVersion` rows of a re-ingested law point at the same XML file
+  (`mx-fed-<id>-v2.xml` is overwritten on every ingest), so the older row has
+  no text of its own. Keeping one file per version needs a storage-naming
+  decision, not made here.
+- `reg_reg_lfpdppp` IS in the corpus (149 docs, grade A, version 2011-12-21).
+  The failed `job-ingest-reglamento-lfpdppp-…` Job predates the 2026-08-27
+  `apps/manage.py` → `manage.py` correction; no source in this repo generates
+  that path any more; the Job object is a leftover.
+- NOM-004-SSA3-2012 is absent because `data/noms/discovered_noms.json` holds
+  only what the DOF search scrape returned (161 NOMs, none from SSA3 in 2012),
+  and each scrape overwrites the file, so a hand-added entry would not last.
+  `python -m apps.scraper.federal.nom_scraper --year-range 2012 2012` followed
+  by `python manage.py ingest_noms --dry-run` is the existing path; it creates
+  the `Law` row (findable by name), not searchable article text.
+
 ## #222 follow-up (2026-09-23) — what is live, what to run now
 
 **Observed (read-only `GET`s against `api.tezca.mx`, 2026-09-23).**

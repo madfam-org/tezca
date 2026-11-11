@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from apps.scraper.utils.law_name import normalize_law_name, normalize_short_name
+
 
 class LawRegistry:
     """
@@ -49,7 +51,9 @@ class LawRegistry:
 
         self.registry_path = Path(registry_path)
         self.data = self._load_registry()
-        self.laws = self.data.get("federal_laws", [])
+        self.laws = [
+            self._clean_names(law) for law in self.data.get("federal_laws", [])
+        ]
 
         if include_reglamentos:
             self.laws.extend(self._load_reglamentos())
@@ -61,6 +65,28 @@ class LawRegistry:
 
         with open(self.registry_path, "r", encoding="utf-8") as f:
             return json.load(f)
+
+    @staticmethod
+    def _clean_names(law: Dict) -> Dict:
+        """Strip Diputados-catalog debris from an entry's name fields.
+
+        287 registry entries were merged from the catalog with the index
+        cell's whole text as the name ("<title> \\t DOF 20/03/2025 \\t Nueva
+        reforma"). Normalising on load means every consumer — the pipeline,
+        ``DatabaseSaver``, ``sync_law_status`` — sees the clean title without
+        rewriting the JSON file. Idempotent; clean entries are untouched.
+        """
+        raw_name = law.get("name")
+        if not isinstance(raw_name, str):
+            return law
+        clean = normalize_law_name(raw_name)
+        if clean == raw_name:
+            return law
+        cleaned = dict(law)
+        cleaned["name"] = clean
+        if "short_name" in law:
+            cleaned["short_name"] = normalize_short_name(law["short_name"], raw_name)
+        return cleaned
 
     def _load_reglamentos(self) -> List[Dict]:
         """Load discovered reglamentos and normalise to registry format."""
