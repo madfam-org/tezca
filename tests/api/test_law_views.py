@@ -739,6 +739,38 @@ class TestSuggestWithES:
         assert len(suggestions) == 1
         assert suggestions[0]["id"] == "cpeum"
 
+    @patch("apps.api.law_views.es_client")
+    def test_suggest_falls_back_when_index_has_no_completion_field(self, mock_es):
+        """A 400 from ES (index without the `suggest` mapping) must not be a 500."""
+        from elasticsearch.exceptions import BadRequestError
+
+        _create_law(official_id="lfpdppp", name="Ley Federal de Proteccion de Datos")
+        mock_es.ping.return_value = True
+        mock_es.search.side_effect = BadRequestError(
+            "search_phase_execution_exception",
+            MagicMock(status=400),
+            {"error": "no mapping found for field [suggest]"},
+        )
+
+        response = self.client.get(self.url, {"q": "datos"})
+
+        assert response.status_code == 200
+        ids = [s["id"] for s in response.json()["suggestions"]]
+        assert ids == ["lfpdppp"]
+
+    @patch("apps.api.law_views.es_client")
+    def test_suggest_falls_back_when_hit_lacks_source_keys(self, mock_es):
+        _create_law(official_id="amparo", name="Ley de Amparo")
+        mock_es.ping.return_value = True
+        mock_es.search.return_value = {
+            "suggest": {"law-suggest": [{"options": [{"_source": {}}]}]}
+        }
+
+        response = self.client.get(self.url, {"q": "amparo"})
+
+        assert response.status_code == 200
+        assert [s["id"] for s in response.json()["suggestions"]] == ["amparo"]
+
 
 # ---------------------------------------------------------------------------
 # laws_exist — batch existence check

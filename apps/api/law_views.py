@@ -35,6 +35,7 @@ def _natural_sort_key(text: str):
     return [int(p) if p.isdigit() else p.lower() for p in parts]
 
 
+from elasticsearch.exceptions import ApiError
 from elasticsearch.exceptions import ConnectionError as ESConnectionError
 from elasticsearch.exceptions import ConnectionTimeout, NotFoundError
 
@@ -682,7 +683,11 @@ def suggest(request):
                 response = Response({"suggestions": suggestions})
                 response["Cache-Control"] = "public, max-age=300"
                 return response
-    except (ESConnectionError, ConnectionTimeout, NotFoundError):
+    except (ApiError, ESConnectionError, ConnectionTimeout, KeyError):
+        # ApiError covers a 400 from an index without the completion field
+        # ("no mapping found for field [suggest]") as well as a missing index;
+        # KeyError covers a hit without the expected _source keys. In every
+        # case the DB answers instead of a 500.
         logger.warning("ES suggest failed, falling back to DB", exc_info=True)
 
     # Fallback to DB
