@@ -22,6 +22,8 @@ from lxml import etree
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from apps.parsers.diputados_pdf import strip_trailing_decree_stubs, trim_decree_tail
+
 # Import pattern library
 from apps.parsers.patterns import (
     compile_article_patterns,
@@ -234,7 +236,10 @@ class AkomaNtosoGeneratorV2:
                         content_lines.append(next_line)
                     j += 1
 
-                full_content = "\n".join(content_lines)
+                # The last body article of a law published inside a
+                # multi-article decree is followed by the ellipsis stubs of
+                # the decree's other articles ("Artículo Cuarto.- ……..").
+                full_content = strip_trailing_decree_stubs("\n".join(content_lines))
 
                 # Extract reform metadata
                 cleaned_content, reforms = extract_reforms(full_content)
@@ -341,7 +346,10 @@ class AkomaNtosoGeneratorV2:
             content_end = (
                 markers[idx + 1].start() if idx + 1 < len(markers) else len(segment)
             )
-            content = segment[match.end() : content_end].strip()
+            # The last transitorio of a decree runs into the signatures, the
+            # promulgation and — in consolidated laws — the next reform
+            # decree's preamble. None of that is the transitorio's text.
+            content = trim_decree_tail(segment[match.end() : content_end].strip())
             # Within one block a repeated number is a stray heading; keep the
             # first occurrence so ids stay stable.
             if number in seen_numbers:

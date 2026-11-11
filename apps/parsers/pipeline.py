@@ -37,6 +37,11 @@ _OJN_MAX_RETRIES = 5
 _DEFAULT_TIMEOUT = 30
 
 from apps.parsers.akn_generator_v2 import AkomaNtosoGeneratorV2
+from apps.parsers.diputados_pdf import (
+    extract_last_reform_date,
+    join_pages,
+    strip_furniture,
+)
 from apps.parsers.quality import QualityCalculator, QualityMetrics
 
 
@@ -159,6 +164,11 @@ class IngestionPipeline:
         self.text_dir.mkdir(parents=True, exist_ok=True)
         self.xml_dir.mkdir(parents=True, exist_ok=True)
 
+        # «Última Reforma DOF» date read from each PDF's page header, keyed by
+        # file name. The header is stripped from the extracted text, so the
+        # date has to be captured during extraction.
+        self._last_reform_by_file: Dict[str, Any] = {}
+
         # Components
         self.parser = AkomaNtosoGeneratorV2()
         self.quality_calc = QualityCalculator()
@@ -212,6 +222,20 @@ class IngestionPipeline:
                 result.text_path = text_path
                 result.stages_completed.append("extract")
                 print(f"✅ Extracted text: {len(text):,} characters")
+
+                # Text cached by an earlier run (or a non-PDF source) may still
+                # carry the Cámara de Diputados page furniture; read the
+                # reform date from it, then remove it. No-op on clean text.
+                last_reform = self._last_reform_by_file.get(
+                    pdf_path.name
+                ) or extract_last_reform_date(text)
+                text = strip_furniture(text)
+                if last_reform is not None:
+                    law_metadata = {
+                        **law_metadata,
+                        "last_reform_date": last_reform.isoformat(),
+                    }
+                    print(f"✅ Última reforma DOF: {last_reform.isoformat()}")
 
                 # Stage 3: Parse to XML
                 xml_path = self._parse_to_xml(law_metadata, text)
@@ -474,7 +498,14 @@ class IngestionPipeline:
                 if text:
                     text_parts.append(text)
 
-        full_text = "\n".join(text_parts)
+        # Cámara de Diputados PDFs repeat a header and an "N de M" footer on
+        # every page. Joined as extracted, they land inside whichever article
+        # straddles the page break. The header also states the reform the
+        # consolidated text is current to, so read that first.
+        last_reform = extract_last_reform_date("\n".join(text_parts[:2]))
+        if last_reform is not None:
+            self._last_reform_by_file[Path(pdf_path).name] = last_reform
+        full_text = join_pages(text_parts)
 
         if len(full_text.strip()) >= MIN_TEXT_LENGTH:
             print(f"   📄 Extracted via pdfplumber ({len(full_text):,} chars)")
