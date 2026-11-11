@@ -1,0 +1,112 @@
+# Runbook: LISR lettered articles (113-A..J, 27 fr. IX, 82-Bis/Ter/Quáter)
+
+Operator runbook for the side-effectful re-parse and re-index that #291
+deliberately does **not** perform. #291 fixed the parser and indexer code
+and shipped with the normal API deploy. The **served LISR text stays wrong
+until LISR is re-parsed and re-indexed.**
+
+Consumer: Money Moves (internal-devops RFC 0052, ruling R7). Its research
+workstream WS-1 needs LISR 113-E (fr. IV is the RESICO exclusion) and Art. 27
+fr. IX (requirements for administrator-fee deductions) served as their own
+articles. Until this runbook has run, Money Moves cites dated primary sources
+from its own catalog. R7 keeps law-version dating (`valid_from` null) and RMF
+ingestion out of scope.
+
+> **Guard.** Re-parsing and indexing are legal-data operations. Run them only
+> on an explicit operator request. Locally they are refused unless
+> `LOCAL_LEGAL_DATA_OPS=yes` is set (`scripts/require-local-legal-data-ops.mjs`).
+> In-cluster execution goes through `enclii exec tezca-api -- …` (Enclii first).
+> Re-parse and re-index are idempotent.
+
+---
+
+## State before the fix (measured 2026-11-09)
+
+| Surface | What it serves |
+| --- | --- |
+| `GET /api/v1/laws/lisr/articles/` | 215 ids, `1`…`215` only. Its `113` holds the **text of 113-J**, because the ten lettered articles shared one ES `_id` and the last write won. Its `4` holds transitorio **"Cuarto"** of the 2021 subcontracting decree, which predates the #218/#252 transitorio namespacing. |
+| `GET /api/v1/laws/lisr/` | one version: `publication_date` 2013-12-11, `valid_from` null (out of scope, R7) |
+| `apps/web/public/viewer_data/lisr.json` | 322 entries; 113-A..J filed as `art-113`; a bogus `art-143` holding Art. 27 fr. VIII onwards (fr. IX included) |
+
+**Cause.** The live index and the export were both built from AKN produced by
+the February-2026 parser. That parser matched headings without regard to case,
+so the wrapped cross-reference line "artículo 143 de la presente Ley, …" became
+an article. It also had no lettered pattern. The current parser segments 113-A..J
+and 27 correctly. #291 fixed the remaining defects:
+
+- `82-Bis/Ter/Quáter`, `96-Bis` and `183-Bis` came out as `82-B/T/Q`, `96-B` and `183-B`;
+- all-caps `ARTÍCULO 27-A` lost its suffix;
+- the indexer left `Artículo 113-E.` at the head of the text.
+
+Regression tests: `tests/parsers/test_lisr_lettered_articles.py`,
+`tests/pipeline/test_lisr_article_ids.py` (fixture
+`tests/fixtures/lisr/lisr_dof_2024_04_01_excerpt.txt`).
+
+---
+
+## 1. Preview (read-only)
+
+```sh
+# Lettered ids currently served (expect none before the re-parse).
+curl -s "https://api.tezca.mx/api/v1/laws/lisr/articles/?page_size=1000" | \
+  python3 -c "import sys,json; d=json.load(sys.stdin); \
+  ids=[x['article_id'] for x in d['articles']]; \
+  print('total', d['total']); print('lettered', [i for i in ids if '-' in i])"
+```
+
+## 2. Re-parse LISR (regenerates the AKN XML from the Diputados PDF)
+
+```sh
+# Downloads LISR.pdf → extracts → parses with AkomaNtosoGeneratorV2 → grades → saves.
+enclii exec tezca-api -- python manage.py shell -c \
+  "import json; from apps.parsers.pipeline import IngestionPipeline; \
+   reg=json.load(open('data/law_registry.json')); \
+   entry=next(e for e in reg['federal_laws'] if e['id']=='lisr'); \
+   print(IngestionPipeline().ingest_law(entry).summary())"
+```
+
+The result summary should report about 236 articles. Ids now include
+`art-4a`, `art-4b`, `art-82bis`, `art-82ter`, `art-82quater`, `art-96bis`,
+`art-113a`…`art-113j` and `art-183bis`.
+
+## 3. Re-index in place
+
+```sh
+# Never combine --reindex with --law-id (see lfpdppp-transitorio-reindex.md §1A).
+enclii exec tezca-api -- python manage.py index_laws --law-id lisr --dry-run
+enclii exec tezca-api -- python manage.py index_laws --law-id lisr
+```
+
+The indexer prunes stale `lisr-*` documents, including the old `113`-as-113-J
+document. The 2021-decree transitorios are re-keyed as `T-…`/`T-R…`.
+
+## 4. Post-verify
+
+```sh
+curl -s "https://api.tezca.mx/api/v1/laws/lisr/articles/?page_size=1000" | python3 -c "
+import sys, json
+d = json.load(sys.stdin); a = {x['article_id']: x for x in d['articles']}
+need = ['113'] + [f'113-{c}' for c in 'ABCDEFGHIJ'] + ['27', '82-Bis', '82-Ter', '82-Quáter']
+print('missing:', [i for i in need if i not in a])
+print('113 derogated:', a['113']['text'].startswith('Se deroga'))
+print('113-E fr. IV:', 'IV. Perciban los ingresos a que se refieren las fracciones III, IV, V' in a['113-E']['text'])
+print('27 fr. IX:', 'IX. Que tratándose de honorarios o gratificaciones a administradores' in a['27']['text'])
+print('4 is substantive:', a['4']['kind'] == 'articulo' and 'Cuarto.' not in a['4']['text'][:10])
+"
+enclii exec tezca-api -- python manage.py spot_check --law-id lisr
+```
+
+Every line must print `True` and `missing: []`. Then tell the Money Moves
+owner (RFC 0052, WS-1) that LISR 113-E and 27-IX are served.
+
+---
+
+## Not covered here
+
+- **`apps/web/public/viewer_data/lisr.json`** is not regenerated by this
+  runbook. Its generator (`scripts/ingestion/update_viewer_data.py` →
+  `xml_to_json.py`) reads `data/federal/mx-fed-lisr-v2.xml`, which is not in
+  the repo. Only `components/LawArticles.tsx` reads the file, and no page imports
+  that component, so the export is a stale public download. Deleting it or
+  regenerating it is an owner decision.
+- **Law-version dating and RMF ingestion** are out of scope under ruling R7.
