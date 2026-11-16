@@ -18,7 +18,7 @@ def _make_admin_auth(mock_auth):
     """Configure mock for admin authentication."""
     from apps.api.middleware.janua_auth import JanuaUser
 
-    user = JanuaUser({"sub": "admin-user", "tier": "madfam", "role": "admin"})
+    user = JanuaUser({"sub": "admin-user", "tier": "madfam", "is_admin": True})
     user.tier = "madfam"
     mock_auth.return_value = (user, "fake-token")
 

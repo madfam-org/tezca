@@ -281,7 +281,7 @@ npm run build:all
 2. **Janua JWT** -- `Authorization: Bearer <token>`
 3. **Anonymous fallback**
 
-Admin endpoints use `_protected()` in `apps/api/urls.py`, which sets `JanuaJWTAuthentication` + `IsAuthenticated` + `IsTezcaAdmin` directly on the view class. `IsTezcaAdmin` (in `apps/api/middleware/admin_permission.py`) checks JWT `role == "admin"` claim OR user ID in `TEZCA_ADMIN_USER_IDS` env var.
+Admin endpoints use `_protected()` in `apps/api/urls.py`, which sets `JanuaJWTAuthentication` + `IsAuthenticated` + `IsTezcaAdmin` directly on the view class. `IsTezcaAdmin` (in `apps/api/middleware/admin_permission.py`) checks the verified Janua JWT `is_admin` claim (exactly `true`) OR user ID in `TEZCA_ADMIN_USER_IDS` env var. Organization roles in `role`/`roles` (including a bare `admin`) do not grant admin access.
 
 ### Integration Policy (Zero Touch)
 
@@ -531,7 +531,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/config.py` | ES_HOST, INDEX_NAME, es_client singleton |
 | `apps/api/constants.py` | KNOWN_STATES (32 states), DOMAIN_MAP (generic + SCIAN 2023-aligned + consumer-facing: training, customs, safety). Used for composite domain expansion (e.g. `manufacturing` → `["labor", "administrative", "commercial"]`). The `Law.domains` JSONField is the canonical source for legal branch classification; `Law.category` stores document type (`ley`, `acuerdo`, `reglamento`, etc.) |
 | `apps/api/management/commands/provision_api_key.py` | CLI API key provisioning |
-| `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT role or user ID allow-list) |
+| `apps/api/middleware/admin_permission.py` | `IsTezcaAdmin` permission (JWT `is_admin` claim or user ID allow-list) |
 | `apps/api/tier_permissions.py` | Single source of truth for tier naming, ranking, format access, rate limits. Re-exports `RequireTier`, `RequireFeature`, `check_feature`, `get_effective_tier` from middleware |
 | `apps/api/middleware/tier_permissions.py` | `RequireTier` (rank-based), `RequireFeature` (feature-flag-based), `get_effective_tier()` (self-hosted cap) |
 | `apps/api/tiers.json` | Feature flags and limits per tier (loaded by tier_permissions) |

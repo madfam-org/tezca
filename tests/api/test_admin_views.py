@@ -9,7 +9,7 @@ from apps.api.middleware.janua_auth import JanuaUser
 from apps.api.models import Law
 
 # Shared admin user for test auth bypass
-_ADMIN_CLAIMS = {"sub": "test-admin", "email": "admin@test.com", "role": "admin"}
+_ADMIN_CLAIMS = {"sub": "test-admin", "email": "admin@test.com", "is_admin": True}
 
 
 def _start_admin_patches(test_instance):

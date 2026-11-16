@@ -19,7 +19,7 @@ from apps.api.middleware.janua_auth import JanuaUser
 def _start_admin_patches(test_instance):
     """Bypass JanuaJWT auth + IsTezcaAdmin for admin view tests."""
     admin_user = JanuaUser(
-        {"sub": "test-admin", "email": "admin@test.com", "role": "admin"}
+        {"sub": "test-admin", "email": "admin@test.com", "is_admin": True}
     )
     admin_user.tier = "madfam"
     admin_user.scopes = ["read", "search"]
