@@ -115,7 +115,7 @@ class TestLawApi:
         """Test POST /ingest/ starts ingestion and returns 202."""
         from apps.api.middleware.janua_auth import JanuaUser
 
-        admin = JanuaUser({"sub": "admin", "role": "admin"})
+        admin = JanuaUser({"sub": "admin", "is_admin": True})
         admin.tier = "madfam"
         admin.scopes = []
         admin.allowed_domains = []
@@ -142,7 +142,7 @@ class TestLawApi:
         """Test POST /ingest/ returns 409 when ingestion is already running."""
         from apps.api.middleware.janua_auth import JanuaUser
 
-        admin = JanuaUser({"sub": "admin", "role": "admin"})
+        admin = JanuaUser({"sub": "admin", "is_admin": True})
         admin.tier = "madfam"
         admin.scopes = []
         admin.allowed_domains = []

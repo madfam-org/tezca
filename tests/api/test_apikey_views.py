@@ -28,7 +28,7 @@ def _admin_user():
             "sub": "admin-user-1",
             "email": "admin@madfam.io",
             "tier": "academic",
-            "role": "admin",
+            "is_admin": True,
         }
     )
     user.tier = "academic"

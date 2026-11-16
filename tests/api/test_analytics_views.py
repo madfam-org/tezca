@@ -18,7 +18,7 @@ ADMIN_PERM_PATCH = "apps.api.middleware.admin_permission.IsTezcaAdmin.has_permis
 
 
 def _make_admin(user_id="admin-user", tier="academic"):
-    user = JanuaUser({"sub": user_id, "email": f"{user_id}@test.com", "role": "admin"})
+    user = JanuaUser({"sub": user_id, "email": f"{user_id}@test.com", "is_admin": True})
     user.tier = tier
     user.scopes = ["read", "search"]
     user.allowed_domains = []
