@@ -8,7 +8,10 @@ readme = "README.md"
 packages = [{include = "apps"}, {include = "engines"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+# >=3.11.5: soupsieve 3.0.2+ (pinned below for its CVE fixes) requires it —
+# CPython <3.11.5 has broken possessive quantifiers. CI and the indigo image
+# use the latest 3.11.x, so this narrows nothing we actually run.
+python = ">=3.11.5,<4.0"
 django = ">=5.2.14,<6"
 djangorestframework = "^3.14"
 django-cors-headers = "^4.3.1"
@@ -22,6 +25,11 @@ elasticsearch = "^8.0"
 spacy = "^3.7"
 # Scraping
 beautifulsoup4 = "^4.12"
+# Transitive via beautifulsoup4 (which only asks for >=1.6.1). Floor at 4.0,
+# the lowest release that clears CVE-2026-126190 (GHSA-mmhr-3c5m-f64f, fixed
+# 4.0), CVE-2026-126191 / CVE-2026-126193 (fixed 3.0.2) and CVE-2026-126192
+# (fixed 2.10) — all CSS-selector DoS findings flagged by pip-audit in CI.
+soupsieve = ">=4.0,<5"
 requests = "^2.31"
 # Simulation
 # openfisca-core = "*" (Blocked on Py3.11/Numpy)
