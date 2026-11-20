@@ -50,7 +50,7 @@ const content = {
         notActiveBody: 'Estamos preparando los planes pagados. Regístrate para enterarte cuando estén disponibles.',
         notActiveFeatureKey: 'billing',
         helpText: '¿Preguntas sobre facturación? Escríbenos a',
-        helpEmail: 'soporte@tezca.mx',
+        helpEmail: 'support@madfam.io',
     },
     en: {
         title: 'Billing',
@@ -74,7 +74,7 @@ const content = {
         notActiveBody: 'Paid plans are coming soon. Register to be notified when they go live.',
         notActiveFeatureKey: 'billing',
         helpText: 'Questions about billing? Email us at',
-        helpEmail: 'soporte@tezca.mx',
+        helpEmail: 'support@madfam.io',
     },
     nah: {
         title: 'Tlatlaxtlahuīliztli',
@@ -98,7 +98,7 @@ const content = {
         notActiveBody: 'Tic chiuhtihuitz tlaxtlahuīlmeh. Xicalaqui ic tic mati quēman.',
         notActiveFeatureKey: 'billing',
         helpText: '¿Tlein ticnequi? Xitech ilhui',
-        helpEmail: 'soporte@tezca.mx',
+        helpEmail: 'support@madfam.io',
     },
 };
 
