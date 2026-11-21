@@ -77,6 +77,8 @@ for both years accordingly.
 | `subsidio_rule` | **2025**, two vigencias (474.95 / 474.65) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 | `subsidio_rule` | **2026**, two vigencias (474.65 / 492.14) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 | `imss_rates` | **2026** (9 conceptos + tope; employer CEV by SBC band, 3.150 % … 7.513 %) | **`published`** when `publish_fiscal_values_2026` runs; CEV from DOF 16-12-2020 codigo 5607729, Trans. 2° (`fiscal_cuotas_2026.py`) |
+| UDI (`/fiscal/udi/`) | 2026-11-11 to 2026-11-25, one row per day (15 rows) | **`published`** when `publish_fiscal_referencias` runs, DOF 10-11-2026 codigo 5803350 |
+| Retención sobre intereses (`/fiscal/retencion-intereses/`) | **2026** 0.90 % · **2027** 0.68 % | **`published`** by the same command, DOF 07-11-2025 codigo 5772357 and DOF 13-11-2026 codigo 5803757 |
 | ISN (`/fiscal/isn/`) | MOR 2.5 % (2025), MOR 3.0 % (from 2026-01-01), CMX 4 % (from 2025-01-01) | **`published`** by the same command; citation = the state gazette, not the DOF |
 
 Still absent for 2026, because no primary source was read for them: the annual
@@ -260,6 +262,39 @@ its **latest** period at the top level and lists the earlier ones under
 `superseded_within_year`. With `?on=`, you get exactly the row in force that
 day. Pass `?on=` whenever the figure feeds a dated calculation.
 
+### `GET /fiscal/udi/`
+
+The value in pesos of one Unidad de Inversión, per day, as Banco de México
+publishes it in the DOF. One row per day; `value` carries the six decimals of
+the notice.
+
+| Query | Meaning |
+|---|---|
+| `?on=YYYY-MM-DD` | The value for that day. A day with no row returns `count: 0`; it is **not** filled with the previous value. |
+| `?from=YYYY-MM-DD&to=YYYY-MM-DD` | A range, inclusive, at most 366 days. Both or neither. |
+| *(none)* | The 31 most recent days on file. |
+
+`GET /fiscal/udi/current/` returns today's row, or **404** with
+`latest_on_file` when today has none. That is deliberate: a limit stated in
+UDIS (deposit-protection limits, disclosure thresholds) must not be converted
+with another day's value without the caller knowing. Tezca serves the unit;
+the conversion, and the date it was done with, belong to the consumer.
+
+Banco de México publishes the values twice a month, ahead of the days they
+cover (the 11th to the 25th, then the 26th to the 10th). Each notice is added
+to `apps/api/fiscal_dof_referencias.py` with its `codigo`.
+
+### `GET /fiscal/retencion-intereses/`
+
+The yearly rate of ISR withholding on the capital that gives rise to interest
+(LISR arts. 54 and 135), set each year by the Ley de Ingresos de la
+Federación. One row per fiscal year; `?year=YYYY` narrows to one.
+
+`value` is the rate in percent as the law writes it (`"0.9000"`); `tasa` is
+the same figure as a decimal fraction (`"0.009000"`). A year whose Ley de
+Ingresos is not published has **no row**: a consumer must refuse to compute
+that year rather than carry the previous rate forward.
+
 ### Provenance fields
 
 Every row in every response carries:
@@ -302,6 +337,18 @@ Staff CRUD lives in the Django admin at `/admin/` (gated to `is_staff`):
    `source_citation`, `source_url` and `dof_date`.
 3. Set `provenance` to `published`.
 4. Close the previous row's `vigencia_to` to the day before the new one starts.
+
+To publish the UDI notices and the interest withholding rates transcribed in
+`apps/api/fiscal_dof_referencias.py`:
+
+```bash
+python manage.py publish_fiscal_referencias --dry-run    # report only
+LOCAL_DB=yes python manage.py publish_fiscal_referencias # write
+```
+
+It is idempotent. A row already on file with a **different** value stops the
+command without writing anything: neither source corrects silently, so a
+difference is a transcription error on one side and a person decides.
 
 To load the initial seed:
 

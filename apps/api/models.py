@@ -9,6 +9,8 @@ from .fiscal_models import (  # noqa: F401
     FiscalValueBase,
     MinimumWage,
     Provenance,
+    RetencionIntereses,
+    UDIValue,
     UMAValue,
 )
 

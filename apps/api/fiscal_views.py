@@ -9,6 +9,9 @@
     GET /api/v1/fiscal/tables/               ISR / subsidio / IMSS tables
     GET /api/v1/fiscal/tables/<year>/        all tables for one fiscal year
 
+The UDI and the interest withholding rate are served by
+:mod:`apps.api.fiscal_reference_views` under the same rules.
+
 Requires an API key (or Janua JWT) carrying the 'read' scope — the same key
 scheme the changelog and bulk feeds use, so usage lands in APIUsageLog via
 the global UsageLoggingMiddleware with no per-view work.

@@ -46,6 +46,7 @@ from .export_views import (
     export_quota,
     export_txt,
 )
+from .fiscal_reference_views import retencion_intereses_list, udi_current, udi_list
 from .fiscal_views import (
     isn_list,
     minimos_list,
@@ -237,6 +238,13 @@ urlpatterns = [
         "fiscal/tipo-cambio/current/",
         tipo_cambio_current,
         name="fiscal-tipo-cambio-current",
+    ),
+    path("fiscal/udi/", udi_list, name="fiscal-udi-list"),
+    path("fiscal/udi/current/", udi_current, name="fiscal-udi-current"),
+    path(
+        "fiscal/retencion-intereses/",
+        retencion_intereses_list,
+        name="fiscal-retencion-intereses-list",
     ),
     path("fiscal/tables/", tables_list, name="fiscal-tables-list"),
     path("fiscal/tables/<int:year>/", tables_by_year, name="fiscal-tables-by-year"),
