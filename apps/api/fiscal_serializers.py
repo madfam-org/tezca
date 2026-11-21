@@ -95,6 +95,40 @@ def serialize_fiscal_table(row):
     return data
 
 
+def serialize_udi(row):
+    """Serialize a :class:`UDIValue`: pesos por una UDI en un día."""
+    data = {
+        "date": row.vigencia_from.isoformat(),
+        "value": str(row.value),
+        "unit": row.unit,
+    }
+    data.update(_vigencia_block(row))
+    # Cada fila cubre un solo día: ``in_force`` no dice nada aquí.
+    data.pop("in_force")
+    data.update(_provenance_block(row))
+    return data
+
+
+def serialize_retencion_intereses(row):
+    """Serialize a :class:`RetencionIntereses`.
+
+    ``value`` es la tasa en PORCENTAJE, como la escribe la ley; ``tasa`` es la
+    misma cifra en fracción decimal, para el consumidor que multiplica.
+    """
+    data = {
+        "year": row.year,
+        "value": str(row.value),
+        "tasa": format(
+            (Decimal(row.value) / Decimal("100")).quantize(Decimal("0.000001")), "f"
+        ),
+        "unit": row.unit,
+        "legal_basis": row.legal_basis,
+    }
+    data.update(_vigencia_block(row))
+    data.update(_provenance_block(row))
+    return data
+
+
 def serialize_isn(row):
     """Serialize an :class:`ImpuestoNominaEstatal` (tasa estatal del ISN).
 

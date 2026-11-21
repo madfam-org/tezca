@@ -456,3 +456,75 @@ class FiscalTable(models.Model):
     @property
     def is_verified(self) -> bool:
         return self.provenance == Provenance.PUBLISHED
+
+
+class UDIValue(FiscalValueBase):
+    """Valor diario de la Unidad de Inversión (UDI), como lo publica el Banco
+    de México en el Diario Oficial de la Federación.
+
+    El Banco publica los valores dos veces al mes, por adelantado: un aviso
+    cubre del 11 al 25 y el siguiente del 26 al 10. Cada día es una fila, con
+    ``vigencia_from`` = ``vigencia_to`` = ese día, y el ``codigo`` del aviso
+    que lo trae. Es de sólo-añadir como todo valor fiscal.
+
+    ``value`` son pesos por una UDI, con las seis decimales con que se publica.
+    Tezca sirve la unidad; convertir un límite expresado en UDIS a pesos es
+    cuenta del consumidor, que así conserva la fecha con que la hizo.
+    """
+
+    value = models.DecimalField(
+        max_digits=14,
+        decimal_places=6,
+        validators=[MinValueValidator(0)],
+        help_text="Pesos por una UDI, con las seis decimales del aviso",
+    )
+
+    class Meta:
+        verbose_name = "valor de la UDI"
+        verbose_name_plural = "valores de la UDI"
+        ordering = ["-vigencia_from"]
+        constraints = [
+            # Un valor por día. Una corrección del Banco sería otro aviso y
+            # otra fila; nunca una edición.
+            models.UniqueConstraint(
+                fields=["vigencia_from"],
+                name="uniq_udi_vigencia",
+            )
+        ]
+
+    def __str__(self):
+        return f"UDI {self.vigencia_from}: {self.value} [{self.provenance}]"
+
+
+class RetencionIntereses(FiscalValueBase):
+    """Tasa anual de retención del ISR sobre el capital que da lugar al pago
+    de intereses (LISR Arts. 54 y 135), que cada año fija la Ley de Ingresos
+    de la Federación.
+
+    Una fila por ejercicio. ``value`` es la tasa en PORCENTAJE, como la
+    escribe la ley (``0.90`` es 0.90 por ciento). Un ejercicio cuya Ley de
+    Ingresos no se ha publicado no tiene fila, y el consumidor debe negarse a
+    calcular ese año en vez de arrastrar la tasa anterior.
+    """
+
+    year = models.IntegerField(db_index=True, help_text="Ejercicio fiscal")
+    legal_basis = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Artículo que fija la tasa, p. ej. 'LIF 2026 Art. 24'",
+    )
+
+    class Meta:
+        verbose_name = "tasa de retención sobre intereses"
+        verbose_name_plural = "tasas de retención sobre intereses"
+        ordering = ["-year"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["year"],
+                name="uniq_retencion_intereses_year",
+            )
+        ]
+
+    def __str__(self):
+        return f"Retención intereses {self.year}: {self.value} % [{self.provenance}]"

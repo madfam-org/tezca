@@ -18,7 +18,9 @@ from .fiscal_models import (
     ImpuestoNominaEstatal,
     MinimumWage,
     Provenance,
+    RetencionIntereses,
     TipoDeCambio,
+    UDIValue,
     UMAValue,
 )
 
@@ -51,6 +53,31 @@ class UMAValueAdmin(_AppendOnlyAdmin):
     list_filter = ["provenance", "year"]
     search_fields = ["year", "source_citation", "notes", "dof_codigo"]
     ordering = ["-vigencia_from"]
+
+
+@admin.register(UDIValue)
+class UDIValueAdmin(_AppendOnlyAdmin):
+    list_display = ["vigencia_from", "value", "provenance", "dof_date", "dof_codigo"]
+    list_filter = ["provenance"]
+    search_fields = ["source_citation", "notes", "dof_codigo"]
+    ordering = ["-vigencia_from"]
+
+
+@admin.register(RetencionIntereses)
+class RetencionInteresesAdmin(_AppendOnlyAdmin):
+    list_display = [
+        "year",
+        "value",
+        "legal_basis",
+        "vigencia_from",
+        "vigencia_to",
+        "provenance",
+        "dof_date",
+        "dof_codigo",
+    ]
+    list_filter = ["provenance", "year"]
+    search_fields = ["year", "legal_basis", "source_citation", "notes", "dof_codigo"]
+    ordering = ["-year"]
 
 
 @admin.register(MinimumWage)
