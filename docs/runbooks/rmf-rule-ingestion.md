@@ -55,11 +55,12 @@ compiled edition; it does not touch Capítulo 3.13.
 
 ### Why SAT is checked from outside the cluster
 
-`www.sat.gob.mx` is served by CloudFront. From the production egress
-(Hetzner, 65.109.68.42) every request returns **504 "Error from cloudfront /
-can't connect to the server for this app"**, while the same URLs return 200
-from Mexico. The in-cluster `dataops.run_rmf_scraper` therefore finds 0
-documents. A zero-document run is now recorded as an error, so the health check flags
+`www.sat.gob.mx` is served by CloudFront. From the production egress (the
+control-plane node; its address is kept in the private ops record,
+internal-devops `infrastructure/nodes.md`) every request returns **504
+"Error from cloudfront / can't connect to the server for this app"**, while
+the same URLs return 200 from Mexico. The in-cluster
+`dataops.run_rmf_scraper` therefore finds 0 documents. A zero-document run is now recorded as an error, so the health check flags
 it. `ingest_rmf_rules --download` fails in-cluster for the same reason; stage
 the PDFs instead (below).
 
@@ -74,10 +75,19 @@ the PDFs instead (below).
    `dof_url`, `change_summary`. Set the previous version's `valid_to` to the
    new `valid_from`, and move the instrument out of `pending`.
 3. Dry-run locally (`--dry-run --source-dir <dir>`): rule count, 0 problems.
-   Merge. Merging deploys the API (`deploy-api.yml`); wait for Argo.
-4. Stage the PDF into the worker and ingest, one version per exec:
+   Merge. Merging deploys the API (`deploy-api.yml`); confirm the rollout
+   in Enclii (web, or `enclii ps`) before going on.
+4. Stage the PDF into the worker and ingest, one version per exec.
+   **Enclii adapter gap.** Enclii has no exec or one-off-task adapter yet
+   (madfam-org/enclii#455): it cannot copy a file into a running container
+   or run a management command in it. Until that adapter ships, the
+   commands below are documented break-glass, not a routine operation. Run
+   them only on the explicit operator request the guard above requires, and
+   keep everything around them in Enclii (rollout state, `enclii logs` for
+   the worker).
 
 ```bash
+# Break-glass until madfam-org/enclii#455 ships an Enclii exec adapter.
 ssh ssh.madfam.io "sudo -n kubectl -n tezca exec -i deploy/tezca-worker -c worker -- sh -c 'mkdir -p data/rmf/sources && cat > data/rmf/sources/<file>.pdf && sha256sum data/rmf/sources/<file>.pdf'" < <file>.pdf
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- env LOCAL_LEGAL_DATA_OPS=yes python manage.py ingest_rmf_rules --only <key>'
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py index_laws --law-id rmf_<year> --dry-run'
@@ -97,12 +107,14 @@ ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -
   peak 848 MB).
 - Staged files live on the container's ephemeral filesystem; any restart
   wipes them. The AKN survives because it is uploaded to R2.
-- Watch memory while it runs. The image has no `ps`/`pgrep`/`pkill`, so pipe
-  a Python script over stdin (`kubectl exec -i … python -`) that reads
+- Watch memory while it runs. The image has no `ps`/`pgrep`/`pkill`, so, on
+  the same break-glass path, pipe a Python script over stdin
+  (`kubectl exec -i … python -`) that reads
   `/sys/fs/cgroup/memory.current` and `/proc/*/cmdline`. Nested quoting
   through ssh breaks `python -c`.
-- `enclii exec` does not exist; this ssh + `kubectl exec` path is the
-  documented Enclii adapter gap.
+- `enclii exec` does not exist (Enclii adapter gap,
+  madfam-org/enclii#455). Until it ships, every `kubectl exec` in this
+  runbook is break-glass; do not treat it as routine access.
 
 ## Elasticsearch `articles` index (state since 2026-11-10)
 
