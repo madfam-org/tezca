@@ -95,7 +95,8 @@ curl "localhost:9200/_cat/indices?v"
 
 1. Provision an empty `tezca` DB on the (restored) `data` Postgres instance.
 2. `pg_restore` the latest dump (§1).
-3. Deploy Tezca (`kubectl apply -k k8s/production`) — the API init container
+3. Deploy Tezca through Enclii (sync the tezca app; `kubectl apply -k
+   k8s/production` is the bootstrap fallback only) — the API init container
    runs `manage.py migrate` (a no-op on a restored schema).
 4. Restore ES from the latest SLM snapshot (§2); repoint the read alias.
 5. Redis needs no restore (broker/result backend rebuilds itself).
