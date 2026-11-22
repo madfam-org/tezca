@@ -90,6 +90,13 @@ describe('/cuenta/billing', () => {
             render(<BillingPage />);
             expect(screen.getByText(/aún no está activa/i)).toBeInTheDocument();
         });
+
+        it('sends billing questions to a mailbox that receives mail', () => {
+            // tezca.mx has no MX record; support@madfam.io is the working help mailbox.
+            render(<BillingPage />);
+            const link = screen.getByRole('link', { name: 'support@madfam.io' });
+            expect(link).toHaveAttribute('href', 'mailto:support@madfam.io');
+        });
     });
 
     describe('when MONETIZATION_ENABLED=true and user is unpaid', () => {
