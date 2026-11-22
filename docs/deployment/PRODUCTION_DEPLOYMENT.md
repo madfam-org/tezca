@@ -1,5 +1,13 @@
 # Tezca Production Deployment
 
+> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
+> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
+> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
+> `ssh … kubectl exec …`, goes through the documented break-glass path
+> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
+> and only on an explicit operator request. It is not routine access. Remove
+> this note when enclii#455 ships.
+
 **Brand**: Tezca (tezca.mx)
 **Org**: madfam-org
 **K8s Namespace**: tezca

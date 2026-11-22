@@ -1,5 +1,13 @@
 # Runbook — LFPDPPP transitorio-collision re-index & RLFPDPPP ingestion
 
+> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
+> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
+> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
+> `ssh … kubectl exec …`, goes through the documented break-glass path
+> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
+> and only on an explicit operator request. It is not routine access. Remove
+> this note when enclii#455 ships.
+
 Operator runbook for the two side-effectful steps that the code fix on branch
 `fix/lfpdppp-transitorio-collision` deliberately does **not** perform:
 
@@ -51,6 +59,7 @@ change is live.** Same invocation form as below — see
 [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # 1. Read-only report: laws with name debris (DB), with -dupN article ids and
 #    with page furniture (Elasticsearch). Writes nothing.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --law-id lfpdppp'
@@ -58,17 +67,20 @@ ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -
 #    and "Dry run: nothing written". Keep the three counts: they size steps 5–6.
 
 # 2. Name (DB) for lfpdppp.
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --law-id lfpdppp --apply --skip-es'
 
 # 3. Status (DB): the sync_law_status pair from the 2026-09-23 section, step 1.
 
 # 4. Re-ingest lfpdppp: downloads the PDF, extracts without furniture, saves the
 #    2025-11-14 version, then re-indexes in place (prunes the stale docs).
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"lfpdppp\", index=False))"'
 #    expect: 'status': 'completed' and 'quarantined': False. Otherwise STOP.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\", dry_run=True))"'
 #    expect: 'Dry run: Would index 88 articles for lfpdppp' (1–64, T-1…T-20,
 #    T-R2-1…T-R2-4). A different count: STOP and read the parse before indexing.
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\"))"'
 #    expect: 'Connected to Elasticsearch at …' and 'Pruned … stale article docs for lfpdppp'.
 ```
@@ -80,6 +92,7 @@ indexer strips the furniture); only the version date stays `2025-03-20`.
 Corpus-wide, once `lfpdppp` passes acceptance:
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # 5. Names (DB), every law the report counted as repairable: preview, then apply.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --skip-es'
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --apply --skip-es'
@@ -164,22 +177,26 @@ and prints the task's return dict. Why not `enclii jobs …`: see
 [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # 0. Read-only pre-flight: imports resolve, DB reachable, current status.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.api.models import Law; l = Law.objects.get(official_id=\"lfpdppp\"); print(\"status=\" + str(l.status), \"newest=\" + str(l.versions.first().publication_date))"'
 #    expect: status=unknown newest=2025-03-20
 
 # 1. Status (DB): preview, then apply. Only unknown/blank rows change.
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import sync_law_status; print(sync_law_status(law_id=\"lfpdppp\", dry_run=True))"'
 #    expect: {'status': 'completed', 'dry_run': True, 'updated': [{'law_id': 'lfpdppp', 'to': 'vigente'}], ...}
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import sync_law_status; print(sync_law_status(law_id=\"lfpdppp\"))"'
 #    expect: same dict with 'dry_run': False
 
 # 2. Re-index LFPDPPP from the existing XML (no re-parse needed): preview, then run.
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\", dry_run=True))"'
 #    expect: 'status': 'completed' and output 'Dry run: Would index 88 articles for lfpdppp'
 #    (88 = 1–64, T-1…T-20, T-R2-1…T-R2-4). Any other count: STOP, do not run the real pass.
 # REAL RUN: omit dry_run entirely. reindex_law reads it with bool(), so any
 # non-empty string ("false", "0") would silently mean a dry run.
+# break-glass, see the note at the top
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\"))"'
 #    expect: output contains 'Connected to Elasticsearch at …' AND
 #    'Pruned 35 stale article docs for lfpdppp' (10 word ids + 25 -dupN ids).
@@ -228,6 +245,7 @@ no stale ids (all 35 gone: `Primero`…`Décimo` and every `-dupN`); status
 > worker pod, e.g. the LFPDPPP re-index dry run:
 >
 > ```bash
+> # break-glass, see the note at the top
 > ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import reindex_law; print(reindex_law(law_id=\"lfpdppp\", dry_run=True))"'
 > ```
 >
@@ -280,6 +298,7 @@ Choose **1A** (targeted, low blast-radius, recommended for a hotfix) or **1B**
 ### Pre-checks
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Cluster + ES reachable, and the LFPDPPP law + newest version exist.
 enclii exec tezca-api -- python manage.py shell -c \
   "from apps.api.models import Law; l=Law.objects.get(official_id='lfpdppp'); \
@@ -306,6 +325,7 @@ correct substantive-article text (the substantive article now wins its own id),
 and the new transitorio docs (`lfpdppp-T-1`, `lfpdppp-T-8`, …) are added.
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Dry run first — prints how many articles WOULD be indexed, no ES writes.
 enclii exec tezca-api -- python manage.py index_laws --law-id lfpdppp --dry-run
 
@@ -328,6 +348,7 @@ alias to it after indexing. It is the zero-orphan option but re-indexes the
 entire corpus (~minutes, ~3.5M docs).
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Dry run.
 enclii exec tezca-api -- python manage.py index_laws --all --reindex --dry-run
 
@@ -381,6 +402,7 @@ PY
 - **1B**: `swap_alias` back to the previous versioned index, then delete the new
   one. List/point the alias with the helper command:
   ```sh
+  # Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
   enclii exec tezca-api -- python manage.py manage_es_alias --status
   ```
 
@@ -432,6 +454,7 @@ indexes it** (via `dataops.reindex_law` internally) unless the parse is
 quarantined:
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"reg_reg_lfpdppp\"))"'
 ```
 
@@ -441,7 +464,7 @@ the XML, then index deliberately with `reindex_law(law_id="reg_reg_lfpdppp")`
 (or `index_laws --include-quarantined`). Pass `index=False` (a Python bool, in
 the same shell wrapper) to persist only: `ingest_law(law_id="reg_reg_lfpdppp", index=False)`.
 
-**Reference — direct pod shell** (`ssh ssh.madfam.io` → `kubectl exec`, NOT
+**Reference — direct pod shell, break-glass** (`ssh ssh.madfam.io` → `kubectl exec`, NOT
 `enclii exec`). `run_pipeline` processes the whole federal registry; constrain to
 just the reglamento from a Django shell if needed
 (`IngestionPipeline().ingest_law(LawRegistry().get_by_id('reg_reg_lfpdppp'))`),
@@ -602,6 +625,7 @@ adapter for these tasks today (next section), so the registered task runs on the
 live worker pod through the documented break-glass path:
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"reg_reg_lfpdppp\"))"'
 ```
 
@@ -683,6 +707,7 @@ What was checked (read-only, 2026-09-23):
 shell on the live worker pod (same image, env and pod identity as the worker):
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import <task>; print(<task>(<kwargs>))"'
 ```
 

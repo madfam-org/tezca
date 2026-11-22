@@ -1,5 +1,13 @@
 # System Management
 
+> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
+> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
+> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
+> `ssh … kubectl exec …`, goes through the documented break-glass path
+> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
+> and only on an explicit operator request. It is not routine access. Remove
+> this note when enclii#455 ships.
+
 This directory contains scripts, tools, and documentation for managing the Tezca platform.
 
 ## Quick Reference
@@ -288,6 +296,7 @@ Three separate workflows: `deploy-api.yml`, `deploy-web.yml`, `deploy-admin.yml`
 ### Quick Commands (via enclii)
 
 ```bash
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Run database migration
 enclii exec tezca-api -- python manage.py migrate
 

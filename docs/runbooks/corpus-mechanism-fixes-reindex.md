@@ -1,5 +1,13 @@
 # Runbook — corpus mechanism fixes: encoding fidelity, transitorio cap, version supersession
 
+> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
+> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
+> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
+> `ssh … kubectl exec …`, goes through the documented break-glass path
+> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
+> and only on an explicit operator request. It is not routine access. Remove
+> this note when enclii#455 ships.
+
 Operator runbook for the side-effectful backfills that three data-quality
 mechanism fixes on branch `fix/lfpdppp-transitorio-collision` deliberately do
 **not** perform. These are corpus-wide (not one-law) fixes, so they live here
@@ -15,10 +23,10 @@ rather than in the LFPDPPP-specific runbook
 > **Guard.** Local legal ingestion / indexing / parsing operations are refused
 > unless `LOCAL_LEGAL_DATA_OPS=yes` is set
 > (`scripts/require-local-legal-data-ops.mjs`). Set it only for the duration of
-> an explicit, supervised operation. In-cluster execution goes through
-> `enclii exec tezca-api -- …` against the production API pod (already has
-> `ES_HOST` / DB env wired). Enclii-first, never an unattended side effect of a
-> merge.
+> an explicit, supervised operation. In-cluster execution runs in the
+> production API pod (already has `ES_HOST` / DB env wired), through the
+> break-glass path in the adapter-gap note above until Enclii has an exec
+> adapter. Never an unattended side effect of a merge.
 
 ---
 
@@ -90,6 +98,7 @@ curl -s "https://api.tezca.mx/api/v1/laws/<law_id>/articles/" | \
 ### Re-index
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Targeted in-place upsert (recommended for a hotfix). See the LFPDPPP runbook
 # §1A caveats — never combine --reindex with --law-id.
 enclii exec tezca-api -- python manage.py index_laws --law-id <law_id> --dry-run
@@ -102,6 +111,7 @@ Re-run the sample above — accented characters must now be present. The encodin
 spot-check should PASS (`encoding_check`, `es_text_sample`):
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 enclii exec tezca-api -- python manage.py spot_check --law-id <law_id>
 ```
 
@@ -134,6 +144,7 @@ the law needs a re-parse.
 ### Re-parse + re-index
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # Re-run the pipeline for the law (download → extract → parse → grade → save).
 # This regenerates the AKN XML with ALL transitorios and updates the LawVersion.
 # Constrain to the single law from a shell if run_pipeline is too broad:
@@ -179,6 +190,7 @@ version's interval against its immediate successor (half-open:
 ### Preview (no writes)
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 enclii exec tezca-api -- python manage.py shell -c "
 from apps.api.models import Law, LawVersion
 open_older = 0
@@ -198,6 +210,7 @@ print('older versions missing valid_to:', open_older)
 > ships for this one-off — run the guarded shell below.
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 enclii exec tezca-api -- python manage.py shell -c "
 from apps.api.models import Law
 closed = 0
@@ -215,6 +228,7 @@ print('closed intervals:', closed)
 ### Post-verify
 
 ```sh
+# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
 # The newest version of each law stays current (valid_to null); every older
 # version now has valid_to == the next version's valid_from.
 enclii exec tezca-api -- python manage.py shell -c "
