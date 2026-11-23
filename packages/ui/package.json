@@ -8,10 +8,10 @@
         ".": "./src/index.ts"
     },
     "dependencies": {
-        "lucide-react": "^0.563.0",
+        "lucide-react": "^0.577.0",
         "@tezca/lib": "*",
         "class-variance-authority": "^0.7.1",
-        "radix-ui": "^1.0.0"
+        "radix-ui": "^1.8.1"
     },
     "devDependencies": {
         "@tezca/tsconfig": "*",
