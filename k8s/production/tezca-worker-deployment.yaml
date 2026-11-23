@@ -77,14 +77,15 @@ spec:
               value: "http://tezca-es:9200"
             - name: MADFAM_CRAWLER_URL
               value: "http://crawler-api.madfam-crawler.svc.cluster.local:8000/v1/crawl"
-            # API key for the crawler's ApiKeyMiddleware (sent as X-Api-Key).
-            # optional: true keeps the pod booting until the operator adds the
-            # MADFAM_CRAWLER_TOKEN key to tezca-secrets; without it the bridge
+            # tezca's per-caller key for the crawler's ApiKeyMiddleware (sent
+            # as X-Api-Key), read from the crawler's own Vault path by
+            # external-secret-crawler-credentials.yaml. optional: true keeps
+            # the pod booting if the Secret is absent; without it the bridge
             # omits the header and the crawler answers 401.
             - name: MADFAM_CRAWLER_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: tezca-secrets
+                  name: tezca-crawler-credentials
                   key: MADFAM_CRAWLER_TOKEN
                   optional: true
             # Unfreezes the DOF corpus: detected changes materialize via the
