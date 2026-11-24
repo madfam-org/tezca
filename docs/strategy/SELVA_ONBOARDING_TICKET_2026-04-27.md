@@ -1,5 +1,7 @@
 # Selva Onboarding Request — `tezca` namespace
 
+> **2026-11-24:** some `enclii` commands below do not exist in the current CLI (`enclii secrets set` and `enclii deploy` take no `--service` flag), and a secret value is never written as a command-line literal. This ticket is kept as written on its date; for how Tezca's settings and secrets are handled today see [`PRODUCTION_DEPLOYMENT.md`](../deployment/PRODUCTION_DEPLOYMENT.md#secrets-reference).
+
 **Last Updated:** 2026-04-27
 **Track:** Track 8 (cross-cutting) of [FEATURE_PARITY_PLAN_2026-04-27](./FEATURE_PARITY_PLAN_2026-04-27.md) §3.1.
 **Status:** Operator action required. Engineering side (Track 2) is already merged behind feature flag `CHAT_ENABLED=false`.

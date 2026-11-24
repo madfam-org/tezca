@@ -1,12 +1,31 @@
 # Runbook — corpus mechanism fixes: encoding fidelity, transitorio cap, version supersession
 
-> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
-> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
-> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
-> `ssh … kubectl exec …`, goes through the documented break-glass path
-> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
-> and only on an explicit operator request. It is not routine access. Remove
-> this note when enclii#455 ships.
+> **Running a command inside Tezca.** `enclii exec`, `enclii shell` and
+> `enclii jobs run` do not exist. Enclii's path for a one-off command is
+> `enclii jobs run-once` in the `tezca-api` image with
+> `--network-identity service`, which copies onto the job pod the labels
+> Tezca's NetworkPolicies select on, so it reaches Postgres, Redis and
+> Elasticsearch as the service does. That path has not yet been run against
+> Tezca (it was verified on another service on 2026-11-24). Until it has, the
+> documented break-glass path remains the fallback, on an explicit operator
+> request only: `ssh ssh.madfam.io`, then `sudo -n kubectl -n tezca exec` into
+> the `tezca-api` or `tezca-worker` deployment (madfam-org/enclii#455). Blocks
+> below marked "in the tezca-api image" show the command that runs inside the
+> pod. The Enclii form, for one of them:
+
+```bash
+SERVICE_ID=$(enclii releases tezca-api --project tezca --limit 1 | awk '/^Resolved /{gsub(/[()]/, "", $NF); print $NF}')
+JOB_ID=$(enclii jobs run-once --name tezca-check-deploy --command "sleep 20 && python manage.py check --deploy" --service-id "$SERVICE_ID" --project tezca --network-identity service | awk '/^  ID:/{print $2}')
+enclii jobs get "$JOB_ID"
+enclii jobs logs "$JOB_ID"
+```
+
+`enclii releases` prints the service id on its `Resolved` line, and
+`enclii jobs run-once` prints the job id on its `ID:` line; the `awk` filters
+read them. `sleep 20` covers a known start-up race (a new job pod can start
+before its network rules apply). Read the output with `enclii jobs logs` once
+`enclii jobs get` shows the job finished. Another in-pod command runs the same
+way with its own `--name` and `--command`.
 
 Operator runbook for the side-effectful backfills that three data-quality
 mechanism fixes on branch `fix/lfpdppp-transitorio-collision` deliberately do
@@ -24,9 +43,8 @@ rather than in the LFPDPPP-specific runbook
 > unless `LOCAL_LEGAL_DATA_OPS=yes` is set
 > (`scripts/require-local-legal-data-ops.mjs`). Set it only for the duration of
 > an explicit, supervised operation. In-cluster execution runs in the
-> production API pod (already has `ES_HOST` / DB env wired), through the
-> break-glass path in the adapter-gap note above until Enclii has an exec
-> adapter. Never an unattended side effect of a merge.
+> production API image (already has `ES_HOST` / DB env wired), the way the
+> note at the top describes. Never an unattended side effect of a merge.
 
 ---
 
@@ -97,23 +115,21 @@ curl -s "https://api.tezca.mx/api/v1/laws/<law_id>/articles/" | \
 
 ### Re-index
 
-```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-# Targeted in-place upsert (recommended for a hotfix). See the LFPDPPP runbook
-# §1A caveats — never combine --reindex with --law-id.
-enclii exec tezca-api -- python manage.py index_laws --law-id <law_id> --dry-run
-enclii exec tezca-api -- python manage.py index_laws --law-id <law_id>
-```
+For each affected law, in the tezca-api image: run `python manage.py
+index_laws` with `--law-id` set to that law's registry `id` (as in
+`data/law_registry.json`) and `--dry-run` first, then the same without
+`--dry-run`. This is the targeted in-place upsert (recommended for a hotfix);
+see the LFPDPPP runbook §1A caveats, and never combine `--reindex` with
+`--law-id`. The law ids come from the detection step above; this runbook does
+not name them because they are not known in advance.
 
 ### Post-verify
 
 Re-run the sample above — accented characters must now be present. The encoding
 spot-check should PASS (`encoding_check`, `es_text_sample`):
 
-```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-enclii exec tezca-api -- python manage.py spot_check --law-id <law_id>
-```
+In the tezca-api image, run `python manage.py spot_check` with `--law-id` set
+to the same law id.
 
 ---
 
@@ -143,24 +159,21 @@ the law needs a re-parse.
 
 ### Re-parse + re-index
 
-```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-# Re-run the pipeline for the law (download → extract → parse → grade → save).
-# This regenerates the AKN XML with ALL transitorios and updates the LawVersion.
-# Constrain to the single law from a shell if run_pipeline is too broad:
-enclii exec tezca-api -- python manage.py shell -c \
-  "import json; from apps.parsers.pipeline import IngestionPipeline; \
-   reg=json.load(open('data/law_registry.json')); \
-   entry=next(e for e in (reg if isinstance(reg,list) else reg.get('laws',reg.values())) if e.get('id')=='<law_id>'); \
-   print(IngestionPipeline().ingest_law(entry))"
+For each affected law, in the tezca-api image:
 
-# Then re-index in place (§1A caveats apply).
-enclii exec tezca-api -- python manage.py index_laws --law-id <law_id>
-```
+1. Re-run the pipeline for that one law (download → extract → parse → grade →
+   save), which regenerates the AKN XML with all transitorios and updates the
+   `LawVersion`: in a `python manage.py shell`, load the law's entry from
+   `data/law_registry.json` (federal laws are under the `federal_laws` key,
+   matched on `id`) and call `IngestionPipeline().ingest_law(entry)` from
+   `apps.parsers.pipeline`. The LFPDPPP runbook shows the same call through
+   `LawRegistry().get_by_id(...)` for one concrete law.
+2. Re-index it in place: `python manage.py index_laws` with `--law-id` set to
+   the same id (§1A caveats apply).
 
-> Adjust the registry-lookup shell snippet to the actual shape of
-> `data/law_registry.json` in your checkout. The essential step is
-> `IngestionPipeline().ingest_law(<registry entry>)` for the affected law.
+The candidate laws (CCF, LFT, LIVA) are named above by their common
+abbreviations; confirm each one's registry `id` in `data/law_registry.json`
+before running, since an abbreviation and an `id` can differ.
 
 ### Post-verify
 
@@ -190,8 +203,8 @@ version's interval against its immediate successor (half-open:
 ### Preview (no writes)
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-enclii exec tezca-api -- python manage.py shell -c "
+# In the tezca-api image (see the note at the top).
+python manage.py shell -c "
 from apps.api.models import Law, LawVersion
 open_older = 0
 for law in Law.objects.all():
@@ -210,8 +223,8 @@ print('older versions missing valid_to:', open_older)
 > ships for this one-off — run the guarded shell below.
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-enclii exec tezca-api -- python manage.py shell -c "
+# In the tezca-api image (see the note at the top).
+python manage.py shell -c "
 from apps.api.models import Law
 closed = 0
 for law in Law.objects.all():
@@ -228,10 +241,10 @@ print('closed intervals:', closed)
 ### Post-verify
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# In the tezca-api image (see the note at the top).
 # The newest version of each law stays current (valid_to null); every older
 # version now has valid_to == the next version's valid_from.
-enclii exec tezca-api -- python manage.py shell -c "
+python manage.py shell -c "
 from apps.api.models import Law
 bad = []
 for law in Law.objects.all():

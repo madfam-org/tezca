@@ -1,6 +1,6 @@
 # Scraper First-Run Checklist
 
-**Last Updated:** 2026-04-27
+**Last Updated:** 2026-11-24
 **Purpose:** Each new scraper merged to main must execute at least once against its real source portal in production before it can be considered "validated." This doc captures the per-scraper acceptance criteria operators run after deploy.
 **Track:** A+ Item 3 (Workstream 6 Phase 1 of [`A_PLUS_REMEDIATION_PLAN_2026-04-27.md`](../strategy/A_PLUS_REMEDIATION_PLAN_2026-04-27.md)).
 
@@ -10,42 +10,66 @@
 
 Tezca's scrapers have unit tests with mocked HTML — they verify our parsing logic. They cannot verify URL guesses against the real portal. This is fine for code review but unsafe for production: a scraper that 404s silently is the difference between "we have Hidalgo coverage" and "we shipped a broken claim."
 
-The first-run checklist closes the loop. After every scraper-PR merge, an operator runs the scraper once via Enclii, captures the actual catalog size + first 3 law titles + AcquisitionLog row, and either flips the coverage tile green or files a follow-up.
+The first-run checklist closes the loop. After every scraper-PR merge, an operator runs the scraper once in production, captures the actual catalog size + first 3 law titles + AcquisitionLog row, and either flips the coverage tile green or files a follow-up.
 
 ---
 
 ## How to run a scraper from production
 
-### Option A — via Celery dispatch (recommended)
+`enclii jobs run` and `enclii shell` do not exist. A scraper runs by calling
+its registered Celery task synchronously in a Django shell, in the API image
+(the worker and the API share it), with Tezca's network identity so it reaches
+Postgres, Redis, R2 and the internet as the worker does.
+
+### Option A — the registered task, as an Enclii one-off job (recommended)
+
+The Hidalgo first run, as an Enclii one-off job. `enclii releases` prints the
+service id on its `Resolved` line and `enclii jobs run-once` prints the job id
+on its `ID:` line; the `awk` filters read them:
 
 ```bash
-# Trigger via the dataops.run_state_scraper Celery task
-enclii jobs run dataops.run_state_scraper -- state_key=hidalgo --service tezca-worker --env production
-
-# Watch logs
-enclii logs tezca-worker -f --since 5m | grep -i "state.*scraper\|laws.*found"
+SERVICE_ID=$(enclii releases tezca-api --project tezca --limit 1 | awk '/^Resolved /{gsub(/[()]/, "", $NF); print $NF}')
+JOB_ID=$(enclii jobs run-once --name tezca-scrape-hidalgo --command "sleep 20 && python manage.py shell -c 'from apps.scraper.scheduling.tasks import run_state_scraper; print(run_state_scraper(state_key=\"hidalgo\"))'" --service-id "$SERVICE_ID" --project tezca --network-identity service | awk '/^  ID:/{print $2}')
+enclii jobs get "$JOB_ID"
+enclii jobs logs "$JOB_ID"
 ```
+
+`--network-identity service` copies onto the job pod the labels Tezca's
+NetworkPolicies select on; `sleep 20` covers a known start-up race (a new job
+pod can start before its network rules apply). This form has not yet been run
+against Tezca. Read the logs for the task's return dict: a job that shows
+finished but whose dict reports a connection error did nothing. Until a run
+confirms it, the documented break-glass fallback is the same call on the live
+worker pod, on an explicit operator request only (the wrapper in
+[`docs/runbooks/lfpdppp-transitorio-reindex.md`](../runbooks/lfpdppp-transitorio-reindex.md#how-to-invoke-the-dataops-tasks-corrected-2026-09-23),
+madfam-org/enclii#455).
+
+Other scrapers run the same way with their own job `--name` and the task call
+from the tables below (for example `run_rmf_scraper(year=2026)`).
 
 Result: a `data/state_laws/<state>/catalog.json` file lands in the worker's R2-backed volume, and an `AcquisitionLog` row records `found`/`downloaded`/`failed` counts.
 
-### Option B — via Django shell (when the dispatch table doesn't have it yet)
+### Option B — a scraper class directly (when the dispatch table doesn't have it yet)
 
-```bash
-enclii shell tezca-worker --env production
->>> from apps.scraper.state.<state> import <Class>Scraper
->>> s = <Class>Scraper()
->>> catalog = s.scrape_catalog()
->>> print(f"Found {len(catalog)} laws. First 3 titles:")
->>> for law in catalog[:3]: print(f"  - {law['name']}")
+In a Django shell in the same image (run the same way as Option A), import the
+state's scraper class from `apps.scraper.state` and print the size of
+`scrape_catalog()` and its first three law names. For Hidalgo:
+
+```python
+from apps.scraper.state.hidalgo import HidalgoScraper
+catalog = HidalgoScraper().scrape_catalog()
+print(f"Found {len(catalog)} laws. First 3 titles:")
+for law in catalog[:3]: print(f"  - {law['name']}")
 ```
 
 ### Capturing the AcquisitionLog row
 
-```bash
-enclii shell tezca-api --env production
->>> from apps.scraper.dataops.models import AcquisitionLog
->>> latest = AcquisitionLog.objects.filter(operation__startswith="state_scraper_").order_by("-started_at").first()
->>> print(latest.operation, latest.found, latest.downloaded, latest.failed, latest.error_summary)
+In a Django shell in the same image:
+
+```python
+from apps.scraper.dataops.models import AcquisitionLog
+latest = AcquisitionLog.objects.filter(operation__startswith="state_scraper_").order_by("-started_at").first()
+print(latest.operation, latest.found, latest.downloaded, latest.failed, latest.error_summary)
 ```
 
 ---
@@ -58,7 +82,7 @@ Each row below is a single first-run target. Tick it (`[x]`) once the operator c
 
 | Scraper | Operation key | Expected catalog | First-run command | Acceptance |
 |---|---|---|---|---|
-| RMF (SAT) | `rmf_scrape` | 5–35 documents (annual + ≤4 modifications + ≤31 annexes) | `enclii jobs run dataops.run_rmf_scraper -- year=2026` | [ ] catalog has annual RMF + at least Anexo 1; `domains: ["fiscal"]` set on Law rows |
+| RMF (SAT) | `rmf_scrape` | 5–35 documents (annual + ≤4 modifications + ≤31 annexes) | `run_rmf_scraper(year=2026)` (task `dataops.run_rmf_scraper`; see [How to run](#how-to-run-a-scraper-from-production)) | [ ] catalog has annual RMF + at least Anexo 1; `domains: ["fiscal"]` set on Law rows |
 | RMF quarterly modifications | `rmf_scrape` (year=2026) | each new modification adds 1 doc | quarterly Beat tick (8th of Jan/Apr/Jul/Oct) | [ ] 1st quarterly mod ingested when SAT publishes (typically Feb–Mar) — **2026-11-10: blocked in-cluster.** SAT's CloudFront answers 504 to the production egress, so runs record 0 documents (now an error). RMF publications are tracked by the DOF corpus watch and the weekly `sat-rmf-watch` workflow instead; see `docs/runbooks/rmf-rule-ingestion.md` |
 | NOM scraper (priority) | `nom_priority_scrape` | ~500–800 NOMs | (already running per `nom-weekly-discovery` Beat) | [x] currently green |
 | NOM agency scrapers (full) | `nom_full_scrape` | ~3000-4000 NOMs | (already running per `nom-monthly-full` Beat 15th) | [x] currently green |
@@ -81,10 +105,10 @@ Each row below is a single first-run target. Tick it (`[x]`) once the operator c
 | michoacan | ✅ live | ~280 laws | newly registered |
 | san_luis_potosi | ✅ live | ~220 laws | newly registered |
 | zacatecas | ✅ live | ~180 laws | newly registered |
-| **aguascalientes** | 🆕 **PENDING FIRST RUN** | 150–200 (estimated) | URL: `congresoags.gob.mx`. First-run: `enclii jobs run dataops.run_state_scraper -- state_key=aguascalientes` |
-| **hidalgo** | 🆕 **PENDING FIRST RUN** | 250–300 (estimated) | URL: `congreso-hidalgo.gob.mx`. First-run: `enclii jobs run dataops.run_state_scraper -- state_key=hidalgo` |
-| **morelos** | 🆕 **PENDING FIRST RUN** | 150–200 (estimated) | URL: `congresomorelos.gob.mx`. First-run: `enclii jobs run dataops.run_state_scraper -- state_key=morelos` |
-| **yucatan** | 🆕 **PENDING FIRST RUN** | 250–300 (estimated) | URL: `congresoyucatan.gob.mx`. First-run: `enclii jobs run dataops.run_state_scraper -- state_key=yucatan` |
+| **aguascalientes** | 🆕 **PENDING FIRST RUN** | 150–200 (estimated) | URL: `congresoags.gob.mx`. First-run: `run_state_scraper(state_key="aguascalientes")` |
+| **hidalgo** | 🆕 **PENDING FIRST RUN** | 250–300 (estimated) | URL: `congreso-hidalgo.gob.mx`. First-run: `run_state_scraper(state_key="hidalgo")` |
+| **morelos** | 🆕 **PENDING FIRST RUN** | 150–200 (estimated) | URL: `congresomorelos.gob.mx`. First-run: `run_state_scraper(state_key="morelos")` |
+| **yucatan** | 🆕 **PENDING FIRST RUN** | 250–300 (estimated) | URL: `congresoyucatan.gob.mx`. First-run: `run_state_scraper(state_key="yucatan")` |
 | campeche | ⏳ Wave 1B | TBD | not yet implemented |
 | chiapas | ⏳ Wave 1B | TBD | not yet implemented |
 | chihuahua | ⏳ Wave 1B | TBD | not yet implemented |
@@ -112,7 +136,7 @@ Each row below is a single first-run target. Tick it (`[x]`) once the operator c
 Copy this template into the table above when a Wave 1B/1C state ships:
 
 ```markdown
-| **<state_key>** | 🆕 **PENDING FIRST RUN** | <low>–<high> (estimated from catalog page count) | URL: `<congress URL>`. First-run: `enclii jobs run dataops.run_state_scraper -- state_key=<state_key>` |
+| **<state_key>** | 🆕 **PENDING FIRST RUN** | <low>–<high> (estimated from catalog page count) | URL: `<congress URL>`. First-run: `run_state_scraper(state_key="<state_key>")` |
 ```
 
 Once the first run completes:

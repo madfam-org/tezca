@@ -1,5 +1,7 @@
 # CNPG Migration — Tezca-Side Preparation
 
+> **2026-11-24:** some `enclii` commands below do not exist in the current CLI (`enclii secrets set` and `enclii deploy` take no `--service` flag). This prep doc is kept as written on its date; for how Tezca's settings and secrets are handled today see [`PRODUCTION_DEPLOYMENT.md`](../deployment/PRODUCTION_DEPLOYMENT.md#secrets-reference).
+
 **Last Updated:** 2026-04-27
 **Track:** Track 6 of [FEATURE_PARITY_PLAN_2026-04-27](./FEATURE_PARITY_PLAN_2026-04-27.md) §3.2.
 **Gates on:** RFC 0012 (CloudNativePG cluster) shipping in `madfam-org/enclii`. Tezca-side prep is small; this doc captures it so the cutover is a one-line env-var flip when the platform is ready.
