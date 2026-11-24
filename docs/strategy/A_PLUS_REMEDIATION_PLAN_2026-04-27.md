@@ -1,5 +1,7 @@
 # Tezca A+ Remediation Plan
 
+> **2026-11-24:** some `enclii` commands below do not exist in the current CLI (`enclii jobs run`). This plan is kept as written on its date; for running a scraper today see [`SCRAPER_FIRST_RUN_CHECKLIST.md`](../research/SCRAPER_FIRST_RUN_CHECKLIST.md#how-to-run-a-scraper-from-production).
+
 **Last Updated:** 2026-04-27
 **Author:** Stability-assessment session, 2026-04-27. Current grade: **B+ on code, C− on infra resilience** (composite B+/B).
 **Status:** Plan for review. No code or infra changes made by this doc; it specifies what work + what verification gets the codebase to A+.

@@ -1,12 +1,31 @@
 # Runbook — LFPDPPP transitorio-collision re-index & RLFPDPPP ingestion
 
-> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
-> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
-> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
-> `ssh … kubectl exec …`, goes through the documented break-glass path
-> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
-> and only on an explicit operator request. It is not routine access. Remove
-> this note when enclii#455 ships.
+> **Running a command inside Tezca.** `enclii exec`, `enclii shell` and
+> `enclii jobs run` do not exist. Enclii's path for a one-off command is
+> `enclii jobs run-once` in the `tezca-api` image with
+> `--network-identity service`, which copies onto the job pod the labels
+> Tezca's NetworkPolicies select on, so it reaches Postgres, Redis and
+> Elasticsearch as the service does. That path has not yet been run against
+> Tezca (it was verified on another service on 2026-11-24). Until it has, the
+> documented break-glass path remains the fallback, on an explicit operator
+> request only: `ssh ssh.madfam.io`, then `sudo -n kubectl -n tezca exec` into
+> the `tezca-api` or `tezca-worker` deployment (madfam-org/enclii#455). Blocks
+> below marked "in the tezca-api image" show the command that runs inside the
+> pod. The Enclii form, for one of them:
+
+```bash
+SERVICE_ID=$(enclii releases tezca-api --project tezca --limit 1 | awk '/^Resolved /{gsub(/[()]/, "", $NF); print $NF}')
+JOB_ID=$(enclii jobs run-once --name tezca-check-deploy --command "sleep 20 && python manage.py check --deploy" --service-id "$SERVICE_ID" --project tezca --network-identity service | awk '/^  ID:/{print $2}')
+enclii jobs get "$JOB_ID"
+enclii jobs logs "$JOB_ID"
+```
+
+`enclii releases` prints the service id on its `Resolved` line, and
+`enclii jobs run-once` prints the job id on its `ID:` line; the `awk` filters
+read them. `sleep 20` covers a known start-up race (a new job pod can start
+before its network rules apply). Read the output with `enclii jobs logs` once
+`enclii jobs get` shows the job finished. Another in-pod command runs the same
+way with its own `--name` and `--command`.
 
 Operator runbook for the two side-effectful steps that the code fix on branch
 `fix/lfpdppp-transitorio-collision` deliberately does **not** perform:
@@ -59,7 +78,7 @@ change is live.** Same invocation form as below — see
 [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
 
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 # 1. Read-only report: laws with name debris (DB), with -dupN article ids and
 #    with page furniture (Elasticsearch). Writes nothing.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --law-id lfpdppp'
@@ -92,7 +111,7 @@ indexer strips the furniture); only the version date stays `2025-03-20`.
 Corpus-wide, once `lfpdppp` passes acceptance:
 
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 # 5. Names (DB), every law the report counted as repairable: preview, then apply.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --skip-es'
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py clean_ingestion_debris --all-names --apply --skip-es'
@@ -177,7 +196,7 @@ and prints the task's return dict. Why not `enclii jobs …`: see
 [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
 
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 # 0. Read-only pre-flight: imports resolve, DB reachable, current status.
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.api.models import Law; l = Law.objects.get(official_id=\"lfpdppp\"); print(\"status=\" + str(l.status), \"newest=\" + str(l.versions.first().publication_date))"'
 #    expect: status=unknown newest=2025-03-20
@@ -236,10 +255,11 @@ no stale ids (all 35 gone: `Primero`…`Décimo` and every `-dupN`); status
 ---
 
 > **⚠️ INVOCATION CORRECTION (2026-08-26, revised 2026-09-23).** Earlier drafts
-> of this runbook used `enclii exec tezca-api -- python apps/manage.py …`.
-> **`enclii exec` is NOT a real subcommand**, and neither is `enclii jobs run`
-> (the CLI, v1.0.0-alpha.9, only has `enclii jobs run-once`). `run-once` is not a
-> working path for these tasks either — see
+> of this runbook used an `enclii exec` form with `apps/manage.py`.
+> **`enclii exec` does not exist**, and neither does `enclii jobs run`
+> (the CLI, v1.0.0-alpha.9, only has `enclii jobs run-once`). `run-once` was not a
+> working path for these tasks either on 2026-09-23 (2026-11-24: see the note at
+> the top for `--network-identity service`) — see
 > [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23).
 > The working invocation runs the registered task synchronously on the live
 > worker pod, e.g. the LFPDPPP re-index dry run:
@@ -251,9 +271,10 @@ no stale ids (all 35 gone: `Primero`…`Décimo` and every `-dupN`); status
 >
 > `dataops.reindex_law` (in `apps/scraper/scheduling/tasks.py`) wraps
 > `index_laws --law-id <id>` — the in-place upsert path, and it **refuses** the
-> corpus-dropping `--reindex`/`--all` variants. The raw `enclii exec … python
-> manage.py …` lines in §1–§2 are kept as the reference for WHAT runs; execute
-> them through the same `kubectl … exec deploy/tezca-worker -c worker --` wrapper
+> corpus-dropping `--reindex`/`--all` variants. The `python manage.py …` lines
+> in §1–§2 marked "in the tezca-api image" are the reference for WHAT runs;
+> execute them the Enclii way in the note at the top or, as the fallback,
+> through the same `kubectl … exec deploy/tezca-worker -c worker --` wrapper
 > (manage.py is at `/app/manage.py`, the working directory).
 >
 > **Guard.** Local legal ingestion / indexing / export operations are refused
@@ -298,9 +319,9 @@ Choose **1A** (targeted, low blast-radius, recommended for a hotfix) or **1B**
 ### Pre-checks
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# In the tezca-api image (see the note at the top).
 # Cluster + ES reachable, and the LFPDPPP law + newest version exist.
-enclii exec tezca-api -- python manage.py shell -c \
+python manage.py shell -c \
   "from apps.api.models import Law; l=Law.objects.get(official_id='lfpdppp'); \
    v=l.versions.first(); print('status=',l.status,'newest=',v.publication_date, v.xml_file_path)"
 
@@ -325,12 +346,12 @@ correct substantive-article text (the substantive article now wins its own id),
 and the new transitorio docs (`lfpdppp-T-1`, `lfpdppp-T-8`, …) are added.
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# In the tezca-api image (see the note at the top).
 # Dry run first — prints how many articles WOULD be indexed, no ES writes.
-enclii exec tezca-api -- python manage.py index_laws --law-id lfpdppp --dry-run
+python manage.py index_laws --law-id lfpdppp --dry-run
 
 # Real run (no --reindex → in-place upsert into the current alias/index).
-enclii exec tezca-api -- python manage.py index_laws --law-id lfpdppp
+python manage.py index_laws --law-id lfpdppp
 ```
 
 > **Stale-doc note (corrected by #222).** An upsert alone cannot delete an id
@@ -348,12 +369,12 @@ alias to it after indexing. It is the zero-orphan option but re-indexes the
 entire corpus (~minutes, ~3.5M docs).
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# In the tezca-api image (see the note at the top).
 # Dry run.
-enclii exec tezca-api -- python manage.py index_laws --all --reindex --dry-run
+python manage.py index_laws --all --reindex --dry-run
 
 # Real run — new index + alias swap at the end.
-enclii exec tezca-api -- python manage.py index_laws --all --reindex
+python manage.py index_laws --all --reindex
 ```
 
 > **⚠️ Never `--reindex --law-id lfpdppp`.** `--reindex` creates an *empty* index
@@ -402,8 +423,8 @@ PY
 - **1B**: `swap_alias` back to the previous versioned index, then delete the new
   one. List/point the alias with the helper command:
   ```sh
-  # Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-  enclii exec tezca-api -- python manage.py manage_es_alias --status
+  # In the tezca-api image (see the note at the top).
+  python manage.py manage_es_alias --status
   ```
 
 ---
@@ -454,7 +475,7 @@ indexes it** (via `dataops.reindex_law` internally) unless the parse is
 quarantined:
 
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"reg_reg_lfpdppp\"))"'
 ```
 
@@ -464,8 +485,8 @@ the XML, then index deliberately with `reindex_law(law_id="reg_reg_lfpdppp")`
 (or `index_laws --include-quarantined`). Pass `index=False` (a Python bool, in
 the same shell wrapper) to persist only: `ingest_law(law_id="reg_reg_lfpdppp", index=False)`.
 
-**Reference — direct pod shell, break-glass** (`ssh ssh.madfam.io` → `kubectl exec`, NOT
-`enclii exec`). `run_pipeline` processes the whole federal registry; constrain to
+**Reference — direct pod shell, break-glass** (`ssh ssh.madfam.io` → `kubectl exec`;
+there is no `enclii exec`, it does not exist). `run_pipeline` processes the whole federal registry; constrain to
 just the reglamento from a Django shell if needed
 (`IngestionPipeline().ingest_law(LawRegistry().get_by_id('reg_reg_lfpdppp'))`),
 then index:
@@ -482,7 +503,7 @@ python manage.py index_laws --law-id reg_reg_lfpdppp
 > IngestionPipeline().ingest_law(<registry entry for reg_reg_lfpdppp>)`) using
 > the registry entry now in `data/law_registry.json`, then index as above.
 > Keep `LOCAL_LEGAL_DATA_OPS=yes` set only for the operation when running
-> locally rather than via `enclii exec`.
+> locally rather than in the cluster.
 
 ### Post-verify
 
@@ -625,7 +646,7 @@ adapter for these tasks today (next section), so the registered task runs on the
 live worker pod through the documented break-glass path:
 
 ```sh
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import ingest_law; print(ingest_law(law_id=\"reg_reg_lfpdppp\"))"'
 ```
 
@@ -634,9 +655,12 @@ inherit the NetworkPolicy allowances below.
 
 > **Enclii adapter gap (recorded 2026-08-27, extended 2026-09-23).** There is no
 > Enclii adapter for an interactive shell in a running pod — `enclii exec` does
-> not exist — and `enclii jobs run-once` cannot run these tasks (see
-> [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23)).
-> Staging a file into a pod (the pre-placed PDF above) likewise has no Enclii path.
+> not exist — and `enclii jobs run-once` could not run these tasks on
+> 2026-09-23 (see
+> [How to invoke the `dataops.*` tasks](#how-to-invoke-the-dataops-tasks-corrected-2026-09-23);
+> 2026-11-24: `--network-identity service` addresses the reason, see the note at
+> the top). Staging a file into a pod (the pre-placed PDF above) has no Enclii
+> path: no Enclii adapter: this is an adapter gap.
 
 **Break-glass only**, reached per the global SSH rule (`ssh ssh.madfam.io`,
 never a direct IP):
@@ -707,7 +731,7 @@ What was checked (read-only, 2026-09-23):
 shell on the live worker pod (same image, env and pod identity as the worker):
 
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
+# Break-glass fallback until the Enclii form is verified for Tezca (see the note at the top).
 ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -- python manage.py shell -c "from apps.scraper.scheduling.tasks import <task>; print(<task>(<kwargs>))"'
 ```
 
@@ -726,3 +750,12 @@ ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/tezca-worker -c worker -
 Enclii follow-up (adapter gap): one-off job pods should inherit the target
 Deployment's pod-template labels (at least `app.kubernetes.io/part-of`) so
 `enclii jobs run-once` can become the sanctioned path again.
+
+> **2026-11-24 update.** The current CLI has `--network-identity service` on
+> `enclii jobs run-once`: Enclii copies onto the job pod the labels the
+> namespace's NetworkPolicies select on (per `enclii help jobs run-once`),
+> which is the follow-up asked for above. The Enclii form is in the note at the
+> top of this runbook. It has not yet been run against Tezca; until a run
+> confirms the job reaches Postgres, Redis and Elasticsearch (the green-but-
+> did-nothing failure above is the thing to check for in its logs), the
+> `tezca-worker` wrapper above stays the fallback.

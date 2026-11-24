@@ -1,18 +1,37 @@
 # Tezca Production Deployment
 
-> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
-> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
-> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
-> `ssh … kubectl exec …`, goes through the documented break-glass path
-> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
-> and only on an explicit operator request. It is not routine access. Remove
-> this note when enclii#455 ships.
+> **Running a command inside Tezca.** `enclii exec`, `enclii shell` and
+> `enclii jobs run` do not exist. Enclii's path for a one-off command is
+> `enclii jobs run-once` in the `tezca-api` image with
+> `--network-identity service`, which copies onto the job pod the labels
+> Tezca's NetworkPolicies select on, so it reaches Postgres, Redis and
+> Elasticsearch as the service does. That path has not yet been run against
+> Tezca (it was verified on another service on 2026-11-24). Until it has, the
+> documented break-glass path remains the fallback, on an explicit operator
+> request only: `ssh ssh.madfam.io`, then `sudo -n kubectl -n tezca exec` into
+> the `tezca-api` or `tezca-worker` deployment (madfam-org/enclii#455). Blocks
+> below marked "in the tezca-api image" show the command that runs inside the
+> pod. The Enclii form, for one of them:
+
+```bash
+SERVICE_ID=$(enclii releases tezca-api --project tezca --limit 1 | awk '/^Resolved /{gsub(/[()]/, "", $NF); print $NF}')
+JOB_ID=$(enclii jobs run-once --name tezca-check-deploy --command "sleep 20 && python manage.py check --deploy" --service-id "$SERVICE_ID" --project tezca --network-identity service | awk '/^  ID:/{print $2}')
+enclii jobs get "$JOB_ID"
+enclii jobs logs "$JOB_ID"
+```
+
+`enclii releases` prints the service id on its `Resolved` line, and
+`enclii jobs run-once` prints the job id on its `ID:` line; the `awk` filters
+read them. `sleep 20` covers a known start-up race (a new job pod can start
+before its network rules apply). Read the output with `enclii jobs logs` once
+`enclii jobs get` shows the job finished. Another in-pod command runs the same
+way with its own `--name` and `--command`.
 
 **Brand**: Tezca (tezca.mx)
 **Org**: madfam-org
 **K8s Namespace**: tezca
 **Registry**: ghcr.io/madfam-org/tezca
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-11-24
 
 ---
 
@@ -39,13 +58,13 @@
 |---|------|-------|----------|-------|
 | **M1** | Install `@janua/nextjs` in admin | Dev | Private npm registry config | Package is on MADFAM private registry, not public npm. Configure `@janua:registry` in `.npmrc` |
 | **M2** | Set GitHub secrets | Repo Admin | GitHub repo admin access | `MADFAM_BOT_PAT` (GHCR push), `ENCLII_CALLBACK_TOKEN` (lifecycle events) |
-| **M3** | Create K8s `tezca-secrets` | DevOps | enclii CLI + secret values | See [Secrets Reference](#secrets-reference) below |
+| **M3** | Create K8s `tezca-secrets` | DevOps | Enclii secret intake | See [Secrets Reference](#secrets-reference) below |
 | **M4** | Register Janua OAuth client | DevOps | Janua admin API access | `client_id: tezca-admin`, redirect: `https://admin.tezca.mx/auth/callback`, scopes: `openid email profile` |
 | **M5** | Configure Cloudflare DNS | DevOps | Cloudflare account | Zone: `tezca.mx`. Enclii auto-provisions CNAME records to `tunnel.enclii.dev` |
 | **M6** | Add to ArgoCD root application | DevOps | Infra repo access | Add `tezca` to `infra/argocd/root-application.yaml`, source: `k8s/production/`, destination: `tezca` namespace |
-| **M7** | Run initial database migration | DevOps | enclii CLI, cluster access | `enclii exec tezca-api -- python manage.py migrate` |
-| **M8** | Collect static files | DevOps | enclii CLI | `enclii exec tezca-api -- python manage.py collectstatic --noinput` |
-| **M9** | Build Elasticsearch indices | DevOps | enclii CLI | `enclii exec tezca-api -- python manage.py index_laws --all --create-indices` |
+| **M7** | Run initial database migration | — | Nothing manual | The `migrate` initContainer of `tezca-api` runs `python manage.py migrate --noinput` on every rollout (`k8s/production/tezca-api-deployment.yaml`) |
+| **M8** | Collect static files | — | Nothing manual | The API image runs `python manage.py collectstatic --noinput` at build time (`apps/indigo/Dockerfile`) |
+| **M9** | Build Elasticsearch indices | DevOps | Enclii CLI (see the note at the top) | In the tezca-api image: `python manage.py index_laws --all --create-indices` |
 | **M10** | Smoke test all domains | QA | All above complete | See [Verification Checklist](#verification-checklist) |
 | **M11** | Create `tezca-r2-credentials` K8s Secret | DevOps | R2 API token | See [R2 Credentials](#k8s-secret-tezca-r2-credentials) |
 | **M12** | Create `tezca-sentry` K8s Secret | DevOps | Sentry DSN | See [Sentry Secret](#k8s-secret-tezca-sentry) |
@@ -156,35 +175,41 @@ and `deploy-admin.yml` with `deploy_ack=production` and a `reason` of at least
 
 ## Secrets Reference
 
+Secret values are never written in a doc, a commit, a PR or chat, and never
+typed as a command-line literal. They go through the Enclii secret intake:
+`enclii secrets intake targets` lists the registered targets, and
+`enclii secrets intake submit` for the Tezca target writes the values with a
+masked prompt (it requires `--reason`; `--generate` with a key name, where the
+target allows it, has Enclii mint a random value such as `DJANGO_SECRET_KEY`
+itself, so nobody sees it). If no Tezca target is listed, there is no intake
+path for these Secrets yet: no Enclii adapter: this is an adapter gap, to be
+recorded rather than worked around with a literal.
+
 ### K8s Secret: `tezca-secrets`
 
-```bash
-enclii secrets set DJANGO_SECRET_KEY "$(openssl rand -base64 50)" --env production
-enclii secrets set DB_USER "tezca" --env production
-enclii secrets set DB_PASSWORD "$(openssl rand -base64 32)" --env production
-enclii secrets set DB_HOST "<shared-cluster-endpoint>" --env production
-enclii secrets set JANUA_API_KEY "sk_live_..." --env production
-enclii secrets set JANUA_PUBLISHABLE_KEY "pk_live_..." --env production
-enclii secrets set JANUA_SECRET_KEY "sk_live_..." --env production
-```
+| Key | Value |
+|-----|-------|
+| `DJANGO_SECRET_KEY` | random, at least 50 bytes (generate it) |
+| `DB_USER` | `tezca` |
+| `DB_PASSWORD` | random (generate it) |
+| `DB_HOST` | the shared cluster PostgreSQL endpoint (see [`CNPG_MIGRATION_PREP_2026-04-27.md`](../strategy/CNPG_MIGRATION_PREP_2026-04-27.md) for the planned cutover) |
+| `JANUA_API_KEY`, `JANUA_PUBLISHABLE_KEY`, `JANUA_SECRET_KEY` | from Janua |
 
 ### K8s Secret: `tezca-r2-credentials`
 
-```bash
-enclii secrets set R2_ACCESS_KEY_ID "<from-existing-cf-account>" --env production
-enclii secrets set R2_SECRET_ACCESS_KEY "<from-existing-cf-account>" --env production
-enclii secrets set R2_ENDPOINT_URL "https://<account_id>.r2.cloudflarestorage.com" --env production
-enclii secrets set R2_BUCKET_NAME "tezca-documents" --env production
-enclii secrets set STORAGE_BACKEND "r2" --env production
-```
+| Key | Value |
+|-----|-------|
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | an R2 API token on the existing Cloudflare account |
+| `R2_ENDPOINT_URL` | the account's R2 S3 endpoint, `https://` + account id + `.r2.cloudflarestorage.com` |
+| `R2_BUCKET_NAME` | `tezca-documents` |
+| `STORAGE_BACKEND` | `r2` |
 
 ### K8s Secret: `tezca-sentry`
 
-```bash
-enclii secrets set SENTRY_DSN "https://<key>@o<org>.ingest.sentry.io/<proj>" --env production
-enclii secrets set SENTRY_ENVIRONMENT "production" --env production
-enclii secrets set NEXT_PUBLIC_SENTRY_DSN "https://<key>@o<org>.ingest.sentry.io/<proj>" --env production
-```
+| Key | Value |
+|-----|-------|
+| `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | the DSN of the Tezca Sentry project |
+| `SENTRY_ENVIRONMENT` | `production` |
 
 ### GitHub Secrets
 
@@ -232,7 +257,7 @@ After completing all manual steps (M1-M9), verify:
 | 6 | Admin API (no auth) | `curl https://api.tezca.mx/api/v1/admin/metrics/` | 401 Unauthorized |
 | 7 | Admin API (valid JWT) | `curl -H "Authorization: Bearer <token>" .../admin/metrics/` | 200 with metrics |
 | 8 | Admin login flow | Navigate to `admin.tezca.mx` | Redirect to /sign-in → login → dashboard |
-| 9 | Django security | `enclii exec tezca-api -- python manage.py check --deploy` | No critical warnings |
+| 9 | Django security | In the tezca-api image: `python manage.py check --deploy` (the Enclii form is the example at the top) | No critical warnings |
 | 10 | CI/CD pipeline | Push to `main` touching `apps/api/` | Image built → digest committed → ArgoCD syncs |
 | 11 | Metrics not public | `curl -s -o /dev/null -w '%{http_code}' https://api.tezca.mx/metrics` (and `/metrics/`) | `404` |
 | 12 | Metrics listener up | `ENCLII_PROJECT=tezca enclii logs tezca-api --env production --since 30m \| grep "Prometheus metrics"` | One `Prometheus metrics (in-cluster only) on :9464/metrics` line per pod |
@@ -261,4 +286,4 @@ After completing all manual steps (M1-M9), verify:
 
 **Document Version**: 1.1
 **Created**: 2026-02-06
-**Updated**: 2026-11-09 (Gotcha 14: Janua SDK SSR interval leak, heap caps). Earlier: 2026-10-01 (WeasyPrint 70 and the PDF export fix; MCP server image scope); 2026-09-30 (deploy trigger table; root-lockfile gap)
+**Updated**: 2026-11-24 (in-pod commands: `enclii exec` does not exist; Enclii one-off job form; secrets via the intake). Earlier: 2026-11-09 (Gotcha 14: Janua SDK SSR interval leak, heap caps); 2026-10-01 (WeasyPrint 70 and the PDF export fix; MCP server image scope); 2026-09-30 (deploy trigger table; root-lockfile gap)

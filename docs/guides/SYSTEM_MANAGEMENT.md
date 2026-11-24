@@ -1,12 +1,31 @@
 # System Management
 
-> **Enclii adapter gap (madfam-org/enclii#455).** Enclii has no exec or
-> one-off-task adapter, and `enclii exec` does not exist. Every in-pod command
-> in this document, whether written `enclii exec tezca-api -- <cmd>` or as
-> `ssh … kubectl exec …`, goes through the documented break-glass path
-> `ssh ssh.madfam.io 'sudo -n kubectl -n tezca exec deploy/<workload> -- <cmd>'`,
-> and only on an explicit operator request. It is not routine access. Remove
-> this note when enclii#455 ships.
+> **Running a command inside Tezca.** `enclii exec`, `enclii shell` and
+> `enclii jobs run` do not exist. Enclii's path for a one-off command is
+> `enclii jobs run-once` in the `tezca-api` image with
+> `--network-identity service`, which copies onto the job pod the labels
+> Tezca's NetworkPolicies select on, so it reaches Postgres, Redis and
+> Elasticsearch as the service does. That path has not yet been run against
+> Tezca (it was verified on another service on 2026-11-24). Until it has, the
+> documented break-glass path remains the fallback, on an explicit operator
+> request only: `ssh ssh.madfam.io`, then `sudo -n kubectl -n tezca exec` into
+> the `tezca-api` or `tezca-worker` deployment (madfam-org/enclii#455). Blocks
+> below marked "in the tezca-api image" show the command that runs inside the
+> pod. The Enclii form, for one of them:
+
+```bash
+SERVICE_ID=$(enclii releases tezca-api --project tezca --limit 1 | awk '/^Resolved /{gsub(/[()]/, "", $NF); print $NF}')
+JOB_ID=$(enclii jobs run-once --name tezca-check-deploy --command "sleep 20 && python manage.py check --deploy" --service-id "$SERVICE_ID" --project tezca --network-identity service | awk '/^  ID:/{print $2}')
+enclii jobs get "$JOB_ID"
+enclii jobs logs "$JOB_ID"
+```
+
+`enclii releases` prints the service id on its `Resolved` line, and
+`enclii jobs run-once` prints the job id on its `ID:` line; the `awk` filters
+read them. `sleep 20` covers a known start-up race (a new job pod can start
+before its network rules apply). Read the output with `enclii jobs logs` once
+`enclii jobs get` shows the job finished. Another in-pod command runs the same
+way with its own `--name` and `--command`.
 
 This directory contains scripts, tools, and documentation for managing the Tezca platform.
 
@@ -295,23 +314,25 @@ Three separate workflows: `deploy-api.yml`, `deploy-web.yml`, `deploy-admin.yml`
 
 ### Quick Commands (via enclii)
 
+Database migrations run automatically (the `migrate` initContainer of
+`tezca-api`), and static files are collected when the API image is built, so
+neither is a manual step. The rest run in the tezca-api image, the Enclii way
+described at the top of this page:
+
 ```bash
-# Break-glass until madfam-org/enclii#455 (see the adapter-gap note at the top).
-# Run database migration
-enclii exec tezca-api -- python manage.py migrate
+# In the tezca-api image: build search indices
+python manage.py index_laws --all --create-indices
 
-# Collect static files
-enclii exec tezca-api -- python manage.py collectstatic --noinput
+# In the tezca-api image: check Django deployment security
+python manage.py check --deploy
+```
 
-# Build search indices
-enclii exec tezca-api -- python manage.py index_laws --all --create-indices
+Logs and pod health:
 
-# Check Django deployment security
-enclii exec tezca-api -- python manage.py check --deploy
-
-# View pod logs
-enclii logs tezca-api
-enclii logs tezca-worker
+```bash
+ENCLII_PROJECT=tezca enclii logs tezca-api --env production --since 30m
+ENCLII_PROJECT=tezca enclii logs tezca-worker --env production --since 30m
+enclii ops pods diagnose --namespace tezca
 ```
 
 ## Maintenance
@@ -356,5 +377,5 @@ For issues or questions:
 
 ---
 
-**Last Updated**: 2026-02-02  
+**Last Updated**: 2026-11-24  
 **System Version**: Phase B Complete (100%)
