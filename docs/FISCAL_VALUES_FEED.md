@@ -77,7 +77,7 @@ for both years accordingly.
 | `subsidio_rule` | **2025**, two vigencias (474.95 / 474.65) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 | `subsidio_rule` | **2026**, two vigencias (474.65 / 492.14) | **`published`**, DOF 31-12-2024 codigo 5746529 |
 | `imss_rates` | **2026** (9 conceptos + tope; employer CEV by SBC band, 3.150 % … 7.513 %) | **`published`** when `publish_fiscal_values_2026` runs; CEV from DOF 16-12-2020 codigo 5607729, Trans. 2° (`fiscal_cuotas_2026.py`) |
-| UDI (`/fiscal/udi/`) | 2026-11-11 to 2026-11-25, one row per day (15 rows) | **`published`** when `publish_fiscal_referencias` runs, DOF 10-11-2026 codigo 5803350 |
+| UDI (`/fiscal/udi/`) | 2026-11-11 to 2026-12-10, one row per day (30 rows) | **`published`** when `publish_fiscal_referencias` runs, DOF 10-11-2026 codigo 5803350 and DOF 25-11-2026 codigo 5805263 |
 | Retención sobre intereses (`/fiscal/retencion-intereses/`) | **2026** 0.90 % · **2027** 0.68 % | **`published`** by the same command, DOF 07-11-2025 codigo 5772357 and DOF 13-11-2026 codigo 5803757 |
 | ISN (`/fiscal/isn/`) | MOR 2.5 % (2025), MOR 3.0 % (from 2026-01-01), CMX 4 % (from 2025-01-01) | **`published`** by the same command; citation = the state gazette, not the DOF |
 
