@@ -14,6 +14,8 @@ from rest_framework.test import APIClient
 from apps.api.fiscal_dof_referencias import (
     RETENCION_INTERESES,
     UDI_AVISO_2026_11_10,
+    UDI_AVISO_2026_11_25,
+    UDI_AVISOS,
     retencion_rows,
     udi_rows,
 )
@@ -34,6 +36,10 @@ def _make_user(scopes=None):
     return user
 
 
+def _udi_days():
+    return [date.fromisoformat(row["vigencia_from"]) for row in udi_rows()]
+
+
 def _publish(monkeypatch, *args):
     monkeypatch.setenv("LOCAL_DB", "yes")
     out = StringIO()
@@ -44,21 +50,54 @@ def _publish(monkeypatch, *args):
 class TestTranscripcion:
     """Lo que el módulo afirma haber leído del DOF."""
 
-    def test_el_aviso_cubre_quince_dias_seguidos(self):
-        days = [date.fromisoformat(day) for day, _ in UDI_AVISO_2026_11_10["values"]]
-        assert days[0] == date(2026, 11, 11) and days[-1] == date(2026, 11, 25)
+    @pytest.mark.parametrize(
+        "aviso, first, last",
+        [
+            (UDI_AVISO_2026_11_10, date(2026, 11, 11), date(2026, 11, 25)),
+            (UDI_AVISO_2026_11_25, date(2026, 11, 26), date(2026, 12, 10)),
+        ],
+    )
+    def test_el_aviso_cubre_quince_dias_seguidos(self, aviso, first, last):
+        days = [date.fromisoformat(day) for day, _ in aviso["values"]]
+        assert len(days) == 15
+        assert days[0] == first and days[-1] == last
+        assert all(b - a == timedelta(days=1) for a, b in zip(days, days[1:]))
+
+    def test_los_avisos_se_encadenan_sin_hueco_ni_repeticion(self):
+        days = _udi_days()
+        assert len(days) == sum(len(aviso["values"]) for aviso in UDI_AVISOS)
+        assert len(set(days)) == len(days)
         assert all(b - a == timedelta(days=1) for a, b in zip(days, days[1:]))
 
     def test_la_udi_sube_cada_dia_y_trae_seis_decimales(self):
-        values = [value for _, value in UDI_AVISO_2026_11_10["values"]]
+        values = [row["value"] for row in udi_rows()]
         assert all(len(value.split(".")[1]) == 6 for value in values)
-        assert [Decimal(v) for v in values] == sorted(Decimal(v) for v in values)
+        decimals = [Decimal(v) for v in values]
+        assert all(a < b <= a + Decimal("0.01") for a, b in zip(decimals, decimals[1:]))
         assert dict(UDI_AVISO_2026_11_10["values"])["2026-11-20"] == "8.920859"
+        assert dict(UDI_AVISO_2026_11_25["values"])["2026-12-01"] == "8.951775"
 
     def test_cada_fila_cita_su_aviso(self):
-        for row in udi_rows():
-            assert row["dof_codigo"] == "5803350" and row["dof_date"] == "2026-11-10"
-            assert row["source_url"].endswith("codigo=5803350&fecha=10/11/2026")
+        avisos = {
+            "2026-11-10": "5803350",
+            "2026-11-25": "5805263",
+        }
+        assert {a["dof_date"]: a["dof_codigo"] for a in UDI_AVISOS} == avisos
+        rows = udi_rows()
+        assert {row["dof_date"] for row in rows} == set(avisos)
+        for aviso in UDI_AVISOS:
+            own_days = {day for day, _ in aviso["values"]}
+            year, month, day = aviso["dof_date"].split("-")
+            for row in rows:
+                if row["vigencia_from"] not in own_days:
+                    continue
+                assert row["dof_codigo"] == aviso["dof_codigo"]
+                assert row["dof_date"] == aviso["dof_date"]
+                assert row["source_url"].endswith(
+                    f"codigo={aviso['dof_codigo']}&fecha={day}/{month}/{year}"
+                )
+                assert row["source_citation"] == aviso["source_citation"]
+        for row in rows:
             assert row["vigencia_from"] == row["vigencia_to"]
             assert row["unit"] == "MXN/UDI"
 
@@ -92,13 +131,18 @@ class TestPublicacion:
         monkeypatch.delenv("LOCAL_DB", raising=False)
         out = StringIO()
         call_command("publish_fiscal_referencias", "--dry-run", stdout=out)
-        assert "Would publish: 17 filas nuevas" in out.getvalue()
+        expected = len(udi_rows()) + len(retencion_rows())
+        assert f"Would publish: {expected} filas nuevas" in out.getvalue()
         assert UDIValue.objects.count() == 0 and RetencionIntereses.objects.count() == 0
 
     def test_publica_y_es_idempotente(self, monkeypatch):
-        assert "Published: 17 filas nuevas" in _publish(monkeypatch)
+        udi_count, retencion_count = len(udi_rows()), len(retencion_rows())
+        assert udi_count == 30 and retencion_count == 2
+        expected = udi_count + retencion_count
+        assert f"Published: {expected} filas nuevas" in _publish(monkeypatch)
         assert (
-            UDIValue.objects.count() == 15 and RetencionIntereses.objects.count() == 2
+            UDIValue.objects.count() == udi_count
+            and RetencionIntereses.objects.count() == retencion_count
         )
         row = UDIValue.objects.get(vigencia_from=date(2026, 11, 20))
         assert (
@@ -106,7 +150,8 @@ class TestPublicacion:
         )
         assert "0 filas nuevas" in _publish(monkeypatch)
         assert (
-            UDIValue.objects.count() == 15 and RetencionIntereses.objects.count() == 2
+            UDIValue.objects.count() == udi_count
+            and RetencionIntereses.objects.count() == retencion_count
         )
 
     def test_una_diferencia_detiene_todo_sin_escribir(self, monkeypatch):
@@ -153,10 +198,9 @@ class TestUdiEndpoints:
         assert row["dof_codigo"] == "5803350" and "in_force" not in row
 
     def test_un_dia_sin_fila_no_se_rellena(self):
+        day_after = (max(_udi_days()) + timedelta(days=1)).isoformat()
         with patch(AUTH_PATCH, return_value=(self.user, "k")):
-            data = self.client.get(
-                reverse("fiscal-udi-list"), {"on": "2026-11-26"}
-            ).json()
+            data = self.client.get(reverse("fiscal-udi-list"), {"on": day_after}).json()
         assert data["count"] == 0 and "value" not in data
 
     def test_un_rango(self):
@@ -190,13 +234,15 @@ class TestUdiEndpoints:
             )
 
     def test_hoy_falla_cerrado_si_no_hay_fila(self):
+        last = max(_udi_days())
+        assert last == date(2026, 12, 10)
         with patch(AUTH_PATCH, return_value=(self.user, "k")), patch(
             "apps.api.fiscal_reference_views.timezone.localdate",
-            return_value=date(2026, 11, 26),
+            return_value=last + timedelta(days=1),
         ):
             response = self.client.get(reverse("fiscal-udi-current"))
         assert response.status_code == 404
-        assert response.json()["latest_on_file"] == "2026-11-25"
+        assert response.json()["latest_on_file"] == last.isoformat()
 
     def test_hoy(self):
         with patch(AUTH_PATCH, return_value=(self.user, "k")), patch(

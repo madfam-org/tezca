@@ -7,13 +7,14 @@ publicada no se sobrescribe.
     https://dof.gob.mx/nota_detalle.php?codigo=<codigo>&fecha=<dd/mm/aaaa>
 
 Leído el **2026-11-20** y el **2026-11-21** de ``nota_detalle``, de forma
-directa y sin fuentes secundarias.
+directa y sin fuentes secundarias; el aviso de la UDI del 25-11-2026, el
+**2026-11-26**, del mismo modo.
 
 Lo que NO está aquí
 -------------------
-* Los avisos de la UDI anteriores o posteriores al del 10-11-2026. Cada aviso
-  cubre unos quince días; publicar el siguiente es un paso de operación, con
-  su propio ``codigo``.
+* Los avisos de la UDI anteriores al del 10-11-2026 ni posteriores al del
+  25-11-2026. Cada aviso cubre unos quince días; publicar el siguiente es un
+  paso de operación, con su propio ``codigo``.
 * Tasas de retención de ejercicios anteriores a 2026: nadie en este repo leyó
   esas Leyes de Ingresos.
 """
@@ -61,7 +62,42 @@ UDI_AVISO_2026_11_10 = {
     ],
 }
 
-UDI_AVISOS = [UDI_AVISO_2026_11_10]
+# Banco de México, «Valor de la unidad de inversión», DOF 25-11-2026: «da a
+# conocer el valor en pesos de la Unidad de Inversión, para los días del 26 de
+# noviembre al 10 de diciembre de 2026». Quince días, quince valores, tal como
+# vienen.
+UDI_AVISO_2026_11_25 = {
+    "dof_date": "2026-11-25",
+    "dof_codigo": "5805263",
+    "source_citation": (
+        "Banco de México, Valor de la unidad de inversión, DOF 25-11-2026 "
+        "(días del 26 de noviembre al 10 de diciembre de 2026)"
+    ),
+    "notes": (
+        "Verificado el 2026-11-26 contra el texto del DOF (lectura directa de "
+        "nota_detalle), sin fuentes secundarias. Provenance='published': la cita "
+        "y el codigo identifican el documento exacto."
+    ),
+    "values": [
+        ("2026-11-26", "8.935690"),
+        ("2026-11-27", "8.938905"),
+        ("2026-11-28", "8.942121"),
+        ("2026-11-29", "8.945338"),
+        ("2026-11-30", "8.948556"),
+        ("2026-12-01", "8.951775"),
+        ("2026-12-02", "8.954996"),
+        ("2026-12-03", "8.958218"),
+        ("2026-12-04", "8.961441"),
+        ("2026-12-05", "8.964665"),
+        ("2026-12-06", "8.967890"),
+        ("2026-12-07", "8.971117"),
+        ("2026-12-08", "8.974344"),
+        ("2026-12-09", "8.977573"),
+        ("2026-12-10", "8.980803"),
+    ],
+}
+
+UDI_AVISOS = [UDI_AVISO_2026_11_10, UDI_AVISO_2026_11_25]
 
 
 def udi_rows():
@@ -79,7 +115,7 @@ def udi_rows():
                     "dof_codigo": aviso["dof_codigo"],
                     "source_url": _dof_url(aviso["dof_codigo"], aviso["dof_date"]),
                     "source_citation": aviso["source_citation"],
-                    "notes": VERIFIED_NOTE,
+                    "notes": aviso.get("notes", VERIFIED_NOTE),
                 }
             )
     return rows
