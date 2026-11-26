@@ -35,7 +35,7 @@
 ## Datos del Solicitante
 
 - **Nombre:** [Nombre del representante de Tezca]
-- **Correo:** contacto@tezca.mx
+- **Correo:** hola@madfam.io (2026-11-26: tezca.mx no recibe correo)
 - **Organización:** Tezca — Plataforma de Derecho Mexicano Abierto
 
 ## Notas de Seguimiento

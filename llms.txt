@@ -10,6 +10,11 @@ Compact LLM context index for this repository.
 - `ECOSYSTEM.md` — MADFAM ecosystem and Enclii deployment context when present.
 - `llms-full.txt` — full context map and durable operating contract.
 
+## Commercial pipeline state (2026-11-26)
+
+- Live sitemap: 52 URLs, no law pages (build-time law read fails silently); no analytics runs; AI crawlers get 403 at the edge. Checkout is off (upgrade link opens the booking page), no trial is offered, and no purchase event reaches Tezca (no Dhanam webhook registered, no publisher on `madfam:billing-events`).
+- `tezca.mx` receives no mail: use support@madfam.io. Detail: `AGENTS.md` → «Commercial pipeline state (2026-11-26)»; cross-repo source: the private internal-devops audit `audits/2026-11-26-business-pipeline/README.md`.
+
 ## Production operations
 
 Routine production operations are Enclii-first. Use Enclii web, API, or CLI
