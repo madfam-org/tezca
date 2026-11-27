@@ -83,7 +83,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Search-Within-Law** - Elasticsearch-powered article search with highlighted snippets
 - ✅ **Keyboard Shortcuts** - j/k article navigation, / search, b bookmark, ? help panel
 - ✅ **Recently Viewed** - Homepage section showing last 10 visited laws (localStorage)
-- ✅ **SEO Foundation** - robots.txt, OG metadata, trilingual 404 page, and a sitemap builder. As of 2026-11-26 the live sitemap lists 52 static, category and state URLs and no law pages: the build-time law fetch in `apps/web/app/sitemap.ts` fails silently and the builder skips every law
+- ✅ **SEO Foundation** - robots.txt, OG metadata, trilingual 404 page, and a sitemap of the static, category, state and law pages. `/sitemap.xml` renders per request; the law list is read in-cluster in the background (`apps/web/lib/sitemap-laws.ts`) because the API's anonymous rate limit makes a full read take over an hour, so a freshly started web pod lists only the laws read so far, and says so in its logs, until that read completes
 - ✅ **URL-Synced Search** - Pagination, filters, and query persisted in URL (shareable/bookmarkable)
 - ✅ **Faceted Search** - ES aggregations (by tier, category, status, law_type, state) with live filter counts
 - ✅ **Browse Pages** - Browse by Category (/categorias/) and State (/estados/) with API-backed counts
@@ -97,7 +97,7 @@ All numbers sourced from `data/universe_registry.json` with links to official so
 - ✅ **Dynamic OG Images** - Per-law opengraph images via Next.js ImageResponse
 - ✅ **Homepage Refresh** - FeaturedLaws grid, QuickLinks, trilingual headings
 - ✅ **JSON-LD Structured Data** - schema.org Legislation + WebSite + Organization
-- ✅ **Canonical URLs** - alternates for es/en/x-default; the sitemap carries categories and states (no law pages live as of 2026-11-26, see SEO Foundation above)
+- ✅ **Canonical URLs** - alternates for es/en/x-default; the sitemap carries categories, states and laws (see SEO Foundation above)
 - ✅ **Spanish URL Paths** - /leyes, /busqueda, /comparar with 301 redirects from English
 - ✅ **Dual Storage** - Local dev / Cloudflare R2 production backend
 - ✅ **Sentry Integration** - Django API + Next.js web (optional)

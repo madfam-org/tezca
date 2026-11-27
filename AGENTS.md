@@ -131,7 +131,7 @@ npm run dev:all                     # both concurrently
 | `NPM_MADFAM_TOKEN` | -- | Needed in `.npmrc` for `@janua/*` and `@tezca/*` private packages |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8000/api/v1` | API base for frontend apps |
 | `DB_ENGINE` | sqlite3 | Set to `django.db.backends.postgresql` for Postgres |
-| `INTERNAL_API_URL` | falls back to `NEXT_PUBLIC_API_URL` | Server-side API URL for SSR inside Docker (e.g. `http://api:8000/api/v1`) |
+| `INTERNAL_API_URL` | falls back to `NEXT_PUBLIC_API_URL` | Server-side API URL for reads that stay inside Docker or the cluster (`http://api:8000/api/v1` in Compose; `http://tezca-api.tezca.svc.cluster.local:8000/api/v1` in `k8s/production`). Today only the `/sitemap.xml` law inventory uses it; law, category and OG pages read `API_BASE_URL` |
 | `CELERY_BROKER_URL` | `redis://localhost:6379/0` | Redis for Celery tasks |
 | `TEZCA_ADMIN_USER_IDS` | `""` | Comma-separated Janua user IDs allowed admin access |
 | `DHANAM_CHECKOUT_URL` | `https://app.dhan.am/checkout` | Billing checkout URL (used by tier gates) |
@@ -554,6 +554,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/crm_sync.py` | CRM webhook dispatch — sends interest.created and newsletter.subscribed events to phynd-crm (no-ops when CRM_WEBHOOK_URL not set) |
 | `apps/indigo/settings.py` | Django settings, Celery Beat schedule |
 | `apps/web/lib/config.ts` | API_BASE_URL, INTERNAL_API_URL |
+| `apps/web/lib/sitemap-laws.ts` | Law inventory for `/sitemap.xml` (rendered per request). Reads `/laws/` in the background, one page at a time, waiting out `429 Retry-After` (capped at 65 s): the API's anonymous limit (10/min, 100/h per client) makes a full read of 30,000+ laws take over an hour. A request waits at most 15 s; before the first complete read (new pod) it lists the laws read so far and logs an error with the missing count, never a 5xx. The complete list is kept in memory 24 h, then served stale while it refreshes |
 | `apps/web/lib/auth-token.ts` | Shared Janua auth token retrieval utility |
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
@@ -715,7 +716,9 @@ repository:
   `llms.txt` included. The live sitemap lists 52 static, category and state
   URLs and no law pages, because the build-time law read in
   `apps/web/app/sitemap.ts` fails silently ([README → Features](README.md#features),
-  [`apps/web/README.md`](apps/web/README.md)). No visitor analytics runs: the
+  [`apps/web/README.md`](apps/web/README.md)). *Update 2026-11-27:* the
+  sitemap now renders per request and reads the law list in-cluster (Key
+  Files → `apps/web/lib/sitemap-laws.ts`). No visitor analytics runs: the
   PostHog client is a no-op because no build passes its key (Key Files →
   `apps/web/app/bienvenida/page.tsx`).
 - **Prospecting.** Interest and newsletter events go to the CRM through

@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next';
 import { INTERNAL_API_URL } from '@/lib/config';
 import { STATE_SLUGS } from '@/lib/states';
-import { assertSitemapSize, getLawIds } from '@/lib/sitemap-laws';
+import { assertSitemapSize, getLawInventory } from '@/lib/sitemap-laws';
 
 // Rendered per request, not prerendered at build: the image build cannot rely
 // on reaching the API, and a build-time failure used to bake a sitemap with no
-// law pages into the image. The law inventory is cached in memory for 24 h by
-// getLawIds, which also keeps the last complete copy when a refresh fails.
+// law pages into the image. The law inventory is read in the background and
+// kept in memory by getLawInventory (lib/sitemap-laws.ts); a request never
+// waits for it longer than REQUEST_BUDGET_MS.
 export const dynamic = 'force-dynamic';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
@@ -105,10 +106,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Dynamic law routes. getLawIds retries, and throws when no complete
-  // inventory is available, so this request answers 5xx instead of
-  // publishing a sitemap with the law pages silently missing.
-  const lawIds = await getLawIds(INTERNAL_API_URL);
+  // Dynamic law routes, read in-cluster (INTERNAL_API_URL). Before the first
+  // complete read finishes (a new pod: the API's anonymous rate limit makes a
+  // full read take over an hour) this lists the laws read so far, and
+  // getLawInventory logs an error with the missing count; it does not throw,
+  // so the static routes are always published.
+  const { ids: lawIds } = await getLawInventory(INTERNAL_API_URL);
   const lawRoutes: MetadataRoute.Sitemap = lawIds.map((id) => ({
     url: `${BASE_URL}/leyes/${encodeURIComponent(id)}`,
     lastModified: new Date(),

@@ -1,13 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import sitemap, { dynamic } from '@/app/sitemap';
-import { resetLawIdCache } from '@/lib/sitemap-laws';
+import { REQUEST_BUDGET_MS, resetLawInventory } from '@/lib/sitemap-laws';
 
 describe('app/sitemap', () => {
   beforeEach(() => {
-    resetLawIdCache();
+    resetLawInventory();
     vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
   });
   afterEach(() => {
+    resetLawInventory();
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
@@ -29,12 +32,20 @@ describe('app/sitemap', () => {
     expect(urls).toContain(`https://tezca.mx/leyes/${encodeURIComponent('ley federal/del trabajo')}`);
   });
 
-  // Real retry backoff (1 s + 3 s) runs here; fetch is stubbed, no host is called.
-  it('fails instead of publishing a sitemap without the law pages', async () => {
+  // fetch is stubbed, no host is called.
+  it('still publishes the static routes, and logs the missing laws, when the API is down', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => new Response('unavailable', { status: 503 })),
     );
-    await expect(sitemap()).rejects.toThrow(/law list read failed/);
-  }, 10_000);
+    const pending = sitemap();
+    await vi.advanceTimersByTimeAsync(REQUEST_BUDGET_MS);
+    const urls = (await pending).map((entry) => entry.url);
+    expect(urls).toContain('https://tezca.mx/leyes');
+    expect(urls.some((url) => url.startsWith('https://tezca.mx/leyes/'))).toBe(false);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('no complete law inventory yet'),
+    );
+  });
 });
