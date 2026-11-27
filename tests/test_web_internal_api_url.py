@@ -51,7 +51,9 @@ def test_internal_api_url_targets_the_api_service() -> None:
     service = _docs(K8S / "tezca-api-service.yaml")[0]
 
     assert parts.scheme == "http"
-    assert parts.hostname == f"{service['metadata']['name']}.{namespace}.svc.cluster.local"
+    assert (
+        parts.hostname == f"{service['metadata']['name']}.{namespace}.svc.cluster.local"
+    )
     assert parts.port in {p["port"] for p in service["spec"]["ports"]}
     assert parts.path.rstrip("/") == "/api/v1"
 
@@ -63,9 +65,7 @@ def test_internal_api_host_is_allowed_by_the_api() -> None:
 
 
 def test_web_to_api_traffic_stays_admitted() -> None:
-    policies = {
-        d["metadata"]["name"]: d for d in _docs(K8S / "network-policies.yaml")
-    }
+    policies = {d["metadata"]["name"]: d for d in _docs(K8S / "network-policies.yaml")}
     intra = policies["allow-intra-namespace"]["spec"]
     assert intra["podSelector"]["matchLabels"] == {"app.kubernetes.io/part-of": "tezca"}
     assert {"from": [{"podSelector": {}}]} in intra["ingress"]
