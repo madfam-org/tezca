@@ -27,6 +27,9 @@ resources:
 env:
   - name: NEXT_PUBLIC_API_URL
     value: "https://api.tezca.mx/api/v1"
+  # Mirrors k8s/production: server-side reads stay in-cluster.
+  - name: INTERNAL_API_URL
+    value: "http://tezca-api.tezca.svc.cluster.local:8000/api/v1"
   # Mirrors k8s/production: V8 heap cap at 62.5% of limits.memory.
   - name: NODE_OPTIONS
     value: "--max-old-space-size=320"
