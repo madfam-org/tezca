@@ -341,7 +341,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - **Pricing source-of-truth**: `internal-devops/decisions/2026-04-25-tulana-ecosystem-pricing.md`. Tezca tiers: Community 199 / Essentials 599 / Institutional 1,999 MXN/mo. Anchored on Tulana v0.1 competitor band (vLex, Doctrina AI, LegalTracker MX). **Confidence: low** — pending v0.2 WTP automation.
 - **PMF measurement**: per RFC 0013, NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*` endpoints. Composite PMF Score gates the `MONETIZATION_ENABLED` flip from InterestGate → checkout.
   - **Integration status (2026-04-26):** Wired into `apps/web` via `components/pmf/PmfWidgetMount.tsx`, mounted in the root `app/layout.tsx` (renders nowhere visible until activated). Gates: feature flag `NEXT_PUBLIC_PMF_WIDGET_ENABLED` (default `false`) + `auth.isAuthenticated` + path-prefix exclusion list (`/login`, `/bienvenida`, `/admin`). `productSlug=tezca`, `apiUrl=$NEXT_PUBLIC_TULANA_API_URL` (default `https://tulana-api.madfam.io`), triggers: NPS afterSession=5 / dismissCooldown=30d, Sean Ellis afterSession=3 / dismissCooldown=45d, smile after 3 `law_viewed` actions. Activation is operator-gated: requires (1) `NPM_MADFAM_TOKEN` rotation so `@madfam/pmf-widget@^0.1.0` can publish + install, (2) deletion of `apps/web/types/madfam-pmf-widget.d.ts` once the published `.d.ts` ships, (3) flipping `NEXT_PUBLIC_PMF_WIDGET_ENABLED=true` in the deployed env. The dynamic import is fail-closed — a missing module never breaks the page.
-- **Monetization architecture (full ecosystem)**: `internal-devops/ecosystem/monetization-architecture-2026-04-26.md`. Tezca enforces tiers via `SubscriptionThrottleGuard` but does not mint them — Dhanam owns subscription state and fans out `subscription.activated|upgraded|cancelled` events. Tezca tier names are defined in Dhanam catalog (`tezca-free`, `tezca-pro`, `tezca-enterprise`).
+- **Monetization architecture (full ecosystem)**: `internal-devops/ecosystem/monetization-architecture-2026-04-26.md`. Tezca enforces tiers via `SubscriptionThrottleGuard` but does not mint them — Dhanam owns subscription state and fans out `subscription.activated|upgraded|cancelled` events. Tezca tier names follow Dhanam's catalogue: free, essentials, academic, institutional, enterprise (2026-11-26). `pro` and `pro_plus` remain in the catalogue but are not for sale.
 
 ### Billing
 
@@ -350,6 +350,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Secret: `DHANAM_WEBHOOK_SECRET` env var
 - Plan mappings: `tezca_community`, `tezca_essentials`, `tezca_academic`, `tezca_institutional`, `tezca_madfam` → corresponding tiers (legacy `tezca_pro`→`academic`)
 - Downgrade fallback: `free_member` (free tier for authenticated users)
+- What production does with a purchase as of 2026-11-26 (checkout off, no webhook sent to Tezca, no trial): see [Commercial pipeline state (2026-11-26)](#commercial-pipeline-state-2026-11-26).
 
 ### Trials
 
@@ -387,7 +388,7 @@ Consuming services configure themselves to connect to Tezca, not the other way a
 - Customer-facing billing surface delegating to Dhanam (Track 4 / `docs/strategy/FEATURE_PARITY_PLAN_2026-04-27.md` §3.3).
 - Tezca holds **zero** Stripe keys. Tezca calls `api.dhan.am/v1/portal` and `api.dhan.am/v1/invoices`; Dhanam owns subscription state.
 - Two display modes: `MONETIZATION_ENABLED=false` → InterestGate fallback; `MONETIZATION_ENABLED=true` → current-plan card + customer-portal CTA + invoice history table (PDF + CFDI 4.0 XML download links).
-- Webhook flow handled by `apps/api/billing_stream_consumer.py` (Redis stream `madfam:billing-events`, consumer group `tezca-consumers`). `subscription.activated|cancelled` events map to `APIKey.tier` updates.
+- `apps/api/billing_stream_consumer.py` reads the Redis stream `madfam:billing-events` (consumer group `tezca-consumers`) and maps `subscription.activated|cancelled` to `APIKey.tier` updates. As of 2026-11-26 no service publishes to this stream, so a purchase does not change `APIKey.tier`. Signed-in users are gated on the `tezca_tier` token claim (`apps/api/middleware/tier_permissions.py`).
 
 ### Route Conventions
 
@@ -557,7 +558,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/web/components/providers/AuthContext.tsx` | Janua JWT auth state |
 | `apps/web/components/TierGate.tsx` | Tier-gating upgrade prompts (4 variants, i18n, countdown) |
 | `apps/web/components/InterestGate.tsx` | Pre-monetization interest-capture component (4 variants, email form, wishlist, i18n). Shown when `MONETIZATION_ENABLED=false`. Fires `funnel.premium_interest` for `early_access` feature |
-| `apps/web/app/bienvenida/page.tsx` | UTM-aware landing page for social media traffic. Reads `utm_source/medium/campaign` params. Newsletter signup → CRM dispatch. Account CTA after subscription. PostHog `funnel.landing_viewed` + `funnel.newsletter_subscribed` |
+| `apps/web/app/bienvenida/page.tsx` | UTM-aware landing page for social media traffic. Reads `utm_source/medium/campaign` params. Newsletter signup → CRM dispatch. Account CTA after subscription. PostHog `funnel.landing_viewed` + `funnel.newsletter_subscribed` are coded but not sent: no build passes `NEXT_PUBLIC_POSTHOG_KEY` (2026-11-26) |
 | `apps/web/app/login/page.tsx` | Login/signup page — renders Janua SignIn/SignUp with redirect support |
 | `apps/web/app/cuenta/page.tsx` | Account page — profile card, quick links (bookmarks, notes, alerts, API keys), tier comparison |
 | `apps/web/app/cuenta/apikeys/page.tsx` | Self-serve API key management — list, create, copy secret, revoke. InterestGate for anon |
@@ -592,7 +593,7 @@ type Lang = 'es' | 'en' | 'nah';
 | `apps/api/chat/selva_client.py` | OpenAI-compatible HTTP client + mock; selected via `CHAT_BACKEND` env. Tezca holds zero LLM API keys |
 | `apps/api/chat/retriever.py` | RAG retrieval over articles ES index; builds system prompt with `[law_id#article_id]` citation format |
 | `apps/api/chat/views.py` | `POST /api/v1/chat/preguntar/` view with 4 gating layers (CHAT_ENABLED → auth → RequireFeature("chat") → daily budget) |
-| `apps/api/billing_stream_consumer.py` | Redis Streams consumer for `madfam:billing-events` (subscription.activated|cancelled → APIKey.tier) |
+| `apps/api/billing_stream_consumer.py` | Redis Streams consumer for `madfam:billing-events` (subscription.activated|cancelled → APIKey.tier); as of 2026-11-26 nothing publishes to the stream |
 | `apps/web/app/cuenta/billing/page.tsx` | Customer-facing billing page — Dhanam-delegated portal CTA + invoice history (PDF + CFDI). Two modes via `MONETIZATION_ENABLED` |
 | `packages/mcp-server/main.py` | MCP server entry point (FastMCP + uvicorn) |
 | `packages/mcp-server/tools/` | 16 MCP tools proxying REST API |
@@ -701,6 +702,42 @@ These gates run as discrete CI steps and fail the merge on regression:
 | CodeQL | 0 new alerts on PR | weekly + on-push |
 
 Backend coverage gate has been ratcheted 44 → 48 → 51 → 54 → 56 → 60 across PRs #56, #77–80, and the WS-R1 push (PR #82). WS-R1 is now done; next ratchet is gated on WS-R5/R6 maturing per `docs/strategy/A_PLUS_PROGRESS_2026-04-27.md`.
+
+## Commercial pipeline state (2026-11-26)
+
+What is true for Tezca at each stage of the business pipeline on 2026-11-26.
+The cross-repo source is the audit record in the private `internal-devops`
+repository:
+[`audits/2026-11-26-business-pipeline/README.md`](https://github.com/madfam-org/internal-devops/blob/main/audits/2026-11-26-business-pipeline/README.md)
+(private; not readable from this public repository).
+
+- **Discovery.** `tezca.mx` answers 200, but its edge answers AI crawlers 403,
+  `llms.txt` included. The live sitemap lists 52 static, category and state
+  URLs and no law pages, because the build-time law read in
+  `apps/web/app/sitemap.ts` fails silently ([README → Features](README.md#features),
+  [`apps/web/README.md`](apps/web/README.md)). No visitor analytics runs: the
+  PostHog client is a no-op because no build passes its key (Key Files →
+  `apps/web/app/bienvenida/page.tsx`).
+- **Prospecting.** Interest and newsletter events go to the CRM through
+  `apps/api/crm_sync.py`, which no-ops while its webhook URL is unset.
+- **Conversion and sales.** Tier names and prices come from Dhanam's catalogue
+  (`apps/web/lib/dhanam-catalog.ts`); essentials, academic and institutional
+  are for sale, `pro` and `pro_plus` are not («Monetization» above). Self-serve
+  payment is not enabled: the upgrade link opens the booking page. No trial is
+  offered at checkout, and `getTrialCheckoutUrl` in `apps/web/lib/billing.ts`
+  has no caller ([ROADMAP → What's Complete](ROADMAP.md#whats-complete-beyond-roadmap-documentation)).
+- **Fulfillment.** A purchase does not reach Tezca today. Dhanam's production
+  configuration registers no purchase webhook for Tezca, so
+  `POST /api/v1/billing/webhook/` («Billing» above) receives nothing, and no
+  service publishes to the `madfam:billing-events` stream that
+  `apps/api/billing_stream_consumer.py` reads («Billing UI» above). Signed-in
+  users are gated on the `tezca_tier` token claim.
+- **Customer success.** `tezca.mx` has no mail (MX) record, so no `@tezca.mx`
+  address receives mail. Use support@madfam.io for support; the
+  `soporte@tezca.mx` shown on `/cuenta/billing`
+  (`apps/web/app/cuenta/billing/page.tsx`) is a code change for the owner. The
+  two outbound letter drafts under `docs/strategy/partnerships/` now give
+  hola@madfam.io. The PMF widget is off («Monetization» above).
 
 ## Strategy Documentation
 

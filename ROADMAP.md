@@ -1,6 +1,6 @@
 # Leyes Como Código - Product Roadmap
 
-**Last Updated**: 2026-04-27
+**Last Updated**: 2026-11-26
 **Current Status**: 35,277 laws, 3.5M+ ES articles, 33,380+ cross-references
 **Data Motor**: Pipeline fix complete (state/municipal AKN parsing + unified indexer)
 **DataOps**: Protocol implemented (gap tracking, health monitoring, coverage dashboard)
@@ -383,7 +383,7 @@ Several features listed under "Phase 5: Vision" are already implemented:
 | SCJN Jurisprudencia | ✅ Done | `JudicialRecord` model, API + Playwright scrapers, weekly Beat task |
 | Graph visualization | ✅ Done | Sigma.js, ego graph + overview + showcase APIs, `/grafo/` route |
 | MCP server for AI agents | ✅ Done | 16 tools, published to PyPI, 18 tests |
-| Billing & trials | ✅ Done | Dhanam webhook, 3/21-day trials, `TierGate` (4 variants) |
+| Billing & trials | 🔄 Partial | Dhanam webhook, tier gates and `TierGate` (4 variants) are done. As of 2026-11-26 no trial is offered at checkout, and self-serve payment is not yet enabled (the upgrade link opens the booking page) |
 
 ### Identified Gaps & Technical Debt
 
@@ -624,7 +624,7 @@ Django models:       14         React contexts:      5
 - ✅ Bulk download (tier-gated)
 - ✅ SCJN judicial corpus (API + Playwright scrapers, weekly)
 - ✅ MCP server (16 tools, published to PyPI)
-- ✅ Billing + trials (Dhanam integration, 3/21-day trials)
+- ✅ Billing (Dhanam webhook and tier gates). As of 2026-11-26 no trial is offered at checkout and self-serve payment is not yet enabled
 
 ---
 

@@ -17,7 +17,7 @@ The citizen-facing web application for searching and reading Mexican laws.
 - **Site Footer**: Navigation links, official sources, disclaimer bar, copyright notice.
 - **Disclaimer Banner**: Dismissable homepage notice with localStorage persistence.
 - **Trilingual Support**: ES/EN/NAH (Classical Nahuatl) language toggle across all UI components (law content remains Spanish-only).
-- **SEO**: JSON-LD (Legislation + WebSite + Organization), dynamic OG images, canonical URLs, alternates, expanded sitemap.
+- **SEO**: JSON-LD (Legislation + WebSite + Organization), dynamic OG images, canonical URLs, alternates. The sitemap (`app/sitemap.ts`) adds law pages only when the build-time API read succeeds; as of 2026-11-26 the live sitemap has 52 static, category and state URLs and no law pages, because that read fails silently.
 - **Dynamic OG Images**: Per-law opengraph images via Next.js ImageResponse.
 - **Homepage**: FeaturedLaws grid, QuickLinks, recently viewed, jurisdiction cards.
 

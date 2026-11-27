@@ -65,7 +65,7 @@ Solicitamos acceso a los corpus de **jurisprudencia** y **tesis aisladas** de la
 ## Contacto
 
 **Proyecto:** Tezca — tezca.mx
-**Email:** contacto@tezca.mx
+**Email:** hola@madfam.io (2026-11-26: tezca.mx no recibe correo)
 **GitHub:** github.com/tezca-mx/tezca
 **Licencia:** AGPL-3.0
 
