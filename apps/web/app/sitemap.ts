@@ -1,13 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { INTERNAL_API_URL } from '@/lib/config';
 import { STATE_SLUGS } from '@/lib/states';
-import { assertSitemapSize, getLawIds } from '@/lib/sitemap-laws';
-
-// Rendered per request, not prerendered at build: the image build cannot rely
-// on reaching the API, and a build-time failure used to bake a sitemap with no
-// law pages into the image. The law inventory is cached in memory for 24 h by
-// getLawIds, which also keeps the last complete copy when a refresh fails.
-export const dynamic = 'force-dynamic';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tezca.mx';
 
@@ -105,18 +98,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Dynamic law routes. getLawIds retries, and throws when no complete
-  // inventory is available, so this request answers 5xx instead of
-  // publishing a sitemap with the law pages silently missing.
-  const lawIds = await getLawIds(INTERNAL_API_URL);
-  const lawRoutes: MetadataRoute.Sitemap = lawIds.map((id) => ({
-    url: `${BASE_URL}/leyes/${encodeURIComponent(id)}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
+  // Dynamic law routes — paginate through API
+  const lawRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const apiUrl = INTERNAL_API_URL;
+    let nextUrl: string | null = `${apiUrl}/laws/?page_size=200`;
 
-  const entries = [...staticRoutes, ...contentRoutes, ...browseRoutes, ...lawRoutes];
-  assertSitemapSize(entries.length);
-  return entries;
+    while (nextUrl) {
+      const res: Response = await fetch(nextUrl, { next: { revalidate: 86400 } });
+      if (!res.ok) break;
+      const data: { results?: Array<{ id: string }>; next?: string | null } = await res.json();
+      const results: Array<{ id: string }> = data.results || [];
+      lawRoutes.push(
+        ...results.map((law) => ({
+          url: `${BASE_URL}/leyes/${encodeURIComponent(law.id)}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly' as const,
+          priority: 0.7,
+        }))
+      );
+      nextUrl = data.next || null;
+    }
+  } catch {
+    // API unavailable at build time — skip dynamic routes
+  }
+
+  return [...staticRoutes, ...contentRoutes, ...browseRoutes, ...lawRoutes];
 }

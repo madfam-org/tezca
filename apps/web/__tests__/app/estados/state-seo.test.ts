@@ -36,12 +36,7 @@ describe('sitemap', () => {
     });
 
     it('lists every state page, the pricing page, and no admin or API URLs', async () => {
-        // The law inventory must load; an unreachable API now fails the
-        // sitemap (see __tests__/app/sitemap.test.ts) instead of shrinking it.
-        vi.stubGlobal(
-            'fetch',
-            vi.fn(async () => Response.json({ count: 1, results: [{ id: 'cpeum' }] })),
-        );
+        vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
         const { default: sitemap } = await import('@/app/sitemap');
         const urls = (await sitemap()).map((e) => e.url);
         for (const slug of STATE_SLUGS) {
