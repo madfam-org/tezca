@@ -733,9 +733,8 @@ repository:
   `apps/api/billing_stream_consumer.py` reads («Billing UI» above). Signed-in
   users are gated on the `tezca_tier` token claim.
 - **Customer success.** `tezca.mx` has no mail (MX) record, so no `@tezca.mx`
-  address receives mail. Use support@madfam.io for support; the
-  `soporte@tezca.mx` shown on `/cuenta/billing`
-  (`apps/web/app/cuenta/billing/page.tsx`) is a code change for the owner. The
+  address receives mail. Use support@madfam.io for support; `/cuenta/billing`
+  (`apps/web/app/cuenta/billing/page.tsx`) shows support@madfam.io. The
   two outbound letter drafts under `docs/strategy/partnerships/` now give
   hola@madfam.io. The PMF widget is off («Monetization» above).
 
