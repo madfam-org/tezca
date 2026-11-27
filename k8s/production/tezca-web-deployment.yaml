@@ -39,6 +39,15 @@ spec:
           env:
             - name: NEXT_PUBLIC_API_URL
               value: "https://api.tezca.mx/api/v1"
+            # Server-side reads that should stay inside the cluster
+            # (apps/web/lib/config.ts INTERNAL_API_URL; today only the
+            # /sitemap.xml law inventory). Unset, they fall back to the public
+            # host and go out through the edge and back. The host must stay in
+            # tezca-api's ALLOWED_HOSTS; /api/ is exempt from the HTTPS
+            # redirect for plain-HTTP in-cluster callers. Guarded by
+            # tests/test_web_internal_api_url.py.
+            - name: INTERNAL_API_URL
+              value: "http://tezca-api.tezca.svc.cluster.local:8000/api/v1"
             - name: NEXT_PUBLIC_JANUA_PUBLISHABLE_KEY
               valueFrom:
                 secretKeyRef:
